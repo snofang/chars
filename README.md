@@ -1,4 +1,4 @@
-# agents · verses · songs
+# agents_verses_songs
 
 ai descriptions  
 human conditions  
