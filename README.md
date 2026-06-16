@@ -1,6 +1,6 @@
 ai descriptions..,  
 human conditions..,  
-carefully carved..  
+carefully carved words..  
 
 @word_voice_artisan..
 
