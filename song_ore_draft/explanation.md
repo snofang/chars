@@ -59,4 +59,3 @@ What was meant to destroy became raw material. The result is not named—it exce
 
 ---
 
-Would you like these explanations integrated into the performance script, or kept separate as a reader's guide?
