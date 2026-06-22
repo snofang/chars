@@ -1,0 +1,19 @@
+
+Verse 1:  f — f — mf — dim.
+Verse 2:  cresc. — f — mf — rit.
+Verse 3:  f — f — f — dim.
+Verse 4:  p — p — p — cresc.
+Verse 5:  mf — f — mf — rit.
+Verse 6:  mf — f — f — dim.
+
+## Dynamic Map
+
+| **Dynamics Key** | **Meaning**                       |
+|:-----------------|:----------------------------------|
+| **p**            | piano — quiet, inward             |
+| **mf**           | mezzo-forte — medium, narrative   |
+| **f**            | forte — firm, declarative         |
+| **dim.**         | diminuendo — fade, soften         |
+| **cresc.**       | crescendo — grow, rise            |
+| **rit.**         | ritardando — slow down            |
+| **fermata (𝄐)**  | hold longer than the beat         |
