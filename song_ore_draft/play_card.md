@@ -20,30 +20,12 @@
 
 ## Keys
 
-Verse 1:  f — f — mf — dim.  
-Verse 2:  cresc. — f — mf — rit.  
-Verse 3:  f — f — f — dim.  
-Verse 4:  p — p — p — cresc.  
-Verse 5:  mf — f — mf — rit.  
-Verse 6:  mf — f — f — dim.  
-
-
-
-## Timing  
-
-Verse 1	~20 seconds  
-Breath	~3 seconds  
-Verse 2	~20 seconds  
-Breath	~3 seconds  
-Verse 3	~20 seconds  
-Breath	~3 seconds  
-Verse 4	~20 seconds  
-Breath	~3 seconds  
-Verse 5	~20 seconds  
-Breath	~3 seconds  
-Verse 6	~20 seconds  
-Final silence	~5 seconds  
-Total	~3 minutes  
+> Verse 1:  f — f — mf — dim.  
+> Verse 2:  cresc. — f — mf — rit.  
+> Verse 3:  f — f — f — dim.  
+> Verse 4:  p — p — p — cresc.  
+> Verse 5:  mf — f — mf — rit.  
+> Verse 6:  mf — f — f — dim.  
 
 
 ## Keys Map
