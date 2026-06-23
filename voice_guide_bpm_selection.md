@@ -59,18 +59,6 @@ What is the poem's primary tone?
 
 ---
 
-## For *Ore* Specifically
-
-| BPM | Duration (72 measures) | Feel |
-|:----|:-----------------------|:-----|
-| 80 | 54 seconds | Quick, conversational |
-| 70 | 62 seconds | Grounded, clear |
-| 60 | 72 seconds | Deliberate, heavy |
-| 50 | 86 seconds | Ceremonial, resonant |
-| 40 | 108 seconds | Meditative, chant-like |
-
----
-
 ## The Final Rule
 
 > **The correct BPM is the one where you stop thinking about the BPM.**
