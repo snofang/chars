@@ -4,139 +4,240 @@
 
 # Performance Guide: The Weight That Remains
 
----
-
-## Delivery Overview
-
-**Duration:** Approx. 2–3 minutes  
-**Tone:** Still, certain, unhurried  
-**Pace:** Slow enough to let each line land, fast enough to avoid sentimentality  
-**Volume:** Even. No shouting. No whispering. Just *saying*.
+## For Musical Performance — 4/4 Time
 
 ---
 
-## Accent Guide
+## Overview
 
-**Recommended:** Neutral, clear, mid-Atlantic or General American. The poem does not belong to any region—it belongs to the mouth that means it.
-
-**If using a natural accent:** Do not suppress it. Let it be yours. The poem holds better in a real voice than a borrowed one.
-
-**Key vowel anchors:**
-
-| Word | Guide |
-|------|-------|
-| *losing* | Long *o*—hold it. Do not let it collapse into *loozing*. |
-| *power* | Two syllables. *Pow-er*. Let the *ow* have weight. |
-| *caving* | Long *a*—open, not tight. Like a door giving way. |
-| *loneliness* | Four syllables. *Lone-li-ness*. Do not rush the middle. |
-| *forge* | One syllable. *Forge*—hard *g*, not soft. The metal sound. |
-| *pressed* | One syllable. Crisp *e*. Like something flattened. |
-| *spent* | One syllable. Short *e*. Sharp. Let the *t* land. |
-| *remains* | Two syllables. *Re-mains*. The *mains* holds—like the sea. |
-| *contain* | Two syllables. *Con-tain*. The *tain* is a wall. Close it. |
-| *choosing* | Long *oo*. Not *chuzing*. Let it stretch—choice is slow. |
-
-**Rhythm notes:**
-- The poem is metered but not strict. Follow the breath, not the beat.
-- Let line breaks breathe—do not rush to the next line.
-- The asterisks in the original (*) are silences. Honor them.
+**Time Signature:** 4/4  
+**Tempo:** Andante (76–80 BPM) — walking pace, unhurried  
+**Key:** Recommend E minor or A minor — dark, open, resonant  
+**Instrumentation:** Sparse. Piano, acoustic guitar, or voice alone. Let the words drive.
 
 ---
 
-## Stanza-by-Stanza Direction
+## Rhythm Map
 
-### Opening (money / possibilities)
+Each line fits into **two bars of 4/4** (8 beats per line), with natural rests at line breaks.
 
-> *"Losing money may look like power, / Or possibilities caving in"*
-
-**Delivery:** Flat. Observational. No judgment. State it like a fact you've checked twice.
-
-**Pacing:** Slight pause between the two lines—let the *or* do its work.
-
-**Accent:** *Losing*—long *o*. *Power*—two syllables. *Caving*—open *a*, let it breathe.
+**Legend:**  
+`/` = stressed beat  
+`.` = unstressed beat  
+`—` = held note  
+`(rest)` = silence
 
 ---
 
-### Loneliness / forgetting
+### Stanza 1
 
-> *"Loneliness alone in your own voice, / Forgetting what was set and trying"*
+```
+Line 1: "Losing money may look like power,"
+Beats:  / . / . / . / . — / . / . / . / .
+Count:  1   2   3   4   5   6   7   8
 
-**Delivery:** Slightly heavier. Not sad—*weighted*. The voice should feel like it's speaking from inside that loneliness, not describing it from outside.
+Line 2: "Or possibilities caving in"
+Beats:  / . / . / . / . — / . / . / . / .
+Count:  1   2   3   4   5   6   7   8
+```
 
-**Pacing:** Breathe after "voice." Let "trying" hang—it's unfinished, like the action itself.
-
-**Accent:** *Loneliness*—four syllables, don't collapse it. *Forgetting*—soft *e*, not sharp. *Set*—short, clipped. *Trying*—let it rise slightly at the end, as if unfinished.
-
----
-
-### Another sit / another shape
-
-> *"Another sit, another shape, / Another name for the same escape"*
-
-**Delivery:** Tired but clear. Recognition, not exhaustion. You've seen this pattern before—you're pointing it out, not collapsing into it.
-
-**Pacing:** The three "anothers" should feel like a turning wheel. Steady rhythm. No rush.
-
-**Accent:** *Another*—unstressed first syllable, stress on *noth*. *Escape*—long *a*, soft *e* at the end. Let it open, then close.
+**Stress points:** *Los-* (1), *mon-* (3), *look* (5), *pow-* (7) — then breathe on 8.  
+Second line: *pos-* (1), *bil-* (3), *cav-* (5), *in* (7) — let *in* land on 7, rest on 8.
 
 ---
 
-### The forge
+### Stanza 2
 
-> *"But the forge knows what was pressed, / What was spent and what is left"*
+```
+Line 3: "Loneliness alone in your own voice,"
+Beats:  / . / . / . / . — / . / . / . / .
+Count:  1   2   3   4   5   6   7   8
 
-**Delivery:** Shift here. Slightly firmer. The *but* turns the poem. This is the first real anchor.
+Line 4: "Forgetting what was set and trying"
+Beats:  / . / . / . / . — / . / . / . / .
+Count:  1   2   3   4   5   6   7   8
+```
 
-**Pacing:** Press "pressed" and "spent"—those are the working words. "Left" should land soft, not heavy.
-
-**Accent:** *Forge*—hard *g*, one syllable. *Pressed*—short *e*, crisp. *Spent*—short *e*, sharp *t*. *Left*—short *e*, let it fade.
-
----
-
-### The wheel / the weight
-
-> *"The wheel turns, the weight remains, / You cannot lose what you were made to contain"*
-
-**Delivery:** This is the spine of the poem. Deliver it like a conclusion you've earned. No drama—just *truth*.
-
-**Pacing:** Breather after "remains." Let "cannot lose" sit alone in the ear before the rest arrives.
-
-**Accent:** *Wheel*—long *e*, hold it. *Weight*—long *a*, not *wet*. *Remains*—two syllables, stress on *mains*. *Cannot*—two syllables, both clear. *Contain*—stress on *tain*, close it.
+**Stress points:** *Lone-* (1), *ness* (3), *a-* (5), *own* (7). Let *voice* carry across beat 8 into the next bar.  
+Second line: *For-* (1), *get-* (3), *set* (5), *try-* (7) — *ing* lands on 8, soft.
 
 ---
 
-### Final instruction
+### Stanza 3
 
-> *"So sit still in the losing, / And see what holds when nothing is choosing"*
+```
+Line 5: "Another sit, another shape,"
+Beats:  / . / . / . / . — / . / . / . / .
+Count:  1   2   3   4   5   6   7   8
 
-**Delivery:** Quiet. Not fragile—*intimate*. This is the offering. Speak it like you mean it for yourself, not just for the room.
+Line 6: "Another name for the same escape"
+Beats:  / . / . / . / . — / . / . / . / .
+Count:  1   2   3   4   5   6   7   8
+```
 
-**Pacing:** Slow. Let "holds" breathe. Let "choosing" fade. Don't close too quickly—let silence finish it.
+**Stress points:** *An-* (1), *ther* (3), *sit* (5), *An-* (7). Comma = breath on 8.  
+Second line: *An-* (1), *ther* (3), *name* (5), *same* (7), *es-* (1 of next bar) *-cape* (3) — let *escape* stretch across the bar line.
 
-**Accent:** *Sit*—short *i*, clipped. *Still*—short *i*, hold the *ll*. *Losing*—long *o*. *Holds*—long *o*, let it resonate. *Choosing*—long *oo*, let it stretch and dissolve.
+---
+
+### Stanza 4
+
+```
+Line 7: "But the forge knows what was pressed,"
+Beats:  / . / . / . / . — / . / . / . / .
+Count:  1   2   3   4   5   6   7   8
+
+Line 8: "What was spent and what is left"
+Beats:  / . / . / . / . — / . / . / . / .
+Count:  1   2   3   4   5   6   7   8
+```
+
+**Stress points:** *forge* (3) — hit it. *knows* (5). *pressed* (7) — let it land sharp.  
+Second line: *spent* (3) — crisp. *left* (7) — soft, fading.
+
+---
+
+### Stanza 5
+
+```
+Line 9: "The wheel turns, the weight remains,"
+Beats:  / . / . / . / . — / . / . / . / .
+Count:  1   2   3   4   5   6   7   8
+
+Line 10: "You cannot lose what you were made to contain"
+Beats:  / . / . / . / . — / . / . / . / . — / . / . 
+Count:  1   2   3   4   5   6   7   8   9   10  11  12
+```
+
+**Stress points:** *wheel* (1), *turns* (3), *weight* (5), *re-* (7) — *-mains* lands on 1 of next bar.  
+Second line: *can-* (1), *not* (3), *lose* (5), *made* (7), *con-* (9), *-tain* (11) — hold *contain* across beats 11–12, let it ring.
+
+---
+
+### Stanza 6
+
+```
+Line 11: "So sit still in the losing,"
+Beats:  / . / . / . / . — / . / . / . / .
+Count:  1   2   3   4   5   6   7   8
+
+Line 12: "And see what holds when nothing is choosing"
+Beats:  / . / . / . / . — / . / . / . / . — / . / .
+Count:  1   2   3   4   5   6   7   8   9   10  11  12
+```
+
+**Stress points:** *sit* (1), *still* (3), *los-* (5), *-ing* (7). Comma = breath on 8.  
+Second line: *see* (1), *holds* (3), *noth-* (5), *-ing* (7), *choos-* (9), *-ing* (11) — let *choosing* stretch and dissolve across beats 11–12.
+
+---
+
+## Strumming Pattern (Guitar)
+
+For each 4/4 bar:
+
+```
+D   D   D   D
+↓   ↓   ↓   ↓
+1   2   3   4
+```
+
+**Variation for weight:**
+- Downstrokes only — keep it grounded
+- Accent beats 1 and 3 (the downbeats)
+- Let beats 2 and 4 be lighter, almost ghosted
+
+**For the final line:**  
+Strum once on beat 1 — let it ring through the rest of the bar. Silence is part of the song.
+
+---
+
+## Piano Accompaniment (Simplified)
+
+**Left hand:** Root note on beat 1, octave on beat 3  
+**Right hand:** Chords on beat 1 only — let them ring
+
+**Chord progression suggestion (E minor):**
+
+| Stanza | Chords |
+|--------|--------|
+| 1–2 | Em — Am — Em |
+| 3 | Am — Bm — Em |
+| 4 | Em — C — G — Em |
+| 5 | Em — C — G — Am — Em |
+| 6 | Am — Em — Am — Em (hold) |
+
+Keep it minimal. The words carry the weight.
+
+---
+
+## Vocal Delivery
+
+| Element | Guideline |
+|---------|-----------|
+| **Attack** | Start each phrase clean — no scooping, no sliding |
+| **Sustain** | Hold stressed words (*forge, weight, holds*) — let them ring |
+| **Release** | End each line cleanly — no vibrato on final syllables |
+| **Dynamics** | Start at mf — build slightly at "forge" — drop to p at "sit still" |
+| **Breath** | Breathe only at stanza breaks — drive through each line |
+
+---
+
+## Articulation Map
+
+| Word | Articulation |
+|------|--------------|
+| *Losing* | Legato — smooth |
+| *Power* | Crisp — let the *ow* open |
+| *Caving* | Open vowel — almost sigh |
+| *Loneliness* | Four clear syllables — don't rush |
+| *Forge* | Marcato — hit it |
+| *Pressed / Spent* | Staccato — sharp, percussive |
+| *Remains* | Legato — let it float |
+| *Contain* | Tenuto — hold the *tain* |
+| *Choosing* | Diminuendo — fade into silence |
+
+---
+
+## Dynamic Map
+
+```
+Stanza 1: mf  — observational, flat
+Stanza 2: mf  — slightly heavier
+Stanza 3: mf  — steady, tired
+Stanza 4: f   — *But* turns it. Build here.
+Stanza 5: f   — spine of the poem. Full voice.
+Stanza 6: p   — intimate. Drop back. Let it land.
+```
+
+---
+
+## Ending
+
+- Sing the last word (*choosing*)
+- Let it fade naturally — no cut-off
+- Count four full beats of silence (4/4, 4 bars of rest)
+- Release slowly
+
+---
+
+## One Rule for Performance
+
+> Do not introduce the song. Do not explain it after.
+> Sing it. Let it sit. Let it work. Let it hold.
 
 ---
 
 ## Technical Notes
 
-| Element | Recommendation |
-|---------|----------------|
-| **Eye contact** | Hold the room, but don't perform *at* them. Speak *to* one person mentally. |
-| **Gestures** | Minimal. Open hands on "forge," still palms on "holds." Nothing dramatic. |
-| **Breath** | Breathe only at stanza breaks—let the lines drive forward. |
-| **Ending** | Count three full seconds of silence before moving. Let the last line settle. |
-| **Asterisks (*)** | In the original text, these mark silences. Pause briefly at each one. |
-
----
-
-## The Only Rule for Performance
-
-> Do not explain the poem before or after.
-> Let it sit. Let it work. Let it hold.
+| Element | Suggestion |
+|---------|------------|
+| **Microphone** | Use a condenser — capture breath and detail |
+| **Reverb** | Minimal. Room ambience only. Do not drown it. |
+| **Monitoring** | Keep it low — hear your own voice naturally |
+| **Lighting** | Low, warm. Let the focus be on the voice. |
 
 ---
 
 *The weight remains. So does the silence after.*
 
 ---
-
