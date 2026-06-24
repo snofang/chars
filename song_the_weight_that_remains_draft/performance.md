@@ -1,5 +1,3 @@
-# performance.md
-
 ---
 
 # Performance Guide: The Weight That Remains
