@@ -1,3 +1,5 @@
+# The Singer's Compass: A Lexicon of Expressive Marks
+
 | Category | Marking | What It Means | What It Does to the Phrase | How It Feels to Sing |
 | :--- | :--- | :--- | :--- | :--- |
 | **Volume** | **mezzo-forte** | moderately loud | anchors the line with presence, not force | steady, grounded, open |
