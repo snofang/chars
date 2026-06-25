@@ -1,6 +1,6 @@
 # use_bpm 120 at the top sets the tempo. Everything sleeps in beats, not seconds, so it all stays locked.
 
-use_bpm 120
+use_bpm 80
 
 live_loop :drums do
   sample :bd_haus
