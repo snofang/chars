@@ -1,0 +1,17 @@
+# use_bpm 120 at the top sets the tempo. Everything sleeps in beats, not seconds, so it all stays locked.
+
+use_bpm 120
+
+live_loop :drums do
+  sample :bd_haus
+  sleep 0.5
+  sample :sn_dolf
+  sleep 0.5
+  sample :bd_haus
+  sleep 0.5
+  sample :sn_dolf
+  sleep 0.5
+end
+
+# BPM changes the speed globally. Try 80 for heavy, 160 for frantic.
+
