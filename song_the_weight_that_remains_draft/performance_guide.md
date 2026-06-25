@@ -1,7 +1,4 @@
 
----
-
-```markdown
 # Performance Guide — The Weight That Remains
 
 **Title:** The Weight That Remains  
