@@ -1,0 +1,31 @@
+# Ore — Grouped into 4 Beats
+# Each group = 2 samples = 0.25 beat each
+# Sum of sleeps per group = 0.5
+
+use_bpm 70
+
+live_loop :ore do
+  # Beat 1
+  sample :bd_haus, amp: 0.8
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.3
+  sleep 0.25
+  
+  # Beat 2
+  sample :bd_haus, amp: 0.6
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.3
+  sleep 0.25
+  
+  # Beat 3
+  sample :bd_haus, amp: 0.8
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.3
+  sleep 0.25
+  
+  # Beat 4
+  sample :drum_snare_soft, amp: 0.7
+  sleep 0.25
+  sample :bd_haus, amp: 1.5
+  sleep 0.25
+end
