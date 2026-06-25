@@ -1,82 +1,17 @@
-use_bpm 100
-use_sched_ahead_time 0.5
+# use_bpm 120 at the top sets the tempo. Everything sleeps in beats, not seconds, so it all stays locked.
 
-live_loop :the_unnamed_one do
-  # MEASURE 1 — The Stomp
-  sample :bd_haus, amp: 1.0   # 1 — heavy
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.3   # & — ghost
-  sleep 0.125
-  sample :sn_dolf, amp: 0.6   # 2 — snap
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.2   # & — breath
-  sleep 0.125
-  sample :bd_haus, amp: 0.9   # 3 — heave
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.3   # & — suspend
-  sleep 0.125
-  sample :sn_dolf, amp: 0.5   # 4 — flick
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.2   # & — reset
-  sleep 0.125
-  
-  # MEASURE 2 — The Cut
-  sample :bd_haus, amp: 0.9
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.3
-  sleep 0.125
-  sample :sn_dolf, amp: 0.7
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.2
-  sleep 0.125
-  sample :bd_haus, amp: 1.0
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.3
-  sleep 0.125
-  sample :sn_dolf, amp: 0.6
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.2
-  sleep 0.125
-  
-  # MEASURE 3 — The Heave
-  sample :bd_haus, amp: 1.0
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.3
-  sleep 0.125
-  sample :sn_dolf, amp: 0.5
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.2
-  sleep 0.125
-  sample :bd_haus, amp: 0.8
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.4
-  sleep 0.125
-  sample :sn_dolf, amp: 0.7
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.3
-  sleep 0.125
-  
-  # MEASURE 4 — The Release
-  sample :bd_haus, amp: 0.6
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.2
-  sleep 0.125
-  sample :sn_dolf, amp: 0.4
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.1
-  sleep 0.125
-  sample :bd_haus, amp: 0.5
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.2
-  sleep 0.125
-  sample :sn_dolf, amp: 0.3
-  sleep 0.125
-  sample :drum_cymbal_closed, amp: 0.1
-  sleep 0.125
+use_bpm 80
+
+live_loop :drums do
+  sample :bd_haus
+  sleep 0.5
+  sample :sn_dolf
+  sleep 0.5
+  sample :bd_haus
+  sleep 0.5
+  sample :sn_dolf
+  sleep 0.5
 end
 
-# Each measure = 8 samples (16th notes).  
-# Each loop = 32 samples (4 measures).  
-# Double precision means the grid is fine enough to catch every accent, every ghost, every breath between the blows.
+# BPM changes the speed globally. Try 80 for heavy, 160 for frantic.
 
-# Stomp.
