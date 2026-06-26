@@ -1,29 +1,33 @@
-# Ore — Grouped into 4 Beats
-# Each group = 2 samples = 0.25 beat each
-# Sum of sleeps per group = 0.5
+# ore_fixed_single.sonicpi
+# Ore — Fixed Measure Simple Loop (Single Precision)
+# Archetype: hip_hop
+# Density: single_time
+# Grid: 8 steps per measure
+# Tempo: 75 BPM
+# Performance: [Slow, heavy. Like a bell tolling from a distance.]
 
-use_bpm 70
+use_bpm 75
 
 live_loop :ore do
-  # Beat 1
+  # Beat 1 — Kick (solid, grounding)
   sample :bd_haus, amp: 0.8
   sleep 0.25
   sample :drum_cymbal_closed, amp: 0.3
   sleep 0.25
   
-  # Beat 2
+  # Beat 2 — Kick (softer — anticipation)
   sample :bd_haus, amp: 0.6
   sleep 0.25
   sample :drum_cymbal_closed, amp: 0.3
   sleep 0.25
   
-  # Beat 3
+  # Beat 3 — Kick (solid, grounding)
   sample :bd_haus, amp: 0.8
   sleep 0.25
   sample :drum_cymbal_closed, amp: 0.3
   sleep 0.25
   
-  # Beat 4
+  # Beat 4 — Snare (edge) + Heavy Kick (the bang)
   sample :drum_snare_soft, amp: 0.7
   sleep 0.25
   sample :bd_haus, amp: 1.5
