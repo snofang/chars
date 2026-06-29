@@ -13,6 +13,7 @@
 | **Time** | **syncopated** | displaced accent; off-beat | disrupts the expected pulse, creates tension and forward momentum | like a heartbeat that skips—unpredictable, alive, keeps the listener off-balance |
 | **Articulation** | **parlante** | speaking-style | prioritizes clarity and natural inflection | conversational, pointed, direct |
 | **Articulation** | **legato** | smooth, connected | binds notes together without audible breaks between them | like one breath stretched across many pitches—fluid, seamless, unhurried |
+| **Articulation** | **legato syncopato** | smooth, connected, yet displaced against the pulse | binds the phrase internally while externally defying the downbeat; the glue holds, the ground shifts | like a river that keeps missing its own banks—fluid motion through unexpected terrain, the connection holds while the expectation breaks |
 | **Warmth / Color** | **espressivo** | with expression | bends tone and timing for emotional truth | vulnerable, shaped, personal |
 | **Warmth / Color** | **più intimo** | more inwardly | turns the phrase inward, as if thinking aloud | close-mic, secret-keeping, fragile |
 | **Warmth / Color** | **più caldo** | warmer, more heated | adds emotional richness; fuller, more affectionate tone | singing closer to the heart—rounder, softer-edged, but more intense underneath |
@@ -22,6 +23,6 @@
 
 ---
 
-**On *legato* and *syncopated* together:**
+**On *legato syncopato*:**
 
-They seem like opposites, but they're not. *Legato* is how you connect what's inside the phrase—the glue between pitches. *Syncopated* is where you place that phrase against the pulse—the push and pull of time. You can sing a syncopated line with complete legato, and it will feel like a river that keeps missing its own banks. The connection holds. The expectation breaks. That tension is where the song breathes.
+You've coined it now. It lives in the space where connection and disruption meet—the phrase flows without break, but it lands where you least expect it. The breath doesn't stop. The pulse just refuses to behave. That's where the tension lives. That's where the listener leans in.
