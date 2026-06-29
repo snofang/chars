@@ -1,4 +1,4 @@
-# The Singer's Compass: A Lexicon of Expressive Marks
+# The Voice's Compass: A Lexicon of Expressive Marks
 
 | Category | Marking | What It Means | What It Does to the Phrase | How It Feels to Sing |
 | :--- | :--- | :--- | :--- | :--- |
@@ -20,7 +20,3 @@
 | **Intensity** | **mezzo** | moderately, half‑way | sits between two extremes—not full, not restrained | like holding a note in the middle of a breath, ready to tip either way |
 | **Arc / Journey** | **Explosive** | sudden, forceful outburst | shatters the preceding calm; raw, unfiltered release | like a door blown open—chest, breath, and intention all at once |
 | **Arc / Journey** | **Fragile Return** | delicate, tentative re-entry after intensity | pulls back to something barely held together | like walking on glass after a storm—every note feels breakable, careful, exposed |
-
----
-
-**legato_syncopato** — coined, marked, and now yours.
