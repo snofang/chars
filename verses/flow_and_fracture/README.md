@@ -8,6 +8,8 @@
 
 This study explores the tension between **flow** (legato, smooth rhythm) and **fracture** (syncopated cello that pushes and pulls against the beat). The rhythm section provides a steady, flowing foundation while the cello phrases anticipate and delay, creating a restless, melancholic quality.
 
+At 80 BPM, the slower tempo gives the syncopated cello more space to breathe, making the push/pull against the legato rhythm more pronounced and spacious.
+
 **Inspired by:** Ellen Allien & Apparat's "Metric"
 
 ---
@@ -16,7 +18,7 @@ This study explores the tension between **flow** (legato, smooth rhythm) and **f
 
 | Property | Value |
 |----------|-------|
-| BPM | 130 |
+| BPM | 80 |
 | Key | C minor |
 | Samples | Sonatina Symphonic Orchestra (SSO) |
 | Instrument | Cello (solo + harmony) |
@@ -28,10 +30,12 @@ This study explores the tension between **flow** (legato, smooth rhythm) and **f
 
 The cello uses `delay` parameters to create push/pull against the steady rhythm:
 
-- `delay: 0.15` → Note anticipates the beat (rushes ahead)
-- `delay: -0.1` → Note delays against the beat (drags behind)
-- `delay: 0.25` → Strong anticipation
-- `delay: -0.2` → Strong delay
+| Delay Value | Effect |
+|-------------|--------|
+| `delay: 0.2` | Note anticipates the beat (rushes ahead) |
+| `delay: -0.15` | Note delays against the beat (drags behind) |
+| `delay: 0.25-0.3` | Strong anticipation |
+| `delay: -0.2 to -0.25` | Strong delay |
 
 This creates a conversational quality where the cello seems to float independently of the rhythm.
 
@@ -52,6 +56,22 @@ This creates a conversational quality where the cello seems to float independent
 | Legato Delay | Smooth echoes (phase: 0.5) |
 | Syncopated Filter | LPF modulation following cello |
 | Rhythmic Pulse | Subtle legato pulse |
+
+---
+
+## Tempo Comparison
+
+| Aspect | 130 BPM | 80 BPM |
+|--------|---------|--------|
+| Cello durations | 1.5-2.2s | 2.0-3.2s |
+| Cello attack | 0.1s | 0.15s |
+| Cello release | 0.2s | 0.3s |
+| Delay values | ±0.1-0.25s | ±0.15-0.3s |
+| Pad attack/sustain | 2/4s | 4/6s |
+| Echo decay | 6 beats | 8 beats |
+| Feel | Tense, driving | Spacious, breathing |
+
+The 80 BPM version gives the syncopated cello more room to breathe, making the push/pull against the legato rhythm more pronounced and dramatic.
 
 ---
 
