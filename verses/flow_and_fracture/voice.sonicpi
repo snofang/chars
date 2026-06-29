@@ -1,0 +1,255 @@
+# Flow & Fracture
+# A syncopato_legato study in cello and rhythm
+# Smooth rhythm section (legato) with syncopated cello (fracture)
+# Inspired by Ellen Allien & Apparat's "Metric"
+
+use_bpm 130
+
+# Define paths to your SSO samples
+sso_path = "~/develop/sso/Samples/"
+cello_path = sso_path + "Cello/"
+
+# ============================================
+# 1. LEGATO DRUMS - Smooth, flowing beat
+# ============================================
+live_loop :legato_drums do
+  sample :drum_heavy_kick, amp: 1.8
+  sleep 0.5
+  sample :drum_snare_off, amp: 1.2
+  sleep 0.5
+  sample :drum_heavy_kick, amp: 1.5
+  sleep 0.5
+  sample :drum_snare_off, amp: 1.3
+  sleep 0.5
+  sample :drum_heavy_kick, amp: 1.6
+  sleep 0.5
+  sample :drum_snare_off, amp: 1.2
+  sleep 0.5
+  sample :drum_heavy_kick, amp: 1.5
+  sleep 0.5
+  sample :drum_snare_off, amp: 1.4
+  sleep 0.5
+end
+
+# ============================================
+# 2. LEGATO HI-HATS - Smooth, consistent texture
+# ============================================
+live_loop :legato_hats do
+  sample :drum_cymbal_closed, amp: 0.25, rate: 1.2
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.2, rate: 1.1
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.22, rate: 1.3
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.18, rate: 0.9
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.25, rate: 1.15
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.2, rate: 1.25
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.22, rate: 0.95
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.2, rate: 1.1
+  sleep 0.25
+end
+
+# ============================================
+# 3. LEGATO BASS - Smooth, sustained foundation
+# ============================================
+live_loop :legato_bass do
+  use_synth :saw
+  play :c2, release: 1.2, cutoff: 55, amp: 0.7
+  sleep 2.0
+  play :g1, release: 1.0, cutoff: 60, amp: 0.6
+  sleep 1.5
+  play :f2, release: 1.2, cutoff: 55, amp: 0.7
+  sleep 2.0
+  play :c2, release: 1.0, cutoff: 55, amp: 0.6
+  sleep 1.5
+end
+
+# ============================================
+# 4. CELLO MELODY - Syncopated against the beat
+# ============================================
+define :play_cello_syncopato do |note, duration, vol, delay|
+  in_thread do
+    sample cello_path + "cello-" + note + ".wav",
+      attack: 0.1,
+      sustain: duration - 0.1,
+      release: 0.2,
+      amp: vol,
+      pan: rrand(-0.2, 0.2)
+  end
+  sleep duration * 0.9 + delay
+end
+
+live_loop :syncopated_cello do
+  with_fx :reverb, mix: 0.5, room: 0.8 do
+    with_fx :lpf, cutoff: 75 do
+      play_cello_syncopato "c3", 1.8, 0.9, 0.15
+      play_cello_syncopato "g3", 1.5, 0.8, -0.1
+      play_cello_syncopato "e3", 2.0, 0.8, 0.2
+      play_cello_syncopato "f3", 1.6, 0.85, -0.15
+      play_cello_syncopato "c4", 1.8, 0.7, 0.1
+      play_cello_syncopato "g3", 2.2, 0.7, -0.2
+      play_cello_syncopato "e4", 1.5, 0.75, 0.25
+      play_cello_syncopato "f3", 2.0, 0.8, -0.1
+      sleep 0.2
+    end
+  end
+end
+
+# ============================================
+# 5. CELLO HARMONY - Syncopated counter-melody
+# ============================================
+define :play_harmony_syncopato do |note, duration, vol, delay|
+  in_thread do
+    sample cello_path + "cello-" + note + ".wav",
+      attack: 0.15,
+      sustain: duration - 0.15,
+      release: 0.25,
+      amp: vol,
+      pan: rrand(-0.4, -0.1)
+  end
+  sleep duration * 0.9 + delay
+end
+
+live_loop :syncopated_harmony do
+  sync :syncopated_cello
+  with_fx :reverb, mix: 0.4, room: 0.7 do
+    with_fx :lpf, cutoff: 65 do
+      play_harmony_syncopato "g2", 2.0, 0.4, 0.2
+      play_harmony_syncopato "c3", 1.8, 0.35, -0.15
+      play_harmony_syncopato "e3", 2.2, 0.35, 0.15
+      play_harmony_syncopato "f2", 1.8, 0.4, -0.2
+      play_harmony_syncopato "g2", 2.4, 0.3, 0.1
+      play_harmony_syncopato "a2", 2.0, 0.35, -0.15
+    end
+  end
+end
+
+# ============================================
+# 6. CELLO BOWING - Syncopated emphasis
+# ============================================
+live_loop :syncopated_bowing do
+  sync :syncopated_cello
+  with_fx :reverb, mix: 0.2 do
+    with_fx :lpf, cutoff: 120 do
+      synth :noise, attack: 0.01, sustain: 0.03, release: 0.02, amp: 0.08
+      sleep 0.15
+    end
+  end
+end
+
+# ============================================
+# 7. LEGATO GLITCH DETAILS - Subtle, smooth
+# ============================================
+live_loop :legato_glitch do
+  use_sample_defaults amp: 0.12, rate: [0.9, 1.1, 1.0, 0.95].choose
+  sample :glitch_perc1, beat_stretch: [0.25, 0.5, 0.375].choose
+  sleep [0.5, 0.5, 0.75, 0.5].choose
+end
+
+# ============================================
+# 8. LEGATO GLITCH FX - Gentle texture
+# ============================================
+live_loop :legato_glitch_fx do
+  use_sample_defaults amp: 0.08, rate: [0.8, 1.2, 0.9].choose
+  sample :vinyl_scratch, start: rand, finish: rand
+  sleep [2.0, 3.0, 2.5].choose
+end
+
+# ============================================
+# 9. ATMOSPHERIC PAD - Smooth, swelling
+# ============================================
+live_loop :smooth_pad do
+  with_fx :reverb, mix: 0.7, room: 0.9 do
+    with_fx :lpf, cutoff: 55 do
+      use_synth :saw
+      play chord(:c3, :minor),
+        attack: 3,
+        sustain: 4,
+        release: 3,
+        amp: 0.12
+      sleep 4.0
+      play chord(:g3, :minor),
+        attack: 2.5,
+        sustain: 3,
+        release: 2.5,
+        amp: 0.08
+      sleep 3.0
+    end
+  end
+end
+
+# ============================================
+# 10. LEGATO DELAY EFFECTS - Smooth echoes
+# ============================================
+live_loop :legato_delay do
+  sync :syncopated_cello
+  with_fx :echo, mix: 0.25, decay: 6, phase: 0.5 do
+    sample cello_path + "cello-c3.wav",
+      attack: 0.1,
+      sustain: 0.1,
+      release: 0.1,
+      amp: 0.15,
+      pan: 0.5
+    sleep 1.8
+    sample cello_path + "cello-g3.wav",
+      attack: 0.1,
+      sustain: 0.1,
+      release: 0.1,
+      amp: 0.12,
+      pan: -0.5
+    sleep 1.5
+    sample cello_path + "cello-e3.wav",
+      attack: 0.1,
+      sustain: 0.1,
+      release: 0.1,
+      amp: 0.12,
+      pan: 0.5
+    sleep 2.0
+    sample cello_path + "cello-f3.wav",
+      attack: 0.1,
+      sustain: 0.1,
+      release: 0.1,
+      amp: 0.15,
+      pan: -0.5
+    sleep 1.6
+  end
+end
+
+# ============================================
+# 11. FILTER MOVEMENT - Syncopated modulation
+# ============================================
+live_loop :syncopated_filter do
+  sync :syncopated_cello
+  with_fx :lpf, cutoff: rrand(55, 85) do
+    synth :sine, note: :c3, attack: 0.3, sustain: 1.5, release: 0.3, amp: 0.04
+    sleep 1.8
+    synth :sine, note: :g3, attack: 0.3, sustain: 1.2, release: 0.3, amp: 0.04
+    sleep 1.5
+    synth :sine, note: :e3, attack: 0.3, sustain: 1.7, release: 0.3, amp: 0.04
+    sleep 2.0
+    synth :sine, note: :f3, attack: 0.3, sustain: 1.3, release: 0.3, amp: 0.04
+    sleep 1.6
+  end
+end
+
+# ============================================
+# 12. RHYTHMIC PULSE - Subtle, legato
+# ============================================
+live_loop :legato_pulse do
+  with_fx :reverb, mix: 0.3 do
+    with_fx :lpf, cutoff: 100 do
+      synth :square, note: :c1, release: 0.08, amp: 0.05, pulse_width: 0.2
+      sleep 0.5
+      synth :square, note: :c1, release: 0.08, amp: 0.04, pulse_width: 0.2
+      sleep 0.5
+      synth :square, note: :c1, release: 0.08, amp: 0.05, pulse_width: 0.2
+      sleep 0.5
+      synth :square, note: :c1, release: 0.08, amp: 0.04, pulse_width: 0.2
+      sleep 0.5
+    end
+  end
+end
