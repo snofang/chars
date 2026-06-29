@@ -1,0 +1,309 @@
+# Cinders
+# A grim, staccato study in industrial dread
+# "Burning bridges light my way" - through the ashes
+
+use_bpm 90
+
+# ============================================
+# 1. GRIM BEAT - Heavy, industrial, chopped
+# ============================================
+live_loop :grim_beat do
+  sample :drum_heavy_kick, amp: 2.0, rate: 0.9
+  sleep 0.5
+  sample :drum_snare_off, amp: 1.5, rate: 0.8
+  sleep 0.25
+  sample :drum_heavy_kick, amp: 1.8, rate: 0.85
+  sleep 0.75
+  sample :drum_snare_off, amp: 1.2, rate: 0.9
+  sleep 0.25
+  sample :drum_heavy_kick, amp: 2.2, rate: 0.95
+  sleep 0.5
+  sample :drum_snare_off, amp: 1.0, rate: 0.75
+  sleep 0.5
+  sample :drum_heavy_kick, amp: 1.5, rate: 0.8
+  sleep 0.25
+  sample :drum_snare_off, amp: 1.8, rate: 0.85
+  sleep 0.5
+  sample :drum_heavy_kick, amp: 1.5, rate: 0.9
+  sleep 0.25
+  sample :drum_snare_off, amp: 1.2, rate: 0.8
+  sleep 0.25
+end
+
+# ============================================
+# 2. GRIM HATS - Harsh, metallic, staccato
+# ============================================
+live_loop :grim_hats do
+  sample :drum_cymbal_closed, amp: 0.2, rate: 1.6, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.15, rate: 0.7, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.125
+  sample :drum_cymbal_closed, amp: 0.18, rate: 1.8, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.375
+  sample :drum_cymbal_closed, amp: 0.12, rate: 0.6, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.2, rate: 1.5, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.15, rate: 0.8, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.125
+  sample :drum_cymbal_closed, amp: 0.18, rate: 1.7, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.25
+end
+
+# ============================================
+# 3. GRIM BASS - Distorted, staccato, punchy
+# ============================================
+live_loop :grim_bass do
+  use_synth :saw
+  with_fx :distortion, distort: 0.4 do
+    with_fx :lpf, cutoff: 50 do
+      play :c1, release: 0.4, amp: 0.9, cutoff: 55
+      sleep 0.5
+      play :c1, release: 0.2, amp: 0.6, cutoff: 50
+      sleep 0.5
+      play :g0, release: 0.3, amp: 0.8, cutoff: 50
+      sleep 0.5
+      play :g0, release: 0.2, amp: 0.5, cutoff: 45
+      sleep 0.5
+      play :f1, release: 0.4, amp: 0.9, cutoff: 55
+      sleep 0.5
+      play :f1, release: 0.2, amp: 0.6, cutoff: 50
+      sleep 0.5
+      play :c1, release: 0.3, amp: 0.8, cutoff: 50
+      sleep 0.5
+      play :c1, release: 0.2, amp: 0.5, cutoff: 45
+      sleep 0.5
+    end
+  end
+end
+
+# ============================================
+# 4. GRIM VERSE - Staccato, chopped vocals
+# ============================================
+define :grim_vocal_staccato do |note, duration|
+  with_fx :reverb, mix: 0.4, room: 0.6 do
+    with_fx :lpf, cutoff: 70 do
+      with_fx :distortion, distort: 0.15 do
+        use_synth :pulse
+        play note,
+          attack: 0.05,
+          sustain: duration * 0.3,
+          release: 0.1,
+          amp: 0.15,
+          pulse_width: 0.2
+        sleep duration
+      end
+    end
+  end
+end
+
+live_loop :grim_verse do
+  sync :grim_beat
+  grim_vocal_staccato :c4, 0.75
+  grim_vocal_staccato :g3, 0.5
+  grim_vocal_staccato :e4, 0.75
+  grim_vocal_staccato :f3, 0.5
+  grim_vocal_staccato :c4, 0.75
+  grim_vocal_staccato :g3, 0.5
+  grim_vocal_staccato :e4, 0.75
+  grim_vocal_staccato :f3, 0.5
+end
+
+# ============================================
+# 5. GRIM CHORUS - Staccato, distorted, oppressive
+# ============================================
+define :grim_pad_staccato do |chord_notes, duration, vol|
+  with_fx :reverb, mix: 0.6, room: 0.8 do
+    with_fx :echo, phase: 0.5, decay: 3, mix: 0.3 do
+      with_fx :distortion, distort: 0.25 do
+        use_synth :saw
+        play chord_notes,
+          attack: 0.05,
+          sustain: duration * 0.4,
+          release: 0.1,
+          amp: vol * 0.5,
+          cutoff: 60
+        
+        use_synth :blade
+        play chord_notes,
+          attack: 0.05,
+          sustain: duration * 0.3,
+          release: 0.1,
+          amp: vol * 0.3,
+          cutoff: 70
+        
+        use_synth :sine
+        play chord_notes - 12,
+          attack: 0.05,
+          sustain: duration * 0.2,
+          release: 0.1,
+          amp: vol * 0.2
+        
+        sleep duration
+      end
+    end
+  end
+end
+
+live_loop :grim_chorus do
+  sync :grim_beat
+  with_fx :reverb, mix: 0.6, room: 0.8 do
+    grim_pad_staccato chord(:c3, :minor), 2.0, 0.3
+    grim_pad_staccato chord(:g3, :minor), 1.5, 0.25
+    grim_pad_staccato chord(:f3, :minor), 2.0, 0.3
+    grim_pad_staccato chord(:c3, :diminished), 1.5, 0.25
+  end
+end
+
+# ============================================
+# 6. GRIM MELODY - Staccato, dissonant, piercing
+# ============================================
+define :grim_melody_staccato do |note, duration|
+  with_fx :reverb, mix: 0.3, room: 0.5 do
+    with_fx :echo, phase: 0.5, decay: 2, mix: 0.2 do
+      with_fx :distortion, distort: 0.15 do
+        use_synth :prophet
+        play note,
+          attack: 0.02,
+          sustain: duration * 0.2,
+          release: 0.05,
+          amp: 0.15,
+          cutoff: rrand(60, 80)
+        sleep duration
+      end
+    end
+  end
+end
+
+live_loop :grim_melody do
+  sync :grim_beat
+  grim_melody_staccato :c5, 0.75
+  grim_melody_staccato :g4, 0.5
+  grim_melody_staccato :e5, 0.75
+  grim_melody_staccato :f4, 0.5
+  grim_melody_staccato :c5, 0.75
+  grim_melody_staccato :g4, 0.5
+  grim_melody_staccato :e5, 0.75
+  grim_melody_staccato :f4, 0.5
+end
+
+# ============================================
+# 7. GRIM ATMOSPHERE - Industrial drone, staccato bursts
+# ============================================
+live_loop :grim_atmosphere do
+  with_fx :reverb, mix: 0.7, room: 0.8 do
+    with_fx :lpf, cutoff: 40 do
+      with_fx :distortion, distort: 0.3 do
+        use_synth :hollow
+        play chord(:c2, :minor),
+          attack: 1.0,
+          sustain: 2.0,
+          release: 1.0,
+          amp: 0.04,
+          cutoff: 45
+        sleep 3.0
+        play chord(:g2, :minor),
+          attack: 0.5,
+          sustain: 1.0,
+          release: 0.5,
+          amp: 0.03,
+          cutoff: 40
+        sleep 2.0
+      end
+    end
+  end
+end
+
+# ============================================
+# 8. GRIM GLITTER - Staccato, harsh, metallic
+# ============================================
+live_loop :grim_glitter do
+  sync :grim_beat
+  with_fx :reverb, mix: 0.3, room: 0.4 do
+    with_fx :distortion, distort: 0.2 do
+      synth :saw, note: :c6, attack: 0.01, sustain: 0.05, release: 0.05, amp: 0.015, cutoff: 100
+      sleep 0.5
+      synth :saw, note: :g5, attack: 0.01, sustain: 0.05, release: 0.05, amp: 0.01, cutoff: 90
+      sleep 0.5
+      synth :saw, note: :e6, attack: 0.01, sustain: 0.05, release: 0.05, amp: 0.015, cutoff: 110
+      sleep 0.5
+      synth :saw, note: :f5, attack: 0.01, sustain: 0.05, release: 0.05, amp: 0.01, cutoff: 95
+      sleep 0.5
+    end
+  end
+end
+
+# ============================================
+# 9. GRIM MODULATION - Staccato, unsettling
+# ============================================
+live_loop :grim_modulation do
+  sync :grim_beat
+  with_fx :lpf, cutoff: rrand(40, 70) do
+    with_fx :distortion, distort: 0.3 do
+      synth :sine, note: :c2, attack: 0.01, sustain: 0.1, release: 0.05, amp: 0.06
+      sleep 1.5
+    end
+  end
+end
+
+# ============================================
+# 10. GRIM NOISE - Staccato, industrial bursts
+# ============================================
+live_loop :grim_noise do
+  sync :grim_beat
+  with_fx :reverb, mix: 0.4, room: 0.6 do
+    with_fx :lpf, cutoff: rrand(30, 80) do
+      synth :noise,
+        attack: 0.01,
+        sustain: 0.1,
+        release: 0.1,
+        amp: 0.03,
+        cutoff: 50
+      sleep [1.0, 1.5, 2.0, 2.5].choose
+    end
+  end
+end
+
+# ============================================
+# 11. GRIM PULSE - Staccato heartbeat
+# ============================================
+live_loop :grim_pulse do
+  with_fx :reverb, mix: 0.3 do
+    with_fx :lpf, cutoff: 60 do
+      with_fx :distortion, distort: 0.4 do
+        synth :square, note: :c0, release: 0.05, amp: 0.04, pulse_width: 0.1
+        sleep 0.5
+        synth :square, note: :c0, release: 0.05, amp: 0.02, pulse_width: 0.1
+        sleep 0.25
+        synth :square, note: :c0, release: 0.05, amp: 0.04, pulse_width: 0.1
+        sleep 0.5
+        synth :square, note: :c0, release: 0.05, amp: 0.02, pulse_width: 0.1
+        sleep 0.75
+      end
+    end
+  end
+end
+
+# ============================================
+# 12. GRIM TENSION - Slow build of dread
+# ============================================
+live_loop :grim_tension do
+  dist_level = (line 0.2, 0.6, steps: 20).tick
+  set :grim_dist, dist_level
+  sleep 4
+end
+
+# ============================================
+# 13. GRIM STACCATO EMPHASIS - Chopped rhythm
+# ============================================
+live_loop :grim_staccato_rhythm do
+  sync :grim_beat
+  sample :drum_heavy_kick, amp: 0.3, rate: 1.5, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.5
+  sample :drum_snare_off, amp: 0.2, rate: 1.2, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.25
+  sample :drum_heavy_kick, amp: 0.25, rate: 1.3, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.75
+  sample :drum_snare_off, amp: 0.2, rate: 1.1, attack: 0.01, sustain: 0.02, release: 0.02
+  sleep 0.25
+end
