@@ -10,10 +10,18 @@
 | **Volume** | **crescendo poco a poco** | little by little, louder | slow-burn rise, patient and inevitable | creeping, almost unnoticed until it's big |
 | **Time** | **ritardando** | gradually slower | stretches time, adds weight to arrival | hesitant, deliberate, heavy-footed |
 | **Time** | **Andante calmo** | walking pace, calm | steady, unhurried motion with a still surface | like floating on slow water—forward motion without urgency |
+| **Time** | **syncopated** | displaced accent; off-beat | disrupts the expected pulse, creates tension and forward momentum | like a heartbeat that skips—unpredictable, alive, keeps the listener off-balance |
 | **Articulation** | **parlante** | speaking-style | prioritizes clarity and natural inflection | conversational, pointed, direct |
+| **Articulation** | **legato** | smooth, connected | binds notes together without audible breaks between them | like one breath stretched across many pitches—fluid, seamless, unhurried |
 | **Warmth / Color** | **espressivo** | with expression | bends tone and timing for emotional truth | vulnerable, shaped, personal |
 | **Warmth / Color** | **più intimo** | more inwardly | turns the phrase inward, as if thinking aloud | close-mic, secret-keeping, fragile |
 | **Warmth / Color** | **più caldo** | warmer, more heated | adds emotional richness; fuller, more affectionate tone | singing closer to the heart—rounder, softer-edged, but more intense underneath |
 | **Intensity** | **mezzo** | moderately, half‑way | sits between two extremes—not full, not restrained | like holding a note in the middle of a breath, ready to tip either way |
 | **Arc / Journey** | **Explosive** | sudden, forceful outburst | shatters the preceding calm; raw, unfiltered release | like a door blown open—chest, breath, and intention all at once |
 | **Arc / Journey** | **Fragile Return** | delicate, tentative re-entry after intensity | pulls back to something barely held together | like walking on glass after a storm—every note feels breakable, careful, exposed |
+
+---
+
+**On *legato* and *syncopated* together:**
+
+They seem like opposites, but they're not. *Legato* is how you connect what's inside the phrase—the glue between pitches. *Syncopated* is where you place that phrase against the pulse—the push and pull of time. You can sing a syncopated line with complete legato, and it will feel like a river that keeps missing its own banks. The connection holds. The expectation breaks. That tension is where the song breathes.
