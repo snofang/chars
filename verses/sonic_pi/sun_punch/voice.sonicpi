@@ -1,0 +1,268 @@
+# Sun Punch
+# A staccato Afrobeat-Haitian fusion study at 90 BPM
+# Uplifting Caribbean warmth with percussive bite
+
+use_bpm 90
+
+# ============================================
+# 1. AFROBEAT RHYTHM - Punchy
+# ============================================
+live_loop :afrobeat_rhythm do
+  sample :drum_heavy_kick, amp: 1.8, attack: 0.01, sustain: 0.05, release: 0.05
+  sleep 0.5
+  sample :drum_snare_off, amp: 1.2, attack: 0.01, sustain: 0.03, release: 0.03
+  sleep 0.25
+  sample :drum_heavy_kick, amp: 1.5, attack: 0.01, sustain: 0.05, release: 0.05
+  sleep 0.5
+  sample :drum_snare_off, amp: 1.4, attack: 0.01, sustain: 0.03, release: 0.03
+  sleep 0.75
+end
+
+# ============================================
+# 2. CARIBBEAN PERCUSSION - Staccato
+# ============================================
+live_loop :caribbean_perc do
+  sample :drum_tom_hi_hard, amp: 0.35, rate: 1.2, attack: 0.01, sustain: 0.04, release: 0.04
+  sleep 0.75
+  sample :drum_tom_lo_hard, amp: 0.3, rate: 0.9, attack: 0.01, sustain: 0.04, release: 0.04
+  sleep 0.5
+  sample :drum_tom_hi_hard, amp: 0.35, rate: 1.4, attack: 0.01, sustain: 0.04, release: 0.04
+  sleep 0.25
+  sample :drum_tom_lo_hard, amp: 0.25, rate: 0.8, attack: 0.01, sustain: 0.04, release: 0.04
+  sleep 0.5
+end
+
+# ============================================
+# 3. ENERGETIC HATS - Sharp
+# ============================================
+live_loop :energetic_hats do
+  sample :drum_cymbal_closed, amp: 0.18, rate: 1.3, attack: 0.005, sustain: 0.02, release: 0.02
+  sleep 0.25
+  sample :drum_cymbal_closed, amp: 0.12, rate: 0.9, attack: 0.005, sustain: 0.02, release: 0.02
+  sleep 0.125
+  sample :drum_cymbal_closed, amp: 0.15, rate: 1.5, attack: 0.005, sustain: 0.02, release: 0.02
+  sleep 0.375
+  sample :drum_cymbal_closed, amp: 0.12, rate: 0.8, attack: 0.005, sustain: 0.02, release: 0.02
+  sleep 0.25
+end
+
+# ============================================
+# 4. UPLIFTING BASS - Staccato
+# ============================================
+live_loop :uplifting_bass do
+  use_synth :saw
+  with_fx :lpf, cutoff: 65 do
+    play :c2, release: 0.4, amp: 0.7, cutoff: 60
+    sleep 0.75
+    play :c2, release: 0.2, amp: 0.4, cutoff: 55
+    sleep 0.75
+    play :f2, release: 0.4, amp: 0.6, cutoff: 60
+    sleep 0.75
+    play :f2, release: 0.2, amp: 0.4, cutoff: 55
+    sleep 0.75
+    play :g2, release: 0.4, amp: 0.7, cutoff: 60
+    sleep 0.75
+    play :g2, release: 0.2, amp: 0.4, cutoff: 55
+    sleep 0.75
+    play :c2, release: 0.4, amp: 0.6, cutoff: 60
+    sleep 0.75
+    play :c2, release: 0.2, amp: 0.4, cutoff: 55
+    sleep 0.75
+  end
+end
+
+# ============================================
+# 5. AFROBEAT GUITAR RIFF - Chopped
+# ============================================
+define :afrobeat_guitar_staccato do |note, duration|
+  with_fx :reverb, mix: 0.2, room: 0.4 do
+    use_synth :pluck
+    play note,
+      attack: 0.01,
+      sustain: duration * 0.3,
+      release: 0.05,
+      amp: 0.25
+    sleep duration
+  end
+end
+
+live_loop :guitar_riff do
+  sync :afrobeat_rhythm
+  afrobeat_guitar_staccato :c4, 0.375
+  afrobeat_guitar_staccato :e4, 0.375
+  afrobeat_guitar_staccato :g4, 0.375
+  afrobeat_guitar_staccato :c5, 0.75
+  afrobeat_guitar_staccato :g4, 0.375
+  afrobeat_guitar_staccato :e4, 0.375
+  afrobeat_guitar_staccato :c4, 0.75
+end
+
+# ============================================
+# 6. UPLIFTING MELODY - Staccato
+# ============================================
+define :uplifting_melody_staccato do |note, duration|
+  with_fx :reverb, mix: 0.3, room: 0.5 do
+    with_fx :echo, phase: 0.5, decay: 2, mix: 0.15 do
+      use_synth :prophet
+      play note,
+        attack: 0.02,
+        sustain: duration * 0.25,
+        release: 0.05,
+        amp: 0.2,
+        cutoff: rrand(80, 110)
+      sleep duration
+    end
+  end
+end
+
+live_loop :melody do
+  sync :afrobeat_rhythm
+  uplifting_melody_staccato :c5, 1.0
+  uplifting_melody_staccato :g4, 0.75
+  uplifting_melody_staccato :e5, 1.0
+  uplifting_melody_staccato :f4, 0.75
+  uplifting_melody_staccato :c5, 1.0
+  uplifting_melody_staccato :g4, 0.75
+  uplifting_melody_staccato :e5, 1.0
+  uplifting_melody_staccato :f4, 0.75
+end
+
+# ============================================
+# 7. HAITIAN-INSPIRED KEYS - Staccato
+# ============================================
+live_loop :haitian_keys do
+  with_fx :reverb, mix: 0.4, room: 0.6 do
+    use_synth :blade
+    play chord(:c3, :major),
+      attack: 0.02,
+      sustain: 0.4,
+      release: 0.05,
+      amp: 0.15,
+      cutoff: 90
+    sleep 1.0
+    play chord(:f3, :major),
+      attack: 0.02,
+      sustain: 0.4,
+      release: 0.05,
+      amp: 0.12,
+      cutoff: 85
+    sleep 1.0
+    play chord(:g3, :major),
+      attack: 0.02,
+      sustain: 0.4,
+      release: 0.05,
+      amp: 0.15,
+      cutoff: 90
+    sleep 1.0
+    play chord(:c3, :major),
+      attack: 0.02,
+      sustain: 0.4,
+      release: 0.05,
+      amp: 0.12,
+      cutoff: 85
+    sleep 1.0
+  end
+end
+
+# ============================================
+# 8. ATMOSPHERIC SWELL - Short bursts
+# ============================================
+live_loop :atmospheric_swell do
+  with_fx :reverb, mix: 0.5, room: 0.7 do
+    with_fx :lpf, cutoff: 55 do
+      use_synth :hollow
+      play chord(:c3, :major),
+        attack: 0.5,
+        sustain: 1.5,
+        release: 0.5,
+        amp: 0.05
+      sleep 3.0
+      play chord(:f3, :major),
+        attack: 0.3,
+        sustain: 1.0,
+        release: 0.3,
+        amp: 0.04
+      sleep 3.0
+    end
+  end
+end
+
+# ============================================
+# 9. VOCAL CHANT - "Ayayay" (Staccato)
+# ============================================
+define :ayayay_chant_staccato do
+  with_fx :reverb, mix: 0.3, room: 0.5 do
+    with_fx :echo, phase: 0.5, decay: 1.5, mix: 0.15 do
+      use_synth :pulse
+      play :c4,
+        attack: 0.01,
+        sustain: 0.15,
+        release: 0.05,
+        amp: 0.12,
+        pulse_width: 0.4
+      sleep 0.375
+      play :e4,
+        attack: 0.01,
+        sustain: 0.15,
+        release: 0.05,
+        amp: 0.10,
+        pulse_width: 0.4
+      sleep 0.375
+      play :g4,
+        attack: 0.01,
+        sustain: 0.2,
+        release: 0.05,
+        amp: 0.12,
+        pulse_width: 0.4
+      sleep 0.5
+      play :c5,
+        attack: 0.01,
+        sustain: 0.2,
+        release: 0.05,
+        amp: 0.10,
+        pulse_width: 0.4
+      sleep 0.5
+    end
+  end
+end
+
+live_loop :chant do
+  sync :afrobeat_rhythm
+  ayayay_chant_staccato
+  sleep 0.375
+end
+
+# ============================================
+# 10. ENERGY BUILD
+# ============================================
+live_loop :energy_build do
+  vol_level = (line 0.5, 1.0, steps: 16).tick
+  set :energy, vol_level
+  sleep 2
+end
+
+# ============================================
+# 11. GLOBAL FUSION TEXTURE - Short
+# ============================================
+live_loop :global_texture do
+  with_fx :reverb, mix: 0.2, room: 0.4 do
+    use_sample_defaults amp: 0.03, rate: [0.8, 1.0, 1.2].choose
+    sample :ambi_soft_buzz, beat_stretch: [1, 2, 1.5].choose
+    sleep [3, 4, 5].choose
+  end
+end
+
+# ============================================
+# 12. STACCATO EMPHASIS - Chopped accents
+# ============================================
+live_loop :staccato_accents do
+  sync :afrobeat_rhythm
+  sample :drum_heavy_kick, amp: 0.2, rate: 1.8, attack: 0.005, sustain: 0.02, release: 0.02
+  sleep 0.5
+  sample :drum_snare_off, amp: 0.15, rate: 1.4, attack: 0.005, sustain: 0.02, release: 0.02
+  sleep 0.25
+  sample :drum_heavy_kick, amp: 0.18, rate: 1.6, attack: 0.005, sustain: 0.02, release: 0.02
+  sleep 0.75
+  sample :drum_snare_off, amp: 0.15, rate: 1.3, attack: 0.005, sustain: 0.02, release: 0.02
+  sleep 0.25
+end
