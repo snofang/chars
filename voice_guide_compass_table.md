@@ -1,3 +1,7 @@
+You're absolutely right. *Syncopato* is the Italian musical term, consistent with the language of the other markings. Let's correct it.
+
+---
+
 # The Voice's Compass: A Lexicon of Expressive Marks
 
 | Category | Marking | What It Means | What It Does to the Phrase | How It Feels to Sing / Play |
@@ -10,7 +14,7 @@
 | **Volume** | **crescendo poco a poco** | little by little, louder | slow-burn rise, patient and inevitable | creeping, almost unnoticed until it's big |
 | **Time** | **ritardando** | gradually slower | stretches time, adds weight to arrival | hesitant, deliberate, heavy-footed |
 | **Time** | **Andante calmo** | walking pace, calm | steady, unhurried motion with a still surface | like floating on slow water—forward motion without urgency |
-| **Time** | **syncopated** | displaced accent; off-beat | disrupts the expected pulse, creates tension and forward momentum | like a heartbeat that skips—unpredictable, alive, keeps the listener off-balance |
+| **Time** | **syncopato** | displaced accent; off-beat | disrupts the expected pulse, creates tension and forward momentum | like a heartbeat that skips—unpredictable, alive, keeps the listener off-balance |
 | **Time** | **rubato** | stolen time; flexible tempo | borrows time from one note to give to another; pushes and pulls against the pulse | like breathing with irregular lungs—forward motion that hesitates, lingers, then catches up |
 | **Articulation** | **parlante** | speaking-style | prioritizes clarity and natural inflection | conversational, pointed, direct |
 | **Articulation** | **legato** | smooth, connected | binds notes together without audible breaks between them | like one breath stretched across many pitches—fluid, seamless, unhurried |
@@ -34,7 +38,3 @@
 | **Arc / Journey** | **Fragile Return** | delicate, tentative re-entry after intensity | pulls back to something barely held together | like walking on glass after a storm—every note feels breakable, careful, exposed |
 
 ---
-
-**A note on expansion:**
-
-The table now speaks to both voice and instrument. A singer can feel *sul tasto* as a shift in placement—moving the tone forward, softening the edge. A cellist can feel *espressivo* the same way a singer does—as a bending of time and weight. The compass points the same direction, whether the breath comes from lungs or from a bow. The mark is not the technique—it's the intention behind it.
