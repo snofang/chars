@@ -14,9 +14,16 @@
 | **Articulation** | **parlante** | speaking-style | prioritizes clarity and natural inflection | conversational, pointed, direct |
 | **Articulation** | **legato** | smooth, connected | binds notes together without audible breaks between them | like one breath stretched across many pitches—fluid, seamless, unhurried |
 | **Articulation** | **legato_syncopato** | smooth, connected, yet displaced against the pulse | binds the phrase internally while externally defying the downbeat; the glue holds, the ground shifts | like a river that keeps missing its own banks—fluid motion through unexpected terrain, the connection holds while the expectation breaks |
+| **Articulation** | **staccato** | short, detached, separated | breaks the line into individual pulses; each note stands alone | like walking on dry leaves—crisp, deliberate, each step its own event, air between every sound |
 | **Warmth / Color** | **espressivo** | with expression | bends tone and timing for emotional truth | vulnerable, shaped, personal |
 | **Warmth / Color** | **più intimo** | more inwardly | turns the phrase inward, as if thinking aloud | close-mic, secret-keeping, fragile |
 | **Warmth / Color** | **più caldo** | warmer, more heated | adds emotional richness; fuller, more affectionate tone | singing closer to the heart—rounder, softer-edged, but more intense underneath |
 | **Intensity** | **mezzo** | moderately, half‑way | sits between two extremes—not full, not restrained | like holding a note in the middle of a breath, ready to tip either way |
 | **Arc / Journey** | **Explosive** | sudden, forceful outburst | shatters the preceding calm; raw, unfiltered release | like a door blown open—chest, breath, and intention all at once |
 | **Arc / Journey** | **Fragile Return** | delicate, tentative re-entry after intensity | pulls back to something barely held together | like walking on glass after a storm—every note feels breakable, careful, exposed |
+
+---
+
+**On *staccato*:**
+
+Where *legato* connects, *staccato* releases. Each note becomes its own world—brief, complete, then gone. It's not harsh unless you make it so. It can be light as a fingertip tap or sharp as a snapped thread. The space between the notes is as important as the notes themselves. That silence is where the rhythm lives. Pair it with *syncopated* and the phrase becomes a puzzle of light and shadow. Pair it with *piano* and it whispers in fragments. Pair it with *forte* and it punctuates. But always—it respects the breath between.
