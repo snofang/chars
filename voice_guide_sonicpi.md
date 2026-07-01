@@ -119,46 +119,41 @@ These correspond to:
 
 ### Common Scales
 
-```ruby
-:major              # Bright, happy, uplifting. The standard Western scale. (Ionian mode)
-:minor              # Dark, sad, melancholic. The natural minor scale. (Aeolian mode)
-:minor_pentatonic   # Five-note blues/rock scale. Used in rock, blues, and jazz.
-:major_pentatonic   # Five-note folk/country scale. Used in folk, country, and pop.
-:dorian             # Minor scale with a raised 6th. Jazzy, soulful, slightly hopeful.
-:phrygian           # Minor scale with a flattened 2nd. Spanish, flamenco, dark exotic sound.
-:lydian             # Major scale with a raised 4th. Dreamy, floating, sci-fi sound.
-:mixolydian         # Major scale with a flattened 7th. Bluesy, rock, dominant sound.
-:aeolian            # Same as :minor. Natural minor scale.
-:locrian            # Minor scale with flattened 2nd and 5th. Unstable, dissonant, rarely used.
-:chromatic          # All 12 semitones. Every note in the octave.
-```
+| Scale | Sequence | Meaning | Mood | Common Use |
+|-------|----------|---------|------|------------|
+| `:major` | 1, 2, 3, 4, 5, 6, 7 | All natural intervals | Bright, happy | Pop, classical, dance |
+| `:minor` | 1, 2, b3, 4, 5, b6, b7 | 3rd, 6th, 7th flattened | Dark, sad | Classical, metal, ballads |
+| `:minor_pentatonic` | 1, b3, 4, 5, b7 | 3rd, 7th flattened | Bluesy, rock | Rock, blues, jazz improvisation |
+| `:major_pentatonic` | 1, 2, 3, 5, 6 | No 4th or 7th | Folk, open | Folk, country, children's songs |
+| `:dorian` | 1, 2, b3, 4, 5, 6, b7 | 3rd, 7th flattened; 6th natural | Jazzy, soulful | Jazz, funk, modal improvisation |
+| `:phrygian` | 1, b2, b3, 4, 5, b6, b7 | 2nd, 3rd, 6th, 7th flattened | Spanish, dark | Flamenco, metal, Middle Eastern |
+| `:lydian` | 1, 2, 3, #4, 5, 6, 7 | 4th raised | Dreamy, floating | Film scores, progressive rock |
+| `:mixolydian` | 1, 2, 3, 4, 5, 6, b7 | 7th flattened | Bluesy, dominant | Blues, rock, funk |
+| `:aeolian` | 1, 2, b3, 4, 5, b6, b7 | Same as :minor | Natural minor | Same as :minor |
+| `:locrian` | 1, b2, b3, 4, b5, b6, b7 | 2nd, 3rd, 5th, 6th, 7th flattened | Unstable, dissonant | Experimental, jazz tension |
+| `:chromatic` | All 12 semitones | Every note | All notes | Atonal, experimental |
 
-**Quick Reference:**
+**Notation Key:**
+- `b` = flat (one semitone lower)
+- `#` = sharp (one semitone higher)
+- Numbers refer to scale degrees from the root
 
-| Scale | Mood | Common Use |
-|-------|------|------------|
-| `:major` | Bright, happy | Pop, classical, dance |
-| `:minor` | Dark, sad | Classical, metal, ballads |
-| `:minor_pentatonic` | Bluesy, rock | Rock, blues, jazz improvisation |
-| `:major_pentatonic` | Folk, open | Folk, country, children's songs |
-| `:dorian` | Jazzy, soulful | Jazz, funk, modal improvisation |
-| `:phrygian` | Spanish, dark | Flamenco, metal, Middle Eastern |
-| `:lydian` | Dreamy, floating | Film scores, progressive rock |
-| `:mixolydian` | Bluesy, dominant | Blues, rock, funk |
-| `:aeolian` | Natural minor | Same as :minor |
-| `:locrian` | Unstable, dissonant | Experimental, jazz tension |
-| `:chromatic` | All notes | Atonal, experimental, chromatic runs |
+**Example (C4 root):**
+- `1` = C4 (60)
+- `3` = E4 (64) — major third
+- `b3` = Ds4 (63) — minor third (one semitone lower than major third)
+- `#4` = Fs4 (66) — augmented fourth (one semitone higher than perfect fourth)
 
-**Note:** The `:blues` scale does not exist in Sonic Pi. Use `:minor_pentatonic` for blues playing instead.
-
-### Scale Examples
-
+**Scale examples:**
 ```ruby
 scale :C4, :major        # (60, 62, 64, 65, 67, 69, 71)
 scale :C4, :minor        # (60, 62, 63, 65, 67, 68, 70)
 scale :C4, :dorian       # (60, 62, 63, 65, 67, 69, 70)
 scale :C4, :minor_pentatonic  # (60, 63, 65, 67, 70)
+scale :C4, :lydian       # (60, 62, 64, 66, 67, 69, 71)
 ```
+
+**Note:** The `:blues` scale does not exist in Sonic Pi. Use `:minor_pentatonic` for blues playing instead.
 
 ### Ring Properties
 
@@ -525,24 +520,6 @@ Each note in the cycle has a unique sonic fingerprint, letting you hear where yo
 | `look` | `look` | Get tick index without advancing |
 | `tick_reset` | `tick_reset(:foo)` | Reset named tick |
 | `tick_reset_all` | `tick_reset_all` | Reset all ticks |
-
-### Common Scale Types
-
-| Scale | Mood | Common Use |
-|-------|------|------------|
-| `:major` | Bright, happy | Pop, classical, dance |
-| `:minor` | Dark, sad | Classical, metal, ballads |
-| `:minor_pentatonic` | Bluesy, rock | Rock, blues, jazz improvisation |
-| `:major_pentatonic` | Folk, open | Folk, country, children's songs |
-| `:dorian` | Jazzy, soulful | Jazz, funk, modal improvisation |
-| `:phrygian` | Spanish, dark | Flamenco, metal, Middle Eastern |
-| `:lydian` | Dreamy, floating | Film scores, progressive rock |
-| `:mixolydian` | Bluesy, dominant | Blues, rock, funk |
-| `:aeolian` | Natural minor | Same as :minor |
-| `:locrian` | Unstable, dissonant | Experimental, jazz tension |
-| `:chromatic` | All notes | Atonal, experimental, chromatic runs |
-
-**Note:** The `:blues` scale does not exist in Sonic Pi. Use `:minor_pentatonic` for blues playing instead.
 
 ### Common Note Names
 
