@@ -9,8 +9,7 @@
 3. [The Tick System](#the-tick-system)
 4. [Data Flow and Method Chaining](#data-flow-and-method-chaining)
 5. [Debugging Techniques](#debugging-techniques)
-6. [Practical Examples](#practical-examples)
-7. [Quick Reference](#quick-reference)
+6. [Quick Reference](#quick-reference)
 
 ---
 
@@ -356,8 +355,6 @@ end
 
 You can also use synthesizer parameters to hear where you are in the pattern. This works alongside logging — you can use both together.
 
-**Full Version with Customization:**
-
 ```ruby
 define :visual_debug do |notes, opts = {}|
   # Defaults
@@ -469,79 +466,6 @@ Each note in the cycle has a unique sonic fingerprint, letting you hear where yo
 | Single `puts` with all info | ✅ | Log-based debugging |
 | Visual feedback (synth params) | ✅ | Ear-based debugging |
 | `verbose` mode | ✅ | Both log and ear together |
-
----
-
-## Practical Examples
-
-### Example 1: Simple Melody
-
-```ruby
-live_loop :melody do
-  use_synth :blade
-  play (scale :E3, :minor_pentatonic).tick, release: 0.2
-  sleep 0.125
-end
-```
-
-### Example 2: Rhythm and Melody Combined
-
-```ruby
-live_loop :complex do
-  use_synth :fm
-  
-  # Different tick for different aspects
-  note = (scale :E3, :minor_pentatonic).tick(:notes)
-  amp = (ring 0.5, 0.7, 1.0, 0.7).tick(:volume)
-  dur = (ring 0.125, 0.25).tick(:timing)
-  
-  play note, release: 0.1, amp: amp
-  sleep dur
-end
-```
-
-### Example 3: Chord Progression
-
-```ruby
-live_loop :chords do
-  # Play full chords from scale
-  play_chord (scale :E3, :minor_pentatonic).tick
-  sleep 0.5
-end
-```
-
-### Example 4: Arpeggio with Transposition
-
-```ruby
-live_loop :arpeggio do
-  use_synth :piano
-  
-  base_note = (scale :E3, :minor_pentatonic).tick(:base)
-  play base_note, release: 0.1
-  
-  # Add a harmony note an octave up
-  play base_note + 12, release: 0.1, amp: 0.5
-  
-  sleep 0.125
-end
-```
-
-### Example 5: Pattern with Variation
-
-```ruby
-live_loop :evolving do
-  use_synth :mod_fm
-  
-  notes = scale :E3, :minor_pentatonic
-  note = notes.tick(:melody)
-  
-  # Change the sound based on position in scale
-  cutoff_val = 60 + (look(:melody) * 5)
-  
-  play note, release: 0.2, cutoff: cutoff_val
-  sleep 0.15
-end
-```
 
 ---
 
