@@ -352,25 +352,118 @@ end
 🔍 Idx: 4 | Note: 62 | Next: 52 | Ring: (ring 52, 55, 57, 59, 62)
 ```
 
-### Visual Debugging (No Logs Needed)
+### Visual Debugging
+
+Instead of relying on log output, you can use synthesizer parameters to hear where you are in the pattern. This is especially useful during live performance.
+
+**Full Version with Customization:**
 
 ```ruby
-live_loop :visual do
-  notes = scale :E3, :minor_pentatonic
+define :visual_debug do |notes, opts = {}|
+  # Defaults
+  synth_type = opts[:synth] || :blade
+  release_time = opts[:release] || 0.1
+  sleep_time = opts[:sleep] || 0.25
+  amp_min = opts[:amp_min] || 0.3
+  amp_max = opts[:amp_max] || 0.9
+  cutoff_min = opts[:cutoff_min] || 50
+  cutoff_max = opts[:cutoff_max] || 82
+  pan_min = opts[:pan_min] || -0.8
+  pan_max = opts[:pan_max] || 0.8
+  verbose = opts[:verbose] || false
+  
   current_note = notes.tick
-  current_idx = look
+  current_idx = look % notes.length
   
-  # Use synth parameters to see tick position
-  use_synth :blade
-  play current_note, 
-    release: 0.1,
-    amp: 0.3 + (current_idx * 0.15),      # Volume changes
-    cutoff: 50 + (current_idx * 8),       # Filter changes
-    pan: -0.8 + (current_idx * 0.4)       # Pan changes
+  # Calculate values based on position in ring
+  amp_val = amp_min + (current_idx * (amp_max - amp_min) / (notes.length - 1))
+  cutoff_val = cutoff_min + (current_idx * (cutoff_max - cutoff_min) / (notes.length - 1))
+  pan_val = pan_min + (current_idx * (pan_max - pan_min) / (notes.length - 1))
   
-  sleep 0.25
+  # Optional logging
+  if verbose
+    puts "Idx: #{current_idx} | Note: #{current_note} | Amp: #{amp_val.round(2)} | Cutoff: #{cutoff_val.round(2)} | Pan: #{pan_val.round(2)}"
+  end
+  
+  use_synth synth_type
+  play current_note,
+    release: release_time,
+    amp: amp_val,
+    cutoff: cutoff_val,
+    pan: pan_val
+  
+  sleep sleep_time
 end
 ```
+
+**Usage Examples:**
+
+```ruby
+# Basic usage (audio feedback only)
+live_loop :debug1 do
+  visual_debug (scale :E3, :minor_pentatonic)
+end
+
+# Custom synth and timing
+live_loop :debug2 do
+  visual_debug (scale :C4, :major), 
+    synth: :fm,
+    release: 0.2,
+    sleep: 0.15,
+    amp_min: 0.1,
+    amp_max: 0.8
+end
+
+# Different scale with custom ranges
+live_loop :debug3 do
+  visual_debug (scale :A3, :blues), 
+    synth: :saw,
+    cutoff_min: 40,
+    cutoff_max: 100,
+    pan_min: -1.0,
+    pan_max: 1.0
+end
+
+# With logging enabled (when you need both)
+live_loop :debug_verbose do
+  visual_debug (scale :E3, :minor_pentatonic), verbose: true
+end
+```
+
+**Parameter Mapping Reference:**
+
+| Parameter | Formula | Range (5-note) | What You Hear |
+|-----------|---------|----------------|---------------|
+| `amp` | `min + (idx * (max - min) / (len - 1))` | 0.3 → 0.9 | Volume increases |
+| `cutoff` | `min + (idx * (max - min) / (len - 1))` | 50 → 82 | Filter opens (brighter) |
+| `pan` | `min + (idx * (max - min) / (len - 1))` | -0.8 → 0.8 | Moves left to right |
+
+**What you hear (5-note ring):**
+
+- Index 0: Quiet, dark, far left
+- Index 1: Medium-quiet, slightly bright, center-left
+- Index 2: Medium, bright, center
+- Index 3: Medium-loud, brighter, center-right
+- Index 4: Loud, very bright, far right
+
+Each note in the cycle has a unique sonic fingerprint, letting you hear where you are in the pattern without looking at the log. The optional `verbose` mode adds log output when you need it for deeper inspection.
+
+**Why this works:**
+
+- No hard-coded values — adapts to any ring length
+- Each note has a unique sonic signature
+- You can hear your position without looking at the log
+- Works with any scale or ring you pass to it
+- Optional verbose mode for when you need log output too
+
+**Benefits of the Function-Based Approach:**
+
+1. **Reusable** — call it with any scale or ring
+2. **Adaptable** — automatically adjusts to ring length
+3. **Customizable** — override defaults with options
+4. **Clean** — keeps your live_loop code minimal
+5. **Testable** — swap scales easily to hear differences
+6. **Performance-friendly** — no log spam, just audio feedback (unless you enable verbose)
 
 ### Debugging Summary
 
