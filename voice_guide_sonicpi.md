@@ -326,7 +326,7 @@ puts my_ring[0]                            # Prints nothing
 puts my_ring[1]                            # Prints nothing
 ```
 
-### Recommended Debugging Pattern
+### Log-Based Debugging
 
 ```ruby
 live_loop :debug do
@@ -354,7 +354,7 @@ end
 
 ### Visual Debugging
 
-Instead of relying on log output, you can use synthesizer parameters to hear where you are in the pattern. This is useful during development when you want to keep your focus on the sound rather than reading the log.
+You can also use synthesizer parameters to hear where you are in the pattern. This works alongside logging — you can use both together.
 
 **Full Version with Customization:**
 
@@ -399,13 +399,18 @@ end
 **Usage Examples:**
 
 ```ruby
-# Basic usage (audio feedback only)
+# Audio feedback only
 live_loop :debug1 do
   visual_debug (scale :E3, :minor_pentatonic)
 end
 
-# Custom synth and timing
+# With logging enabled (hear it and see it)
 live_loop :debug2 do
+  visual_debug (scale :E3, :minor_pentatonic), verbose: true
+end
+
+# Custom synth and timing
+live_loop :debug3 do
   visual_debug (scale :C4, :major), 
     synth: :fm,
     release: 0.2,
@@ -415,18 +420,14 @@ live_loop :debug2 do
 end
 
 # Different scale with custom ranges
-live_loop :debug3 do
+live_loop :debug4 do
   visual_debug (scale :A3, :blues), 
     synth: :saw,
     cutoff_min: 40,
     cutoff_max: 100,
     pan_min: -1.0,
-    pan_max: 1.0
-end
-
-# With logging enabled (when you need both)
-live_loop :debug_verbose do
-  visual_debug (scale :E3, :minor_pentatonic), verbose: true
+    pan_max: 1.0,
+    verbose: true
 end
 ```
 
@@ -446,15 +447,7 @@ end
 - Index 3: Medium-loud, brighter, center-right
 - Index 4: Loud, very bright, far right
 
-Each note in the cycle has a unique sonic fingerprint, letting you hear where you are in the pattern without looking at the log. The optional `verbose` mode adds log output when you need it for deeper inspection.
-
-**Why this is useful during development:**
-
-- You can keep your ears focused on the sound
-- You don't need to split attention between code and log
-- Each position has a distinct sonic signature
-- Adapts to any ring length automatically
-- Optional verbose mode for when you need log output too
+Each note in the cycle has a unique sonic fingerprint, letting you hear where you are in the pattern. The optional `verbose` mode adds log output when you want to see the values as well.
 
 **Benefits of the Function-Based Approach:**
 
@@ -463,19 +456,19 @@ Each note in the cycle has a unique sonic fingerprint, letting you hear where yo
 3. **Customizable** — override defaults with options
 4. **Clean** — keeps your live_loop code minimal
 5. **Testable** — swap scales easily to hear differences
-6. **Performance-friendly** — no log spam, just audio feedback (unless you enable verbose)
+6. **Flexible** — use with or without logging
 
 ### Debugging Summary
 
-| Debugging Method | Works? | Best For |
-|------------------|--------|----------|
-| `puts ring` | ✅ | Quick inspection |
-| `puts ring[0]` | ❌ | — |
-| `puts "Value: #{ring[0]}"` | ✅ | Individual element inspection |
-| Multiple `puts` in loop | ❌ | — |
+| Debugging Method | Works? | Description |
+|------------------|--------|-------------|
+| `puts ring` | ✅ | Prints full ring |
+| `puts ring[0]` | ❌ | Prints nothing |
+| `puts "Value: #{ring[0]}"` | ✅ | Works with interpolation |
+| Multiple `puts` in loop | ❌ | Only first executes |
 | Single `puts` with all info | ✅ | Log-based debugging |
-| Visual feedback (synth params) | ✅ | Ear-based development |
-| `verbose` mode | ✅ | When you need both |
+| Visual feedback (synth params) | ✅ | Ear-based debugging |
+| `verbose` mode | ✅ | Both log and ear together |
 
 ---
 
@@ -640,9 +633,7 @@ play note, cutoff: 70 + (look(:melody) * 5)
 6. **Remember that rings wrap** — they loop forever, which is perfect for live loops
 7. **Experiment with transposition** — shift entire patterns up/down for variation
 8. **Combine ticks** — control melody, rhythm, dynamics, and effects independently
-9. **Use visual debugging** — synth parameters like `amp`, `cutoff`, and `pan` show tick position during development
+9. **Use visual debugging** — synth parameters like `amp`, `cutoff`, and `pan` show tick position; combine with `verbose: true` for log output too
 10. **Accept limitations** — Sonic Pi prioritizes audio performance over logging
 
 ---
-
-*The grid exists. The grid is active. The grid is invisible.*
