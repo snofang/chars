@@ -278,105 +278,111 @@ end
 
 ## Debugging Techniques
 
-### Printing Ring Contents
+### Important Limitation
 
-```ruby
-puts (scale :E3, :minor_pentatonic)
-# (ring 52, 55, 57, 59, 62)
-```
+Sonic Pi's logging system processes only the first `puts` statement per iteration. Multiple `puts` statements will not all appear in the log.
 
-### Safe Debugging with `look`
-
+**✅ Do this:**
 ```ruby
 live_loop :debug do
   notes = scale :E3, :minor_pentatonic
   current_note = notes.tick
-  current_index = look
+  current_idx = look
   
-  puts "Index: #{current_index} → Note: #{current_note}"
-  puts "Next in ring: #{notes[current_index + 1]}" if current_index < notes.length - 1
-  puts "Ring wraps to: #{notes[0]}" if current_index == notes.length - 1
+  # Single puts with all debug info
+  puts "Idx: #{current_idx} | Note: #{current_note} | Ring: #{notes}"
   
   play current_note, release: 0.1
   sleep 0.25
 end
 ```
 
-### Debugging Multiple Named Ticks
-
+**❌ Don't do this:**
 ```ruby
-live_loop :multi_debug do
+live_loop :debug do
   notes = scale :E3, :minor_pentatonic
-  durations = ring 0.125, 0.25, 0.5
+  current_note = notes.tick
   
-  note = notes.tick(:melody)
-  duration = durations.tick(:rhythm)
+  puts "Note: #{current_note}"   # Only this prints
+  puts "Ring: #{notes}"           # This never prints
+  puts "---"                      # This never prints
   
-  puts "Melody: #{note} (idx: #{look(:melody)})"
-  puts "Rhythm: #{duration} (idx: #{look(:rhythm)})"
-  puts "---"
-  
-  play note, release: 0.1
-  sleep duration
+  play current_note
+  sleep 0.25
 end
 ```
 
-### Log Output Example
+### Printing Ring Elements
 
-```
-Index: 0 → Note: 52
-Next in ring: 55
----
-Index: 1 → Note: 55
-Next in ring: 57
----
-Index: 2 → Note: 57
-Next in ring: 59
----
-Index: 3 → Note: 59
-Next in ring: 62
----
-Index: 4 → Note: 62
-Ring wraps to: 52
+**Works:**
+```ruby
+puts "Ring: #{my_ring}"                    # Prints full ring
+puts "First: #{my_ring[0]}"               # Prints with interpolation
 ```
 
-### Common Pitfall
+**Does NOT work:**
+```ruby
+puts my_ring[0]                            # Prints nothing
+puts my_ring[1]                            # Prints nothing
+```
 
-**DON'T do this** (calls tick twice, advancing it extra):
+### Recommended Debugging Pattern
 
 ```ruby
-# ❌ Bad: calls tick twice
-puts (scale :E3, :minor_pentatonic).tick
-play (scale :E3, :minor_pentatonic).tick
-```
-
-**DO this** (calls tick once, stores result):
-
-```ruby
-# ✅ Good: calls tick once
-note = (scale :E3, :minor_pentatonic).tick
-puts note
-play note
-```
-
-### Visualizing Tick State
-
-```ruby
-live_loop :visualize do
+live_loop :debug do
   notes = scale :E3, :minor_pentatonic
-  note = notes.tick
-  idx = look
+  current_note = notes.tick
+  current_idx = look
   
-  # Visual representation
-  bar = notes.map_with_index do |n, i|
-    i == idx ? "[#{n}]" : " #{n} "
-  end.join
+  # Combine everything into one formatted string
+  next_idx = (current_idx + 1) % notes.length
+  puts "🔍 Idx: #{current_idx} | Note: #{current_note} | Next: #{notes[next_idx]} | Ring: #{notes}"
   
-  puts bar
-  play note, release: 0.1
-  sleep 0.5
+  play current_note, release: 0.1
+  sleep 0.25
 end
 ```
+
+**Output:**
+```
+🔍 Idx: 0 | Note: 52 | Next: 55 | Ring: (ring 52, 55, 57, 59, 62)
+🔍 Idx: 1 | Note: 55 | Next: 57 | Ring: (ring 52, 55, 57, 59, 62)
+🔍 Idx: 2 | Note: 57 | Next: 59 | Ring: (ring 52, 55, 57, 59, 62)
+🔍 Idx: 3 | Note: 59 | Next: 62 | Ring: (ring 52, 55, 57, 59, 62)
+🔍 Idx: 4 | Note: 62 | Next: 52 | Ring: (ring 52, 55, 57, 59, 62)
+```
+
+### Visual Debugging (No Logs Needed)
+
+```ruby
+live_loop :visual do
+  notes = scale :E3, :minor_pentatonic
+  current_note = notes.tick
+  current_idx = look
+  
+  # Use synth parameters to see tick position
+  use_synth :blade
+  play current_note, 
+    release: 0.1,
+    amp: 0.3 + (current_idx * 0.15),      # Volume changes
+    cutoff: 50 + (current_idx * 8),       # Filter changes
+    pan: -0.8 + (current_idx * 0.4)       # Pan changes
+  
+  sleep 0.25
+end
+```
+
+### Debugging Summary
+
+| Debugging Method | Works? | Notes |
+|------------------|--------|-------|
+| `puts ring` | ✅ | Prints full ring |
+| `puts ring[0]` | ❌ | Prints nothing |
+| `puts "Value: #{ring[0]}"` | ✅ | Works with interpolation |
+| Multiple `puts` in loop | ❌ | Only first executes |
+| Single `puts` with all info | ✅ | Best practice |
+| `print` instead of `puts` | ⚠️ | Sometimes works, not reliable |
+| Visual feedback (synth params) | ✅ | Great for live performance |
 
 ---
 
@@ -483,8 +489,7 @@ end
 
 | Function | Example | Description |
 |----------|---------|-------------|
-| `puts` | `puts ring` | Print to log |
-| `print` | `print "hello"` | Print to log |
+| `puts` | `puts ring` | Print to log (single per iteration) |
 | `look` | `look` | Get tick index without advancing |
 | `tick_reset` | `tick_reset(:foo)` | Reset named tick |
 | `tick_reset_all` | `tick_reset_all` | Reset all ticks |
@@ -534,13 +539,16 @@ play note, cutoff: 70 + (look(:melody) * 5)
 
 ## Final Tips
 
-1. **Always use `look` for debugging** — never call `.tick` just to inspect values
-2. **Name your ticks** when using multiple — it prevents counter collisions
-3. **Store rings in variables** if you reuse them — it's cleaner and more efficient
-4. **Use `puts` liberally** when learning — see exactly what your code produces
-5. **Remember that rings wrap** — they loop forever, which is perfect for live loops
-6. **Experiment with transposition** — shift entire patterns up/down for variation
-7. **Combine ticks** — control melody, rhythm, dynamics, and effects independently
+1. **Use single `puts` per iteration** — multiple `puts` statements won't all appear in the log
+2. **Use string interpolation** — `puts "Value: #{ring[0]}"` works; `puts ring[0]` doesn't
+3. **Always use `look` for debugging** — never call `.tick` just to inspect values
+4. **Name your ticks** when using multiple — it prevents counter collisions
+5. **Store rings in variables** if you reuse them — it's cleaner and more efficient
+6. **Remember that rings wrap** — they loop forever, which is perfect for live loops
+7. **Experiment with transposition** — shift entire patterns up/down for variation
+8. **Combine ticks** — control melody, rhythm, dynamics, and effects independently
+9. **Use visual debugging** — synth parameters like `amp`, `cutoff`, and `pan` show tick position
+10. **Accept limitations** — Sonic Pi prioritizes audio performance over logging
 
 ---
 
