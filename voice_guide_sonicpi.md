@@ -546,11 +546,33 @@ Each note in the cycle has a unique sonic fingerprint, letting you hear where yo
 
 ### Common Note Names
 
-```
-:C3  :Cs3  :D3  :Ds3  :E3  :F3  :Fs3  :G3  :Gs3  :A3  :As3  :B3
-:C4  :Cs4  :D4  :Ds4  :E4  :F4  :Fs4  :G4  :Gs4  :A4  :As4  :B4
-:C5  :Cs5  :D5  :Ds5  :E5  :F5  :Fs5  :G5  :Gs5  :A5  :As5  :B5
-```
+| Note | MIDI | Brief |
+|------|------|-------|
+| `:C3` | 48 | Low C. Bass register. |
+| `:Cs3` | 49 | C sharp. Dark, tense. |
+| `:D3` | 50 | Low D. Warm, open. |
+| `:Ds3` | 51 | D sharp. Dark, bluesy. |
+| `:E3` | 52 | Low E. Guitar low string. Root of your scale. |
+| `:F3` | 53 | F. Dark, weighty. |
+| `:Fs3` | 54 | F sharp. Tense, bluesy. |
+| `:G3` | 55 | G. Open, warm. Minor third of your scale. |
+| `:Gs3` | 56 | G sharp. Dark, exotic. |
+| `:A3` | 57 | A. Open, warm. Fourth of your scale. |
+| `:As3` | 58 | A sharp. Dark, bluesy. |
+| `:B3` | 59 | B. Bright, leading tone. Fifth of your scale. |
+| `:C4` | 60 | Middle C. The central reference note. |
+| `:Cs4` | 61 | C sharp. Tense, bright. |
+| `:D4` | 62 | D. Open, warm. Minor seventh of your scale. |
+| `:Ds4` | 63 | D sharp. Dark, bluesy. |
+| `:E4` | 64 | E. Bright, open. Guitar high E string. |
+| `:F4` | 65 | F. Bright, weighty. |
+| `:Fs4` | 66 | F sharp. Tense, bright. |
+| `:G4` | 67 | G. Bright, open. |
+| `:Gs4` | 68 | G sharp. Bright, exotic. |
+| `:A4` | 69 | A. Bright, open. Concert pitch reference (440Hz). |
+| `:As4` | 70 | A sharp. Bright, bluesy. |
+| `:B4` | 71 | B. Very bright, leading. |
+| `:C5` | 72 | High C. Soprano register. |
 
 ### Useful Patterns
 
