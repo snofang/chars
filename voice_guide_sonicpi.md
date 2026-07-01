@@ -120,14 +120,36 @@ These correspond to:
 ### Common Scales
 
 ```ruby
-:major              # happy, bright
-:minor              # sad, dark
-:minor_pentatonic   # blues, rock (what you're using)
-:major_pentatonic   # folk, country
-:dorian             # jazzy minor
-:blues              # blues scale
-:chromatic          # all 12 notes
+:major              # Bright, happy, uplifting. The standard Western scale. (Ionian mode)
+:minor              # Dark, sad, melancholic. The natural minor scale. (Aeolian mode)
+:minor_pentatonic   # Five-note blues/rock scale. Used in rock, blues, and jazz.
+:major_pentatonic   # Five-note folk/country scale. Used in folk, country, and pop.
+:dorian             # Minor scale with a raised 6th. Jazzy, soulful, slightly hopeful.
+:phrygian           # Minor scale with a flattened 2nd. Spanish, flamenco, dark exotic sound.
+:lydian             # Major scale with a raised 4th. Dreamy, floating, sci-fi sound.
+:mixolydian         # Major scale with a flattened 7th. Bluesy, rock, dominant sound.
+:aeolian            # Same as :minor. Natural minor scale.
+:locrian            # Minor scale with flattened 2nd and 5th. Unstable, dissonant, rarely used.
+:chromatic          # All 12 semitones. Every note in the octave.
 ```
+
+**Quick Reference:**
+
+| Scale | Mood | Common Use |
+|-------|------|------------|
+| `:major` | Bright, happy | Pop, classical, dance |
+| `:minor` | Dark, sad | Classical, metal, ballads |
+| `:minor_pentatonic` | Bluesy, rock | Rock, blues, jazz improvisation |
+| `:major_pentatonic` | Folk, open | Folk, country, children's songs |
+| `:dorian` | Jazzy, soulful | Jazz, funk, modal improvisation |
+| `:phrygian` | Spanish, dark | Flamenco, metal, Middle Eastern |
+| `:lydian` | Dreamy, floating | Film scores, progressive rock |
+| `:mixolydian` | Bluesy, dominant | Blues, rock, funk |
+| `:aeolian` | Natural minor | Same as :minor |
+| `:locrian` | Unstable, dissonant | Experimental, jazz tension |
+| `:chromatic` | All notes | Atonal, experimental, chromatic runs |
+
+**Note:** The `:blues` scale does not exist in Sonic Pi. Use `:minor_pentatonic` for blues playing instead.
 
 ### Scale Examples
 
@@ -135,7 +157,7 @@ These correspond to:
 scale :C4, :major        # (60, 62, 64, 65, 67, 69, 71)
 scale :C4, :minor        # (60, 62, 63, 65, 67, 68, 70)
 scale :C4, :dorian       # (60, 62, 63, 65, 67, 69, 70)
-scale :C4, :blues        # (60, 63, 65, 66, 67, 70)
+scale :C4, :minor_pentatonic  # (60, 63, 65, 67, 70)
 ```
 
 ### Ring Properties
@@ -418,7 +440,7 @@ end
 
 # Different scale with custom ranges
 live_loop :debug4 do
-  visual_debug (scale :A3, :blues), 
+  visual_debug (scale :A3, :phrygian), 
     synth: :saw,
     cutoff_min: 40,
     cutoff_max: 100,
@@ -506,14 +528,21 @@ Each note in the cycle has a unique sonic fingerprint, letting you hear where yo
 
 ### Common Scale Types
 
-```
-:major                 :major_pentatonic
-:minor                 :minor_pentatonic
-:dorian                :phrygian
-:lydian                :mixolydian
-:aeolian               :locrian
-:blues                 :chromatic
-```
+| Scale | Mood | Common Use |
+|-------|------|------------|
+| `:major` | Bright, happy | Pop, classical, dance |
+| `:minor` | Dark, sad | Classical, metal, ballads |
+| `:minor_pentatonic` | Bluesy, rock | Rock, blues, jazz improvisation |
+| `:major_pentatonic` | Folk, open | Folk, country, children's songs |
+| `:dorian` | Jazzy, soulful | Jazz, funk, modal improvisation |
+| `:phrygian` | Spanish, dark | Flamenco, metal, Middle Eastern |
+| `:lydian` | Dreamy, floating | Film scores, progressive rock |
+| `:mixolydian` | Bluesy, dominant | Blues, rock, funk |
+| `:aeolian` | Natural minor | Same as :minor |
+| `:locrian` | Unstable, dissonant | Experimental, jazz tension |
+| `:chromatic` | All notes | Atonal, experimental, chromatic runs |
+
+**Note:** The `:blues` scale does not exist in Sonic Pi. Use `:minor_pentatonic` for blues playing instead.
 
 ### Common Note Names
 
