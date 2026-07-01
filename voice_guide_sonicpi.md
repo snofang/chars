@@ -354,7 +354,7 @@ end
 
 ### Visual Debugging
 
-Instead of relying on log output, you can use synthesizer parameters to hear where you are in the pattern. This is especially useful during live performance.
+Instead of relying on log output, you can use synthesizer parameters to hear where you are in the pattern. This is useful during development when you want to keep your focus on the sound rather than reading the log.
 
 **Full Version with Customization:**
 
@@ -448,12 +448,12 @@ end
 
 Each note in the cycle has a unique sonic fingerprint, letting you hear where you are in the pattern without looking at the log. The optional `verbose` mode adds log output when you need it for deeper inspection.
 
-**Why this works:**
+**Why this is useful during development:**
 
-- No hard-coded values — adapts to any ring length
-- Each note has a unique sonic signature
-- You can hear your position without looking at the log
-- Works with any scale or ring you pass to it
+- You can keep your ears focused on the sound
+- You don't need to split attention between code and log
+- Each position has a distinct sonic signature
+- Adapts to any ring length automatically
 - Optional verbose mode for when you need log output too
 
 **Benefits of the Function-Based Approach:**
@@ -467,15 +467,15 @@ Each note in the cycle has a unique sonic fingerprint, letting you hear where yo
 
 ### Debugging Summary
 
-| Debugging Method | Works? | Notes |
-|------------------|--------|-------|
-| `puts ring` | ✅ | Prints full ring |
-| `puts ring[0]` | ❌ | Prints nothing |
-| `puts "Value: #{ring[0]}"` | ✅ | Works with interpolation |
-| Multiple `puts` in loop | ❌ | Only first executes |
-| Single `puts` with all info | ✅ | Best practice |
-| `print` instead of `puts` | ⚠️ | Sometimes works, not reliable |
-| Visual feedback (synth params) | ✅ | Great for live performance |
+| Debugging Method | Works? | Best For |
+|------------------|--------|----------|
+| `puts ring` | ✅ | Quick inspection |
+| `puts ring[0]` | ❌ | — |
+| `puts "Value: #{ring[0]}"` | ✅ | Individual element inspection |
+| Multiple `puts` in loop | ❌ | — |
+| Single `puts` with all info | ✅ | Log-based debugging |
+| Visual feedback (synth params) | ✅ | Ear-based development |
+| `verbose` mode | ✅ | When you need both |
 
 ---
 
@@ -640,8 +640,9 @@ play note, cutoff: 70 + (look(:melody) * 5)
 6. **Remember that rings wrap** — they loop forever, which is perfect for live loops
 7. **Experiment with transposition** — shift entire patterns up/down for variation
 8. **Combine ticks** — control melody, rhythm, dynamics, and effects independently
-9. **Use visual debugging** — synth parameters like `amp`, `cutoff`, and `pan` show tick position
+9. **Use visual debugging** — synth parameters like `amp`, `cutoff`, and `pan` show tick position during development
 10. **Accept limitations** — Sonic Pi prioritizes audio performance over logging
 
 ---
 
+*The grid exists. The grid is active. The grid is invisible.*
