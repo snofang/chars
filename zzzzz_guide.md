@@ -5,5 +5,5 @@ ffmpeg -loop 1 -i cover.png -i voice.flac -c:v libx264 -preset medium -tune stil
 
 *- to convert flac to mp3
 ```
-gahetu_draft$ ffmpeg -i voice.flac -b:a 128k -map_metadata 0 -id3v2_version 3 -q:a 2 voice.mp3
+ffmpeg -i voice.flac -b:a 128k -map_metadata 0 -id3v2_version 3 -q:a 2 voice.mp3
 ```
