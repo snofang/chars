@@ -1,17 +1,75 @@
-# use_bpm 120 at the top sets the tempo. Everything sleeps in beats, not seconds, so it all stays locked.
+# Irish Poem Performance - DRUM GRID ONLY
+# Sharp, driving Irish groove
+# Simple, focused, repetitive
 
-use_bpm 80
+use_bpm 100
+use_debug false
 
-live_loop :drums do
-  sample :bd_haus
-  sleep 0.5
-  sample :sn_dolf
-  sleep 0.5
-  sample :bd_haus
-  sleep 0.5
-  sample :sn_dolf
-  sleep 0.5
+# ============================================
+# DRUM GRID - Sharp Irish groove
+# 16th notes with accents on 2 and 4
+# ============================================
+
+live_loop :drum_grid do
+  # KICK - punchy, on 1 and 3 with anticipation
+  kick_pattern = [
+    1, 0, 0, 0,  # Beat 1 - HEAVY
+    0, 0, 1, 0,  # Beat 2 - anticipatory
+    1, 0, 0, 0,  # Beat 3 - HEAVY
+    0, 0, 1, 0   # Beat 4 - anticipatory
+  ]
+  
+  # SNARE - sharp backbeat, cutting through
+  snare_pattern = [
+    0, 0, 0, 0,  # Beat 1
+    1, 0, 0, 0,  # Beat 2 - ACCENT
+    0, 0, 0, 0,  # Beat 3
+    1, 0, 0, 0   # Beat 4 - ACCENT
+  ]
+  
+  # HI-HAT - driving, syncopated
+  hat_pattern = [
+    1, 0, 0, 1,  # Beat 1 - driving
+    1, 0, 0, 1,  # Beat 2
+    1, 0, 0, 1,  # Beat 3
+    1, 0, 0, 1   # Beat 4
+  ]
+  
+  # BODHRÁN - syncopated Irish pulse
+  bodhran_pattern = [
+    1, 0, 0, 0,  # Beat 1
+    0, 1, 0, 0,  # Beat 2
+    1, 0, 0, 0,  # Beat 3
+    0, 1, 0, 0   # Beat 4
+  ]
+  
+  16.times do |i|
+    # Kick - punchy, short decay
+    if kick_pattern[i] == 1
+      sample :bd_haus, amp: 0.9, rate: 0.8, release: 0.05, attack: 0.01
+    end
+    
+    # Snare - sharp, cutting
+    if snare_pattern[i] == 1
+      sample :sn_dolf, amp: 0.7, rate: 1.0, release: 0.04, attack: 0.01
+    end
+    
+    # Hi-hat - crisp, driving
+    if hat_pattern[i] == 1
+      sample :drum_cymbal_closed, amp: 0.4, rate: 1.5, release: 0.02, attack: 0.005
+    end
+    
+    # Bodhrán - deep, resonant
+    if bodhran_pattern[i] == 1
+      sample :drum_tom_hi_hard, amp: 0.5, rate: 0.9, release: 0.06, attack: 0.01
+    end
+    
+    sleep 0.25
+  end
 end
 
-# BPM changes the speed globally. Try 80 for heavy, 160 for frantic.
+# ============================================
+# CONTROLS
+# ============================================
 
+# set_volume! :drum_grid, 0.9
