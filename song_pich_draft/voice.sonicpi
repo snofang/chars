@@ -1,88 +1,110 @@
-# پیچ (The Turn) - Drum Grid
-# Sharp, driving Irish groove for Persian poem
-# 16th notes with accents on 2 and 4
+# پیچ (The Turn) - Enhanced Bodhrán Groove
+# Based on your basic rhythm with bodhrán textures
+# 16th notes - 8 beats per bar
 
-use_bpm 100
+use_bpm 80
 use_debug false
 
-# ============================================
-# DRUM GRID - Sharp groove for 'پیچ'
-# 16th notes with accents on 2 and 4
-# ============================================
-
-live_loop :drum_grid do
-  # KICK - punchy, driving
-  kick_pattern = [
-    1, 0, 0, 0,  # Beat 1 - HEAVY
-    0, 0, 1, 0,  # Beat 2 - anticipatory
-    1, 0, 0, 0,  # Beat 3 - HEAVY
-    0, 0, 1, 0   # Beat 4 - anticipatory
-  ]
+live_loop :pich do
+  # ============================================
+  # BEAT 1
+  # ============================================
   
-  # SNARE - sharp backbeat
-  snare_pattern = [
-    0, 0, 0, 0,  # Beat 1
-    1, 0, 0, 0,  # Beat 2 - ACCENT
-    0, 0, 0, 0,  # Beat 3
-    1, 0, 0, 0   # Beat 4 - ACCENT
-  ]
+  # Kick — pulse, weight
+  sample :drum_bass_hard, amp: 0.7, release: 0.08
+  sleep 0.25
   
-  # HI-HAT - driving, syncopated
-  hat_pattern = [
-    1, 0, 0, 1,  # Beat 1
-    1, 0, 0, 1,  # Beat 2
-    1, 0, 0, 1,  # Beat 3
-    1, 0, 0, 1   # Beat 4
-  ]
+  # Bodhrán rim — sharp, driving (replaces closed hat)
+  sample :drum_tom_mid_soft, amp: 0.3, rate: 1.8, release: 0.02
+  sleep 0.25
   
-  # BODHRÁN / FRAME DRUM - rolling pulse
-  bodhran_pattern = [
-    1, 0, 0, 0,  # Beat 1
-    0, 1, 0, 0,  # Beat 2
-    1, 0, 0, 0,  # Beat 3
-    0, 1, 0, 0   # Beat 4
-  ]
+  # ============================================
+  # BEAT 2
+  # ============================================
   
-  # RIDE / CYMBAL - for tension build
-  ride_pattern = [
-    0, 0, 0, 0,  # Beat 1 - rest
-    0, 0, 0, 0,  # Beat 2 - rest
-    0, 0, 0, 0,  # Beat 3 - rest
-    1, 0, 0, 0   # Beat 4 - accent
-  ]
+  # Bodhrán thump — backbeat (replaces snare)
+  sample :drum_tom_hi_hard, amp: 0.6, rate: 0.7, release: 0.06
+  sleep 0.25
   
-  16.times do |i|
-    # Kick - punchy, short decay
-    if kick_pattern[i] == 1
-      sample :bd_haus, amp: 0.9, rate: 0.8, release: 0.05, attack: 0.01
-    end
-    
-    # Snare - sharp, cutting
-    if snare_pattern[i] == 1
-      sample :sn_dolf, amp: 0.7, rate: 1.0, release: 0.04, attack: 0.01
-    end
-    
-    # Hi-hat - crisp, driving
-    if hat_pattern[i] == 1
-      sample :drum_cymbal_closed, amp: 0.4, rate: 1.5, release: 0.02, attack: 0.005
-    end
-    
-    # Bodhrán - deep, resonant
-    if bodhran_pattern[i] == 1
-      sample :drum_tom_hi_hard, amp: 0.5, rate: 0.9, release: 0.06, attack: 0.01
-    end
-    
-    # Ride - tension builder (every 4th bar accent)
-    if ride_pattern[i] == 1
-      sample :drum_cymbal_open, amp: 0.3, rate: 1.0, release: 0.1, attack: 0.01
-    end
-    
-    sleep 0.25
-  end
+  # Bodhrán rim
+  sample :drum_tom_mid_soft, amp: 0.3, rate: 1.8, release: 0.02
+  sleep 0.25
+  
+  # ============================================
+  # BEAT 3
+  # ============================================
+  
+  # Kick — return, cycle
+  sample :drum_bass_hard, amp: 0.6, release: 0.08
+  sleep 0.25
+  
+  # Bodhrán rim
+  sample :drum_tom_mid_soft, amp: 0.3, rate: 1.8, release: 0.02
+  sleep 0.25
+  
+  # ============================================
+  # BEAT 4
+  # ============================================
+  
+  # Bodhrán thump — holding (replaces snare)
+  sample :drum_tom_hi_hard, amp: 0.6, rate: 0.7, release: 0.06
+  sleep 0.25
+  
+  # Bodhrán rim
+  sample :drum_tom_mid_soft, amp: 0.3, rate: 1.8, release: 0.02
+  sleep 0.25
+  
+  # ============================================
+  # BEAT 5
+  # ============================================
+  
+  # Kick — weight remains
+  sample :drum_bass_hard, amp: 0.6, release: 0.08
+  sleep 0.25
+  
+  # Bodhrán rim — softer
+  sample :drum_tom_mid_soft, amp: 0.2, rate: 1.8, release: 0.02
+  sleep 0.25
+  
+  # ============================================
+  # BEAT 6
+  # ============================================
+  
+  # Bodhrán roll — ghost, subtle (replaces snare soft)
+  sample :drum_tom_lo_hard, amp: 0.25, rate: 1.3, release: 0.03
+  sleep 0.25
+  
+  # Bodhrán rim — softer
+  sample :drum_tom_mid_soft, amp: 0.2, rate: 1.8, release: 0.02
+  sleep 0.25
+  
+  # ============================================
+  # BEAT 7
+  # ============================================
+  
+  # Kick — center
+  sample :drum_bass_hard, amp: 0.7, release: 0.08
+  sleep 0.25
+  
+  # Bodhrán rim
+  sample :drum_tom_mid_soft, amp: 0.3, rate: 1.8, release: 0.02
+  sleep 0.25
+  
+  # ============================================
+  # BEAT 8
+  # ============================================
+  
+  # Bodhrán thump — final hold (replaces snare)
+  sample :drum_tom_hi_hard, amp: 0.6, rate: 0.7, release: 0.06
+  sleep 0.25
+  
+  # Open bodhrán — resonant release (replaces open hat)
+  sample :drum_tom_hi_soft, amp: 0.25, rate: 0.5, release: 0.12
+  sleep 0.25
 end
 
 # ============================================
 # CONTROLS
 # ============================================
 
-# set_volume! :drum_grid, 0.9
+# set_volume! :pich, 0.9
