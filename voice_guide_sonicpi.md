@@ -760,16 +760,15 @@ play note, cutoff: 70 + (look(:melody) * 5)
 ## Final Tips
 
 1. **Use single `puts` per iteration** — multiple `puts` statements won't all appear in the log
-2. **Use string interpolation** — `puts "Value: #{ring[0]}"` works; `puts ring[0]` doesn't
-3. **Always use `look` for debugging** — never call `.tick` just to inspect values
-4. **Name your ticks** when using multiple — it prevents counter collisions
-5. **Store rings in variables** if you reuse them — it's cleaner and more efficient
-6. **Remember that rings wrap** — they loop forever, which is perfect for live loops
-7. **Experiment with transposition** — shift entire patterns up/down for variation
-8. **Combine ticks** — control melody, rhythm, dynamics, and effects independently
-9. **Use visual debugging** — synth parameters like `amp`, `cutoff`, and `pan` show tick position; combine with `verbose: true` for log output too
-10. **Accept limitations** — Sonic Pi prioritizes audio performance over logging
-11. **Start simple with rhythms** — kick on 1 and 3, snare on 2 and 4, hihats on all 8th notes
-12. **Think in grids** — 4/4 is 4 beats, subdivided into 8th or 16th notes
+2. **Always use `look` for debugging** — never call `.tick` just to inspect values
+3. **Name your ticks** when using multiple — it prevents counter collisions
+4. **Store rings in variables** if you reuse them — it's cleaner and more efficient
+5. **Remember that rings wrap** — they loop forever, which is perfect for live loops
+6. **Experiment with transposition** — shift entire patterns up/down for variation
+7. **Combine ticks** — control melody, rhythm, dynamics, and effects independently
+8. **Use visual debugging** — synth parameters like `amp`, `cutoff`, and `pan` show tick position; combine with `verbose: true` for log output too
+9. **Accept limitations** — Sonic Pi prioritizes audio performance over logging
+10. **Start simple with rhythms** — kick on 1 and 3, snare on 2 and 4, hihats on all 8th notes
+11. **Think in grids** — 4/4 is 4 beats, subdivided into 8th or 16th notes
 
 ---
