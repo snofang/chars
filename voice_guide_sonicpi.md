@@ -9,7 +9,8 @@
 3. [The Tick System](#the-tick-system)
 4. [Data Flow and Method Chaining](#data-flow-and-method-chaining)
 5. [Debugging Techniques](#debugging-techniques)
-6. [Quick Reference](#quick-reference)
+6. [Building Basic 4/4 Rhythms](#building-basic-44-rhythms)
+7. [Quick Reference](#quick-reference)
 
 ---
 
@@ -486,6 +487,202 @@ Each note in the cycle has a unique sonic fingerprint, letting you hear where yo
 
 ---
 
+## Building Basic 4/4 Rhythms
+
+### The Foundation: Understanding 4/4
+
+4/4 time means:
+- **4 beats** per bar
+- Each beat is a **quarter note**
+- The bar repeats every 4 beats
+
+In Sonic Pi, a beat is typically `sleep 1`. A full bar is `sleep 4` (if you're counting in whole beats) or `sleep 0.25` for sixteenth notes.
+
+### The Basic Kick-Snare Pattern
+
+The simplest 4/4 beat: kick on 1 and 3, snare on 2 and 4.
+
+```ruby
+live_loop :basic_beat do
+  # Beat 1
+  sample :bd_haus
+  sleep 1
+  
+  # Beat 2
+  sample :sn_dolf
+  sleep 1
+  
+  # Beat 3
+  sample :bd_haus
+  sleep 1
+  
+  # Beat 4
+  sample :sn_dolf
+  sleep 1
+end
+```
+
+### The Four-Beat Grid
+
+Think of 4/4 as a grid with 4 positions:
+
+```
+Beat:  1    2    3    4
+       |    |    |    |
+Kick:  x         x
+Snare:      x         x
+```
+
+### Using Ticks for Rhythm Patterns
+
+This is the most efficient way to build rhythms in Sonic Pi:
+
+```ruby
+live_loop :rhythm do
+  # Define patterns as rings
+  kicks = (ring 1, 0, 0, 0, 1, 0, 0, 0)
+  snares = (ring 0, 0, 1, 0, 0, 0, 1, 0)
+  hats = (ring 1, 1, 1, 1, 1, 1, 1, 1)
+  
+  idx = tick
+  
+  sample :bd_haus if kicks[idx] == 1
+  sample :sn_dolf if snares[idx] == 1
+  sample :drum_cymbal_open if hats[idx] == 1
+  
+  sleep 0.5  # Eighth note grid
+end
+```
+
+### Subdividing the Beat
+
+**Eighth Notes (Sleep 0.5)**
+
+A 4/4 bar with eighth notes has 8 positions:
+
+```
+Beat:  1   &   2   &   3   &   4   &
+       |   |   |   |   |   |   |   |
+Kick:  x       x       x       x
+Snare:      x           x
+Hi-hat: x   x   x   x   x   x   x   x
+```
+
+```ruby
+kicks = (ring 1, 0, 1, 0, 1, 0, 1, 0)  # Kick on all beats
+snares = (ring 0, 0, 1, 0, 0, 0, 1, 0)  # Snare on 2 and 4
+hats = (ring 1, 1, 1, 1, 1, 1, 1, 1)    # Hi-hat on all 8th notes
+```
+
+**Sixteenth Notes (Sleep 0.25)**
+
+A 4/4 bar with sixteenth notes has 16 positions:
+
+```
+Beat:  1   e   &   a   2   e   &   a   3   e   &   a   4   e   &   a
+       |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+Kick:  x                   x               x                   x
+Snare:              x                   x
+Hi-hat: x   x   x   x   x   x   x   x   x   x   x   x   x   x   x   x
+```
+
+```ruby
+kicks = (ring 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+snares = (ring 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0)
+hats = (ring 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+```
+
+### Common 4/4 Patterns
+
+| Pattern | Grid | Kick | Snare | Hihat |
+|---------|------|------|-------|-------|
+| **Rock** | 8th | `x . . . x . . .` | `. . x . . . x .` | `x x x x x x x x` |
+| **Funk** | 16th | `x . . x x . . x . . x x . . x .` | `. . . . x . . . . . . . x . . .` | `x x x x x x x x x x x x x x x x` |
+| **Dance** | 16th | `x . . . x . . . x . . . x . . .` | `. . . . x . . . . . . . x . . .` | `x . x . x . x . x . x . x . x .` |
+| **Hip Hop** | 8th | `x . x . . . x .` | `. . . . x . . .` | `x . x . x . x .` |
+| **House** | 16th | `x . . . . . . . x . . . . . . .` | `. . . . x . . . . . . . x . . .` | `x x x x x x x x x x x x x x x x` |
+| **Dub** | 8th | `x . . . . . x .` | `. . . . x . . .` | `x . . . x . . .` |
+
+### Complete Rhythm Building Example
+
+**Step 1: Choose your grid**
+- Sixteenth notes: `sleep 0.25`
+
+**Step 2: Design your pattern**
+```
+Kick:  1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0
+Snare: 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0
+Hihat: 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+```
+
+**Step 3: Convert to ring**
+```ruby
+kicks = (ring 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+snares = (ring 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0)
+hats = (ring 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+```
+
+**Step 4: Build the loop**
+```ruby
+live_loop :my_beat do
+  idx = tick
+  
+  sample :bd_haus if kicks[idx] == 1
+  sample :sn_dolf if snares[idx] == 1
+  sample :drum_cymbal_open if hats[idx] == 1
+  
+  sleep 0.25
+end
+```
+
+### Making Patterns More Interesting
+
+**Add Variation with Tick Values**
+```ruby
+live_loop :variation do
+  kicks = (ring 1, 0, 0, 0, 1, 0, 0, 0)
+  snares = (ring 0, 0, 1, 0, 0, 0, 1, 0)
+  
+  idx = tick
+  kick_play = kicks[idx] == 1 && (look % 4 != 0)  # Skip every 4th bar
+  
+  sample :bd_haus if kick_play
+  sample :sn_dolf if snares[idx] == 1
+  sample :drum_cymbal_open
+  
+  sleep 0.5
+end
+```
+
+**Add Ghost Notes**
+```ruby
+live_loop :ghost do
+  kicks = (ring 1, 0, 0, 0, 1, 0, 0, 0)
+  snares = (ring 0, 0, 1, 0, 0, 0, 1, 0)
+  ghosts = (ring 0, 0, 0, 1, 0, 0, 0, 1)  # Quiet snare hits
+  
+  idx = tick
+  
+  sample :bd_haus if kicks[idx] == 1
+  sample :sn_dolf if snares[idx] == 1
+  sample :sn_dolf, amp: 0.3 if ghosts[idx] == 1  # Ghost note
+  
+  sleep 0.5
+end
+```
+
+### Quick Reference: Common 4/4 Sample Choices
+
+| Element | Samples | Sound |
+|---------|---------|-------|
+| **Kick** | `:bd_haus`, `:bd_boom`, `:bd_sone` | Low, heavy thump |
+| **Snare** | `:sn_dolf`, `:sn_dub`, `:drum_snare_soft` | Sharp, mid-range crack |
+| **Hihat** | `:drum_cymbal_open`, `:drum_cymbal_closed`, `:drum_cymbal_pedal` | Crisp, metallic |
+| **Percussion** | `:drum_tom_hi_hard`, `:drum_tom_lo_hard`, `:drum_tom_hi_soft` | Tonal, resonant |
+| **FX** | `:drum_splash_soft`, `:drum_roll`, `:drum_crash_soft` | Accents, fills |
+
+---
+
 ## Quick Reference
 
 ### Note Functions
@@ -587,5 +784,8 @@ play note, cutoff: 70 + (look(:melody) * 5)
 8. **Combine ticks** — control melody, rhythm, dynamics, and effects independently
 9. **Use visual debugging** — synth parameters like `amp`, `cutoff`, and `pan` show tick position; combine with `verbose: true` for log output too
 10. **Accept limitations** — Sonic Pi prioritizes audio performance over logging
+11. **Start simple with rhythms** — kick on 1 and 3, snare on 2 and 4, hihats on all 8th notes
+12. **Think in grids** — 4/4 is 4 beats, subdivided into 8th or 16th notes
 
 ---
+
