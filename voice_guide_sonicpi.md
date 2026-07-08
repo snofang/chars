@@ -1,3 +1,4 @@
+
 # Sonic Pi: A Practical Guide to Notes, Ticks, and Debugging
 
 ---
@@ -329,20 +330,6 @@ live_loop :debug do
 end
 ```
 
-### Printing Ring Elements
-
-**Works:**
-```ruby
-puts "Ring: #{my_ring}"                    # Prints full ring
-puts "First: #{my_ring[0]}"               # Prints with interpolation
-```
-
-**Does NOT work:**
-```ruby
-puts my_ring[0]                            # Prints nothing
-puts my_ring[1]                            # Prints nothing
-```
-
 ### Log-Based Debugging
 
 ```ruby
@@ -478,8 +465,6 @@ Each note in the cycle has a unique sonic fingerprint, letting you hear where yo
 | Debugging Method | Works? | Description |
 |------------------|--------|-------------|
 | `puts ring` | ✅ | Prints full ring |
-| `puts ring[0]` | ❌ | Prints nothing |
-| `puts "Value: #{ring[0]}"` | ✅ | Works with interpolation |
 | Multiple `puts` in loop | ❌ | Only first executes |
 | Single `puts` with all info | ✅ | Log-based debugging |
 | Visual feedback (synth params) | ✅ | Ear-based debugging |
@@ -788,4 +773,3 @@ play note, cutoff: 70 + (look(:melody) * 5)
 12. **Think in grids** — 4/4 is 4 beats, subdivided into 8th or 16th notes
 
 ---
-
