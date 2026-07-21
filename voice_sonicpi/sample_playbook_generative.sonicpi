@@ -1,0 +1,66 @@
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. GENERATIVE FUNCTIONS (Algorithmic Composition)
+# ==========================================================
+
+# Generator 1: Euclidean/Binary Rhythm Generator
+# Takes a 16-bit binary string and converts it to a 16-step ring
+define :gen_rhythm do |binary_string, note_symbol|
+  binary_string.chars.map { |c| c == '1' ? note_symbol : nil }.ring
+end
+
+# Generator 2: Markov-ish Random Walk Melody Generator
+define :gen_melody do |scale_notes, density = 0.5|
+  16.times.map do
+    # 50% chance to play a note, otherwise rest
+    if rand < density
+      scale_notes.choose
+    else
+      nil
+    end
+  end.ring
+end
+
+# ==========================================================
+# 3. THE SCORES (Mixing Generative + Hand-written + Hashes)
+# ==========================================================
+
+# Generate rhythms algorithmically
+s_kick  = gen_rhythm("1000100010001000", :c4)
+s_hats  = gen_rhythm("1010101010101010", :c4)
+
+# Generate a random melody in E Minor
+s_fm    = gen_melody((scale :e4, :minor_pentatonic), 0.4)
+
+# Hand-written bass with PARAMETER FRONTIER (Hashes for dynamics!)
+# Notice step 4 and 12 are quieter, and step 8 has a higher cutoff
+s_bass  = (ring :e2, nil, nil, nil, {note: :e2, amp: 0.7}, nil, nil, nil, 
+           {note: :e2, cutoff: 120}, nil, nil, nil, {note: :g2, amp: 0.7}, nil, nil, nil)
+
+# ==========================================================
+# 4. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Generative drums (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add dynamic bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], 
+    [:play_sub,  s_bass, 4] ],
+    
+  # Scene 3: Add generative FM melody through the Echo FX (8 bars)
+  # The melody will be different every time you run the script!
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], 
+    [:play_sub,  s_bass, 8], [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 5. RUN
+# ==========================================================
+start_engine(playbook)

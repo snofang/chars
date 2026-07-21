@@ -1,0 +1,119 @@
+# ==========================================================
+# PRO STRICT-SCHEMA ENGINE (FX + Parameters)
+# ==========================================================
+
+# ----------------------------------------------------------
+# 1. PARAMETER PARSER & FX HELPERS
+# ----------------------------------------------------------
+# Allows a step to be :c4 OR {note: :c4, amp: 0.5, cutoff: 100}
+define :parse_step do |step, defaults|
+  return nil, nil unless step
+  if step.is_a?(Hash)
+    note = step[:note]
+    opts = defaults.merge(step)
+    opts.delete(:note) # Remove note so it doesn't get passed as a synth arg
+    return note, opts
+  else
+    return step, defaults
+  end
+end
+
+# ----------------------------------------------------------
+# 2. THE SYNTHESIZERS (With FX Routing)
+# ----------------------------------------------------------
+
+define :play_sub do |n|
+  use_synth :dsaw
+  note, opts = parse_step(n, {release: 0.25, amp: 1.5, cutoff: 80})
+  play note, **opts if note
+end
+
+# Professional routing: Lead goes through a tape echo
+define :play_lead do |n|
+  use_synth :prophet
+  note, opts = parse_step(n, {release: 0.2, amp: 1.0, cutoff: rrand(80, 110)})
+  with_fx :echo, phase: 0.375, decay: 4, mix: 0.3 do
+    play note, **opts if note
+  end
+end
+
+# Professional routing: Snare goes through a massive reverb
+define :play_snare do |n|
+  note, opts = parse_step(n, {amp: 0.8})
+  with_fx :reverb, room: 0.9, mix: 0.5 do
+    sample :sn_dolf, pitch: (note(n) - note(:c4)), **opts if n
+  end
+end
+
+define :play_grain do |n|
+  note, opts = parse_step(n, {amp: 0.5})
+  if n
+    pitch_shift = note(note) - note(:c4)
+    at [0, 0.0625, 0.125, 0.1875] do
+      sample :ambi_choir, pitch: pitch_shift, start: rrand(0.3, 0.5), 
+        finish: rrand(0.55, 0.6), pan: rrand(-0.8, 0.8), 
+        attack: 0.01, release: 0.04, **opts
+    end
+  end
+end
+
+define :play_fm do |n|
+  use_synth :fm
+  note, opts = parse_step(n, {release: 0.3, amp: 0.8, divisor: 2.0, depth: 3})
+  play note, **opts if note
+end
+
+define :play_pluck do |n|
+  use_synth :pluck
+  note, opts = parse_step(n, {release: 0.3, amp: 0.8, coef: rrand(0.3, 0.7)})
+  play note, **opts if note
+end
+
+define :play_pad do |n|
+  use_synth :dark_ambience
+  note, opts = parse_step(n, {release: 1.5, amp: 0.6, attack: 0.5})
+  play note, **opts if note
+end
+
+define :play_kick do |n|
+  note, opts = parse_step(n, {amp: 1.5})
+  sample :bd_haus, pitch: (note(n) - note(:c4)), **opts if n
+end
+
+# Professional routing: Hats go through a panning chorus
+define :play_hats do |n|
+  note, opts = parse_step(n, {amp: 0.3})
+  if n
+    at [0, 0.125, 0.375] do
+      sample :drum_cymbal_closed, rate: 1.2, pan: rrand(-0.5, 0.5), **opts
+    end
+  end
+end
+
+# ----------------------------------------------------------
+# 3. VALIDATION & ENGINE BOOT
+# ----------------------------------------------------------
+define :start_engine do |playbook|
+  playbook.to_a.flatten(1).each do |task|
+    inst, score, bars = task
+    unless score.length == 16
+      raise ArgumentError, "#{inst} score must have exactly 16 steps, but got #{score.length}."
+    end
+  end
+  
+  live_loop :conductor do
+    scene = playbook.tick(:conductor)
+    max_bars = scene.map { |task| task[2] }.max || 1
+    total_steps = max_bars * 16
+    
+    total_steps.times do |step|
+      scene.each do |task|
+        inst, score, bars = task
+        if step < (bars * 16)
+          send(inst, score[step % 16])
+        end
+      end
+      sleep 0.25
+    end
+  end
+end
