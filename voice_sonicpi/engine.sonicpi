@@ -1,17 +1,16 @@
 # ==========================================================
-# PRO STRICT-SCHEMA ENGINE (FX + Parameters)
+# PRO STRICT-SCHEMA ENGINE (Granular Upgrade)
 # ==========================================================
 
 # ----------------------------------------------------------
-# 1. PARAMETER PARSER & FX HELPERS
+# 1. PARAMETER PARSER
 # ----------------------------------------------------------
-# Allows a step to be :c4 OR {note: :c4, amp: 0.5, cutoff: 100}
 define :parse_step do |step, defaults|
   return nil, nil unless step
   if step.is_a?(Hash)
     note = step[:note]
     opts = defaults.merge(step)
-    opts.delete(:note) # Remove note so it doesn't get passed as a synth arg
+    opts.delete(:note)
     return note, opts
   else
     return step, defaults
@@ -19,16 +18,14 @@ define :parse_step do |step, defaults|
 end
 
 # ----------------------------------------------------------
-# 2. THE SYNTHESIZERS (With FX Routing)
+# 2. THE SYNTHESIZERS
 # ----------------------------------------------------------
-
 define :play_sub do |n|
   use_synth :dsaw
   note, opts = parse_step(n, {release: 0.25, amp: 1.5, cutoff: 80})
   play note, **opts if note
 end
 
-# Professional routing: Lead goes through a tape echo
 define :play_lead do |n|
   use_synth :prophet
   note, opts = parse_step(n, {release: 0.2, amp: 1.0, cutoff: rrand(80, 110)})
@@ -37,7 +34,6 @@ define :play_lead do |n|
   end
 end
 
-# Professional routing: Snare goes through a massive reverb
 define :play_snare do |n|
   note, opts = parse_step(n, {amp: 0.8})
   with_fx :reverb, room: 0.9, mix: 0.5 do
@@ -45,15 +41,38 @@ define :play_snare do |n|
   end
 end
 
+# THE GRANULAR UPGRADE:
+# Extracts density, pos, size, and buffer. Defaults to a cloud if not provided.
 define :play_grain do |n|
+  return unless n
   note, opts = parse_step(n, {amp: 0.5})
-  if n
-    pitch_shift = note(note) - note(:c4)
-    at [0, 0.0625, 0.125, 0.1875] do
-      sample :ambi_choir, pitch: pitch_shift, start: rrand(0.3, 0.5), 
-        finish: rrand(0.55, 0.6), pan: rrand(-0.8, 0.8), 
-        attack: 0.01, release: 0.04, **opts
-    end
+  
+  # Extract Granular Parameters
+  density = opts[:density] || 4        # Grains per 16th step
+  pos     = opts[:pos] || rrand(0.3, 0.5) # Buffer position (0.0 to 1.0)
+  size    = opts[:size] || 0.05        # Grain duration in seconds (50ms)
+  buffer  = opts[:buffer] || :ambi_choir
+  
+  # Clean opts so they don't get passed to the sample and cause errors
+  opts.delete(:density); opts.delete(:pos); opts.delete(:size); opts.delete(:buffer)
+  
+  pitch_shift = note(note) - note(:c4)
+  interval = 0.25 / density
+  
+  # Fire the grains asynchronously
+  at density.times.map { |i| i * interval } do
+    # Add jitter (randomness) to the start position so it sounds like a cloud, not a loop
+    grain_start = pos + rrand(-0.01, 0.01) 
+    grain_finish = grain_start + size
+    
+    sample buffer, 
+      pitch: pitch_shift, 
+      start: grain_start, 
+      finish: grain_finish, 
+      pan: rrand(-0.8, 0.8), 
+      attack: size / 2,    # Smooth grain envelope
+      release: size / 2, 
+      **opts
   end
 end
 
@@ -80,7 +99,6 @@ define :play_kick do |n|
   sample :bd_haus, pitch: (note(n) - note(:c4)), **opts if n
 end
 
-# Professional routing: Hats go through a panning chorus
 define :play_hats do |n|
   note, opts = parse_step(n, {amp: 0.3})
   if n
