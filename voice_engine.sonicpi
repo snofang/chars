@@ -1,119 +1,65 @@
 # ==========================================================
-# GRANULAR & SUBTRACTIVE ENGINE LIBRARY
+# STRICT SCHEMA SINGLE-LOOP ENGINE
 # ==========================================================
-# Uniform 16-Step Grid (4/4 Time). All scores use notes (nil = rest).
-# All pitched samples map relative to :c4 (MIDI 60).
+# Enforces exactly 16 steps per score. No padding. Fail-fast validation.
 
 # ----------------------------------------------------------
-# THE CONDUCTOR (Scene Scheduler)
+# 1. THE SYNTHESIZERS (Single-Note Triggers)
 # ----------------------------------------------------------
-define :run_scene do |scene|
-  max_bars = 1
-  
-  scene.each do |task|
-    func, data, bars = task
-    max_bars = bars if bars > max_bars
-    
-    in_thread do
-      bars.times do
-        send(func, data)
-      end
-    end
-  end
-  
-  sleep max_bars * 4.0
-end
-
-# ----------------------------------------------------------
-# THE INSTRUMENT SET
-# ----------------------------------------------------------
-
-# 1. SUB BASS (Subtractive)
-define :play_sub do |score|
+define :play_sub do |n|
   use_synth :dsaw
-  16.times do |i|
-    n = score[i]
-    if n
-      play n, release: 0.25, amp: 1.5, cutoff: 80
-    end
-    sleep 0.25
-  end
+  play n, release: 0.25, amp: 1.5, cutoff: 80 if n
 end
 
-# 2. LEAD SYNTH (Subtractive / Wavetable)
-define :play_lead do |score|
+define :play_lead do |n|
   use_synth :prophet
-  16.times do |i|
-    n = score[i]
-    if n
-      play n, release: 0.2, amp: 1.0, cutoff: rrand(80, 110)
+  play n, release: 0.2, amp: 1.0, cutoff: rrand(80, 110) if n
+end
+
+define :play_grain do |n|
+  if n
+    pitch_shift = note(n) - note(:c4)
+    at [0, 0.0625, 0.125, 0.1875] do
+      sample :ambi_choir, pitch: pitch_shift, start: rrand(0.3, 0.5), 
+        finish: rrand(0.55, 0.6), pan: rrand(-0.8, 0.8), amp: 0.5, 
+        attack: 0.01, release: 0.04
     end
-    sleep 0.25
   end
 end
 
-# 3. GRANULAR CLOUD (Granular Synthesis)
-define :play_grain do |score|
-  16.times do |i|
-    n = score[i]
-    if n
-      pitch_shift = note(n) - note(:c4)
-      4.times do
-        sample :ambi_choir, pitch: pitch_shift, start: rrand(0.3, 0.5), 
-          finish: rrand(0.55, 0.6), pan: rrand(-0.8, 0.8), amp: 0.5, 
-          attack: 0.01, release: 0.04
-        sleep 0.0625
+define :play_kick do |n|
+  sample :bd_haus, pitch: (note(n) - note(:c4)), amp: 1.5 if n
+end
+
+# ----------------------------------------------------------
+# 2. VALIDATION & ENGINE BOOT
+# ----------------------------------------------------------
+define :start_engine do |playbook|
+  # 1. STRICT VALIDATION: Check every score in the playbook for exactly 16 steps
+  playbook.to_a.flatten(1).each do |task|
+    inst, score, bars = task
+    unless score.length == 16
+      # Fail fast and loud if the composer made a mistake
+      raise ArgumentError, "#{inst} score must have exactly 16 steps, but got #{score.length}."
+    end
+  end
+  
+  # 2. THE CONDUCTOR (Single Master Clock)
+  live_loop :conductor do
+    scene = playbook.tick(:conductor)
+    max_bars = scene.map { |task| task[2] }.max || 1
+    total_steps = max_bars * 16
+    
+    total_steps.times do |step|
+      scene.each do |task|
+        inst, score, bars = task
+        
+        if step < (bars * 16)
+          # No % 16 math needed anymore, because we know the score is exactly 16!
+          send(inst, score[step % 16])
+        end
       end
-    else
       sleep 0.25
     end
-  end
-end
-
-# 4. PITCHED KICK (Sampler)
-define :play_kick do |score|
-  16.times do |i|
-    n = score[i]
-    if n
-      pitch_shift = note(n) - note(:c4)
-      sample :bd_haus, pitch: pitch_shift, amp: 1.5
-    end
-    sleep 0.25
-  end
-end
-
-# 5. PITCHED HATS (Sampler)
-define :play_hats do |score|
-  16.times do |i|
-    n = score[i]
-    if n
-      pitch_shift = note(n) - note(:c4)
-      sample :drum_cymbal_closed, pitch: pitch_shift, amp: 0.6
-    end
-    sleep 0.25
-  end
-end
-
-# 6. PLUCKED PHYSICAL MODEL (Karplus-Strong)
-define :play_pluck do |score|
-  use_synth :pluck
-  16.times do |i|
-    n = score[i]
-    if n
-      play n, release: 0.3, amp: 0.8, coef: rrand(0.3, 0.7)
-    end
-    sleep 0.25
-  end
-end
-
-# 7. FM BELL (FM Synthesis)
-define :play_fm do |score|
-  use_synth :fm
-  16.times do |i|
-    n = score[i]
-    if n
-      play n, release: 0.2, amp: 0.8, divisor: 2.0, depth: 3
-    end
-    sleep 0.25
   end
 end

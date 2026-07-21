@@ -6,54 +6,32 @@ cello_path = sso_path + "Cello/"
 
 # We use a built-in harmonic sample. 
 # Try changing this to :elec_piano or :misc_lori to hear it on different sources.
-source_buffer = "~/develop/sso/Sonatina Symphonic Orchestra/Samples/Grand Piano/FF C4.flac"#:ambi_soft_buzz #:ambi_choir 
+source_buffer = "~/develop/sso/Sonatina Symphonic Orchestra/Samples/Vibraphone/vibraphone-c4.flac"#:ambi_soft_buzz #:ambi_choir 
 
-# ==========================================
-# THE GRANULAR ENGINE
-# ==========================================
-live_loop :granular_vocal do
-  use_synth :basicoplayer # Plays the sample without internal envelopes
-  
-  # 1. THE SCRUB POINT (Where are we in the song?)
-  # We use a slow sine wave to slowly move the playhead through the sample (0.0 to 1.0)
-  # This creates a slow "scrubbing" or "breathing" motion through the audio
-  scrub_point = 0.3 + (0.2 * Math.sin(tick / 8.0)) 
-  
-  # 2. POSITIONAL JITTER (Freezing Time)
-  # We add random noise to the scrub point so the grains hover around the target
-  # rrands in seconds. 0.02 = 20ms, 0.05 = 50ms. This is our Grain Size!
-  grain_start = scrub_point + rrand(-0.01, 0.01)
-  grain_finish = grain_start + rrand(0.02, 0.08) # 20ms to 80ms grain size
-  
-  # 3. PITCH DETACHMENT (Harmonizing the cloud)
-  # We randomly assign each grain a pitch ratio.
-  # 1.0 = original pitch, 1.5 = perfect 5th up, 2.0 = octave up
-  pitch_ratios = (ring 1.0, 1.0, 1.5, 2.0, 1.0)
-  current_rate = pitch_ratios.tick
-  
-  # 4. TRIGGER THE GRAIN
-  sample source_buffer, 
-    start: grain_start, 
-    finish: grain_finish,
-    rate: current_rate,   # Pitch detachment
-    pan: rrand(-0.9, 0.9),# Swarm stereo field
-    amp: rrand(0.3, 0.6), # Amplitude randomization
-    attack: 0.005,        # 5ms attack to avoid clicks
-    release: 0.06         # 60ms release to smooth the grain tail
-  
-  # 5. GRAIN DENSITY
-  # How fast we fire grains. 
-  # sleep 0.02 = 50 grains per second (thick cloud)
-  # sleep 0.1 = 10 grains per second (rhythmic stutter)
-  sleep rrand(0.16, 0.2) # Randomized density for organic feel
-end
+eval_file  "~/develop/chars/voice_engine.sonicpi"
 
-# ==========================================
-# THE MACRO CONTROLLER
-# ==========================================
-# A slow drone underneath to anchor the granular cloud harmonically
-live_loop :drone_anchor do
-  use_synth :dark_ambience
-  play :e3, release: 8, amp: 0.5, attack: 4
-  sleep 8
-end
+use_bpm 120
+
+# ==========================================================
+# 2. THE SCORES (Strictly 16 steps. Intentionally written.)
+# ==========================================================
+# Every array has exactly 16 elements. nil = rest.
+
+score_bass  = (ring :c2, nil, nil, nil, :c2, nil, nil, nil, :eb2, nil, nil, nil, :g2, nil, nil, nil)
+score_lead  = (ring :c4, nil, :eb4, nil, :g4, nil, :c5, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+score_kick  = (ring :c4, nil, :c4, nil, :c4, nil, :eb4, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK (Data Stream)
+# ==========================================================
+playbook = (ring
+  [ [:play_kick, score_kick, 4] ],
+  [ [:play_kick, score_kick, 4], [:play_sub,  score_bass, 4] ],
+  [ [:play_kick,  score_kick, 8], [:play_sub,   score_bass, 4], 
+    [:play_lead,  score_lead, 8], [:play_grain, score_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
