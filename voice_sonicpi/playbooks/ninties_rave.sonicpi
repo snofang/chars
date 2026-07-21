@@ -1,0 +1,38 @@
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (Relentless 16th grids)
+# ==========================================================
+# Classic 4-on-the-floor
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Off-beat driving bass (the "ump-ump-ump" sound)
+s_bass  = (ring nil, nil, :c2, nil, nil, nil, :c2, nil, nil, nil, :c2, nil, nil, nil, :c2, nil)
+# Rave stab (C minor)
+s_fm    = (ring nil, nil, nil, nil, nil, nil, nil, nil, :eb4, nil, :g4, nil, nil, nil, nil, nil)
+# Snare rush to build tension
+s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, :c4, :c4, :c4)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the pounding kick (2 bars)
+  [ [:play_kick, s_kick, 2] ],
+  
+  # Scene 2: Introduce off-beat bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4] ],
+    
+  # Scene 3: The Drop - FM stabs and snare rush (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_fm, s_fm, 8], [:play_snare, s_snare, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

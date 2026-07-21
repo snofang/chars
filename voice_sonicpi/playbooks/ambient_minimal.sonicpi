@@ -1,0 +1,36 @@
+use_bpm 65
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (Evolving Patterns)
+# ==========================================================
+# Fast arpeggio that creates a pulsing drone
+s_pluck = (ring :c4, :e4, :g4, :c5, :c4, :e4, :g4, :c5, :c4, :e4, :g4, :c5, :c4, :e4, :g4, :c5)
+# A secondary, sparser pluck that syncopates against the first
+s_pluck2= (ring nil, nil, nil, nil, :e4, nil, nil, nil, :g4, nil, nil, nil, :e4, nil, nil, nil)
+# A massive underlying drone
+s_pad   = (ring :c3, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the fast pulse (4 bars)
+  [ [:play_pluck, s_pluck, 4] ],
+  
+  # Scene 2: Add the massive drone underneath (8 bars)
+  [ [:play_pluck, s_pluck, 8], [:play_pad, s_pad, 8] ],
+    
+  # Scene 3: Add the syncopated layer (8 bars)
+  [ [:play_pluck, s_pluck, 8], [:play_pad, s_pad, 8], 
+    [:play_pluck, s_pluck2, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

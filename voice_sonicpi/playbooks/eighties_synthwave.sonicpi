@@ -1,0 +1,37 @@
+use_bpm 95
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor Tension)
+# ==========================================================
+# Driving 16th-note bass arpeggio
+s_bass  = (ring :d2, nil, :d2, nil, :f2, nil, :d2, nil, :a2, nil, :d2, nil, :f2, nil, :a2, nil)
+# Simple horror-rock backbeat
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# A slow, creeping synth lead
+s_lead  = (ring :d4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the driving arpeggio (2 bars)
+  [ [:play_sub, s_bass, 2] ],
+  
+  # Scene 2: Add the heavy rock drums (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_kick, s_kick, 4], [:play_snare, s_snare, 4] ],
+    
+  # Scene 3: The stalk - add the creeping lead (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], 
+    [:play_lead, s_lead, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
