@@ -9,7 +9,7 @@ This engine separates musical *data* (the playbooks) from the *synthesis and tim
 1. **Single Master Clock:** The entire engine runs inside a single `live_loop`. There are no `in_thread` calls, no `cue`/`sync` race conditions, and zero timing drift. All instruments are triggered sequentially step-by-step.
 2. **Strict Schema Validation:** Every score must be exactly 16 steps long. If a score has 15 or 17 steps, the engine "fails fast" and throws an error, preventing hidden timing bugs.
 3. **Single-Note Triggers:** Instruments (like `:play_sub`) are completely "dumb." They do not know about sequences or time. They only know how to play one note/chord when handed one. The Engine handles all iteration.
-4. **Parameter Hashing:** A step in a score can be a simple note (`:c4`), a rest (`nil`), or a Hash of parameters (`{note: :c4, amp: 0.5, cutoff: 100}`). The engine parses these transparently.
+4. **Bulletproof Parameter Hashing:** A step in a score can be a simple note (`:c4`), a rest (`nil`), an array of notes (a chord), or a Hash of parameters (`{note: :c4, amp: 0.5}`). The engine's `parse_step` function sanitizes all incoming data—automatically cleaning out `nil` values from arrays to prevent runtime crashes.
 5. **Professional Signal Chain:** FX routing (reverbs, echoes) is encapsulated directly inside the instrument definitions, keeping the musical data clean.
 
 ## The Schema
@@ -55,6 +55,7 @@ The engine comes with built-in instrument functions. You can call them by passin
 
 *   `:play_sub` - Distorted subtractive bass (`:dsaw`).
 *   `:play_lead` - Wavetable lead (`:prophet`) routed through a tape echo.
+*   `:play_chords` - Warm sustained pad (`:blade`) designed to play arrays of notes (chords).
 *   `:play_grain` - **True Granular Synthesizer.** (See Granular Parameters below).
 *   `:play_fm` - FM Bell (`:fm`).
 *   `:play_pluck` - Physical modeling (`:pluck`).
