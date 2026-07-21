@@ -1,0 +1,40 @@
+use_bpm 88
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor Gritty)
+# ==========================================================
+# Heavy, slightly swung drum pattern
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, nil, nil)
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_hats  = (ring :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, {note: :c4, amp: 0.5})
+# Jazzy walking bass
+s_bass  = (ring :d2, nil, nil, :f2, nil, nil, :a2, nil, nil, nil, :g2, nil, nil, nil, :f2, nil)
+# Melancholic plucked melody
+s_pluck = (ring :d4, nil, nil, nil, :f4, nil, nil, nil, :a4, nil, nil, nil, :g4, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Drum loop (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the bassline (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: Add the melody (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_pluck, s_pluck, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

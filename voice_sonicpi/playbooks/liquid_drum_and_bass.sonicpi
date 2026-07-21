@@ -1,0 +1,42 @@
+use_bpm 170
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor Atmospheric)
+# ==========================================================
+# DnB Breakbeat pattern
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, nil, nil)
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Fast, rolling 16th hats with dynamic velocity via Hashes
+s_hats  = (ring {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+           {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+           {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+           {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15})
+# Deep Reese bass
+s_bass  = (ring :fs1, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Lush granular vocal pad
+s_pad   = (ring :fs3, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Atmospheric intro (4 bars)
+  [ [:play_grain, s_pad, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: Drums drop (8 bars)
+  [ [:play_grain, s_pad, 8], [:play_sub, s_bass, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: Breakdown - drums leave, atmosphere remains (4 bars)
+  [ [:play_grain, s_pad, 4], [:play_sub, s_bass, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

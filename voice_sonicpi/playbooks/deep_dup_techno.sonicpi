@@ -1,0 +1,40 @@
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor Dub)
+# ==========================================================
+# Classic 4-on-the-floor
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Off-beat hi-hats
+s_hats  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Sub-bass heartbeat
+s_bass  = (ring :g1, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Chord stabs (Gm7) routed through the Lead's Tape Echo FX
+# Using Hashes to add slight volume variations to the stabs
+s_stab  = (ring nil, nil, nil, nil, {note: [:g3, :bb3, :d4, :f4], amp: 0.6}, nil, nil, nil, 
+           nil, nil, nil, nil, {note: [:g3, :bb3, :d4, :f4], amp: 0.4}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the rhythm (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add sub-bass (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: Echoed chord stabs enter (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], 
+    [:play_sub,  s_bass, 8], [:play_lead, s_stab, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
