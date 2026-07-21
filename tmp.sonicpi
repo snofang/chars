@@ -10,25 +10,33 @@ source_buffer = "~/develop/sso/Sonatina Symphonic Orchestra/Samples/Vibraphone/v
 
 eval_file  "~/develop/chars/voice_engine.sonicpi"
 
-use_bpm 120
+use_bpm 95
+
 
 # ==========================================================
-# 2. THE SCORES (Strictly 16 steps. Intentionally written.)
+# 2. THE SCORES (D Minor Tension)
 # ==========================================================
-# Every array has exactly 16 elements. nil = rest.
-
-score_bass  = (ring :c2, nil, nil, nil, :c2, nil, nil, nil, :eb2, nil, nil, nil, :g2, nil, nil, nil)
-score_lead  = (ring :c4, nil, :eb4, nil, :g4, nil, :c5, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-score_kick  = (ring :c4, nil, :c4, nil, :c4, nil, :eb4, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Driving 16th-note bass arpeggio
+s_bass  = (ring :d2, nil, :d2, nil, :f2, nil, :d2, nil, :a2, nil, :d2, nil, :f2, nil, :a2, nil)
+# Simple horror-rock backbeat
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# A slow, creeping synth lead
+s_lead  = (ring :d4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
-# 3. THE PLAYBOOK (Data Stream)
+# 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  [ [:play_kick, score_kick, 4] ],
-  [ [:play_kick, score_kick, 4], [:play_sub,  score_bass, 4] ],
-  [ [:play_kick,  score_kick, 8], [:play_sub,   score_bass, 4], 
-    [:play_lead,  score_lead, 8], [:play_grain, score_lead, 8] ]
+  # Scene 1: Just the driving arpeggio (2 bars)
+  [ [:play_sub, s_bass, 2] ],
+  
+  # Scene 2: Add the heavy rock drums (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_kick, s_kick, 4], [:play_snare, s_snare, 4] ],
+    
+  # Scene 3: The stalk - add the creeping lead (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], 
+    [:play_lead, s_lead, 4] ]
 )
 
 # ==========================================================

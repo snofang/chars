@@ -1,21 +1,24 @@
 # ==========================================================
-# STRICT SCHEMA SINGLE-LOOP ENGINE
+# EXPANDED STRICT-SCHEMA SINGLE-LOOP ENGINE
 # ==========================================================
-# Enforces exactly 16 steps per score. No padding. Fail-fast validation.
 
 # ----------------------------------------------------------
-# 1. THE SYNTHESIZERS (Single-Note Triggers)
+# 1. THE SYNTHESIZERS (8 Pillars of Synthesis)
 # ----------------------------------------------------------
+
+# 1. SUBTRACTIVE BASS
 define :play_sub do |n|
   use_synth :dsaw
   play n, release: 0.25, amp: 1.5, cutoff: 80 if n
 end
 
+# 2. SUBTRACTIVE LEAD
 define :play_lead do |n|
   use_synth :prophet
   play n, release: 0.2, amp: 1.0, cutoff: rrand(80, 110) if n
 end
 
+# 3. GRANULAR CLOUD (Pitched Sample)
 define :play_grain do |n|
   if n
     pitch_shift = note(n) - note(:c4)
@@ -27,24 +30,45 @@ define :play_grain do |n|
   end
 end
 
+# 4. FM BELL (Digital '80s)
+define :play_fm do |n|
+  use_synth :fm
+  play n, release: 0.3, amp: 0.8, divisor: 2.0, depth: 3 if n
+end
+
+# 5. PHYSICAL MODELING (Karplus-Strong Pluck)
+define :play_pluck do |n|
+  use_synth :pluck
+  play n, release: 0.3, amp: 0.8, coef: rrand(0.3, 0.7) if n
+end
+
+# 6. WAVETABLE PAD (Dark Ambience)
+define :play_pad do |n|
+  use_synth :dark_ambience
+  play n, release: 1.5, amp: 0.6, attack: 0.5 if n
+end
+
+# 7. PITCHED KICK (Sampler)
 define :play_kick do |n|
   sample :bd_haus, pitch: (note(n) - note(:c4)), amp: 1.5 if n
+end
+
+# 8. PITCHED SNARE (Sampler)
+define :play_snare do |n|
+  sample :sn_dolf, pitch: (note(n) - note(:c4)), amp: 0.8 if n
 end
 
 # ----------------------------------------------------------
 # 2. VALIDATION & ENGINE BOOT
 # ----------------------------------------------------------
 define :start_engine do |playbook|
-  # 1. STRICT VALIDATION: Check every score in the playbook for exactly 16 steps
   playbook.to_a.flatten(1).each do |task|
     inst, score, bars = task
     unless score.length == 16
-      # Fail fast and loud if the composer made a mistake
       raise ArgumentError, "#{inst} score must have exactly 16 steps, but got #{score.length}."
     end
   end
   
-  # 2. THE CONDUCTOR (Single Master Clock)
   live_loop :conductor do
     scene = playbook.tick(:conductor)
     max_bars = scene.map { |task| task[2] }.max || 1
@@ -53,9 +77,7 @@ define :start_engine do |playbook|
     total_steps.times do |step|
       scene.each do |task|
         inst, score, bars = task
-        
         if step < (bars * 16)
-          # No % 16 math needed anymore, because we know the score is exactly 16!
           send(inst, score[step % 16])
         end
       end
