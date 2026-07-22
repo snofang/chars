@@ -1,0 +1,61 @@
+use_bpm 150
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (Eb Major - Lush & Euphoric)
+# ==========================================================
+
+# Half-time Trap kick. Hits on step 0, and a syncopated hit on step 12.
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+
+# Heavy snare strictly on beat 3 (step 8).
+s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
+
+# Rolling Trap hi-hats with rising amplitudes to simulate the "roll"
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6})
+
+# Deep, round sub-bass. Short release to make it punchy.
+s_bass  = (ring {:note => :eb2, :release => 0.3}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :bb2, :release => 0.3}, nil, nil, nil, nil, nil, nil, nil)
+
+# Massive, lush Major 9th chords (Eb Maj 9 to Bb Maj 9).
+# Long release creates that euphoric, swelling Future Bass wash.
+s_chords= (ring [:eb3, :g3, :bb3, :d4], nil, nil, nil, nil, nil, nil, nil, 
+           [:bb3, :d4, :f4, :a4], nil, nil, nil, nil, nil, nil, nil)
+
+# High-pitched, chopped angelic vocal (Granular Synth)
+# High density, small size = euphoric stutter
+s_vocal = (ring nil, nil, nil, nil, {:note => :eb4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04}, nil, nil, nil, 
+           nil, nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.04}, nil, nil, nil)
+
+# Bright, echoing arpeggio (Eb Major Pentatonic)
+s_lead  = (ring nil, nil, {:note => :eb5, :amp => 0.6}, nil, nil, {:note => :g5, :amp => 0.5}, nil, {:note => :bb5, :amp => 0.7}, 
+           nil, nil, {:note => :ab5, :amp => 0.5}, nil, nil, {:note => :f5, :amp => 0.6}, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the lush chords and half-time drums (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the deep sub-bass (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: The vocal chops and bright lead drop (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

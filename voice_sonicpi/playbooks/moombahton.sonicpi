@@ -1,0 +1,62 @@
+use_bpm 110
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Chunky & Aggressive)
+# ==========================================================
+
+# The Dembow Kick. 3-3-2 pulse (steps 0, 3, 6, 8, 11).
+s_kick  = (ring :c4, nil, nil, :c4, nil, nil, :c4, nil, :c4, nil, nil, :c4, nil, nil, nil, nil)
+
+# The Dembow Snare. Fills the off-beats (steps 2, 5, 7, 10, 13, 15).
+s_snare = (ring nil, nil, :c4, nil, nil, :c4, nil, {:note => :c4, :amp => 0.6}, nil, nil, :c4, nil, nil, :c4, nil, {:note => :c4, :amp => 0.5})
+
+# Steady 8th-note hats with a roll at the end of the bar
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil)
+
+# Deep, round 808 bass. 
+# Short release to make it punchy and bouncy.
+s_bass  = (ring {:note => :a1, :release => 0.3}, nil, nil, nil, nil, nil, {:note => :a1, :release => 0.3}, nil, 
+           {:note => :c2, :release => 0.3}, nil, nil, nil, nil, nil, {:note => :g1, :release => 0.3}, nil)
+
+# Aggressive, wide Dutch House chord stabs (Am and Cmaj).
+# Hits on the off-beats to leave room for the Dembow kick.
+s_chords= (ring nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, 
+           nil, [:c3, :e3, :g3], nil, nil, nil, [:c3, :e3, :g3], nil, nil)
+
+# Chopped, rhythmic vocal stutter (Granular Synth)
+s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04}, nil, nil, nil, 
+           nil, nil, nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.04}, nil, nil, nil)
+
+# High-pitched, echoing "Moombah" lead (A Minor Pentatonic)
+s_lead  = (ring nil, nil, nil, {:note => :a5, :amp => 0.6}, nil, nil, {:note => :c6, :amp => 0.5}, nil, 
+           nil, nil, {:note => :e6, :amp => 0.7}, nil, nil, nil, {:note => :c6, :amp => 0.5}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the chunky Dembow rhythm (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the bouncing 808 bass (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: The Dutch House chords and vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_grain, s_vocal, 4], [:play_lead, s_lead, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

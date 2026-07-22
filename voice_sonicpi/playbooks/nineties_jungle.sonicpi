@@ -1,0 +1,51 @@
+use_bpm 165
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Deep Reggae / Frantic Breaks)
+# ==========================================================
+
+# The "Amen" Kick. Highly syncopated, hits on the 'e' and 'a' of beats.
+s_kick  = (ring :c4, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil)
+
+# The "Amen" Snare. Heavy hits on 2 and 4, with frantic ghost rolls in between.
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.3})
+
+# Rolling, fast 16th hats
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2})
+
+# Massive, round Reggae Sub-Bass. 
+# Long release to anchor the frantic drums.
+s_bass  = (ring {:note => :a1, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e1, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# Deep, echoing minor chord stabs (A Minor)
+s_chords= (ring nil, [:a3, :c4, :e4], nil, nil, nil, nil, nil, nil, nil, [:e3, :g3, :b3], nil, nil, nil, nil, nil, nil)
+
+# Chopped Ragga Vocal (Granular Synth)
+# High density, small size = rhythmic stutter
+s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04}, nil, nil, nil, nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04}, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the frantic Amen drums (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the massive reggae sub-bass and chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The chopped ragga vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

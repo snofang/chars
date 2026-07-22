@@ -1,0 +1,56 @@
+use_bpm 135
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Relentless & Dark)
+# ==========================================================
+
+# Massive, driving 4-on-the-floor kick.
+s_kick  = (ring {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil)
+
+# Sharp, metallic clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+
+# Rides on the off-beats, with an open hat on the 'and' of 4.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2})
+
+# The "Rolling" Modular Bass.
+# Plays on every 16th step, but the alternating amplitudes create a hypnotic "pump".
+s_bass  = (ring {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, 
+           {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, 
+           {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, 
+           {:note => :g1, :amp => 0.8}, {:note => :g1, :amp => 0.4}, {:note => :g1, :amp => 0.8}, {:note => :g1, :amp => 0.4})
+
+# Dark, echoing synth stabs (A Minor).
+# Hits on the 'and' of 2 (step 5) and the 'and' of 4 (step 13) to create tension.
+s_lead  = (ring nil, nil, nil, nil, nil, {:note => :a3, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :g3, :amp => 0.6}, nil, nil)
+
+# Sinister, metallic granular texture (using :elec_piano buffer).
+# High density, tiny size = industrial machine static.
+s_grain = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the relentless kick and rolling bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: Add the metallic claps and rides (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: Add the dark echoing stabs and granular static (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8], [:play_grain, s_grain, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

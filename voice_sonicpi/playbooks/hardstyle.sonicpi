@@ -1,0 +1,52 @@
+use_bpm 150
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Phrygian - Aggressive & Epic)
+# ==========================================================
+
+# Relentless, distorted 4-on-the-floor Hardstyle kick.
+s_kick  = (ring {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil)
+
+# The "Reverse Bass". 
+# Hits strictly on the off-beats (steps 2, 6, 10, 14) to create the "boom-cha" bounce.
+s_bass  = (ring nil, nil, {:note => :e2, :amp => 1.2, :release => 0.25}, nil, nil, nil, {:note => :e2, :amp => 1.2, :release => 0.25}, nil, nil, nil, {:note => :f2, :amp => 1.2, :release => 0.25}, nil, nil, nil, {:note => :f2, :amp => 1.2, :release => 0.25}, nil)
+
+# Aggressive, distorted off-beat synth stabs (E Minor).
+# Hits exactly in sync with the reverse bass.
+s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:f3, :a3, :c4], nil, nil, nil, [:f3, :a3, :c4], nil)
+
+# Fast, driving 16th hats
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2})
+
+# The Hardstyle "Screech" Lead (E Phrygian).
+# Uses extreme FM depth (8) and high divisor to create a metallic, screaming robot sound.
+s_fm    = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.8, :depth => 8, :divisor => 3}, nil, {:note => :e5, :amp => 0.6, :depth => 8, :divisor => 3}, nil, {:note => :f5, :amp => 0.8, :depth => 8, :divisor => 3}, nil, {:note => :g5, :amp => 0.7, :depth => 8, :divisor => 3}, nil, {:note => :f5, :amp => 0.6, :depth => 8, :divisor => 3}, nil, nil, nil)
+
+# Massive, dark granular drone to fill the epic space (using :ambi_choir)
+s_grain = (ring {:note => :e3, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the relentless kick and dark drone (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: Add the "Reverse Bass" and off-beat stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_grain, s_grain, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The FM Screech lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_grain, s_grain, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
