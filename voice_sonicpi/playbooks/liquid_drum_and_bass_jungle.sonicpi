@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: LIQUID DRUM & BASS / ATMOSPHERIC JUNGLE
+# (Pioneered by LTJ Bukem, Makoto, and High Contrast)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Liquid Drum & 
+# Bass. We have explored dark, frantic DnB (Neurofunk, Jungle) and 
+# heavy half-time genres (Dubstep, Trap). Liquid DnB is the exact 
+# opposite. It takes the high-BPM 16-step grid and softens it, focusing 
+# on lush, atmospheric chords, rolling sub-bass, and crisp, syncopated 
+# breakbeats that feel like floating.
+#
+# This playbook perfectly demonstrates how to create a fast, rolling 
+# groove without aggression. By using the `:play_pad` for massive, 
+# slow-attacking chords and the `:play_grain` engine for an ethereal 
+# vocal texture, the engine creates a soundscape that feels both 
+# incredibly fast and deeply relaxing.
+# ==========================================================
+
+use_bpm 170
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Lush, Uplifting, & Floating)
+# ==========================================================
+
+# Crisp, syncopated Liquid DnB Kick.
+# Hits on step 0, the 'a' of 1 (step 3), and beat 3 (step 8).
+s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Tight, metallic snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'a' of 2 (step 7) to keep the groove rolling.
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# Fast, bouncy 16th hats. Notice the alternating amplitudes for a triplet feel.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# Deep, rolling Reese bass (F# Minor).
+# Long release (1.5) to anchor the fast drums and create a warm undercurrent.
+s_bass  = (ring {:note => :fs1, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a1, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# Massive, lush minor 9th chords (F#m9 to Am9).
+# Hit on the downbeats. The massive 2-beat attack makes them slowly swell 
+# into the mix like a wave.
+s_chords= (ring {:note => [:fs3, :a3, :cs4, :e4], :attack => 1.0, :release => 2.0, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a3, :c4, :e4, :g4], :attack => 1.0, :release => 2.0, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+
+# Bright, echoing Rhodes/marimba melody (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor to create a soft, organic bell tone.
+# Routed through the engine's tape echo for a cascading, atmospheric smear.
+s_fm    = (ring nil, {:note => :fs5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil, {:note => :a5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil, {:note => :cs5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil)
+
+# Ethereal, granular vocal pad (using :ambi_choir).
+# Long size (0.2) and low density (2) creates a slow, evolving celestial texture.
+s_grain = (ring {:note => :fs4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.6, :density => 2, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Atmosphere - Just the lush pad, vocal grain, and bass (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_grain, s_grain, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Groove - Add the fast, syncopated drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Journey - The echoing Rhodes melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ATMOSPHERIC SPEED]
+# 
+# 1. The Swelling Chords: Look at `s_chords`. The Hashes specify an 
+#    `attack` of `1.0` and a `release` of `2.0`. Because the BPM is 170, 
+#    it takes a whole bar for the chord to fade in, and two bars to fade 
+#    out. The engine reads these Hashes and turns the normally sharp 
+#    `:blade` synth into a slow, massive wave that washes over the fast 
+#    drums.
+#
+# 2. Rolling Sub-Bass: Look at `s_bass`. The `:play_sub` synth is given 
+#    a `release` of `1.5`. Because the drums are playing a frantic 170 
+#    BPM breakbeat, holding the bass note out for a bar and a half 
+#    creates a beautiful contrast. The engine's strict master clock 
+#    ensures the deep sub-bass anchors the fast rhythm perfectly.
+#
+# 3. Echoing Bells: The `s_fm` sequence uses `divisor: 3` and `depth: 2` 
+#    to turn the FM synth into a soft, organic bell. Because it's routed 
+#    through the engine's tape echo, the sparse notes smear across the 
+#    16-step grid, creating a cascading, melancholic melody that feels 
+#    like flying over a city at night.
+# ==========================================================

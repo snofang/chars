@@ -1,0 +1,99 @@
+# ==========================================================
+# PLAYBOOK: MID-2000s FIDGET / ELECTRO HOUSE
+# (Pioneered by Crookers, Bloody Beetroots, and early Deadmau5)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Fidget / Electro House.
+# We have explored rigid techno and massive EDM, but Fidget House is the
+# sound of the mid-2000s bloghouse era. It takes the rigid 4/4 grid and
+# injects it with a chaotic, "farting" mid-range FM bassline, heavily
+# sidechained off-beat stabs, and chopped, repetitive vocal stutters.
+#
+# This playbook perfectly demonstrates how to push the `:play_fm` synth
+# to its absolute limit. By rapidly changing the `divisor` and `depth`
+# Hashes on every 16th step, the engine creates a squelching, talking
+# bassline that bounces around the rigid kick drum.
+# ==========================================================
+
+use_bpm 128
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Chaotic & Bouncy)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, dry electro clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Off-beat open hats with a bouncy, alternating amplitude.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# The "Fidget" Bass (E Minor).
+# Hits strictly on the off-beats. By rapidly changing the FM `divisor` and
+# `depth` Hashes on every hit, the engine creates a squelching, "talking"
+# bassline that sounds like a digital duck.
+s_bass  = (ring nil, nil, {:note => :e2, :amp => 1.0, :release => 0.15, :depth => 6, :divisor => 2}, nil, nil, nil, {:note => :e2, :amp => 1.0, :release => 0.15, :depth => 4, :divisor => 3}, nil, nil, nil, {:note => :g2, :amp => 1.0, :release => 0.15, :depth => 8, :divisor => 2}, nil, nil, nil, {:note => :g2, :amp => 1.0, :release => 0.15, :depth => 5, :divisor => 4}, nil)
+
+# Sidechained, off-beat synth stabs (E Minor).
+# Hit strictly on the off-beats in sync with the fidget bass.
+s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:g3, :b3, :d4], nil, nil, nil, [:g3, :b3, :d4], nil)
+
+# Piercing, high-pitched FM blips (E Minor Pentatonic).
+# Uses a high divisor (4) to create a sharp, 8-bit video game sound.
+s_fm    = (ring {:note => :e5, :amp => 0.6, :divisor => 4, :depth => 2, :release => 0.1}, nil, nil, nil, nil, nil, nil, nil, {:note => :d5, :amp => 0.5, :divisor => 4, :depth => 2, :release => 0.1}, nil, nil, nil, nil, nil, nil, nil)
+
+# Repetitive, chopped "bloghouse" vocal stutter (Granular Synth).
+# High density, tiny size = a sharp, percussive vocal skip.
+s_vocal = (ring nil, nil, nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Bounce - Just the kick, off-beat bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_fm, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Groove - Add the heavy claps and off-beat stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_fm, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The piercing blips and vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_fm, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MID-RANGE FM]
+# 
+# 1. The "Talking" Bass: Look at `s_bass`. The `:play_fm` synth is given 
+#    a different `depth` and `divisor` on every single off-beat hit. 
+#    Because the engine reads these Hashes independently for every step, 
+#    the FM modulator radically changes its harmonic ratio. This forces 
+#    the synth to squelch and "talk" in a chaotic, bouncy rhythm that 
+#    defined the Fidget House genre.
+#
+# 2. The Off-Beat Wall: Look at `s_bass`, `s_hats`, and `s_chords`. They 
+#    ALL hit strictly on steps 2, 6, 10, and 14. Because the engine's 
+#    master clock locks these together perfectly at 128 BPM, the track 
+#    physically "bounces" up and down on the off-beats, creating an 
+#    unstoppable, skipping momentum.
+#
+# 3. Percussive Vocals: The `s_vocal` sequence uses the granular engine 
+#    to chop a vocal into microscopic shards (`size: 0.03`). In Fidget 
+#    House, vocals are rarely sung; they are sliced and used as raw 
+#    percussion that hits in sync with the bassline.
+# ==========================================================

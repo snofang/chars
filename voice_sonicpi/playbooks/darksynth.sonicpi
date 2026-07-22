@@ -1,0 +1,106 @@
+# ==========================================================
+# PLAYBOOK: DARKSYNTH / CYBERPUNK
+# (Pioneered by Perturbator, Carpenter Brut, and Mega Drive)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Darksynth. 
+# We have explored 80s Synthwave and Industrial, but Darksynth is the 
+# modern, aggressive evolution of those genres. It is the sound of 
+# neon-lit, dystopian cyberpunk futures. It relies on massive, 
+# distorted basslines, driving 16th-note arpeggios, and a complete 
+# disregard for subtlety.
+#
+# This playbook perfectly demonstrates how to push the `:play_sub` 
+# synth to its absolute limit. By using extreme `cutoff` values (130) 
+# in the Parameter Hashes, we force the detuned sawtooth into a 
+# roaring, distorted wall of sound that drives the track forward 
+# relentlessly.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Phrygian - Dystopian & Aggressive)
+# ==========================================================
+
+# Relentless, heavy 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Massive, dry snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Driving, off-beat open hats.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil)
+
+# The "Distorted" Driving Bass (E Phrygian).
+# Plays continuous 16th notes. The extreme cutoff (130) forces the 
+# :dsaw synth into overdrive, creating a massive, grinding wall of sound.
+s_bass  = (ring {:note => :e2, :cutoff => 130}, {:note => :e2, :cutoff => 130}, {:note => :e3, :cutoff => 130}, {:note => :e2, :cutoff => 130}, 
+           {:note => :e2, :cutoff => 130}, {:note => :e2, :cutoff => 130}, {:note => :f2, :cutoff => 130}, {:note => :f2, :cutoff => 130}, 
+           {:note => :f3, :cutoff => 130}, {:note => :f2, :cutoff => 130}, {:note => :f2, :cutoff => 130}, {:note => :f2, :cutoff => 130}, 
+           {:note => :g2, :cutoff => 130}, {:note => :g2, :cutoff => 130}, {:note => :g3, :cutoff => 130}, {:note => :e2, :cutoff => 130})
+
+# Dark, heavy minor chord stabs (Em to F to G).
+# Hit on the off-beats to leave room for the driving bass.
+s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, 
+           nil, nil, [:f3, :a3, :c4], nil, nil, nil, [:g3, :bb3, :d4], nil)
+
+# Aggressive, metallic FM lead (E Phrygian).
+# Uses :play_fm with a high depth (6) to create a sharp, robotic synth riff.
+s_fm    = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.7, :depth => 6, :divisor => 2}, nil, {:note => :g5, :amp => 0.6, :depth => 6, :divisor => 2}, nil, 
+           nil, nil, {:note => :f5, :amp => 0.7, :depth => 6, :divisor => 2}, nil, nil, nil, {:note => :e5, :amp => 0.5, :depth => 6, :divisor => 2}, nil)
+
+# Industrial, dark granular drone (using :elec_piano).
+# Long size (0.3) and low density (2) creates a slow, evolving mechanical texture.
+s_grain = (ring {:note => :e3, :buffer => :elec_piano, :pos => 0.1, :density => 2, :size => 0.3, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, 
+           nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Drive - Just the distorted bass and relentless kick (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_kick, s_kick, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy snares and dark chord stabs (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_kick, s_kick, 8], [:play_grain, s_grain, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Chase - The aggressive FM lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_kick, s_kick, 8], [:play_grain, s_grain, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DIGITAL DISTORTION]
+# 
+# 1. Data-Driven Overdrive: Look at `s_bass`. The `:play_sub` synth is 
+#    given a `cutoff` of `130` on every single 16th step. In Sonic Pi, 
+#    130 is near the top of the audible filter range. By forcing the 
+#    filter wide open on a detuned sawtooth, the engine lets all the 
+#    harsh, high-frequency harmonics through, creating a roaring, 
+#    distorted bassline without needing a separate distortion effect.
+#
+# 2. The 16-Note Roll: Just like in Italo Disco and Techno, the bass 
+#    plays on EVERY single 16th step. By alternating between the low 
+#    octave (:e2) and the high octave (:e3), the engine creates a 
+#    relentless, rolling pulse that feels like a high-speed car chase 
+#    through a neon city.
+#
+# 3. Metallic FM: The `s_fm` sequence uses `depth: 6` and `divisor: 2`. 
+#    This extreme FM ratio produces a sharp, metallic square wave that 
+#    cuts through the massive distorted bass, perfectly mimicking the 
+#    aggressive, cyberpunk synth leads of artists like Perturbator.
+# ==========================================================
