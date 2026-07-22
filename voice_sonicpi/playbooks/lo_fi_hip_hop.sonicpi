@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: LO-FI HIP-HOP / CHILLHOP
+# (Pioneered by Nujabes, J Dilla, and ChilledCow/Lofi Girl)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Lo-Fi Hip-Hop.
+# We have explored heavy, aggressive bass music (Midtempo, Phonk) and 
+# rigid minimalism (Minimal Techno). Lo-Fi Hip-Hop is the sound of 
+# pure relaxation. It takes the boom-bap drum pattern of 90s hip-hop, 
+# slows it down to a lazy 80 BPM, and pairs it with warm, jazzy 9th 
+# chords, dusty tape saturation, and mellow, echoing melodies.
+#
+# This playbook perfectly demonstrates how to simulate the legendary 
+# "Dilla Swing" on a rigid 16-step grid. By leaving specific gaps and 
+# manipulating the amplitude Hashes, the engine creates a head-nodding, 
+# off-kilter groove that feels like a worn-out cassette tape.
+# ==========================================================
+
+use_bpm 82
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Major - Jazzy, Warm, & Dusty)
+# ==========================================================
+
+# The "Dilla Swing" Kick. 
+# Hits on step 0, the 'a' of 2 (step 7), and the 'e' of 3 (step 10).
+# This lopsided placement creates that signature lazy, head-nodding bounce.
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil)
+
+# Crisp, vinyl-crackle snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# Swung, lazy hi-hats.
+# Notice the gaps (nil) on the 'and' of the beats, which creates the 
+# illusion of a 54% swing quantize without breaking the master clock.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.15}, nil)
+
+# Deep, round, melodic bass (F Major).
+# Long release (0.6) and low cutoff (75) to create a warm, muffled undercurrent.
+s_bass  = (ring {:note => :f2, :release => 0.6, :cutoff => 75}, nil, nil, nil, nil, nil, nil, nil, {:note => :d2, :release => 0.6, :cutoff => 75}, nil, nil, nil, nil, nil, nil, nil)
+
+# Lush, jazzy minor 9th chords (Fmaj9 to Dm9).
+# Hit on the downbeats. The 0.2-beat attack makes them slowly fade in 
+# like a warm Rhodes piano.
+s_chords= (ring {:note => [:f3, :a3, :c4, :e4], :attack => 0.2, :release => 1.5, :cutoff => 90, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:d3, :f3, :a3, :c4], :attack => 0.2, :release => 1.5, :cutoff => 90, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Mellow, echoing Rhodes melody (F Major Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (1) to create a soft, 
+# organic bell tone. Routed through the engine's tape echo for a nostalgic smear.
+s_fm    = (ring nil, nil, nil, nil, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 1, :release => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :amp => 0.4, :divisor => 2, :depth => 1, :release => 0.5})
+
+# Dusty, ambient "rain/vinyl" texture (Granular Synth).
+# Long size (0.3) and low density (1) creates a slow, evolving, warm 
+# background hiss that anchors the lo-fi aesthetic.
+s_grain = (ring {:note => :f4, :buffer => :elec_piano, :pos => 0.3, :density => 1, :size => 0.3, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the dusty chords, bass, and texture (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the swung boom-bap drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Late Night - The mellow Rhodes melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN LAZY GROOVE]
+# 
+# 1. The Dilla Swing: Look at `s_kick`. Instead of hitting on straight 
+#    8th notes, it hits on steps 0, 7, and 10. By pushing the kick late 
+#    on beat 2 (step 7) and early on beat 3 (step 10), the engine creates 
+#    a lopsided, "drunken" groove that feels like a human drummer playing 
+#    slightly off the grid, all while maintaining a rigid `sleep 0.25` 
+#    master clock.
+#
+# 2. Jazzy Warmth: Look at `s_chords`. The arrays form lush Fmaj9 and 
+#    Dm9 chords. By using a low `cutoff` (90) and a slow `attack` (0.2), 
+#    the engine turns the normally sharp `:blade` synth into a soft, 
+#    muffled Rhodes piano that sounds like it's playing from the next room.
+#
+# 3. Granular Hiss: The `s_grain` sequence uses a `density` of `1` and a 
+#    `size` of `0.3`. By time-stretching the electric piano sample into a 
+#    slow, evolving drone, the engine simulates the ambient warmth of a 
+#    vinyl record or a rainy window, perfectly anchoring the lo-fi aesthetic.
+# ==========================================================

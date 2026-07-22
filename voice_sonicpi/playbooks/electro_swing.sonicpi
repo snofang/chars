@@ -1,0 +1,101 @@
+# ==========================================================
+# PLAYBOOK: ELECTRO SWING
+# (Pioneered by Parov Stelar, Caravan Palace, and Tape Five)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Electro Swing.
+# We have explored dark, minimalistic genres (Minimal Techno) and heavy 
+# bass music (Brostep). Electro Swing is the exact opposite. It is pure, 
+# high-energy fun. It fuses 1920s/30s jazz samples (brass, clarinets) 
+# with a modern, bouncy 4/4 house beat and a massive, walking upright 
+# bassline.
+#
+# This playbook perfectly demonstrates how to simulate a "walking" jazz 
+# bassline on the 16-step grid. By using the `:play_sub` synth with a 
+# high `cutoff` and short `release`, the engine creates a punchy, acoustic-
+# sounding bass that drives the swing rhythm perfectly.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Jazzy, Bouncy, & Vintage)
+# ==========================================================
+
+# Driving 4/4 kick with a syncopated 16th hit on the 'a' of 4 (step 15).
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, {:note => :c4, :amp => 0.6})
+
+# Crisp, vintage snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'a' of 2 (step 7) and 'a' of 4 (step 15).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3})
+
+# Swung, bouncy 16th hats. Alternating amplitudes simulate a jazz ride cymbal.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15})
+
+# The "Walking" Upright Bass (D Minor).
+# Plays a continuous, melodic 16th-note line. The high cutoff (90) and 
+# short release (0.2) mimic a plucked upright bass.
+s_bass  = (ring {:note => :d2, :cutoff => 90, :release => 0.2}, nil, {:note => :d2, :cutoff => 90, :release => 0.2}, {:note => :e2, :cutoff => 90, :release => 0.2}, {:note => :f2, :cutoff => 90, :release => 0.2}, nil, {:note => :f2, :cutoff => 90, :release => 0.2}, {:note => :e2, :cutoff => 90, :release => 0.2}, {:note => :g2, :cutoff => 90, :release => 0.2}, nil, {:note => :g2, :cutoff => 90, :release => 0.2}, {:note => :a2, :cutoff => 90, :release => 0.2}, {:note => :bb2, :cutoff => 90, :release => 0.2}, nil, {:note => :a2, :cutoff => 90, :release => 0.2}, {:note => :f2, :cutoff => 90, :release => 0.2})
+
+# Vintage, staccato jazz chord stabs (Dm7 to G7).
+# Hit on the off-beats to leave room for the walking bass.
+s_chords= (ring nil, [:d3, :f3, :a3, :c4], nil, nil, nil, [:g3, :b3, :d4, :f4], nil, nil, nil, [:d3, :f3, :a3, :c4], nil, nil, nil, [:g3, :b3, :d4, :f4], nil, nil)
+
+# Bright, "Clarinet/Brass" Melody (D Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (2) to create a warm, 
+# brassy staccato riff that cuts through the mix.
+s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.3}, nil, {:note => :f5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.3}, nil, nil, nil, {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.3}, nil, nil, nil, {:note => :g5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.3}, nil)
+
+# Chopped, vintage "vocal" brass hit (Granular Synth).
+# High density, small size = a sharp, percussive vintage skip.
+s_vocal = (ring {:note => :f4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil, nil, nil, {:note => :d4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.5}, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.7, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the 4/4 beat and walking upright bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the vintage jazz chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The brassy melody and vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_fm, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN VINTAGE BOUNCE]
+# 
+# 1. The Walking Bass: Look at `s_bass`. Instead of just playing the root 
+#    note, the bassline walks up and down the D minor scale (D, F, G, A, Bb). 
+#    By using a high `cutoff` (90) and a short `release` (0.2), the engine 
+#    turns the `:dsaw` synth into a punchy, acoustic-sounding upright bass 
+#    that drives the harmonic progression forward.
+#
+# 2. The Off-Beat Pocket: Look at `s_chords`. The jazz chords (Dm7 and G7) 
+#    hit strictly on steps 1, 5, 9, and 13. In a 16-step grid, these are 
+#    the classic "off-beats". The engine's strict master clock locks these 
+#    stabs perfectly between the walking bass notes, creating that signature 
+#    bouncy, "chuka-chuka" swing feel.
+#
+# 3. FM as Brass: The `s_fm` sequence uses `divisor: 2` and `depth: 2`. This 
+#    narrows the harmonic ratio to produce a warm, brassy staccato riff that 
+#    perfectly mimics a 1920s clarinet or trumpet cutting through a big band 
+#    mix.
+# ==========================================================

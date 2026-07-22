@@ -1,0 +1,101 @@
+# ==========================================================
+# PLAYBOOK: MINIMAL TECHNO
+# (Pioneered by Plastikman, Robert Hood, and Richie Hawtin)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Minimal Techno.
+# We have explored massive, dense genres (Complextro, Hardcore) and 
+# organic genres (Afro House, Dub). Minimal Techno is the absolute 
+# masterclass in subtraction. It strips the 16-step grid down to its 
+# bare essentials: a single kick, a sparse, clicking percussion loop, 
+# and a hypnotic, micro-evolving bassline.
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# (`cutoff`) to create a slow, hypnotic filter sweep on a highly sparse 
+# 16-step grid. By leaving massive amounts of negative space (`nil`), 
+# the engine creates a stark, clinical groove that feels like a machine 
+# breathing in an empty room.
+# ==========================================================
+
+use_bpm 127
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Stark, Clinical, & Hypnotic)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Extremely sparse, dry clap. Only hits once per bar on beat 3 (step 8).
+s_clap  = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# "Micro" Hi-Hats. Very quiet, hitting only on the off-beats.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.15}, nil, nil, nil, {:note => :c4, :amp => 0.15}, nil, nil, nil, {:note => :c4, :amp => 0.15}, nil, nil, nil, {:note => :c4, :amp => 0.15}, nil)
+
+# The Hypnotic, Evolving Bassline (A Minor).
+# Hits sparsely on steps 0, 3, 6, 8, 11, 14.
+# The 'cutoff' Hash slowly opens from 60 to 90 and closes back down, 
+# creating a 1-bar filter sweep that gives the loop constant motion.
+s_bass  = (ring {:note => :a1, :cutoff => 60}, nil, nil, {:note => :a1, :cutoff => 65}, nil, nil, {:note => :a1, :cutoff => 70}, nil, {:note => :a1, :cutoff => 80}, nil, nil, {:note => :a1, :cutoff => 90}, nil, nil, {:note => :a1, :cutoff => 75}, nil)
+
+# The "Plastikman" FM Click/Blip (A Minor).
+# Uses :play_fm with an extreme divisor (4) and depth (2) to create a 
+# piercing, robotic "click" that cuts through the heavy kick.
+# Routed through the engine's tape echo for a cavernous, sterile smear.
+s_fm    = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 4, :depth => 2, :release => 0.1}, nil, nil, nil, nil, nil, {:note => :a5, :amp => 0.4, :divisor => 4, :depth => 2, :release => 0.1}, nil)
+
+# Subliminal, granular texture (using :elec_piano).
+# Long size (0.2) and low density (1) creates a slow, almost imperceptible 
+# background drone that sounds like a distant machine humming.
+s_grain = (ring {:note => :a3, :buffer => :elec_piano, :pos => 0.1, :density => 1, :size => 0.2, :amp => 0.3}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Hypnosis - Just the kick, sweeping bass, and drone (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Machine - Add the sparse micro-hats and single clap (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_hats, s_hats, 8], [:play_snare, s_clap, 8] ],
+    
+  # Scene 3: The Echo - The robotic FM blips drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_hats, s_hats, 8], [:play_snare, s_clap, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SUBTRACTION]
+# 
+# 1. Data-Driven Evolution: Look at `s_bass`. The notes are all A1, but 
+#    the `cutoff` Hash changes on every single hit, slowly opening from 
+#    60 to 90 and closing back to 75. Because the engine reads these 
+#    Hashes, a completely static, repetitive bassline constantly evolves 
+#    and breathes, creating immense hypnotic tension without adding any 
+#    new notes to the grid.
+#
+# 2. Extreme Negative Space: Minimal Techno relies on what you *don't* 
+#    play. 80% of the `s_bass`, `s_clap`, and `s_fm` grids are `nil`. 
+#    The engine honors these rests perfectly, leaving massive, echoing 
+#    voids between the hits. This makes the sparse, quiet elements feel 
+#    incredibly heavy and significant.
+#
+# 3. FM as a Click: The `s_fm` sequence uses `divisor: 4` and `depth: 2`. 
+#    This extreme harmonic ratio narrows the FM synth down to a piercing, 
+#    microscopic "click". Because it's routed through the engine's tape 
+#    echo, that single click on step 8 smears across the empty space, 
+#    perfectly mimicking the sterile, robotic aesthetic of Plastikman.
+# ==========================================================

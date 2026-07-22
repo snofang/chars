@@ -1,0 +1,105 @@
+# ==========================================================
+# PLAYBOOK: DRUMSTEP / HALFTIME DNB
+# (Pioneered by Noisia, Nero, and Chase & Status)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Drumstep.
+# We have explored liquid DnB (170 BPM, fast and smooth) and Dubstep 
+# (140 BPM, half-time and heavy). Drumstep is the aggressive, festival-
+# sized bridge between them. It operates at 174 BPM, giving it the 
+# frantic energy of Drum & Bass, but the drums play a heavy, swaggering 
+# half-time pattern. It relies on massive, distorted "Reese" basslines 
+# and epic, orchestral chord stabs.
+#
+# This playbook perfectly demonstrates how to create a massive, slow 
+# groove at a high BPM. By using the Parameter Hashes to push the 
+# `:play_sub` synth's `cutoff` wide open, the engine creates a roaring, 
+# distorted wall of sound that anchors the frantic hi-hats.
+# ==========================================================
+
+use_bpm 174
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Epic, Dark, & Heavy)
+# ==========================================================
+
+# Half-time, swaggering kick. 
+# Hits on step 0, a ghost on the 'a' of 2 (step 7), and beat 3 (step 8).
+s_kick  = (ring {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Massive, echoing snare strictly on beat 3 (step 8).
+s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil, nil, nil, nil, nil)
+
+# Frantic, 174 BPM 16th hats to keep the DnB momentum alive.
+# Notice the rising amplitude roll at the end of the bar.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.7})
+
+# The "Reese" Bass (E Minor).
+# Massive release (1.5) and extreme cutoff (120) to create a roaring, 
+# distorted wall of sound that anchors the fast drums.
+s_bass  = (ring {:note => :e1, :release => 1.5, :cutoff => 120, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :e1, :release => 1.5, :cutoff => 120, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Epic, orchestral minor chord stabs (Em to Cmaj7).
+# Hit on the downbeats. The high cutoff (110) and long release (1.0) 
+# create a cinematic, festival-sized wall of sound.
+s_chords= (ring {:note => [:e3, :g3, :b3, :d4], :cutoff => 110, :release => 1.0, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => [:c3, :e3, :g3, :b3], :cutoff => 110, :release => 1.0, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+
+# High-pitched, metallic FM blips (E Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and depth (4) to create a sharp, 
+# robotic sound that cuts through the massive Reese bass.
+s_fm    = (ring nil, nil, nil, nil, nil, nil, {:note => :e5, :amp => 0.6, :divisor => 3, :depth => 4}, nil, nil, nil, nil, nil, nil, nil, {:note => :g5, :amp => 0.5, :divisor => 3, :depth => 4}, nil)
+
+# Ethereal, granular vocal pad (using :ambi_choir).
+# Long size (0.3) and low density (1) creates a slow, evolving celestial 
+# texture that contrasts heavily with the heavy, distorted bass.
+s_grain = (ring {:note => :e4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the epic chords, Reese bass, and vocal pad (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drop - Add the half-time drums and frantic hats (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Climax - The metallic FM blips drop (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HALFTIME FUSION]
+# 
+# 1. The Half-Time Illusion: The engine's master clock is ticking at a 
+#    frantic 174 BPM. But because the `s_kick` only hits on steps 0 and 8, 
+#    and the `s_snare` only hits on step 8, the psychological tempo feels 
+#    like 87 BPM. The frantic 16th hi-hats fill in the gaps, creating the 
+#    signature Drumstep illusion of slow heaviness over fast energy.
+#
+# 2. The Distorted Reese: Look at `s_bass`. The `:play_sub` synth is given 
+#    a `cutoff` of `120` and a `release` of `1.5`. In Sonic Pi, pushing the 
+#    filter wide open on a detuned sawtooth lets all the harsh, high-
+#    frequency harmonics through. This creates a roaring, distorted "Reese" 
+#    bassline that rings out for a bar and a half, providing massive weight.
+#
+# 3. Cinematic Contrast: The `s_chords` and `s_grain` sequences provide 
+#    an ethereal, orchestral backdrop. By using long releases and slow 
+#    attacks, the engine turns the synths into a sweeping, celestial pad 
+#    that perfectly contrasts with the aggressive, metallic bassline and 
+#    fast hi-hats.
+# ==========================================================

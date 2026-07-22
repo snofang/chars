@@ -1,0 +1,100 @@
+# ==========================================================
+# PLAYBOOK: 90s BREAKBEAT HARDCORE / RAVE
+# (Pioneered by The Prodigy, Altern-8, and Shades of Rhythm)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Breakbeat 
+# Hardcore. We have explored modern DnB and old-school Jungle, but 
+# Breakbeat Hardcore is the raw, chaotic bridge between Acid House and 
+# Jungle. Sitting at 135 BPM, it is famous for pitching up reggae 
+# vocals, slicing heavy breakbeats, and using aggressive "Hoover" 
+# synth stabs and frantic piano chords.
+#
+# This playbook perfectly demonstrates how to simulate the legendary 
+# "Hoover" synth using the `:play_fm` engine with extreme `depth` Hashes, 
+# and how to use the granular engine to create those classic, pitched-up 
+# "Rave MC" vocal stutters.
+# ==========================================================
+
+use_bpm 135
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Chaotic & Euphoric)
+# ==========================================================
+
+# The "Breakbeat" Kick. 
+# Syncopated, hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil, nil, nil)
+
+# The "Breakbeat" Snare. 
+# Heavy hits on 2 and 4, with a frantic roll on the 'a' of 3 and beat 4.
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, {:note => :c4, :amp => 1.0}, nil, {:note => :c4, :amp => 0.8}, nil)
+
+# Rigid, driving 16th hats.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2})
+
+# The "Hoover" Rave Bass (A Minor).
+# Uses :play_fm with an extreme depth (8) and high divisor (3) to create 
+# a dissonant, aggressive, buzzing Hoover synth stab.
+s_bass  = (ring {:note => :a1, :divisor => 3, :depth => 8, :release => 0.2, :amp => 1.0}, nil, nil, nil, {:note => :a1, :divisor => 3, :depth => 8, :release => 0.2, :amp => 1.0}, nil, nil, nil, {:note => :g1, :divisor => 3, :depth => 8, :release => 0.2, :amp => 1.0}, nil, nil, nil, {:note => :f1, :divisor => 3, :depth => 8, :release => 0.2, :amp => 1.0}, nil, nil, nil)
+
+# Off-beat Rave Piano Stabs (A Minor).
+# Hit strictly on the off-beats to create that bouncing warehouse momentum.
+s_chords= (ring nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil, [:f3, :a3, :c4], nil)
+
+# Piercing, high-pitched Rave Stab Lead (A Minor).
+# Uses :play_fm with a high divisor to cut through the heavy mix.
+s_fm    = (ring nil, nil, nil, nil, {:note => :a4, :amp => 0.7, :divisor => 2, :depth => 3}, nil, {:note => :e4, :amp => 0.5, :divisor => 2, :depth => 3}, nil, {:note => :c5, :amp => 0.7, :divisor => 2, :depth => 3}, nil, {:note => :e4, :amp => 0.5, :divisor => 2, :depth => 3}, nil, {:note => :g4, :amp => 0.7, :divisor => 2, :depth => 3}, nil, {:note => :a4, :amp => 0.6, :divisor => 2, :depth => 3}, nil)
+
+# Pitched-up "Rave MC" Vocal Stutter (Granular Synth).
+# Pitched UP to :e5. High density, tiny size = a frantic, sugary rave skip.
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :e5, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Warehouse - Just the breakbeat and Hoover bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_fm, s_bass, 4] ],
+  
+  # Scene 2: The Rave - Add the off-beat piano stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Meltdown - Piercing stabs and pitched-up vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RAVE CHAOS]
+# 
+# 1. FM as a "Hoover": Look at `s_bass`. The `:play_fm` synth is given a 
+#    `depth` of `8` and a `divisor` of `3`. This extreme harmonic ratio 
+#    forces the FM modulator to shatter the carrier wave, creating a 
+#    dissonant, buzzing growl that perfectly mimics the classic Roland 
+#    Alpha Juno "Hoover" sound used in 90s rave music.
+#
+# 2. The Breakbeat Roll: Look at `s_snare`. The engine's strict master 
+#    clock ensures the rapid 16th-note hits on steps 10, 12, and 14 land 
+#    with absolute precision. This creates the lopsided, rolling breakbeat 
+#    that makes the track feel like a live drummer going wild in a warehouse.
+#
+# 3. Pitched-Up Granular: The `s_vocal` sequence uses the granular engine 
+#    to chop a vocal into microscopic shards (`size: 0.03`). By pitching 
+#    it up to `:e5`, the vocal loses its original form and becomes a 
+#    frantic, sugary stutter that defines the early 90s hardcore rave sound.
+# ==========================================================

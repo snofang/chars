@@ -1,0 +1,70 @@
+# ==========================================================
+# PLAYBOOK: BROSTEP / RIDDIM
+# (Pioneered by Skrillex, Excision, and Virtual Riot)
+# ========================================================== 
+
+use_bpm 140
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Aggressive & Chaotic)
+# ==========================================================
+
+# Half-time kick. Hits on step 0, with a ghost kick on the 'a' of 4 (step 14).
+s_kick  = (ring {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil)
+
+# Massive, stadium snare strictly on beat 3 (step 8), with a ghost on the 'a' of 3.
+s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.2}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil)
+
+# Frantic, triplet-feel Trap hats with a rising amplitude roll.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6})
+
+# The "Metal Growl" Bass (F# Minor).
+# Plays a syncopated rhythm. The 'divisor' and 'depth' Hashes change 
+# radically on every hit, forcing the FM synth to squelch and "talk".
+s_bass  = (ring {:note => :fs1, :divisor => 2, :depth => 8, :release => 0.15, :amp => 1.0}, nil, {:note => :fs1, :divisor => 4, :depth => 5, :release => 0.15, :amp => 0.8}, nil, nil, {:note => :fs1, :divisor => 3, :depth => 9, :release => 0.15, :amp => 1.0}, nil, nil, {:note => :a1, :divisor => 2, :depth => 6, :release => 0.15, :amp => 1.0}, nil, {:note => :a1, :divisor => 5, :depth => 3, :release => 0.15, :amp => 0.8}, nil, nil, {:note => :fs1, :divisor => 2, :depth => 8, :release => 0.15, :amp => 1.0}, nil, {:note => :b1, :divisor => 3, :depth => 7, :release => 0.15, :amp => 0.9})
+
+# Eerie, sparse minor chords (F# Minor).
+# Hit on the off-beats with a high cutoff to cut through the heavy bass.
+s_chords= (ring nil, nil, nil, nil, {:note => [:fs3, :a3, :c4], :cutoff => 110, :release => 0.5, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 110, :release => 0.5, :amp => 0.5}, nil, nil, nil)
+
+# Piercing, high-pitched "Alien" FM blips (F# Minor Pentatonic).
+# FIXED & VERIFIED: Exactly 16 steps. (Count them: 1,2,3,4 | 5,6,7,8 | 9,10,11,12 | 13,14,15,16)
+s_fm    = (ring 
+  nil, nil, nil, nil, 
+  {:note => :fs5, :amp => 0.6, :divisor => 4, :depth => 3}, nil, {:note => :a5, :amp => 0.5, :divisor => 4, :depth => 3}, nil, 
+  nil, nil, {:note => :b5, :amp => 0.7, :divisor => 4, :depth => 3}, nil, 
+  {:note => :a5, :amp => 0.5, :divisor => 4, :depth => 3}, nil, {:note => :fs5, :amp => 0.6, :divisor => 4, :depth => 3}, nil
+)
+
+# Monstrous, pitched-down vocal grunt (Granular Synth).
+# Pitched DOWN to :fs2. Long size (0.1) and low density (1).
+# This creates a slow, demonic grunt that anchors the chaotic FM bass.
+s_grain = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :fs2, :buffer => :misc_lori, :pos => 0.6, :density => 1, :size => 0.1, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the eerie chords and monstrous vocal (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Tension - Add the half-time drums and metallic growl (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_bass, 8] ],
+    
+  # Scene 3: The Drop - The piercing alien FM blips drop (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_bass, 8], [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
