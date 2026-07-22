@@ -1,0 +1,59 @@
+use_bpm 145
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. GENERATIVE FUNCTION
+# ==========================================================
+# Generates a 16-step ring of glitchy notes with random amplitudes/cutoffs
+define :gen_glitch do |binary_string, scale_notes|
+  binary_string.chars.map do |c|
+    if c == '1'
+      {note: scale_notes.choose, amp: rrand(0.3, 0.9), cutoff: rrand(70, 120)}
+    else
+      nil
+    end
+  end.ring
+end
+
+# ==========================================================
+# 3. THE SCORES (A Minor - Atonal leanings)
+# ==========================================================
+# Generative, hyper-dense kick and hats
+s_kick  = gen_glitch("1000101001000100", (ring :c4))
+s_hats  = gen_glitch("1101010110101101", (ring :c4, {:note => :c4, :amp => 0.2}))
+
+# Erratic, mathematical bass
+s_bass  = (ring :a1, nil, nil, :a1, nil, :c2, nil, nil, :a1, nil, nil, :e2, nil, nil, :g1, nil)
+
+# Generative FM melody (Random A minor pentatonic blips)
+s_fm    = gen_glitch("0010101000100101", (scale :a4, :minor_pentatonic))
+
+# Granular texture (High density, small size = glitchy static texture)
+s_grain = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :elec_piano, :pos => 0.6, :density => 12, :size => 0.02}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 4. THE PLAYBOOK (Overlapping Bar Lengths)
+# ==========================================================
+playbook = (ring
+  # Scene 1: Erratic percussion (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add bass and granular static (8 bars)
+  # Note: Kick plays 8 bars, but Bass plays 4 bars. They phase in and out.
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+    
+  # Scene 3: Full glitch meltdown (8 bars)
+  # Generative FM melody enters, overlapping with the 8-bar drum loop
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 4], [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 5. RUN
+# ==========================================================
+start_engine(playbook)

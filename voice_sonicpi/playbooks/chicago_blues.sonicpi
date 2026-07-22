@@ -1,0 +1,93 @@
+use_bpm 105
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (12-Bar Blues in C)
+# ==========================================================
+
+# Rhythm Section (Standard Shuffle Groove)
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# 8th-note hats to drive the shuffle
+s_hats  = (ring :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil)
+
+# Walking Basslines (8th notes, bouncing between root and 5th/octave)
+s_bass_C = (ring :c2, nil, :g2, nil, :c3, nil, :g2, nil, :c2, nil, :g2, nil, :c3, nil, :g2, nil)
+s_bass_F = (ring :f2, nil, :c3, nil, :f3, nil, :c3, nil, :f2, nil, :c3, nil, :f3, nil, :c3, nil)
+s_bass_G = (ring :g2, nil, :d3, nil, :g3, nil, :d3, nil, :g2, nil, :d3, nil, :g3, nil, :d3, nil)
+
+# Comping Chords (C7, F7, G7) - Stabbing on the "and" of the beat
+s_chord_C = (ring nil, nil, nil, nil, [:c3, :e3, :g3, :bb3], nil, nil, nil, nil, nil, nil, nil, [:c3, :e3, :g3, :bb3], nil, nil, nil)
+s_chord_F = (ring nil, nil, nil, nil, [:f3, :a3, :c4, :eb4], nil, nil, nil, nil, nil, nil, nil, [:f3, :a3, :c4, :eb4], nil, nil, nil)
+s_chord_G = (ring nil, nil, nil, nil, [:g3, :b3, :d4, :f4], nil, nil, nil, nil, nil, nil, nil, [:g3, :b3, :d4, :f4], nil, nil, nil)
+
+# Blues Lead Solo (C Minor Pentatonic with dynamic Hashes)
+# Routed through the Prophet's Tape Echo for that classic blues wail
+s_lead  = (ring :c4, nil, nil, nil, {note: :eb4, amp: 0.8}, nil, :g4, nil, 
+           nil, nil, :f4, nil, {note: :eb4, amp: 0.6}, nil, :c4, nil)
+
+# Turnaround Harmonica Wail (Using Granular synth on a vocal sample)
+s_harp   = (ring {note: :c4, buffer: :misc_lori, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
+            {note: :eb4, buffer: :misc_lori, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
+            {note: :g4, buffer: :misc_lori, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
+            {note: :c5, buffer: :misc_lori, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK (12-Bar Blues Form)
+# ==========================================================
+# 4 beats per bar. 16 steps = 1 bar.
+# Scene 1: 4 bars of C7
+# Scene 2: 2 bars of F7, 2 bars of C7
+# Scene 3: 1 bar G7, 1 bar F7, 2 bars C7 (Turnaround)
+
+playbook = (ring
+  # --- VERSE 1: Just the groove ---
+  # 4 Bars of C7
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass_C, 4], [:play_chords, s_chord_C, 4] ],
+    
+  # 2 Bars of F7, 2 Bars of C7
+  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2], 
+    [:play_sub, s_bass_F, 2], [:play_chords, s_chord_F, 2] ],
+    
+  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2], 
+    [:play_sub, s_bass_C, 2], [:play_chords, s_chord_C, 2] ],
+    
+  # --- VERSE 2: Add the lead guitar ---
+  # 4 Bars of C7
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass_C, 4], [:play_chords, s_chord_C, 4], [:play_lead, s_lead, 4] ],
+    
+  # 2 Bars of F7, 2 Bars of C7
+  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2], 
+    [:play_sub, s_bass_F, 2], [:play_chords, s_chord_F, 2], [:play_lead, s_lead, 2] ],
+    
+  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2], 
+    [:play_sub, s_bass_C, 2], [:play_chords, s_chord_C, 2], [:play_lead, s_lead, 2] ],
+
+  # --- THE TURNAROUND ---
+  # 1 Bar G7
+  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1], 
+    [:play_sub, s_bass_G, 1], [:play_chords, s_chord_G, 1] ],
+    
+  # 1 Bar F7
+  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1], 
+    [:play_sub, s_bass_F, 1], [:play_chords, s_chord_F, 1] ],
+    
+  # 1 Bar C7
+  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1], 
+    [:play_sub, s_bass_C, 1], [:play_chords, s_chord_C, 1] ],
+    
+  # 1 Bar G7 (With Granular Harp Wail to end the phrase)
+  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1], 
+    [:play_sub, s_bass_G, 1], [:play_chords, s_chord_G, 1], [:play_grain, s_harp, 1] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

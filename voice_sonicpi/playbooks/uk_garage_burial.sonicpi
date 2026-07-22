@@ -1,0 +1,55 @@
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Deep Late-Night Vibe)
+# ==========================================================
+
+# The classic 2-Step drum pattern. Kicks on 1 and the 'a' of 2. Snares on the 'and' of 2.
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil)
+s_snare = (ring nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil)
+
+# Shuffled, swinging 16th hats. Notice the alternating amplitudes for the bounce.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15})
+
+# Wandering, syncopated sub-bass
+s_bass  = (ring :f2, nil, nil, :f2, nil, nil, :ab2, nil, nil, :c3, nil, nil, nil, nil, :ab2, nil)
+
+# Deep house chord stabs on the off-beats
+s_chords= (ring nil, nil, nil, nil, [:f3, :ab3, :c4], nil, nil, nil, 
+           nil, nil, nil, nil, [:ab3, :c4, :eb4], nil, nil, nil)
+
+# Rhythmic Vocal Chops using the Granular Synth!
+# We use :misc_lori (vocal sample), small grain size, and pitch it to F minor.
+s_vocal = (ring nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.05}, nil, 
+           nil, nil, nil, nil, 
+           {:note => :ab4, :buffer => :misc_lori, :pos => 0.4, :density => 2, :size => 0.05}, nil, nil, nil, 
+           {:note => :c5, :buffer => :misc_lori, :pos => 0.6, :density => 2, :size => 0.05}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the bouncing 2-step groove (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the wandering bass and chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The vocal chops drop in (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

@@ -1,0 +1,51 @@
+use_bpm 110
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Phrygian Dominant - Exotic & Hypnotic)
+# ==========================================================
+
+# The Maqsum Rhythm (Dum - Tek - Dum - Tek)
+# Dum = Low (Kick), Tek = High (Hat)
+s_dum   = (ring :c4, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil)
+s_tek   = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, nil)
+# Fast 16th ornaments for the teks
+s_teks  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.2})
+
+# Driving, pulsing bass on the root (D)
+s_bass  = (ring :d2, nil, nil, nil, nil, nil, nil, nil, {:note => :d2, :amp => 0.8}, nil, nil, nil, {:note => :eb2, :amp => 0.6}, nil, nil, nil)
+
+# Haunting, echoing melody (D Phrygian Dominant)
+s_lead  = (ring :d4, nil, nil, {:note => :eb4, :amp => 0.6}, nil, nil, {:note => :f4, :amp => 0.8}, nil, 
+           nil, {:note => :g4, :amp => 0.7}, nil, {:note => :f4, :amp => 0.5}, nil, {:note => :eb4, :amp => 0.6}, nil, nil)
+
+# Sustained drone pad to anchor the scale
+s_pad   = (ring :d3, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# Distant granular vocal chant (using :misc_lori buffer)
+s_chant = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :d4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.1}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Maqsum rhythm and drone (4 bars)
+  [ [:play_pad, s_pad, 4], [:play_kick, s_dum, 4], [:play_hats, s_tek, 4], [:play_hats, s_teks, 4] ],
+  
+  # Scene 2: Add the driving bassline (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_kick, s_dum, 8], [:play_hats, s_tek, 8], [:play_hats, s_teks, 8], 
+    [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: The Oud melody and distant chants enter (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_kick, s_dum, 8], [:play_hats, s_tek, 8], [:play_hats, s_teks, 8], 
+    [:play_sub, s_bass, 8], [:play_lead, s_lead, 8], [:play_grain, s_chant, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

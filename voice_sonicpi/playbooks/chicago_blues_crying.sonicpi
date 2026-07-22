@@ -1,0 +1,76 @@
+use_bpm 75
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor Ballad)
+# ==========================================================
+
+# Soft, minimal rhythm section to let the guitar shine
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Warm, sustained bass notes
+s_bass  = (ring :e2, nil, nil, nil, nil, nil, nil, nil, :d2, nil, nil, nil, nil, nil, nil, nil)
+
+# Slow chord stabs (E minor to D Major)
+# FIXED: :f#3 changed to :fs3
+s_chords = (ring [:e3, :g3, :b3, :e4], nil, nil, nil, nil, nil, nil, nil, 
+            [:d3, :fs3, :a3, :d4], nil, nil, nil, nil, nil, nil, nil)
+
+# --- THE CRYING GUITAR MELODIES ---
+# Notice the 'release: 1.5' and 'release: 1.0' in the Hashes. 
+# Because the steps are only 0.25 beats apart, a release of 1.5 means 
+# the note rings out for 6 steps, heavily overlapping the next note.
+# This creates a continuous, weeping legato phrasing.
+
+s_lead_1 = (ring 
+  {note: :b4, release: 1.5, amp: 0.9, cutoff: 90}, nil, nil, nil, 
+  {note: :g4, release: 1.0, amp: 0.7, cutoff: 85}, nil, nil, nil, 
+  {note: :e4, release: 1.5, amp: 1.0, cutoff: 95}, nil, nil, nil, 
+  nil, nil, nil, nil
+)
+
+s_lead_2 = (ring 
+  {note: :d5, release: 1.5, amp: 0.9, cutoff: 90}, nil, nil, nil, 
+  {note: :b4, release: 1.0, amp: 0.7, cutoff: 85}, nil, nil, nil, 
+  {note: :g4, release: 1.5, amp: 1.0, cutoff: 95}, nil, nil, nil, 
+  nil, nil, nil, nil
+)
+
+# A dramatic descending climb to end the phrase
+s_lead_3 = (ring 
+  {note: :e5, release: 1.5, amp: 0.9, cutoff: 95}, nil, nil, nil, 
+  {note: :d5, release: 1.0, amp: 0.8, cutoff: 90}, nil, nil, nil, 
+  {note: :b4, release: 1.0, amp: 0.8, cutoff: 90}, nil, nil, nil, 
+  {note: :a4, release: 0.5, amp: 0.6, cutoff: 85}, nil, {note: :g4, release: 0.5, amp: 0.6, cutoff: 85}, nil
+)
+
+# ==========================================================
+# 3. THE PLAYBOOK (Em - D - Em - D Progression)
+# ==========================================================
+playbook = (ring
+  # Scene 1: Intro (Just chords and bass for 2 bars)
+  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2], 
+    [:play_chords, s_chords, 2] ],
+    
+  # Scene 2: Guitar enters, weeping melody (2 bars)
+  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2], 
+    [:play_chords, s_chords, 2], [:play_lead, s_lead_1, 2] ],
+    
+  # Scene 3: Guitar replies, higher melody (2 bars)
+  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2], 
+    [:play_chords, s_chords, 2], [:play_lead, s_lead_2, 2] ],
+    
+  # Scene 4: The climax - descending cry (2 bars)
+  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2], 
+    [:play_chords, s_chords, 2], [:play_lead, s_lead_3, 2] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

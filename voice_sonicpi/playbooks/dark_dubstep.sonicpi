@@ -1,0 +1,54 @@
+use_bpm 140
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Dark & Heavy)
+# ==========================================================
+
+# Classic half-time kick. Hits on step 0, with a ghost kick on step 14.
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil)
+
+# Heavy snare strictly on beat 3 (step 8), with a ghost snare on the 'a' of 4.
+s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# Syncopated, rolling hats to keep the 140 BPM momentum alive
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, 
+           nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, 
+           {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, 
+           nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, nil)
+
+# Massive, sustained sub-bass. Long releases create that iconic wobble feel.
+s_bass  = (ring {:note => :f2, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :eb2, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Distant, echoing 8-bit melody (F Minor Pentatonic)
+s_fm    = (ring nil, nil, nil, nil, :f5, nil, nil, nil, nil, nil, :eb5, nil, nil, nil, :c5, nil)
+
+# Massive dark pad to fill the empty space
+s_pad   = (ring :f3, nil, nil, nil, nil, nil, nil, nil, :eb3, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Atmospheric intro, just pad and sub-bass (4 bars)
+  [ [:play_pad, s_pad, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The half-time drums drop (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_sub, s_bass, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: Add the distant FM melody (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_sub, s_bass, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

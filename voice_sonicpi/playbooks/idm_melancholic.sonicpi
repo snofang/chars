@@ -1,0 +1,44 @@
+use_bpm 135
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor)
+# ==========================================================
+# Half-time drum feel
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil)
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.15}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.15}, nil)
+
+# Deep, pulsing bass
+s_bass  = (ring :fs2, nil, nil, nil, nil, nil, :fs2, nil, nil, nil, :a2, nil, nil, nil, nil, nil)
+
+# Angular, nostalgic FM melody
+s_fm    = (ring :fs4, nil, nil, :c5, nil, nil, :a4, nil, nil, nil, :e4, nil, :fs4, nil, :c5, nil)
+
+# Granular vocal drone (Using :misc_lori buffer, low density for ambient feel)
+s_grain = (ring {:note => :fs3, :buffer => :misc_lori, :pos => 0.4, :density => 2, :size => 0.15}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Atmosphere and Bass (4 bars)
+  [ [:play_grain, s_grain, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: Drums enter (8 bars)
+  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: FM Melody enters, bass drops out for a break (4 bars)
+  [ [:play_grain, s_grain, 4], [:play_fm, s_fm, 4], 
+    [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

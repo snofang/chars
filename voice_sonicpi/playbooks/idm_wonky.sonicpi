@@ -1,0 +1,56 @@
+use_bpm 90
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Major Jazzy)
+# ==========================================================
+# Lopsided, drunken kick pattern. Hits on step 3, 8, 11.
+s_kick  = (ring nil, nil, nil, {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, 
+           {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil)
+           
+# Snare hits late (step 5 and 13 - the classic Dilla "lag")
+s_snare = (ring nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, 
+           nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil)
+           
+# Rolling, triplet-feel hats
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2})
+
+# Deep, sparse bass
+s_bass  = (ring :f2, nil, nil, nil, nil, nil, nil, nil, {:note => :a2, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil)
+
+# Jazzy chord stabs (Arrays) on the off-beats
+s_chords= (ring nil, nil, nil, nil, [:f3, :a4, :c5, :e5], nil, nil, nil, 
+           nil, nil, nil, nil, [:d3, :f4, :a4, :c5], nil, nil, nil)
+
+# Granular piano glitch (using :elec_piano buffer, very small size)
+s_grain = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :f4, :buffer => :elec_piano, :pos => 0.6, :density => 8, :size => 0.03}, nil, nil, nil, 
+           nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the wonky groove (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add chords and bass (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8], [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: Add granular piano stutters (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8], [:play_grain, s_grain, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

@@ -1,0 +1,45 @@
+use_bpm 135
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Rave Energy)
+# ==========================================================
+# Relentless 4-on-the-floor
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Clap on the 2 and 4
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Heavily swung 16th hats
+s_hats  = (ring {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
+           {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
+           {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
+           {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5})
+# Bouncing, octave-jumping reggae-style bass
+s_bass  = (ring :f2, nil, :f2, nil, :f3, nil, :f2, nil, :ab2, nil, :ab2, nil, :ab3, nil, :ab2, nil)
+# Rave stabs on the off-beats
+s_fm    = (ring nil, nil, nil, nil, nil, nil, {:note => :f4, :amp => 0.7}, nil, 
+           nil, nil, nil, nil, nil, nil, {:note => :ab4, :amp => 0.7}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the relentless beat (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the bouncing bassline (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: Add the FM rave stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

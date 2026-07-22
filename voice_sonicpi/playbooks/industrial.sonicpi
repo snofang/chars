@@ -1,0 +1,56 @@
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Dystopian & Mechanical)
+# ==========================================================
+
+# Rigid, pounding 4-on-the-floor with an extra 16th hit for drive
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, {:note => :c4, :amp => 0.6}, nil)
+
+# Heavy, metallic snare strictly on beats 2 and 4
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid 16th note hats
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2})
+
+# Driving, aggressive FM 16th bassline
+s_fm    = (ring :d2, nil, :d2, nil, :d2, nil, :f2, nil, :d2, nil, :d2, nil, :a2, nil, :f2, nil)
+
+# Caustic, echoing synth stabs on the off-beats
+s_lead  = (ring nil, nil, nil, nil, nil, nil, {:note => :d4, :amp => 0.8}, nil, 
+           nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil)
+
+# Granular metallic texture (using :elec_piano buffer, tiny size = machine static)
+s_grain = (ring {:note => :d3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02}, nil, nil, nil, 
+           nil, nil, nil, nil, 
+           {:note => :d3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02}, nil, nil, nil, 
+           nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the pounding machine beat (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the driving FM bassline (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ],
+    
+  # Scene 3: Add caustic stabs and granular static (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8], [:play_lead, s_lead, 8], [:play_grain, s_grain, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

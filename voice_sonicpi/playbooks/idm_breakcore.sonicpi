@@ -1,0 +1,51 @@
+use_bpm 170
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Phrygian Dominant - Tense & Middle Eastern)
+# ==========================================================
+# Kicks hit on the 'e' and 'a' (off-beats). Notice the dynamic accents.
+s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 1.2}, nil, nil, {:note => :c4, :amp => 0.8}, nil, 
+           nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil)
+           
+# Snares hit entirely on the up-beats and off-beats
+s_snare = (ring nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, 
+           nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil)
+           
+# Rolling, stuttering hats
+s_hats  = (ring {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, 
+           {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, 
+           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, 
+           {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.6})
+
+# Fast, stuttering 16th-note bass clusters
+s_bass  = (ring :a1, nil, :a1, nil, nil, :a1, nil, nil, :bf1, nil, :bf1, nil, nil, :a1, nil, nil)
+
+# Angular, syncopated FM melody
+s_fm    = (ring nil, nil, :a5, nil, nil, {:note => :c6, :amp => 0.5}, nil, nil, 
+           nil, :e5, nil, nil, nil, {:note => :bf5, :amp => 0.7}, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the chaotic rhythm section (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add stuttering bass (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 4] ],
+    
+  # Scene 3: Melody enters, bass drops out for a break (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_fm, s_fm, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

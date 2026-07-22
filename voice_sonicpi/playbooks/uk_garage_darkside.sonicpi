@@ -1,0 +1,43 @@
+use_bpm 140
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C# Minor - Moody & Atmospheric)
+# ==========================================================
+# Broken, uneasy kick pattern
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil)
+# Crisp, metallic snare on the heavy off-beats
+s_snare = (ring nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil)
+# Rusty, relentless hats
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil)
+# Deep, sporadic sub-bass
+s_bass  = (ring :cs2, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, :fs2, nil, nil, nil)
+# Lush, massive dark pad
+s_pad   = (ring :cs3, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Ghostly granular vocal (using :misc_lori, long size for ambient drone feel)
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :cs4, :buffer => :misc_lori, :pos => 0.7, :density => 3, :size => 0.12}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Moody intro, just pad and broken drums (4 bars)
+  [ [:play_pad, s_pad, 4], [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Sub-bass drops, adding weight (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: The ghost in the machine - granular vocals enter (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

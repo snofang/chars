@@ -110,24 +110,24 @@ define :play_pad do |n|
   play note, **opts if note
 end
 
-# 8. PITCHED KICK
+# 8. PITCHED KICK (Fixed Hash Parsing)
 define :play_kick do |n|
   note, opts = parse_step(n, {amp: 1.5})
-  sample :bd_haus, pitch: (note(n) - note(:c4)), **opts if n
+  sample :bd_haus, pitch: (note(note) - note(:c4)), **opts if note
 end
 
-# 9. PITCHED SNARE (Routed through Hall Reverb)
+# 9. PITCHED SNARE (Fixed Hash Parsing)
 define :play_snare do |n|
   note, opts = parse_step(n, {amp: 0.8})
   with_fx :reverb, room: 0.9, mix: 0.5 do
-    sample :sn_dolf, pitch: (note(n) - note(:c4)), **opts if n
+    sample :sn_dolf, pitch: (note(note) - note(:c4)), **opts if note
   end
 end
 
 # 10. MICRO-TIMED HI-HATS
 define :play_hats do |n|
   note, opts = parse_step(n, {amp: 0.3})
-  if n
+  if note
     at [0, 0.125, 0.375] do
       sample :drum_cymbal_closed, rate: 1.2, pan: rrand(-0.5, 0.5), **opts
     end

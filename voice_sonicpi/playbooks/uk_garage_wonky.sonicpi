@@ -1,0 +1,56 @@
+use_bpm 85
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Deep & Jazzy)
+# ==========================================================
+
+# Highly syncopated "Wonky" kick. Hits on step 0, the 'a' of 2 (step 7), 
+# and the 'e' of 3 (step 10). Notice the dynamic accents.
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil)
+
+# Snare hits late, on the 'and' of 2 (step 5) and 'and' of 4 (step 13)
+s_snare = (ring nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil)
+
+# Swung, triplet-feel hats with heavy velocity manipulation
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.2}, nil)
+
+# Deep, sporadic sub-bass
+s_bass  = (ring :f2, nil, nil, nil, nil, nil, nil, nil, {:note => :ab2, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil)
+
+# Jazzy 7th chords (Arrays) on the off-beats
+s_chords= (ring [:f3, :ab4, :c5, :eb5], nil, nil, nil, nil, nil, nil, nil, 
+           [:eb3, :g4, :bb4, :db5], nil, nil, nil, nil, nil, nil, nil)
+
+# Granular piano glitch (using :elec_piano buffer)
+# Short size (0.04) and high density (8) creates a rhythmic stutter
+s_grain = (ring nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :elec_piano, :pos => 0.4, :density => 8, :size => 0.04}, nil, 
+           nil, nil, nil, nil, nil, nil, {:note => :ab4, :buffer => :elec_piano, :pos => 0.6, :density => 8, :size => 0.04}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the wonky groove (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the deep bass and lo-fi chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8], [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: Granular piano stutters drop in (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8], [:play_grain, s_grain, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
