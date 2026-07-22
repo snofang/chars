@@ -1,0 +1,54 @@
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Hypnotic & Interlocking)
+# ==========================================================
+
+# Syncopated kick. Hits on beat 1, the 'and' of 2, and beat 4.
+s_kick  = (ring :c4, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# Snare/clap on the heavy off-beats (steps 4 and 12)
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+
+# Continuous 16th-note shaker, but with accents on the off-beats
+s_hats  = (ring {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
+           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
+           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
+           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5})
+
+# Conversational, syncopated bassline
+s_bass  = (ring :f2, nil, nil, :f2, nil, nil, :f2, nil, {:note => :ab2, :amp => 0.8}, nil, nil, :ab2, nil, nil, :c3, nil)
+
+# The classic Afrobeat "Skank". Off-beat chord stabs on steps 2, 6, 10, 14.
+s_chords= (ring nil, nil, [:f3, :ab3, :c4], nil, nil, nil, [:f3, :ab3, :c4], nil, 
+           nil, nil, [:eb3, :g3, :bb3], nil, nil, nil, [:eb3, :g3, :bb3], nil)
+
+# Distant, echoing horn stabs (F Minor Pentatonic)
+s_fm    = (ring nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :amp => 0.6}, 
+           nil, nil, nil, nil, nil, nil, nil, {:note => :eb4, :amp => 0.7})
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the interlocking drums and shaker (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the syncopated bass and off-beat chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: Add the distant horn stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

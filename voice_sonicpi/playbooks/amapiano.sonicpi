@@ -1,0 +1,55 @@
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (Ab Minor - Jazzy & Deep)
+# ==========================================================
+
+# Laid-back kick. Hits on step 0, and a syncopated hit on the 'a' of 3 (step 10).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil)
+
+# Dry snare/clap on the heavy off-beats (steps 5 and 13)
+s_snare = (ring nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil)
+
+# The signature Amapiano Shaker. Continuous 16ths with heavy syncopated bounces.
+# Notice the rising amplitudes on steps 5,6,7 and 13,14,15 to create the "roll" feel.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.15}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.7})
+
+# The "Log Drum" Bass. Short, punchy release to make it sound percussive.
+s_bass  = (ring {:note => :ab1, :release => 0.2}, nil, nil, nil, nil, nil, {:note => :ab1, :release => 0.2}, nil, 
+           nil, nil, {:note => :eb1, :release => 0.2}, nil, nil, nil, {:note => :db1, :release => 0.2}, nil)
+
+# Soulful, jazzy minor 9th chords (Arrays) on the off-beats
+s_chords= (ring nil, nil, nil, nil, [:ab3, :c4, :eb4, :gb4], nil, nil, nil, 
+           nil, nil, nil, nil, [:db3, :f4, :ab4, :cb4], nil, nil, nil)
+
+# Ethereal vocal pad to fill the empty space
+s_pad   = (ring :ab2, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Atmosphere, chords, and shakers (4 bars)
+  [ [:play_pad, s_pad, 4], [:play_chords, s_chords, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the laid-back kick and snare (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_chords, s_chords, 8], [:play_hats, s_hats, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8] ],
+    
+  # Scene 3: The Log Drum bass drops, completing the groove (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_chords, s_chords, 8], [:play_hats, s_hats, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_sub, s_bass, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

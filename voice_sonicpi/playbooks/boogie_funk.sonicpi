@@ -1,0 +1,66 @@
+use_bpm 105
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Dorian - Bright & Bouncy)
+# ==========================================================
+
+# Classic funk kick. Hits on step 0, the 'a' of 2 (step 7), and beat 3 (step 8).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Heavy funk clap strictly on beats 2 and 4 (steps 4 and 12), with a ghost clap.
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# Relentless, swinging 16th hats. 
+# Notice the alternating amplitudes to create the "bounce".
+s_hats  = (ring {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
+           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
+           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
+           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5})
+
+# The "Slap Bass" Melody. 
+# Highly syncopated, using short releases to make it punchy and staccato.
+s_bass  = (ring :c2, nil, :c2, nil, nil, :eb2, nil, :g2, 
+           {:note => :c2, :amp => 0.8}, nil, :c2, nil, nil, :f2, nil, :g2)
+
+# Warm, analog Boogie chords (C Minor 9th to F Minor 9th).
+# Hits on the off-beats to leave room for the slap bass.
+s_chords= (ring nil, [:c3, :eb4, :g4, :bb4], nil, nil, nil, nil, [:c3, :eb4, :g4, :bb4], nil, 
+           nil, [:f3, :ab4, :c5, :eb5], nil, nil, nil, nil, [:f3, :ab4, :c5, :eb5], nil)
+
+# Bright, echoing lead melody (C Dorian)
+s_lead  = (ring nil, nil, :c5, nil, :eb5, nil, nil, :g5, 
+           nil, nil, :f5, nil, :eb5, nil, :c5, nil)
+
+# Rhythmic, funky vocal chop (Granular Synth)
+# Using :misc_lori, short size, high density = funky stutter
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :c4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04}, nil, nil, nil, 
+           nil, nil, {:note => :eb4, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the bouncing drums and bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: Add the warm analog chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The bright lead and funky vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

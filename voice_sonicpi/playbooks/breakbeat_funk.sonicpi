@@ -1,0 +1,54 @@
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Aggressive & Stadium-Sized)
+# ==========================================================
+
+# Classic syncopated Breakbeat Kick.
+# Hits on step 0, the 'a' of 1 (step 3), the 'and' of 2 (step 6), and beat 4 (step 12).
+s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, nil, nil)
+
+# Heavy snare strictly on beats 2 and 4 (steps 4 and 12), with a ghost snare on the 'a' of 2.
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil)
+
+# Swinging, rolling hats with heavy velocity manipulation
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2})
+
+# Thick, distorted bassline riff. 
+# High cutoff values (120+) push the :dsaw synth into overdrive.
+s_bass  = (ring {:note => :e2, :cutoff => 120, :release => 0.25}, nil, nil, {:note => :e2, :cutoff => 130, :release => 0.25}, nil, nil, {:note => :g2, :cutoff => 110, :release => 0.25}, nil, {:note => :e2, :cutoff => 120, :release => 0.25}, nil, nil, {:note => :d2, :cutoff => 100, :release => 0.25}, nil, nil, {:note => :e2, :cutoff => 90, :release => 0.25}, nil)
+
+# Aggressive, hard-hitting chord stabs (E Minor)
+# Hits on the off-beats to leave room for the heavy kick syncopations.
+s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:g3, :b3, :d4], nil, nil, nil, [:d3, :fs3, :a3], nil)
+
+# Rhythmic, chopped vocal shout (Granular Synth)
+# High density, small size = percussive vocal hit
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.1, :density => 4, :size => 0.04}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the heavy breakbeat and distorted bass riff (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: Add the aggressive chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: Add the chopped vocal shout (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

@@ -1,0 +1,61 @@
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Bouncy & Kinetic)
+# ==========================================================
+
+# The "Bouncing" Kick. 
+# Hits on step 0, but then hits on the off-beats (steps 6, 8, 14) to create bounce.
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil)
+
+# Heavy clap strictly on beats 2 and 4 (steps 4 and 12)
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Fast, swinging 16th hats
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4})
+
+# Booming, pure sine wave bass. 
+# Short release to make it punchy.
+s_bass  = (ring {:note => :g1, :release => 0.3}, nil, nil, nil, {:note => :g1, :release => 0.3}, nil, nil, nil, 
+           {:note => :bb1, :release => 0.3}, nil, nil, nil, {:note => :d1, :release => 0.3}, nil, nil, nil)
+
+# Staccato minor chord stabs (Gm and Bbmaj7)
+s_chords= (ring nil, [:g3, :bb3, :d4], nil, nil, nil, nil, [:g3, :bb3, :d4], nil, 
+           nil, [:bb3, :db4, :f4], nil, nil, nil, nil, [:d3, :f3, :a3], nil)
+
+# The signature Jersey Club Vocal Chop!
+# Granular synth chops :misc_lori into a rapid, rhythmic stutter.
+s_vocal = (ring nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04}, nil, 
+           nil, nil, nil, {:note => :bb4, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04}, nil, 
+           nil, nil, {:note => :d5, :buffer => :misc_lori, :pos => 0.7, :density => 3, :size => 0.04}, nil, 
+           nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the bouncing drums and chord stabs (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
+    [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: Add the booming bass (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8], [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: The chopped vocal hook drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

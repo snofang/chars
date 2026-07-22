@@ -1,0 +1,56 @@
+use_bpm 60
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Major - Nostalgic & Lush)
+# ==========================================================
+
+# "Chopped and screwed" slow kick. Hits on beat 1, and a sluggish ghost kick on the 'e' of 3.
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, nil, nil)
+
+# Heavy, echoing snare strictly on beat 3 (step 8). 
+s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil)
+
+# Very sparse, lazy hi-hats. 
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.2}, nil, 
+           {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.2}, nil)
+
+# Deep, sustained MIDI bass. Long release to create a warm, analog drone.
+s_bass  = (ring {:note => :f2, :release => 3.0}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :c2, :release => 3.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Lush, nostalgic Major 9th chords (Arrays). 
+# They hit on step 0 and step 8, holding for 2 beats each.
+s_chords= (ring [:f3, :a3, :c4, :e4], nil, nil, nil, nil, nil, nil, nil, 
+           [:c3, :e3, :g3, :b3], nil, nil, nil, nil, nil, nil, nil)
+
+# Shimmering, degraded VHS texture (Granular Synth)
+# Using :elec_piano, very low density (1) and long size (0.3) for a smooth, smeared sound.
+s_grain = (ring {:note => :f4, :buffer => :elec_piano, :pos => 0.4, :density => 1, :size => 0.3, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :c5, :buffer => :elec_piano, :pos => 0.6, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the lush chords and VHS granular texture (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: Add the slow, "chopped" drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: Add the deep, sustained analog bass (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

@@ -1,0 +1,66 @@
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Cosmic & Hypnotic)
+# ==========================================================
+
+# "Motorik" Drum Pattern. Steady, driving, 4/4 pulse.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, 
+           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# Relentless 16th-note Analog Bass Sequence.
+# Alternating amplitudes give it a mechanical "pump".
+s_bass  = (ring {:note => :a2, :amp => 0.8}, {:note => :a2, :amp => 0.4}, {:note => :e2, :amp => 0.8}, {:note => :a2, :amp => 0.4}, 
+           {:note => :a2, :amp => 0.8}, {:note => :a2, :amp => 0.4}, {:note => :g2, :amp => 0.8}, {:note => :a2, :amp => 0.4}, 
+           {:note => :a2, :amp => 0.8}, {:note => :a2, :amp => 0.4}, {:note => :e2, :amp => 0.8}, {:note => :a2, :amp => 0.4}, 
+           {:note => :c3, :amp => 0.8}, {:note => :c3, :amp => 0.4}, {:note => :g2, :amp => 0.8}, {:note => :a2, :amp => 0.4})
+
+# The Filter-Sweeping Arpeggio.
+# This is the magic of the Parameter Hash! The notes are repetitive, 
+# but the 'cutoff' filter slowly opens up and closes across the 16 steps.
+s_seq   = (ring {:note => :a4, :cutoff => 70}, {:note => :a4, :cutoff => 75}, {:note => :e4, :cutoff => 80}, {:note => :a4, :cutoff => 85}, 
+           {:note => :c5, :cutoff => 90}, {:note => :a4, :cutoff => 95}, {:note => :e4, :cutoff => 100}, {:note => :a4, :cutoff => 105}, 
+           {:note => :a4, :cutoff => 110}, {:note => :a4, :cutoff => 105}, {:note => :e4, :cutoff => 100}, {:note => :a4, :cutoff => 95}, 
+           {:note => :c5, :cutoff => 90}, {:note => :c5, :cutoff => 85}, {:note => :g4, :cutoff => 80}, {:note => :a4, :cutoff => 75})
+
+# Slow, swirling cosmic drone (Granular Synth)
+# Using :ambi_choir, very long size (0.2s) for a smooth space texture.
+s_grain = (ring {:note => :a3, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :g3, :buffer => :ambi_choir, :pos => 0.6, :density => 2, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# Massive dark pad underneath
+s_pad   = (ring {:note => :a2, :release => 4.0, :attack => 2.0}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :g2, :release => 4.0, :attack => 2.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the cosmic drone and motorik drums (4 bars)
+  [ [:play_pad, s_pad, 4], [:play_grain, s_grain, 4], 
+    [:play_kick, s_kick, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the relentless 16th-note bass sequence (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: The filter-sweep arpeggio drops in (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_lead, s_seq, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

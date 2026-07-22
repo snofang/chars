@@ -1,0 +1,63 @@
+use_bpm 160
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Frantic & Bouncy)
+# ==========================================================
+
+# Unconventional kick. Hits on step 0, skips the downbeat of beat 3, 
+# and stutters on the off-beats.
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, 
+           {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.6}, nil, 
+           nil, nil, {:note => :c4, :amp => 0.7}, nil)
+
+# Rapid snare hits and rolls, heavily syncopated
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.5}, nil, 
+           nil, nil, {:note => :c4, :amp => 0.8}, nil, 
+           nil, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.9}, {:note => :c4, :amp => 0.4})
+
+# Erratic, machine-gun hi-hats
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, 
+           nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, nil, 
+           {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, 
+           {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# Deep, sparse sub-bass. Long release to anchor the frantic drums.
+s_bass  = (ring {:note => :f2, :release => 0.5}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :ab2, :release => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# Chopped, stuttering vocal melody (Granular Synth)
+# Using :misc_lori, short size (0.04), high density (4) = rhythmic stutter
+s_vocal = (ring nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.3, :density => 4, :size => 0.04}, nil, 
+           nil, {:note => :ab4, :buffer => :misc_lori, :pos => 0.5, :density => 4, :size => 0.04}, nil, nil, 
+           nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.7, :density => 4, :size => 0.04}, nil, 
+           nil, nil, nil, nil)
+
+# Distant, jagged FM melody
+s_fm    = (ring nil, nil, nil, {:note => :f5, :amp => 0.6}, nil, nil, {:note => :eb5, :amp => 0.5}, nil, 
+           nil, {:note => :c5, :amp => 0.7}, nil, nil, nil, {:note => :ab5, :amp => 0.5}, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the frantic, interlocking drums (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: Add the deep sub-bass (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: Add the chopped vocal stutters and FM blips (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], [:play_fm, s_fm, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

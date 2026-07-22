@@ -1,0 +1,50 @@
+use_bpm 60
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Vast & Celestial)
+# ==========================================================
+
+# Massive, slow-attacking drone. 
+# Notice the 4-beat attack and 8-beat release. It takes a whole bar just to fade in!
+s_pad   = (ring {:note => :d2, :attack => 4.0, :release => 8.0, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :a2, :attack => 4.0, :release => 8.0, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+
+# Shimmering granular vocal drone. 
+# Using :ambi_choir, very long size (0.2s) and low density (2) = smooth, evolving cloud.
+# The 'pos' shifts slightly to create movement.
+s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :a4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# Distant, echoing FM bells (D Major)
+s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.4, :release => 3.0}, nil, nil, nil, 
+           nil, nil, nil, nil, nil, nil, {:note => :a4, :amp => 0.3, :release => 3.0}, nil)
+
+# Sparse, high "starlight" plucks (F# Minor pentatonic for a touch of tension)
+s_pluck = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :d6, :amp => 0.3, :release => 2.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the vast drone and granular cloud (4 bars)
+  [ [:play_pad, s_pad, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: Add distant FM bells (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_grain, s_grain, 8], 
+    [:play_fm, s_fm, 8] ],
+    
+  # Scene 3: Add the high starlight plucks (8 bars)
+  [ [:play_pad, s_pad, 8], [:play_grain, s_grain, 8], 
+    [:play_fm, s_fm, 8], [:play_pluck, s_pluck, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

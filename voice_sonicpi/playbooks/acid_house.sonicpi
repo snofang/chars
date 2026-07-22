@@ -1,0 +1,58 @@
+use_bpm 128
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Squelchy & Hypnotic)
+# ==========================================================
+
+# Rigid 4-on-the-floor with a clap on 2 and 4
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Open hats on the off-beats (steps 2, 6, 10, 14)
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, 
+           nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Acid 303" Bassline.
+# The notes are simple A minor, but the 'cutoff' Hash slowly opens from 70 to 130 
+# and closes back down, simulating the 303 filter envelope.
+s_bass  = (ring {:note => :a2, :cutoff => 70}, {:note => :a2, :cutoff => 80}, nil, {:note => :c3, :cutoff => 90}, 
+           {:note => :a2, :cutoff => 100}, nil, {:note => :e2, :cutoff => 110}, {:note => :a2, :cutoff => 120}, 
+           {:note => :a2, :cutoff => 130}, nil, {:note => :a2, :cutoff => 120}, {:note => :g2, :cutoff => 110}, 
+           {:note => :f2, :cutoff => 100}, nil, {:note => :e2, :cutoff => 90}, {:note => :a2, :cutoff => 80})
+
+# Classic House organ stabs (A Minor 9th) on the off-beats
+s_chords= (ring nil, [:a3, :c4, :e4, :g4], nil, nil, nil, [:a3, :c4, :e4, :g4], nil, nil, 
+           nil, [:g3, :bb3, :d4, :f4], nil, nil, nil, [:g3, :bb3, :d4, :f4], nil, nil)
+
+# Pitched-down, chopped club vocal ("Yeah!")
+# Granular synth chops :misc_lori to create a rhythmic vocal stab.
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :a3, :buffer => :misc_lori, :pos => 0.2, :density => 4, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
+           nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the rigid drums and the filter-sweeping Acid bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: Add the classic house organ stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: Add the chopped vocal stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

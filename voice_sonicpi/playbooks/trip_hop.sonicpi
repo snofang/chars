@@ -1,0 +1,65 @@
+use_bpm 80
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Melancholy & Cinematic)
+# ==========================================================
+
+# Loose, syncopated boom-bap kick. Hits on step 0, the 'e' of 3 (step 10), 
+# and a ghost kick on the 'a' of 4 (step 15).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, {:note => :c4, :amp => 0.5})
+
+# Heavy, dusty snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'a' of 2 (step 7).
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Lazy, swinging hats. Notice the triplet-feel emphasis on the off-beats.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.2}, 
+           nil, {:note => :c4, :amp => 0.3}, nil, nil, 
+           {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.4}, 
+           nil, {:note => :c4, :amp => 0.3}, nil, nil)
+
+# Deep, sustained sub-bass. Long release to create a suffocating weight.
+s_bass  = (ring {:note => :d2, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :f2, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# Jazzy, melancholy minor 9th chords (Arrays) on the downbeats.
+s_chords= (ring [:d3, :f4, :a4, :c5], nil, nil, nil, nil, nil, nil, nil, 
+           [:bb3, :d4, :f4, :a4], nil, nil, nil, nil, nil, nil, nil)
+
+# Distant, echoing music box melody (D Natural Minor)
+# Routed through the tape echo in the engine for a ghostly smear.
+s_pluck = (ring nil, nil, nil, nil, nil, nil, {:note => :d5, :amp => 0.6}, nil, 
+           nil, nil, nil, nil, nil, nil, {:note => :f5, :amp => 0.5}, nil)
+
+# Haunting granular vocal drone (using :misc_lori buffer, long size)
+s_grain = (ring {:note => :d4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.15}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :f4, :buffer => :misc_lori, :pos => 0.7, :density => 2, :size => 0.15}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the melancholy chords and vocal drone (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: Add the deep bass and dusty drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_sub, s_bass, 8], [:play_kick, s_kick, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The distant music box melody enters (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_sub, s_bass, 8], [:play_kick, s_kick, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_pluck, s_pluck, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
