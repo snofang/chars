@@ -1,0 +1,100 @@
+# ==========================================================
+# PLAYBOOK: GLITCH HOP / MIDTEMPO BASS
+# (Pioneered by Opiuo, Tipper, and KOAN Sound)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Glitch Hop. 
+# We have explored hyper-quantized genres (Hyperpop) and rigid 4/4 
+# genres (Techno). Glitch Hop sits right in the middle. It takes the 
+# tempo of hip-hop (around 100-110 BPM) but injects it with massive, 
+# squelchy FM basslines, highly swung drums, and pristine, funky 
+# sound design.
+#
+# This playbook perfectly demonstrates how to create a "swing" feel 
+# on a rigid 16-step grid by using sparsity and amplitude manipulation. 
+# It also pushes the `:play_fm` synth to its squelchy, wobble-bass limits.
+# ==========================================================
+
+use_bpm 110
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Funky, Squelchy, & Deep)
+# ==========================================================
+
+# The "Swung" Glitch Hop Kick. 
+# Hits on step 0, the 'and' of 2 (step 6), and the 'e' of 3 (step 10).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil)
+
+# Heavy, organic snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# Swung, bouncy hats.
+# Notice the alternating amplitudes and rests to create a triplet-like bounce.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil)
+
+# The "Squelch" Bass (E Minor).
+# Uses :play_fm with a high depth (5) and long release to create a 
+# wobbling, funky, electronic bassline that carries the melody.
+s_bass  = (ring {:note => :e2, :divisor => 2, :depth => 5, :release => 0.4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :g2, :divisor => 2, :depth => 5, :release => 0.4, :amp => 1.0}, nil, {:note => :a2, :divisor => 2, :depth => 5, :release => 0.4, :amp => 1.0}, nil, nil, nil, {:note => :d2, :divisor => 2, :depth => 5, :release => 0.4, :amp => 1.0}, nil, nil, nil)
+
+# Lush, jazzy minor 9th chords (Em9 to Am9).
+# Hit on the off-beats to leave massive room for the squelchy bass.
+s_chords= (ring [:e3, :g3, :b3, :d4], nil, nil, nil, nil, nil, nil, nil, [:a3, :c4, :e4, :g4], nil, nil, nil, nil, nil, nil, nil)
+
+# Bright, echoing chromatic melody (E Minor Pentatonic).
+# Routed through the engine's tape echo for a spacey, surreal smear.
+s_lead  = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.7}, nil, {:note => :g5, :amp => 0.6}, nil, nil, nil, {:note => :b5, :amp => 0.8}, nil, nil, nil, {:note => :a5, :amp => 0.6}, nil)
+
+# Funky, chopped vocal stutters (Granular Synth)
+# High density, small size = percussive, rhythmic vocal chops.
+s_vocal = (ring nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, {:note => :b4, :buffer => :misc_lori, :pos => 0.7, :density => 2, :size => 0.05, :amp => 0.6}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Funky Groove - Drums and Squelch Bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_fm, s_bass, 4] ],
+  
+  # Scene 2: Add the jazzy chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Full Glitch - Lead melody and vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SWING & BASS DESIGN]
+# 
+# 1. Simulated Swing: Look at `s_kick` and `s_hats`. Instead of hitting 
+#    on straight 16th notes, the kicks hit on steps 0, 6, and 10. The 
+#    hats leave gaps (`nil`) on the "e" and "a" of the beat. Because 
+#    the engine's master clock is rigid, this sparsity creates a laid-back, 
+#    bouncing "swing" feel that defines Glitch Hop.
+#
+# 2. FM as a Wobble Bass: The `s_bass` sequence uses the `:play_fm` synth 
+#    with a `depth` of `5` and a `release` of `0.4`. This extreme FM ratio 
+#    creates a rich, squelchy, harmonically dense sound that wobbles and 
+#    decays naturally, acting as the main melodic hook of the track.
+#
+# 3. Jazzy Space: Glitch Hop relies on pristine separation. The lush Em9 
+#    and Am9 chords (`s_chords`) hit on the downbeats, while the squelchy 
+#    bass and vocal chops hit on the off-beats. The engine's strict 16-step 
+#    grid ensures these complex, overlapping elements never clash, creating 
+#    a massive, funky, and clean wall of sound.
+# ==========================================================

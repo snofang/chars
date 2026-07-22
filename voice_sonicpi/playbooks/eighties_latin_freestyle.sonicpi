@@ -1,0 +1,101 @@
+# ==========================================================
+# PLAYBOOK: 80s LATIN FREESTYLE / MIAMI BASS
+# (Pioneered by Shannon, Stevie B, and Exposé)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Latin Freestyle.
+# We have explored rigid 4/4 techno and swung hip-hop. Freestyle is the
+# sound of 80s Miami and New York club culture. It fuses the syncopated
+# electro-funk of Afrika Bambaataa with lush, romantic Latin melodies.
+# It relies heavily on the "Mambo" rhythm—a specific 3-3-2 syncopation
+# played on the 808 toms and snares.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to
+# create that bouncy, robotic 808 syncopation, while the synths provide
+# massive, staccato minor chords and bright, piercing arpeggios.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Romantic & Robotic)
+# ==========================================================
+
+# The "Mambo" 808 Kick.
+# Hits on step 0, the 'a' of 1 (step 3), beat 3 (step 8), and the 'a' of 3 (step 11).
+s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil)
+
+# Dry, 808 snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, driving 16th hats.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2})
+
+# Deep, melodic 808 bassline (A Minor).
+s_bass  = (ring :a2, nil, nil, :a2, nil, :c3, nil, nil, :e3, nil, nil, :e3, nil, :c3, nil, nil)
+
+# Staccato, romantic minor chords (Am to G).
+# Hit on the off-beats (steps 2, 6, 10, 14) to leave room for the 808 syncopation.
+s_chords= (ring nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil, [:g3, :bb3, :d4], nil)
+
+# The 808 Tom/Marimba fill (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) to create a hollow, percussive tom sound.
+s_fm    = (ring nil, {:note => :a4, :amp => 0.6, :divisor => 4, :depth => 1}, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 4, :depth => 1}, nil, nil, {:note => :c5, :amp => 0.6, :divisor => 4, :depth => 1}, nil, {:note => :a4, :amp => 0.6, :divisor => 4, :depth => 1}, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 4, :depth => 1}, nil, nil, {:note => :g4, :amp => 0.6, :divisor => 4, :depth => 1})
+
+# Bright, echoing arpeggio lead (A Minor).
+# Routed through the engine's tape echo for that classic 80s space echo smear.
+s_lead  = (ring :a5, nil, nil, nil, :c6, nil, :e6, nil, nil, nil, :d6, nil, :c6, nil, :b5, nil)
+
+# Chopped, rhythmic vocal stutter (Granular Synth)
+s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the 808 syncopation and bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the staccato chords and tom fills (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_fm, s_fm, 8] ],
+    
+  # Scene 3: The Hook - The bright arpeggio and vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_fm, s_fm, 8], 
+    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 4] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 808 FUNK]
+# 
+# 1. The "Mambo" Syncopation: Look at `s_kick` and `s_fm`. The kick 
+#    hits on steps 0, 3, 8, and 11. The FM toms fill in the gaps on 
+#    steps 1, 4, 7, 9, 12, and 15. This interlocking 3-3-2 rhythm is 
+#    the absolute foundation of Latin Freestyle. The engine's strict 
+#    master clock ensures this complex puzzle locks together with 
+#    robotic, 808 precision.
+#
+# 2. Staccato Romance: Look at `s_chords`. The arrays hit strictly on 
+#    the off-beats (steps 2, 6, 10, 14). Because the engine's `:play_chords` 
+#    synth uses a sharp attack, these minor chords sound like a razor 
+#    slicing perfectly between the 808 kicks, creating that bouncy, 
+#    dance-floor romance.
+#
+# 3. FM as an 808 Tom: The `:play_fm` synth is given `divisor: 4` and 
+#    `depth: 1` in the Hashes. This narrows the harmonic ratio so much 
+#    that the sine waves collapse into a hollow, percussive thud, 
+#    perfectly mimicking the 808 tom fills that defined 80s electro-funk.
+# ==========================================================

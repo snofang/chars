@@ -1,0 +1,94 @@
+# ==========================================================
+# PLAYBOOK: BALTIMORE CLUB
+# (Pioneered by DJ Technics, Rod Lee, Blaqstarr, and Scottie B)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Baltimore Club.
+# We have explored Jersey Club and Footwork, but Baltimore Club is the 
+# raw, raunchy, Godfather of the 130 BPM bounce. Born in the mid-90s 
+# in Baltimore, it is famous for a specific, aggressive drum pattern 
+# known as the "Baltimore Break." 
+#
+# It relies on a kick drum that gallops and stutters on the 16-step grid, 
+# heavily chopped R&B vocal stutters, and a raw, repetitive energy. This 
+# playbook perfectly demonstrates how to use rapid grid placements to 
+# create a frantic, physical bounce that forces you to move.
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Raw & Bouncy)
+# ==========================================================
+
+# The "Baltimore Break" Kick.
+# Hits on step 0, the 'and' of 2 (step 6), beat 3 (step 8), 
+# and a rapid 16th stutter on the 'e' and 'and' of 4 (steps 10 & 11).
+s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil)
+
+# Heavy, dry snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'a' of 2.
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil)
+
+# Fast, relentless, driving 16th hats.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# Raw, repetitive, booming 808 bass.
+# Short release to make it act like a rhythmic punch.
+s_bass  = (ring {:note => :g1, :release => 0.2}, nil, nil, nil, {:note => :g1, :release => 0.2}, nil, {:note => :bb1, :release => 0.2}, nil, {:note => :c2, :release => 0.2}, nil, nil, nil, {:note => :bb1, :release => 0.2}, nil, nil, nil)
+
+# Staccato, minor chord stabs (G Minor).
+# Hit on the off-beats to leave maximum room for the galloping kick.
+s_chords= (ring nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil, nil, nil, nil, nil, [:bb3, :db4, :f4], nil, nil, nil, nil)
+
+# Heavily chopped, R&B vocal stutter (Granular Synth).
+# High density, tiny size = a raw, percussive vocal skip.
+s_vocal = (ring nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil, {:note => :bb4, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, {:note => :d5, :buffer => :misc_lori, :pos => 0.7, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Break - Just the galloping drums (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Groove - Add the raw 808 bass and chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Club - The chopped R&B vocal stutters drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE BOUNCE]
+# 
+# 1. The Galloping Kick: Look at `s_kick`. The secret to the Baltimore 
+#    sound is the rapid 16th-note stutter on steps 10 and 11 right before 
+#    beat 4. Because the engine's master clock fires these exactly on the 
+#    grid, it creates a physical "gallop" that makes the track lurch 
+#    forward aggressively.
+#
+# 2. Raw 808 Punch: Look at `s_bass`. The `release` is set to `0.2`. 
+#    This cuts the sub-bass off almost instantly, preventing it from 
+#    droning and turning it into a sharp, rhythmic punch that weaves 
+#    perfectly between the galloping kicks.
+#
+# 3. Percussive Vocals: The `s_vocal` sequence uses the granular engine 
+#    to chop a vocal into microscopic shards (`size: 0.03`). In Baltimore 
+#    Club, vocals are rarely sung; they are sliced and used as raw 
+#    percussion. The engine fires these with absolute precision, creating 
+#    a frantic, human energy over the rigid 130 BPM grid.
+# ==========================================================

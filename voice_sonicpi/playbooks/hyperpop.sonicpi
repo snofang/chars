@@ -1,0 +1,102 @@
+# ==========================================================
+# PLAYBOOK: HYPERPOP / BUBBLEGUM BASS
+# (Pioneered by SOPHIE, A. G. Cook, and 100 Gecs)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Hyperpop. 
+# We have explored organic genres (Afro House, Dub) and retro genres 
+# (Chiptune, Synthwave). Hyperpop is the sound of the modern internet. 
+# It pushes digital synthesis to absolute, clinical extremes. It is 
+# characterized by hyper-quantized, trap-influenced drums, massive 
+# metallic synth basses (the "SOPHIE" kick), and vocals that are 
+# pitched up into angelic, chipmunk-range stutters.
+#
+# This playbook perfectly demonstrates how to push the Parameter Hashes 
+# to their absolute limits. We use extreme FM `depth` to create metallic, 
+# plastic bass clanks, and the granular engine to shatter a vocal into 
+# high-pitched, sugary glitches.
+# ==========================================================
+
+use_bpm 160
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Major - Sugary, Bright, & Aggressive)
+# ==========================================================
+
+# The "Hyperpop" Kick. 
+# Half-time feel, syncopated. Hits on step 0 and the 'a' of 3 (step 14).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil)
+
+# Rigid, metallic clap strictly on beat 3 (step 8).
+s_clap  = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Frantic, hyper-quantized Trap Hats.
+# Notice the rapid amplitude rises at the end of the bar to simulate a roll.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, 
+           {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.7}, {:note => :c4, :amp => 0.8}, 
+           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, 
+           {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.7}, {:note => :c4, :amp => 0.8})
+
+# The "Plastic/Metallic" Bass Clank (F# Minor).
+# Uses :play_fm with extreme depth (8) to create a metallic, industrial knock.
+s_bass  = (ring {:note => :f2, :divisor => 2, :depth => 8, :amp => 1.0, :release => 0.2}, nil, nil, nil, {:note => :f2, :divisor => 2, :depth => 8, :amp => 1.0, :release => 0.2}, nil, nil, nil, {:note => :a2, :divisor => 2, :depth => 8, :amp => 1.0, :release => 0.2}, nil, nil, nil, {:note => :g2, :divisor => 2, :depth => 8, :amp => 1.0, :release => 0.2}, nil, nil, nil)
+
+# Bright, icy Major chord stabs (F# Major 9).
+s_chords= (ring nil, [:f3, :a3, :c4, :e4], nil, nil, nil, [:f3, :a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4, :g4], nil, nil, nil, [:g3, :b3, :d4, :f4], nil, nil)
+
+# High-pitched, piercing arpeggio lead (F# Major Pentatonic).
+# Routed through the engine's tape echo for a digital, sterile smear.
+s_lead  = (ring {:note => :f6, :amp => 0.7, :cutoff => 130}, nil, {:note => :e6, :amp => 0.6, :cutoff => 130}, nil, {:note => :c6, :amp => 0.7, :cutoff => 130}, nil, {:note => :a5, :amp => 0.6, :cutoff => 130}, nil, {:note => :g5, :amp => 0.7, :cutoff => 130}, nil, {:note => :a5, :amp => 0.6, :cutoff => 130}, nil, {:note => :c6, :amp => 0.7, :cutoff => 130}, nil, {:note => :e6, :amp => 0.6, :cutoff => 130}, nil)
+
+# The "Chipmunk" Vocal Glitch (Granular Synth)
+# Pitched to :f5 and :c6. Extreme density (5) and tiny size (0.02) 
+# creates a sugary, robotic stutter.
+s_vocal = (ring nil, nil, {:note => :f5, :buffer => :misc_lori, :pos => 0.2, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, {:note => :a5, :buffer => :misc_lori, :pos => 0.4, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, nil, nil, {:note => :c6, :buffer => :misc_lori, :pos => 0.6, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, {:note => :a5, :buffer => :misc_lori, :pos => 0.4, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The sterile intro - Just the metallic bass and trap hats (4 bars)
+  [ [:play_fm, s_bass, 4], [:play_hats, s_hats, 4], [:play_kick, s_kick, 4] ],
+  
+  # Scene 2: Add the icy chords and metallic claps (8 bars)
+  [ [:play_fm, s_bass, 8], [:play_hats, s_hats, 8], [:play_kick, s_kick, 8], 
+    [:play_chords, s_chords, 8], [:play_snare, s_clap, 8] ],
+    
+  # Scene 3: The Hyperpop Drop - Piercing lead and chipmunk vocals (8 bars)
+  [ [:play_fm, s_bass, 8], [:play_hats, s_hats, 8], [:play_kick, s_kick, 8], 
+    [:play_chords, s_chords, 8], [:play_snare, s_clap, 8], 
+    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DIGITAL EXTREMES]
+# 
+# 1. FM as Plastic: Look at `s_bass`. The `:play_fm` synth is given a 
+#    `depth` of `8`. This extreme ratio forces the FM modulator to 
+#    shatter the carrier wave, creating a metallic, "clanking" sound 
+#    that mimics the famous latex/plastic basses designed by SOPHIE.
+#
+# 2. The Hyper-Roll: Look at `s_hats`. The amplitudes in the Hashes 
+#    rise linearly from 0.3 to 0.8 twice per bar. Because the engine 
+#    fires these on the strict 16-step grid, it creates a machine-gun 
+#    roll that feels mathematically perfect and intensely digital.
+#
+# 3. Sugary Granularization: The `s_vocal` sequence uses the granular 
+#    engine to chop a vocal into microscopic shards (`size: 0.02`). By 
+#    pitching them up to the `:c6` range, the vocal loses all human 
+#    breath and becomes a bright, sugary, robotic glitch that defines 
+#    the Hyperpop aesthetic.
+# ==========================================================

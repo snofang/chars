@@ -1,0 +1,97 @@
+# ==========================================================
+# PLAYBOOK: HARDBASS / RUSSIAN PUMPING HOUSE
+# (Pioneered by DJ Snat, XS Project, and GSPD)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Hardbass. 
+# We have explored dark, slow genres (Witch House) and complex, 
+# swinging genres (Glitch Hop). Hardbass is the absolute pinnacle of 
+# high-energy, working-class European rave culture. It sits at 150+ BPM 
+# and is entirely built around a specific sound: the "Donk" (a bouncy, 
+# pitched FM bass that hits strictly on the off-beats).
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# to turn the `:play_sub` synth into a sharp, piercing "Donk" bassline. 
+# By pairing it with frantic 16th-note arpeggios, the engine creates a 
+# relentless, jumping, "rave-in-a-basement" momentum.
+# ==========================================================
+
+use_bpm 150
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Frantic & Bouncy)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick at 150 BPM.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, dry rave clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, driving 16th off-beat hats.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Donk" Bass. 
+# Hits strictly on the off-beats (steps 2, 6, 10, 14). 
+# Very short release (0.1) makes it punchy and bouncy.
+s_bass  = (ring nil, nil, {:note => :a2, :amp => 1.2, :release => 0.1}, nil, nil, nil, {:note => :a2, :amp => 1.2, :release => 0.1}, nil, 
+           nil, nil, {:note => :c3, :amp => 1.2, :release => 0.1}, nil, nil, nil, {:note => :e3, :amp => 1.2, :release => 0.1}, nil)
+
+# Aggressive, off-beat synth stabs (A Minor).
+# Hits in sync with the Donk bass to create a massive wall of sound.
+s_chords= (ring nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, 
+           nil, nil, [:c4, :e4, :g4], nil, nil, nil, [:e4, :g4, :b4], nil)
+
+# Frantic, high-pitched 16th-note arpeggio lead (A Minor).
+# Uses :play_fm with a high divisor to create a piercing, chip-tune rave melody.
+s_fm    = (ring {:note => :a5, :amp => 0.7, :depth => 2, :divisor => 2}, nil, {:note => :e5, :amp => 0.5, :depth => 2, :divisor => 2}, nil, {:note => :c6, :amp => 0.7, :depth => 2, :divisor => 2}, nil, {:note => :e6, :amp => 0.6, :depth => 2, :divisor => 2}, nil, {:note => :d6, :amp => 0.7, :depth => 2, :divisor => 2}, nil, {:note => :c6, :amp => 0.5, :depth => 2, :divisor => 2}, nil, {:note => :b5, :amp => 0.6, :depth => 2, :divisor => 2}, nil, {:note => :a5, :amp => 0.6, :depth => 2, :divisor => 2}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Pump - Just the kick, hats, and Donk bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Rave - Add the heavy claps and synth stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Meltdown - The frantic FM arpeggio drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RAVE MOMENTUM]
+# 
+# 1. The Donk: Look at `s_bass`. The `:play_sub` synth (usually a deep 
+#    rumble) is given a `release` of `0.1` via the Parameter Hashes. This 
+#    cuts the note off instantly, turning the sawtooth wave into a sharp, 
+#    piercing "thwack" that hits exactly between the kicks. This off-beat 
+#    bounce is the absolute genetic code of Hardbass.
+#
+# 2. The Off-Beat Wall: Look at `s_bass`, `s_hats`, and `s_chords`. They 
+#    ALL hit strictly on steps 2, 6, 10, and 14. Because the engine's 
+#    master clock locks these together at 150 BPM, the track physically 
+#    "jumps" up and down on the off-beats, creating an unstoppable, 
+#    skipping momentum.
+#
+# 3. Frantic FM Arpeggios: The `s_fm` sequence plays on almost every 
+#    16th step. By using `divisor: 2` and `depth: 2`, the FM synth 
+#    produces a hollow, piercing square wave that cuts through the heavy 
+#    bass and kicks, mimicking the fast, aggressive melodies of a 2000s 
+#    Russian rave track.
+# ==========================================================
