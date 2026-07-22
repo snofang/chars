@@ -1,0 +1,103 @@
+# ==========================================================
+# PLAYBOOK: UK HARDCORE / HAPPY HARDCORE
+# (Pioneered by Scott Brown, Brisk, DJ Sy, and Hixxy)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose UK Hardcore. 
+# We have explored dark, slow genres (Dub, Vaporwave) and rigid techno, 
+# but Happy Hardcore is the absolute pinnacle of high-BPM euphoria. 
+# Emerging from the early 90s rave scene, it pushes the tempo to 170+ BPM.
+# It is famous for taking a rigid 4/4 kick, pairing it with a fast 
+# "off-beat" bassline, and layering massive, bright piano chords and 
+# pitched-up vocal stutters on top.
+#
+# This playbook perfectly demonstrates how the 16-step grid feels at 
+# extreme speeds, and how the Parameter Hashes can be used to create 
+# a frantic, rolling off-beat bounce.
+# ==========================================================
+
+use_bpm 170
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Major - Euphoric & Frantic)
+# ==========================================================
+
+# Rigid, driving 4-on-the-floor kick at 170 BPM.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, rave-style clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Fast, off-beat open hats. Notice they hit exactly between the kicks.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, 
+           nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Off-Beat" Rave Bass. 
+# Hits strictly on the off-beats (steps 2, 6, 10, 14) to create a massive bounce.
+s_bass  = (ring nil, nil, {:note => :c2, :amp => 1.0, :release => 0.15}, nil, nil, nil, {:note => :c2, :amp => 1.0, :release => 0.15}, nil, 
+           nil, nil, {:note => :g1, :amp => 1.0, :release => 0.15}, nil, nil, nil, {:note => :g1, :amp => 1.0, :release => 0.15}, nil)
+
+# Massive, bright piano stabs (C Major 7 to G Major 7).
+# Hits on the off-beats in sync with the bass.
+s_chords= (ring nil, nil, [:c3, :e3, :g3, :b3], nil, nil, nil, [:c3, :e3, :g3, :b3], nil, 
+           nil, nil, [:g3, :b3, :d4, :f4], nil, nil, nil, [:g3, :b3, :d4, :f4], nil)
+
+# High-pitched, euphoric vocal chops (Granular Synth)
+# High density, tiny size = pitched-up rave vocal stutter.
+s_vocal = (ring nil, nil, nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.2, :density => 4, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
+           nil, nil, {:note => :e5, :buffer => :misc_lori, :pos => 0.4, :density => 4, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil)
+
+# Bright, echoing arpeggio lead (C Major Pentatonic)
+s_lead  = (ring :c5, nil, :d5, nil, :e5, nil, :g5, nil, :e5, nil, :d5, nil, :c5, nil, :g4, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Just the frantic 170 BPM kick and off-beat bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: Add the heavy claps, off-beat hats, and piano stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The euphoric vocal chops and arpeggio drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EUPHORIA]
+# 
+# 1. The Off-Beat Bounce: Look at `s_bass`, `s_hats`, and `s_chords`.
+#    They ALL hit strictly on steps 2, 6, 10, and 14. In a 16-step grid,
+#    these are the exact midpoints between the kicks. Because the engine's
+#    master clock locks these together perfectly at 170 BPM, the track 
+#    physically "bounces" up and down, creating the signature Happy Hardcore
+#    "boom-cha boom-cha" momentum.
+#
+# 2. Extreme Tempo Precision: At 170 BPM, a 16th note is incredibly fast.
+#    The engine's strict master clock ensures the piano stabs and vocal chops
+#    land with absolute mathematical precision, preventing the track from
+#    sounding muddy or sloppy.
+#
+# 3. Pitched-Up Granular Vocals: The `s_vocal` sequence uses the granular
+#    engine to chop a vocal sample into tiny, rhythmic pieces (`size: 0.03`).
+#    By pitching them up to `:c5` and `:e5`, the vocal loses its original
+#    tone and becomes a bright, angelic flutter that dances on top of the
+#    heavy kick drum.
+# ==========================================================
