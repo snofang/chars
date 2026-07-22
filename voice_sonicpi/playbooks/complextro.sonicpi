@@ -1,0 +1,112 @@
+# ==========================================================
+# PLAYBOOK: COMPLEXTRO / ELECTRO HOUSE
+# (Pioneered by Porter Robinson, Wolfgang Gartner, and Mord Fustang)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Complextro.
+# We have explored rigid 4/4 genres (Techno) and chaotic breakbeats 
+# (Glitch Hop). Complextro (Complex Electro) is the sound of 2010s 
+# EDM at its most technical. It relies on a specific production trick: 
+# rapidly switching synth patches on every single 16th note to create 
+# a "morphing" bassline that sounds like multiple instruments fighting 
+# for space.
+#
+# This playbook perfectly demonstrates the raw power of the Parameter 
+# Hashes. By pushing the `:play_fm` synth to play on every 16th step, 
+# but changing the `divisor` and `depth` Hashes on every single hit, 
+# the engine forces the FM modulator to constantly reshape the waveform, 
+# creating that signature bouncy, talking bassline.
+# ==========================================================
+
+use_bpm 128
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Bouncy & Highly Technical)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, festival-style clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Complextro" Morphing Bass (E Minor).
+# Plays on EVERY 16th step. Notice how the 'divisor' and 'depth' Hashes 
+# change radically on every single hit. This forces the FM synth to 
+# act like 16 different synthesizer patches playing in sequence!
+s_bass  = (ring {:note => :e2, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :e2, :divisor => 4, :depth => 6, :release => 0.1}, {:note => :e3, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :e2, :divisor => 2, :depth => 8, :release => 0.1}, 
+           {:note => :g2, :divisor => 4, :depth => 1, :release => 0.1}, {:note => :g2, :divisor => 3, :depth => 5, :release => 0.1}, {:note => :e2, :divisor => 2, :depth => 2, :release => 0.1}, {:note => :e2, :divisor => 4, :depth => 7, :release => 0.1}, 
+           {:note => :b2, :divisor => 3, :depth => 4, :release => 0.1}, {:note => :b2, :divisor => 2, :depth => 1, :release => 0.1}, {:note => :e3, :divisor => 4, :depth => 6, :release => 0.1}, {:note => :e2, :divisor => 3, :depth => 3, :release => 0.1}, 
+           {:note => :g2, :divisor => 2, :depth => 8, :release => 0.1}, {:note => :g2, :divisor => 4, :depth => 2, :release => 0.1}, {:note => :e2, :divisor => 3, :depth => 5, :release => 0.1}, {:note => :e2, :divisor => 2, :depth => 1, :release => 0.1})
+
+# Massive, sidechained supersaw stabs (E Minor).
+# Hit on the off-beats with a high cutoff to create a bright, soaring wall of sound.
+s_chords= (ring nil, nil, {:note => [:e3, :g3, :b3], :cutoff => 120, :release => 0.2, :amp => 0.6}, nil, nil, nil, {:note => [:e3, :g3, :b3], :cutoff => 120, :release => 0.2, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:c3, :e3, :g3], :cutoff => 120, :release => 0.2, :amp => 0.6}, nil, nil, nil, {:note => [:d3, :fs3, :a3], :cutoff => 120, :release => 0.2, :amp => 0.6}, nil)
+
+# Piercing, 8-bit video game blips (E Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) to cut through the dense bassline.
+s_fm    = (ring {:note => :e5, :amp => 0.6, :divisor => 4, :depth => 2}, nil, {:note => :b5, :amp => 0.5, :divisor => 4, :depth => 2}, nil, {:note => :g5, :amp => 0.6, :divisor => 4, :depth => 2}, nil, {:note => :e6, :amp => 0.7, :divisor => 4, :depth => 2}, nil, 
+           {:note => :e5, :amp => 0.6, :divisor => 4, :depth => 2}, nil, {:note => :c6, :amp => 0.5, :divisor => 4, :depth => 2}, nil, {:note => :d6, :amp => 0.6, :divisor => 4, :depth => 2}, nil, {:note => :b5, :amp => 0.7, :divisor => 4, :depth => 2}, nil)
+
+# Rapid, chopped vocal stutter (Granular Synth).
+# FIXED: Exactly 16 steps. High density, tiny size = a sharp, percussive vocal skip.
+s_vocal = (ring nil, nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.03, :amp => 0.5}, 
+           nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.03, :amp => 0.5}, 
+           nil, nil, nil, {:note => :b4, :buffer => :misc_lori, :pos => 0.6, :density => 3, :size => 0.03, :amp => 0.5}, 
+           nil, nil, nil, {:note => :e5, :buffer => :misc_lori, :pos => 0.8, :density => 3, :size => 0.03, :amp => 0.5})
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the kick, off-beat hats, and morphing bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_fm, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps and supersaw stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The 8-bit blips and vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN FM MORPHING]
+# 
+# 1. The Morphing Bass: Look at `s_bass`. The `:play_fm` synth plays on 
+#    every 16th step, but the `divisor` and `depth` Hashes change on 
+#    every single hit (e.g., from `divisor: 2, depth: 3` to `divisor: 4, 
+#    depth: 6`). Because the engine reads these Hashes independently, 
+#    the FM modulator radically reshapes the carrier wave on every step, 
+#    creating the illusion of 16 different synth patches playing in 
+#    sequence. This is the absolute genetic code of Complextro.
+#
+# 2. The Off-Beat Supersaw: Look at `s_chords`. The chords hit strictly 
+#    on the off-beats (steps 2, 6, 10, 14). By using a high `cutoff` 
+#    (120), the engine turns the `:blade` synth into a bright, soaring 
+#    wall of sound that contrasts heavily with the chaotic, low-pitched 
+#    morphing bass.
+#
+# 3. Extreme Density: Unlike Techno, which leaves space, Complextro 
+#    fills the grid. The `s_bass`, `s_chords`, `s_fm`, and `s_vocal` 
+#    sequences all interlock on different 16th steps. The engine's strict 
+#    master clock ensures these dense, complex elements fire with absolute 
+#    mathematical precision, preventing the track from sounding muddy.
+# ==========================================================

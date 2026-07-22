@@ -1,26 +1,22 @@
 # ==========================================================
-# VOICE SONIC PI ENGINE
-# A declarative, strict-schema step-sequencer & granular synth.
+# VOICE SONIC PI ENGINE - OPTIMIZED (FX Routing)
 # ==========================================================
 
 # ----------------------------------------------------------
-# 1. PARAMETER PARSER (Bulletproof)
+# 1. PARAMETER PARSER (Bulletproof - Unchanged)
 # ----------------------------------------------------------
-# Allows a step to be :c4, [:c4, :e4], nil, or a Hash: {note: :c4, amp: 0.5}
-# Also cleans arrays to prevent "play_chord got nil" errors.
 define :parse_step do |step, defaults|
   return nil, nil unless step
   
   if step.is_a?(Hash)
     note = step[:note]
     opts = defaults.merge(step)
-    opts.delete(:note) # Remove so it doesn't get passed as a synth arg
+    opts.delete(:note)
   else
     note = step
     opts = defaults
   end
   
-  # Sanitize arrays: remove nils, and return nil if the array is empty
   if note.is_a?(Array)
     note = note.compact
     return nil, opts if note.empty?
@@ -30,52 +26,77 @@ define :parse_step do |step, defaults|
 end
 
 # ----------------------------------------------------------
-# 2. THE SYNTHESIZERS (Single-Note Triggers with FX Routing)
+# 2. GLOBAL FX BUSES & QUEUES
 # ----------------------------------------------------------
 
-# 1. SUBTRACTIVE BASS
+# Queues for FX-wrapped instruments
+@lead_notes = []
+@snare_notes = []
+
+# Lead echo processor (sync'd with conductor)
+live_loop :lead_fx do
+  sync :conductor_step
+  if @lead_notes.any?
+    note, opts = @lead_notes.shift
+    with_fx :echo, phase: 0.375, decay: 4, mix: 0.3 do
+      use_synth :prophet
+      play note, **opts
+    end
+  end
+end
+
+# Snare reverb processor
+live_loop :snare_fx do
+  sync :conductor_step
+  if @snare_notes.any?
+    note, opts = @snare_notes.shift
+    with_fx :reverb, room: 0.9, mix: 0.5 do
+      sample :sn_dolf, pitch: (note(note) - note(:c4)), **opts
+    end
+  end
+end
+
+# ----------------------------------------------------------
+# 3. THE SYNTHESIZERS (Optimized)
+# ----------------------------------------------------------
+
+# 1. SUBTRACTIVE BASS (No FX - unchanged)
 define :play_sub do |n|
   use_synth :dsaw
   note, opts = parse_step(n, {release: 0.25, amp: 1.5, cutoff: 80})
   play note, **opts if note
 end
 
-# 2. SUBTRACTIVE LEAD (Routed through Tape Echo)
+# 2. SUBTRACTIVE LEAD (FX moved to global bus)
 define :play_lead do |n|
-  use_synth :prophet
   note, opts = parse_step(n, {release: 0.2, amp: 1.0, cutoff: rrand(80, 110)})
-  with_fx :echo, phase: 0.375, decay: 4, mix: 0.3 do
-    play note, **opts if note
-  end
+  @lead_notes << [note, opts] if note
 end
 
-# 3. WARM CHORDS / NEO-SOUL PAD
+# 3. WARM CHORDS / NEO-SOUL PAD (No FX - unchanged)
 define :play_chords do |n|
   use_synth :blade
   note, opts = parse_step(n, {release: 1.5, amp: 0.7, attack: 0.2, cutoff: 80})
   play note, **opts if note
 end
 
-# 4. GRANULAR CLOUD (Fully Featured)
+# 4. GRANULAR CLOUD (No FX - unchanged)
 define :play_grain do |n|
   return unless n
   note, opts = parse_step(n, {amp: 0.5})
   
-  # Extract Granular Parameters
-  density = opts[:density] || 4        # Grains per 16th step
-  pos     = opts[:pos] || rrand(0.3, 0.5) # Buffer position (0.0 to 1.0)
-  size    = opts[:size] || 0.05        # Grain duration in seconds (50ms)
+  density = opts[:density] || 4
+  pos     = opts[:pos] || rrand(0.3, 0.5)
+  size    = opts[:size] || 0.05
   buffer  = opts[:buffer] || :ambi_choir
   
-  # Clean opts so they don't cause errors when passed to the sample
   opts.delete(:density); opts.delete(:pos); opts.delete(:size); opts.delete(:buffer)
   
   pitch_shift = note(note) - note(:c4)
   interval = 0.25 / density
   
-  # Fire the grains asynchronously without blocking the master clock
   at density.times.map { |i| i * interval } do
-    grain_start = pos + rrand(-0.01, 0.01) # Jitter for organic cloud texture
+    grain_start = pos + rrand(-0.01, 0.01)
     grain_finish = grain_start + size
     
     sample buffer, 
@@ -83,48 +104,46 @@ define :play_grain do |n|
       start: grain_start, 
       finish: grain_finish, 
       pan: rrand(-0.8, 0.8), 
-      attack: size / 2,    # Smooth grain envelope
+      attack: size / 2,
       release: size / 2, 
       **opts
   end
 end
 
-# 5. FM BELL
+# 5. FM BELL (No FX - unchanged)
 define :play_fm do |n|
   use_synth :fm
   note, opts = parse_step(n, {release: 0.3, amp: 0.8, divisor: 2.0, depth: 3})
   play note, **opts if note
 end
 
-# 6. PHYSICAL MODELING (Pluck)
+# 6. PHYSICAL MODELING (Pluck) (No FX - unchanged)
 define :play_pluck do |n|
   use_synth :pluck
   note, opts = parse_step(n, {release: 0.3, amp: 0.8, coef: rrand(0.3, 0.7)})
   play note, **opts if note
 end
 
-# 7. DARK AMBIENT PAD
+# 7. DARK AMBIENT PAD (No FX - unchanged)
 define :play_pad do |n|
   use_synth :dark_ambience
   note, opts = parse_step(n, {release: 1.5, amp: 0.6, attack: 0.5})
   play note, **opts if note
 end
 
-# 8. PITCHED KICK (Fixed Hash Parsing)
+# 8. PITCHED KICK (No FX - unchanged)
 define :play_kick do |n|
   note, opts = parse_step(n, {amp: 1.5})
   sample :bd_haus, pitch: (note(note) - note(:c4)), **opts if note
 end
 
-# 9. PITCHED SNARE (Fixed Hash Parsing)
+# 9. PITCHED SNARE (FX moved to global bus)
 define :play_snare do |n|
   note, opts = parse_step(n, {amp: 0.8})
-  with_fx :reverb, room: 0.9, mix: 0.5 do
-    sample :sn_dolf, pitch: (note(note) - note(:c4)), **opts if note
-  end
+  @snare_notes << [note, opts] if note
 end
 
-# 10. MICRO-TIMED HI-HATS
+# 10. MICRO-TIMED HI-HATS (No FX - unchanged)
 define :play_hats do |n|
   note, opts = parse_step(n, {amp: 0.3})
   if note
@@ -135,7 +154,7 @@ define :play_hats do |n|
 end
 
 # ----------------------------------------------------------
-# 3. VALIDATION & ENGINE BOOT (The Single Master Clock)
+# 4. VALIDATION & ENGINE BOOT (The Single Master Clock)
 # ----------------------------------------------------------
 define :start_engine do |playbook|
   # 1. Strict schema validation
@@ -162,6 +181,9 @@ define :start_engine do |playbook|
           send(inst, score[step % 16])
         end
       end
+      
+      # Trigger FX processors after scheduling notes
+      cue :conductor_step
       
       # The single master sleep for all instruments
       sleep 0.25

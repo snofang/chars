@@ -1,0 +1,97 @@
+# ==========================================================
+# PLAYBOOK: FUTURE GARAGE / UK BASS
+# (Pioneered by Burial, El-B, and Joy Orbison)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Future Garage.
+# We have explored rigid 4/4 house and frantic DnB. Future Garage is 
+# the sound of rainy, late-night London. It takes the 130 BPM grid but 
+# heavily swings the drums, leaving massive gaps in the rhythm. It relies 
+# on deep, moody sub-bass, lush minor chords, and ghostly, time-stretched 
+# vocal fragments that sound like memories echoing in an empty room.
+#
+# This playbook perfectly demonstrates how to use the Granular Synthesizer 
+# to create a mournful, ambient vocal drone. By using a long grain `size` 
+# and low `density`, the engine turns a vocal sample into a slow, 
+# evolving ghost that drifts over the swung 2-step beat.
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Moody, Nocturnal, & Swung)
+# ==========================================================
+
+# The "Swung 2-Step" Kick. 
+# Hits on step 0, then stutters on the 'a' of 2 (step 7) and beat 3 (step 8).
+s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil)
+
+# Tight, metallic snare strictly on beat 2 (step 4), with a ghost on the 'a' of 4.
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.3})
+
+# Erratic, swung shaker. Notice the gaps that create a "lagging" feel.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil)
+
+# Deep, moody Reese Sub-Bass (F Minor).
+# Massive release (2.0) and low cutoff (60) to create a dark, rumbling undercurrent.
+s_bass  = (ring {:note => :f1, :release => 2.0, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil, {:note => :ab1, :release => 2.0, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil)
+
+# Lush, nocturnal minor chords (Fm9 to Abm9).
+# Hit on the downbeats. The 1-beat attack makes them slowly fade in like fog.
+s_chords= (ring {:note => [:f3, :ab3, :c4, :eb4], :attack => 1.0, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:ab3, :cb4, :eb4, :gb4], :attack => 1.0, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Distant, echoing FM raindrops (F Minor Pentatonic).
+# Uses :play_fm with a high divisor to create a soft, organic bell tone.
+# Routed through the engine's tape echo for a cascading, nocturnal smear.
+s_fm    = (ring nil, {:note => :f5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :eb5, :amp => 0.3, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil, nil, nil, nil)
+
+# The "Ghostly" Vocal Drone (Granular Synth).
+# Pitched DOWN to :f3. Long size (0.15) and low density (1).
+# This time-stretches the vocal into a mournful, unrecognizable memory.
+s_vocal = (ring {:note => :f3, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.15, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :ab3, :buffer => :misc_lori, :pos => 0.6, :density => 1, :size => 0.15, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Night - Just the ghostly vocal, Reese bass, and chords (4 bars)
+  [ [:play_grain, s_vocal, 4], [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Streets - Add the swung 2-step drums and FM raindrops (8 bars)
+  [ [:play_grain, s_vocal, 8], [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN NOCTURNAL ATMOSPHERE]
+# 
+# 1. The Swung 2-Step: Look at `s_kick`. After the initial hit on step 0, 
+#    the next kick doesn't hit until step 7 (the very last 16th note of 
+#    beat 2), followed immediately by step 8. Because the engine's master 
+#    clock is rigid, this specific placement creates a lopsided, "drunken" 
+#    groove that feels like walking through puddles on a wet street.
+#
+# 2. Granular Ghosts: Look at `s_vocal`. The granular engine is given a 
+#    `density` of `1` and a `size` of `0.15`. By pitching the vocal down 
+#    and using sparse, long grains, the engine time-stretches the sample 
+#    into a formless, mournful wail. It no longer sounds like a voice; it 
+#    sounds like a memory echoing in the distance.
+#
+# 3. Subterranean Bass: The `s_bass` sequence uses a `cutoff` of `60` and 
+#    a `release` of `2.0`. This filters out all the high frequencies, 
+#    leaving only a dark, rumbling low-end that rings out for two whole 
+#    beats. The engine's strict clock ensures this massive bass note 
+#    perfectly anchors the erratic, swung drums.
+# ==========================================================
