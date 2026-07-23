@@ -1,0 +1,106 @@
+# ==========================================================
+# PLAYBOOK: 90s CHICAGO GHETTO HOUSE / JACK TRAX
+# (Pioneered by DJ Funk, DJ Deeon, and DJ Slugo)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Ghetto House.
+# We have explored Tech House (which is polished) and French Touch (which 
+# is filtered). Ghetto House is the raw, unpolished, x-rated sound of 
+# 90s Chicago's Dance Mania records. It takes the 909 drum machine and 
+# pushes it to its absolute limit, relying on a jacking, syncopated kick, 
+# relentless 8th-note off-beat bass, and repetitive, percussive vocal 
+# chants designed to make you sweat in a dark basement.
+#
+# This playbook perfectly demonstrates how to create raw, physical 
+# momentum. By using a high `cutoff` on the `:play_sub` synth for a 
+# buzzing, unfiltered bass, and scattering percussive vocal hits, the 
+# engine creates a relentless, jacking groove that feels like a 90s 
+# warehouse party.
+# ==========================================================
+
+use_bpm 132
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Raw, Jacking, & Relentless)
+# ==========================================================
+
+# The "Jacking" 909 Kick. 
+# Syncopated. Hits on step 0, the 'a' of 1 (step 3), beat 2 (step 4), 
+# and the 'a' of 3 (step 11).
+s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, :c4, nil, :c4, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, :c4, nil)
+
+# Heavy, dry 909 clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, driving 8th-note hats.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil)
+
+# The "Raw" Off-Beat Bass (F Minor).
+# Hits strictly on the off-beats. High cutoff (100) and very short release 
+# (0.1) create a relentless, buzzing, unfiltered analog bounce.
+s_bass  = (ring nil, nil, {:note => :f1, :release => 0.1, :cutoff => 100}, nil, nil, nil, {:note => :f1, :release => 0.1, :cutoff => 100}, nil, nil, nil, {:note => :ab1, :release => 0.1, :cutoff => 100}, nil, nil, nil, {:note => :c2, :release => 0.1, :cutoff => 100}, nil)
+
+# Stark, staccato minor chord stabs (Fm to Ab to C).
+# Hit sparingly on the off-beats to leave maximum room for the jacking bass.
+s_chords= (ring nil, nil, [:f3, :ab3, :c4], nil, nil, nil, [:f3, :ab3, :c4], nil, nil, nil, [:ab3, :c4, :eb4], nil, nil, nil, [:c3, :eb3, :g3], nil)
+
+# Piercing, repetitive "Rave" FM Blip (F Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
+# buzzy square wave that cuts through the raw mix.
+s_fm    = (ring {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.05}, nil, nil, {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.05}, nil, {:note => :ab5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.05}, nil, nil, {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.05}, nil, nil, {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.05}, nil, {:note => :g5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.05}, nil, nil)
+
+# Pitched-down, percussive "Ghetto" vocal chant (Granular Synth).
+# Pitched DOWN to :f3. High density, small size = a sharp, repetitive vocal hit 
+# that acts as a secondary percussion instrument.
+s_vocal = (ring {:note => :f3, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil, {:note => :f3, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil, {:note => :ab3, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil, {:note => :c4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Jack - Just the jacking kick, off-beat bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps and stark chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The repetitive FM blips and vocal chants drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RAW ENERGY]
+# 
+# 1. The Jacking Syncopation: Look at `s_kick`. It hits on steps 0, 3, 6, 
+#    8, and 11. This specific 3-3-2-3 syncopation is the absolute genetic 
+#    code of Chicago Ghetto House. By avoiding the standard 4/4 pulse, 
+#    the engine creates a lopsided, physical "jacking" feel that forces 
+#    the dancer to move their body, not just their head.
+#
+# 2. Unfiltered Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `cutoff` of `100` and a `release` of `0.1`. This leaves the filter 
+#    wide open, letting all the harsh, high-frequency harmonics of the 
+#    detuned sawtooth through. This creates a buzzing, aggressive "thwack" 
+#    that perfectly mimics the raw, unpolished analog basslines of 90s 
+#    Dance Mania records.
+#
+# 3. Percussive Chants: Ghetto House relies on repetitive, x-rated vocal 
+#    chants. The `s_vocal` sequence uses the granular engine to chop a 
+#    vocal into a sharp, percussive hit. By pitching it down to `:f3` and 
+#    scattering it on the off-beats, the engine turns the vocal into a 
+#    raw percussion instrument that locks perfectly with the jacking kick.
+# ==========================================================
