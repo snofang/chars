@@ -1,0 +1,116 @@
+# ==========================================================
+# PLAYBOOK: 80s HEAVY METAL / NWOBHM
+# (Pioneered by Iron Maiden, Judas Priest, and Motörhead)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Heavy Metal (NWOBHM).
+# We have explored Stadium Rock and Nu-Metal, but 80s Heavy Metal is the 
+# sound of the New Wave of British Heavy Metal. It relies on a fast, driving 
+# "galloping" bassline (pioneered by Steve Harris), continuous 8th-note drum 
+# beats, massive, distorted power chords, and soaring, operatic minor scale 
+# guitar solos. 
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a fast, live heavy metal band. By using the `:play_sub` 
+# synth to play a continuous, driving 8th-note bass, and the `:play_fm` 
+# synth to simulate a distorted guitar, the engine creates a high-energy, 
+# aggressive, and deeply nostalgic metal atmosphere.
+# ==========================================================
+
+use_bpm 160
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Fast, Aggressive, & Galloping)
+# ==========================================================
+
+# Fast, driving 4/4 metal kick. Hits on 1, 2, 3, and 4.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 8th hats. 
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Galloping" Bass (E Minor).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive "thwack" that mimics a picked electric bass.
+bass_notes = [:e1, :e1, :e1, :e1, :e1, :e1, :e1, :e1, 
+              :d1, :d1, :d1, :d1, :c1, :c1, :c1, :c1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (E5 to D5 to C5).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# sharp, buzzy square wave that mimics a heavily distorted electric guitar.
+# Hits only on beats 1 and 3 to let the bass drive the rhythm.
+s_chords = gen_score("x.......x.......", [
+  {note: [:e3, :b3], divisor: 2, depth: 5, release: 0.3, amp: 0.7},
+  {note: [:c3, :g3], divisor: 2, depth: 5, release: 0.3, amp: 0.7}
+])
+
+# Soaring, "Operatic" Guitar Solo (E Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and extreme depth (4) to create a 
+# piercing, distorted lead that cuts through the heavy mix.
+lead_notes = [:e4, :g4, :b4, :e5, :d5, :b4, :g4, :e4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 4, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Battle Cry" vocal shout (Granular Synth).
+# Long size (0.1) and low density (1) creates a raw, repetitive vocal hit 
+# that mimics a metal singer screaming.
+s_vocal = gen_score("........x.......", [
+  {note: :e3, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.1, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Charge - Just the fast drums, galloping bass, and power chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Battle - Add the battle cry vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The soaring operatic guitar solo drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN METAL MOMENTUM]
+# 
+# 1. FM as a Distorted Amp: Look at `s_chords` and `s_lead`. The `:play_fm` 
+#    synth is given a `divisor` of `2` and an extreme `depth` of `4` or `5`. 
+#    This harsh harmonic ratio forces the FM modulator to shatter the carrier 
+#    wave, creating a piercing, buzzy square wave that perfectly mimics a 
+#    heavily distorted electric guitar playing power chords or soaring solos.
+#
+# 2. The Galloping Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a fast, driving line. By using a high 
+#    `cutoff` (100) and a very short `release` (0.1), the engine turns the 
+#    detuned sawtooth into a punchy, aggressive "thwack" that perfectly mimics 
+#    a picked electric bass guitar driving the rhythm, a hallmark of 80s 
+#    heavy metal pioneered by Steve Harris of Iron Maiden.
+#
+# 3. The 8th-Note Drive: 80s Heavy Metal relies on a stark, driving rhythm 
+#    section. The `s_hats` play straight 8th notes, and the `s_kick` hits on 
+#    every beat (steps 0, 4, 8, 12). The engine's strict master clock ensures 
+#    this rigid, mechanical momentum locks perfectly with the continuous 
+#    8th-note bassline, creating a high-energy, forward-driving metal groove.
+# ==========================================================

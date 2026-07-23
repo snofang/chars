@@ -1,0 +1,117 @@
+# ==========================================================
+# PLAYBOOK: 70s OUTLAW COUNTRY / HONKY TONK
+# (Pioneered by Johnny Cash, Waylon Jennings, and Willie Nelson)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Outlaw Country.
+# We have explored Rockabilly and Surf Rock, but Outlaw Country is the 
+# sound of the 1970s American South. It relies on a steady, swinging 
+# "train beat" drum pattern, a deep, walking upright bass, stark acoustic 
+# guitar strums, and a soaring, crying pedal steel guitar. 
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a live country band. By using the `:play_pluck` synth 
+# to simulate an acoustic guitar and the `:play_lead` synth routed through 
+# the global tape echo to simulate a crying pedal steel, the engine creates 
+# a dusty, nostalgic, and deeply cinematic Western atmosphere.
+# ==========================================================
+
+use_bpm 100
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Dusty, Swung, & Melancholic)
+# ==========================================================
+
+# The "Train Beat" Kick. 
+# A steady, marching pulse. Hits on step 0 and beat 3 (step 8).
+s_kick = gen_score("x.......x.......", [:c4])
+
+# Crisp, organic snare/rimshot strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# The "Train Beat" Shaker.
+# Plays continuous 16th notes with heavy amplitude manipulation to simulate 
+# the shaking of a tambourine or train wheels on a track.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# The "Walking Upright" Bass (D Major).
+# Plays a driving, melodic line. Mid cutoff (80) and short release (0.15) 
+# mimic a plucked upright bass.
+bass_notes = [:d2, :d2, :e2, :f2, :g2, :g2, :a2, :g2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 80, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x...x.x.x.x.....", bass_data)
+
+# The "Acoustic Guitar" Strums (D to G to A).
+# Uses :play_pluck. Hits strictly on the off-beats to mimic a strummed acoustic.
+s_guitar = gen_score("..x.....x.....x.", [
+  {note: [:d3, :a3], amp: 0.6, release: 0.2, coef: 0.5}, 
+  {note: [:g2, :d3], amp: 0.6, release: 0.2, coef: 0.5}, 
+  {note: [:a2, :e3], amp: 0.6, release: 0.2, coef: 0.5}
+])
+
+# The "Crying Pedal Steel" Lead (D Major Pentatonic).
+# Uses :play_lead routed through the global tape echo. The long release (0.8) 
+# and massive gaps (`nil`) create a soaring, crying melody that mimics a pedal steel guitar.
+lead_notes = [:d4, :e4, :fs4, :a4, :d5, :a4, :fs4, :d4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 90, release: 0.8} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Train Whistle" / ambient drone (Granular Synth).
+# Long size (0.3) and low density (1) creates a slow, evolving background 
+# texture that sounds like a distant train horn.
+s_grain = gen_score("x...............", [
+  {note: :d3, buffer: :misc_lori, pos: 0.4, density: 1, size: 0.3, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Prairie - Just the walking bass, acoustic guitar, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Ride - Add the steady train beat drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Sunset - The crying pedal steel lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN WESTERN ATMOSPHERE]
+# 
+# 1. The Train Beat: Look at `s_hats`. The hats play continuous 16th notes, 
+#    but the amplitudes swing wildly between 0.15, 0.3, and 0.4. By 
+#    emphasizing the off-beats, the engine simulates the relentless, rattling 
+#    rhythm of a steam train rolling down the tracks, creating a hypnotic 
+#    momentum that drives the track without needing a fast tempo.
+#
+# 2. FM as a Pedal Steel: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (90) and a long `release` (0.8). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a soaring, 
+#    crying melody that perfectly mimics the sliding, echoing tones of a 
+#    pedal steel guitar.
+#
+# 3. The Walking Upright Bass: Look at `s_bass`. The `:play_sub` synth is 
+#    given a mid-range `cutoff` (80) and a short `release` (0.15). This 
+#    strips away the sub-frequencies and cuts the note off cleanly, turning 
+#    the detuned sawtooth into a warm, bouncy "thwack" that perfectly mimics 
+#    a plucked upright bass walking a melodic line.
+# ==========================================================

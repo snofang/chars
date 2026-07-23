@@ -1,0 +1,111 @@
+# ==========================================================
+# PLAYBOOK: 80s SYNTHPOP / NEW WAVE
+# (Pioneered by Depeche Mode, New Order, and Pet Shop Boys)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Synthpop.
+# We have explored Synthwave and Hi-NRG, but pure 80s Synthpop is the 
+# sound of melancholic dancefloors. It relies on a pristine, driving 
+# LinnDrum beat, a warm, melodic analog bassline, massive, slow-attacking 
+# string pads, and piercing, echoing FM bell melodies that feel like 
+# dancing in a dark, neon-lit club.
+#
+# This playbook perfectly demonstrates how to use the `gen_score` helper 
+# to create a melodic, continuous 8th-note bassline, and how to use 
+# massive `attack` and `release` Hashes to blur chords into a lush, 
+# cinematic wave.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Melancholic, Pristine, & Driving)
+# ==========================================================
+
+# Pristine, driving 4/4 LinnDrum kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Crisp, organic snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 16th hats with alternating amplitudes.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Analog" Bass (F# Minor).
+# Plays continuous 8th notes. Mid cutoff (90) and short release (0.1) 
+# create a warm, driving "thwack" that locks with the kick.
+bass_notes = [:fs2, :fs2, :a2, :fs2, :d2, :d2, :e2, :e2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, slow-attacking "String Synth" Chords (F#m to Dmaj to Em).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic wave.
+s_chords = gen_score("x.......x.......", [
+  {note: [:fs3, :a3, :c4, :e4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.5},
+  {note: [:e3, :g3, :b3, :d4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.5}
+])
+
+# Piercing, "DX7" FM Bell Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a pristine, 
+# glassy tone. Routed through the engine's tape echo for a cinematic smear.
+lead_notes = [:fs5, :a5, :c6, :e6, :d6, :c6, :a5, :fs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Ethereal, "Choir" vocal drone (Granular Synth).
+# Long size (0.3) and low density (1) creates a slow, evolving background 
+# texture that drifts behind the beat like a cold wind.
+s_grain = gen_score("x...............", [
+  {note: :fs4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Club - Just the analog bass, sweeping chords, and choir (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the pristine LinnDrum beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The piercing DX7 bell melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MELODIC SYNTHPOP]
+# 
+# 1. FM as a DX7: Look at `s_lead`. The `:play_fm` synth is given a high 
+#    `divisor` (3) and a low `depth` (2). This harmonic ratio produces a 
+#    pristine, glassy, bell-like tone that perfectly mimics the legendary 
+#    Yamaha DX7 presets that defined 80s Synthpop. Routed through the global 
+#    tape echo, the sparse notes cascade across the empty space.
+#
+# 2. The Analog Bass Drive: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a melodic line. By using a mid-range 
+#    `cutoff` (90) and a very short `release` (0.1), the engine turns the 
+#    detuned sawtooth into a warm, driving "thwack" that perfectly mimics 
+#    the analog synth basslines of New Order or Depeche Mode.
+#
+# 3. The Swell: Look at `s_chords`. The Hashes specify an `attack` of `1.0` 
+#    and a `release` of `3.0`. Because the engine reads these Hashes, the 
+#    chords don't just hit; they slowly swell into the mix and fade away 
+#    over four whole beats, creating a continuous, blurred wave of harmony 
+#    that perfectly anchors the track's melancholic, danceable atmosphere.
+# ==========================================================

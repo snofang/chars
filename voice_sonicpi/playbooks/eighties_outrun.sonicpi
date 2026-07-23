@@ -1,0 +1,113 @@
+# ==========================================================
+# PLAYBOOK: 80s OUTRUN / SYNTHWAVE
+# (Pioneered by Kavinsky, The Midnight, and Gunship)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Outrun / Synthwave.
+# We have explored modern Nu-Disco and French House, but Synthwave is the 
+# sound of pure, neon-drenched 80s nostalgia. It fuses a driving, heavy 
+# 4/4 beat with a continuous, 16th-note rolling analog bass, lush, 
+# slow-attacking "sunrise" chords, and a piercing, echoing FM lead that 
+# feels like driving a Ferrari Testarossa down a neon-lit coastal highway 
+# at midnight.
+#
+# This playbook perfectly demonstrates how to use the DRY `gen_score` helper 
+# and Ruby's `.map` function to algorithmically generate a continuous, 
+# octave-jumping 16th-note bassline with zero repetitive code, creating 
+# an unstoppable, cinematic momentum.
+# ==========================================================
+
+use_bpm 105
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Driving, Nostalgic, & Cinematic)
+# ==========================================================
+
+# Heavy, driving 4/4 kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 16th hats.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Rolling" Analog Bass (A Minor).
+# DRY: Generate 16 continuous 16th notes with alternating octaves automatically.
+bass_cycle = [:a1, :a2, :a1, :a2, :a1, :a2, :a1, :a2, 
+              :f1, :f2, :f1, :f2, :g1, :g2, :g1, :g2]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Lush, slow-attacking "Sunrise" Chords (Am to F to G).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic wave.
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.5}
+])
+
+# Piercing, "Top-Down" FM Lead (A Minor Pentatonic).
+# DRY: Define just the notes, merge default opts automatically.
+lead_notes = [:a4, :c5, :e5, :a5, :g5, :e5, :c5, :a4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Ethereal, "Night Air" vocal drone (Granular Synth).
+# Long size (0.4) and low density (1) creates a slow, evolving background 
+# texture that drifts behind the relentless beat like a coastal fog.
+s_grain = gen_score("x...............", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Highway - Just the rolling bass, sunrise chords, and night air (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drive - Add the heavy, driving drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Sunset - The piercing FM lead melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC MOMENTUM]
+# 
+# 1. Algorithmic Octave Bass: Look at `s_bass`. Instead of typing 16 
+#    repetitive Hashes, we define an array `bass_cycle` that alternates 
+#    between the low octave (:a1) and the high octave (:a2). We then use 
+#    `.map` to inject the default parameters (`cutoff`, `release`, `amp`) 
+#    into every step. This creates the relentless, driving, 16th-note 
+#    "gallop" that defines the Outrun genre, with zero repetitive code.
+#
+# 2. The "Sunrise" Swell: Look at `s_chords`. The Hashes specify an 
+#    `attack` of `1.0` and a `release` of `3.0`. Because the engine reads 
+#    these Hashes, the chords don't just hit; they slowly swell into the mix 
+#    and fade away over four whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics the lush, wide-stereo synth pads 
+#    of 80s film soundtracks.
+#
+# 3. Echoing Space: The `s_lead` sequence plays a simple A minor pentatonic 
+#    melody, but leaves massive gaps (`nil`) between the notes. Because the 
+#    engine routes the `:play_fm` synth through a tape echo, those empty 
+#    spaces are filled by delay tails, creating a cascading, shimmering 
+#    soundscape that feels like looking out over a neon city at midnight.
+# ==========================================================
