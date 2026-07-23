@@ -1,0 +1,70 @@
+# ==========================================================
+# PLAYBOOK: 80s MIAMI BASS / BOOTY BASS (DRY)
+# (Pioneered by 2 Live Crew, Maggotron, and DJ Magic Mike)
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Bouncy, Raw, & Sub-Rattling)
+# ==========================================================
+
+# Syncopated 808 gallop. Hits on step 0, 2, 6, 8, 14.
+s_kick = gen_score("x.x...x.x.x...x.", [
+  :c4, :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 1.0}, {note: :c4, amp: 0.6}
+])
+
+# Crisp, 808 snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, rolling 16th hats to drive the momentum.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Rattling" 808 Bass (A Minor).
+# DRY: Generate 16 continuous 16th notes with alternating octaves automatically.
+bass_cycle = (ring :a1, :a1, :a1, :a2, :a1, :a1, :a1, :a2, :a1, :a1, :a1, :a2, :g1, :g1, :g1, :g2)
+bass_data = 16.times.map { |i| {note: bass_cycle[i], cutoff: 60, release: 0.1, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, minor chord stabs (Am to Gm).
+s_chords = gen_score("..x...x...x...x.", [
+  [:a3, :c4, :e4], [:a3, :c4, :e4], [:g3, :bb3, :d4], [:g3, :bb3, :d4]
+])
+
+# Piercing, "Whiny" FM Lead (A Minor Pentatonic).
+# DRY: Define just the notes/depths, merge defaults automatically.
+fm_notes = [
+  {note: :a5, depth: 5}, {note: :c6, depth: 5}, {note: :e6, depth: 5}, 
+  {note: :a5, depth: 5}, {note: :g5, depth: 5}
+]
+fm_data = fm_notes.map { |n| n.merge({amp: 0.6, divisor: 2, release: 0.1}) }
+s_fm = gen_score("x...x...x...x.x.", fm_data)
+
+# Pitched-up, "Sugary" vocal stutter.
+s_vocal = gen_score("....x...x...x...", [
+  {note: :a4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
+  {note: :c5, buffer: :misc_lori, pos: 0.3, density: 3, size: 0.04, amp: 0.6},
+  {note: :a4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8] ],
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

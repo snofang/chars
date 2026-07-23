@@ -1,9 +1,32 @@
 # ==========================================================
-# VOICE SONIC PI ENGINE - FULLY OPTIMIZED (Behavior Preserved)
+# VOICE SONIC PI ENGINE - FULLY OPTIMIZED (with Data Helpers)
 # ==========================================================
 
 # ----------------------------------------------------------
-# 1. PARAMETER PARSER (Bulletproof + Cached)
+# 1. DATA HELPERS (DRY Sequencing & Parameter Parsing)
+# ----------------------------------------------------------
+
+# Generates a 16-step ring from a binary string ("x...x...") and an array of data.
+# Guarantees exactly 16 steps, eliminating manual `nil` counting.
+define :gen_score do |pattern, data|
+  data = [nil] if data.nil? || data.empty?
+  idx = 0
+  # Pad pattern to exactly 16 characters
+  p_str = pattern.to_s.ljust(16, '.')[0...16]
+  
+  p_str.chars.map do |char|
+    if char == 'x' || char == 'X'
+      val = data[idx % data.length]
+      idx += 1
+      val
+    else
+      nil
+    end
+  end.ring
+end
+
+# ----------------------------------------------------------
+# 2. PARAMETER PARSER (Bulletproof + Cached)
 # ----------------------------------------------------------
 @parse_cache = {}
 
@@ -35,7 +58,7 @@ define :parse_step do |step, defaults|
 end
 
 # ----------------------------------------------------------
-# 2. NOTE CACHE
+# 3. NOTE CACHE
 # ----------------------------------------------------------
 @note_cache = {}
 
@@ -45,7 +68,7 @@ define :note_cached do |pitch|
 end
 
 # ----------------------------------------------------------
-# 3. GLOBAL FX BUSES & QUEUES
+# 4. GLOBAL FX BUSES & QUEUES
 # ----------------------------------------------------------
 
 # Queues for FX-wrapped instruments
@@ -76,7 +99,7 @@ live_loop :snare_fx do
 end
 
 # ----------------------------------------------------------
-# 4. THE SYNTHESIZERS
+# 5. THE SYNTHESIZERS
 # ----------------------------------------------------------
 
 # 1. SUBTRACTIVE BASS
@@ -151,7 +174,7 @@ define :play_hats do |n|
 end
 
 # ----------------------------------------------------------
-# 5. GRAIN PRE-EXPANSION HELPER (Preserves Randomness)
+# 6. GRAIN PRE-EXPANSION HELPER (Preserves Randomness)
 # ----------------------------------------------------------
 define :expand_grain_events do |raw|
   events = []
@@ -188,7 +211,7 @@ define :expand_grain_events do |raw|
 end
 
 # ----------------------------------------------------------
-# 6. VALIDATION & ENGINE BOOT
+# 7. VALIDATION & ENGINE BOOT
 # ----------------------------------------------------------
 define :start_engine do |playbook|
   # 1. Strict schema validation

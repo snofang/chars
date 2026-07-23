@@ -1,0 +1,105 @@
+# ==========================================================
+# PLAYBOOK: 2000s BAY AREA HYPHY / YAY AREA
+# (Pioneered by Mac Dre, E-40, and Keak da Sneak)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Bay Area Hyphy.
+# We have explored Southern hip-hop (Crunk, Snap, Memphis) and modern trap, 
+# but Hyphy is the sound of 2000s Northern California. It fuses the bouncy, 
+# syncopated drum patterns of Mac Dre with massive, sliding 808 basslines, 
+# erratic, high-pitched "zap" synth leads, and a deeply hypnotic, party-ready 
+# energy designed to make cars "ghostride the whip."
+#
+# This playbook perfectly demonstrates how to push the `:play_fm` synth 
+# to its extreme upper register to create a whiny, buzzing lead. By pairing 
+# it with a deep, sliding 808 and a bouncy drum grid, the engine creates 
+# a raw, high-energy Yay Area atmosphere.
+# ==========================================================
+
+use_bpm 102
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Bouncy, Raw, & Hypnotic)
+# ==========================================================
+
+# The "Hyphy" Kick. 
+# Highly syncopated. Hits on step 0, the 'and' of 2 (step 6), 
+# beat 3 (step 8), and the 'a' of 4 (step 14).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil)
+
+# Crisp, dry snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# Fast, rolling 16th hats with a rising amplitude roll at the end.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6})
+
+# Deep, sliding 808 Bass (F# Minor).
+# Massive release (1.0) allows the bass to ring out and carry the dark melody.
+s_bass  = (ring {:note => :fs1, :release => 1.0, :cutoff => 70, :amp => 1.2}, nil, nil, nil, nil, nil, nil, nil, {:note => :a1, :release => 1.0, :cutoff => 70, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Dark, sparse minor chord stabs (F#m to Am).
+# Hit sparingly on the downbeats. Low cutoff (80) gives them a muffled, 
+# raw cassette tape feel.
+s_chords= (ring {:note => [:fs3, :a3, :c4], :cutoff => 80, :release => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 80, :release => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# The "Whiny Zap" Lead (F# Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (5). Plays in the 
+# extreme upper register (:fs6, :a6) to create a piercing, whiny, buzzing 
+# square wave that cuts through the heavy 808 bass.
+s_fm    = (ring {:note => :fs6, :amp => 0.6, :divisor => 2, :depth => 5, :release => 0.1}, nil, nil, nil, {:note => :a6, :amp => 0.5, :divisor => 2, :depth => 5, :release => 0.1}, nil, {:note => :c7, :amp => 0.6, :divisor => 2, :depth => 5, :release => 0.1}, nil, nil, {:note => :a6, :amp => 0.5, :divisor => 2, :depth => 5, :release => 0.1}, nil, {:note => :fs6, :amp => 0.6, :divisor => 2, :depth => 5, :release => 0.1}, nil, nil, nil, nil)
+
+# Pitched-down, hypnotic "Thizz" vocal drone (Granular Synth).
+# Long size (0.15) and low density (1) creates a slow, evolving background 
+# texture that sounds like a distant crowd chanting in a parking lot.
+s_vocal = (ring {:note => :fs3, :buffer => :misc_lori, :pos => 0.3, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :misc_lori, :pos => 0.5, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the massive 808, dark chords, and vocal drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Groove - Add the syncopated drums and rolling hats (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Drop - The whiny zap lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN BAY AREA BOUNCE]
+# 
+# 1. The Whiny Zap Lead: Look at `s_fm`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and an extreme `depth` of `5`, and plays in the 
+#    extreme upper register (:fs6, :c7). This forces the FM modulator to 
+#    shatter the carrier wave, creating a piercing, whiny, buzzing square 
+#    wave that perfectly mimics the cheap, high-pitched synth presets used 
+#    by Bay Area producers like Rick Rock.
+#
+# 2. The Sliding 808: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `release` of `1.0` (a whole beat) and a low `cutoff` of `70`. Because 
+#    the BPM is 102, that low F# note rings out and decays naturally, 
+#    creating a massive, booming low-end that carries the dark melody and 
+#    provides immense weight for the cars to bounce to.
+#
+# 3. The Syncopated Pocket: Look at `s_kick`. It completely avoids landing 
+#    on the standard 4/4 pulse. By hitting on steps 0, 6, 8, and 14, the 
+#    engine creates a lopsided, "drunken" groove that feels like a live 
+#    drummer playing a Bay Area funk break, perfectly anchoring the whiny 
+#    lead and massive 808.
+# ==========================================================
