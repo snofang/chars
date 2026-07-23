@@ -1,0 +1,120 @@
+# ==========================================================
+# PLAYBOOK: 2000s GHETTOTECH / DETROIT BOOTY BASS
+# (Pioneered by DJ Godfather, DJ Assault, and Disco D)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Ghettotech.
+# We have explored Chicago Ghetto House and Miami Bass, but Ghettotech 
+# is the sound of Detroit. It fuses the relentless, jacking energy of 
+# ghetto house with the high-speed tempo (145 BPM) and electro-funk 
+# syncopation of Detroit techno. It relies on rapid 808 drum patterns, 
+# continuous, buzzing 16th-note bass, and pitched-down, explicit vocal 
+# chants designed to make a sweaty basement move.
+#
+# This playbook perfectly demonstrates how to push the engine's master 
+# clock to a high tempo while maintaining a dense, driving groove. By 
+# locking a continuous 16th-note bassline to a syncopated 808 kick, 
+# the engine creates a raw, high-energy, and relentless club atmosphere.
+# ==========================================================
+
+use_bpm 145
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Fast, Raw, & Jacking)
+# ==========================================================
+
+# The "Ghettotech" Kick. 
+# Highly syncopated, jacking 808 pattern.
+s_kick = gen_score("x...x.x.x...x...", [
+  :c4, :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Crisp, 808 snare strictly on beats 2 and 4, with a ghost note.
+s_snare = gen_score("....x.....x.x...", [:c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}])
+
+# Fast, relentless 16th hats to drive the high-speed momentum.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# The "Continuous" Bass (G Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# High cutoff (110) and microscopic release (0.08) create a relentless, 
+# buzzing, aggressive churn.
+bass_cycle = [:g1, :g1, :g2, :g1, :g1, :g1, :bb1, :g1, 
+              :g1, :g1, :g2, :g1, :d1, :d1, :d2, :d1]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 110, release: 0.08, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, "Analogue" Synth Stabs (Gm to Bbm).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a sharp, 
+# buzzy staccato hit that locks in with the kick.
+s_chords = gen_score("..x.....x.....x.", [
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.1, amp: 0.5},
+  {note: [:bb2, :db3, :f3], divisor: 2, depth: 3, release: 0.1, amp: 0.5}
+])
+
+# Piercing, "Detroit" FM Lead (G Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a piercing, 
+# glassy tone. Plays a rapid, 8th-note melody.
+lead_notes = [:g5, :d5, :bb5, :d6, :g5, :f5, :d5, :bb4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Pitched-down, "Booty" vocal grunt (Granular Synth).
+# Low density, small size = a dark, percussive, repetitive vocal hit.
+s_vocal = gen_score("....x.......x...", [
+  {note: :g3, buffer: :misc_lori, pos: 0.1, density: 2, size: 0.04, amp: 0.7},
+  {note: :bb3, buffer: :misc_lori, pos: 0.3, density: 2, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Jack - Just the syncopated 808s and continuous bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the synth stabs and vocal grunts (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The piercing Detroit FM lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DETROIT ENERGY]
+# 
+# 1. The Continuous Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:g1) and the 
+#    high octave (:g2). By using a high `cutoff` (110) and a microscopic 
+#    `release` (0.08), the engine turns the detuned sawtooth into a relentless, 
+#    buzzing churn. At 145 BPM, this creates a massive, high-speed wall of sound.
+#
+# 2. The 808 Jack: Look at `s_kick`. It completely avoids landing on a 
+#    standard 4/4 pulse. By hitting on syncopated steps (0, 4, 6, 8, 12), the 
+#    engine creates a lopsided, "jacking" groove that feels like a raw, live 
+#    808 drum machine, perfectly anchoring the continuous 16th-note bass.
+#
+# 3. Piercing FM Contrast: Ghettotech relies on the stark contrast between 
+#    the massive, dark sub-bass and high-pitched, pristine elements. The 
+#    `s_lead` sequence uses the FM synth with a high `divisor` (4) to cut 
+#    through the heavy mix like a knife, perfectly mimicking the fast, 
+#    melodic synth lines of Detroit techno.
+# ==========================================================

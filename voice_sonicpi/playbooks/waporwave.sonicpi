@@ -1,0 +1,116 @@
+# ==========================================================
+# PLAYBOOK: 2010s VAPORWAVE / MALLSOFT
+# (Pioneered by Macintosh Plus, Saint Pepsi, and Blank Banshee)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2010s Vaporwave.
+# We have explored fast, chaotic genres (Kuduro, Singeli) and rigid 
+# electronic genres (Techno, Trance). Vaporwave is the exact opposite. 
+# It is the sound of slowed-down, chopped-and-screwed 80s elevator music. 
+# It relies on a glacial 60 BPM tempo, massive, slow-attacking synth pads, 
+# deep, continuous sub-bass, and pitch-shifted, time-stretched granular 
+# vocal samples that sound like wandering through an abandoned, neon-lit 
+# shopping mall in a dream.
+#
+# This playbook perfectly demonstrates the ambient power of the Granular 
+# Synthesizer and the Parameter Hashes. By using a massive grain `size` 
+# (0.5s), slow `attack` times on the chords, and a rigid but slow master 
+# clock, the engine creates a nostalgic, eerie, and deeply relaxing 
+# atmosphere.
+# ==========================================================
+
+use_bpm 60
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Major - Slow, Lush, & Nostalgic)
+# ==========================================================
+
+# Slow, muffled 4/4 kick. Lower amplitude for a gentle pulse.
+s_kick = gen_score("x.......x.......", [{note: :c4, amp: 0.7}, {note: :c4, amp: 0.8}])
+
+# Heavy, echoing snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Very sparse, lazy 8th hats. 
+s_hats = gen_score("x..x..x..x..x..x", [{note: :c4, amp: 0.15}, {note: :c4, amp: 0.1}])
+
+# Deep, continuous sub-bass (F Major).
+# Hits strictly on the downbeats. Very low cutoff (50) and massive release 
+# (3.0) create a heavy, continuous rumble.
+s_bass = gen_score("x...............", [
+  {note: :f1, release: 3.0, cutoff: 50, amp: 1.2}, 
+  {note: :c1, release: 3.0, cutoff: 50, amp: 1.0}
+])
+
+# Lush, slow-attacking "Electric Piano" Chords (Fmaj9 to Cmaj7).
+# Hit on the downbeats. The slow 1.5-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, warm wave.
+s_chords = gen_score("x.......x.......", [
+  {note: [:f3, :a3, :c4, :e4], cutoff: 70, attack: 1.5, release: 4.0, amp: 0.5},
+  {note: [:c3, :e3, :g3, :b3], cutoff: 70, attack: 1.5, release: 4.0, amp: 0.5}
+])
+
+# Bright, echoing "Elevator" Melody (F Major Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (1) to create a clean, 
+# glassy, sine-like wave. Routed through the engine's tape echo.
+lead_notes = [:f5, :a5, :c6, :a5, :g5, :e5, :c5, :f5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.5, divisor: 3, depth: 1, release: 1.0} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# The "Chopped and Screwed" Vocal Drone (Granular Synth).
+# Pitched DOWN to :f3. Massive size (0.5s) and low density (1) time-stretches 
+# the sample into a slow, haunting, pitch-shifted background texture.
+s_grain = gen_score("x...............", [
+  {note: :f3, buffer: :misc_lori, pos: 0.4, density: 1, size: 0.5, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Mall - Just the swelling chords, sub-bass, and vocal drone (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Echo - Add the slow, muffled drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Dream - The bright elevator melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN NOSTALGIA]
+# 
+# 1. Ambient Granular Time-Stretching: Look at `s_grain`. The granular engine 
+#    is given a massive `size` of `0.5` (500 milliseconds) and a `density` of `1`. 
+#    By pitching the vocal DOWN and using sparse, long grains, the engine 
+#    time-stretches the sample into a slow, formless drone. It sounds like a 
+#    distorted, pitch-shifted memory echoing in an empty atrium.
+#
+# 2. The 33 RPM Illusion: Look at `s_chords` and `s_bass`. The Hashes specify 
+#    massive `attack` (1.5) and `release` (4.0) times. Because the engine reads 
+#    these Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over six whole beats. Combined with the 60 BPM tempo, this 
+#    creates the psychological illusion that a 120 BPM 80s track has been 
+#    physically slowed down to half speed.
+#
+# 3. Extreme Negative Space: Vaporwave relies on what you *don't* play. 
+#    80% of the `s_kick`, `s_hats`, and `s_lead` grids are `nil`. The engine 
+#    honors these rests perfectly, letting the massive reverb tails of the 
+#    snare and the delay tails of the FM melody ring out into the void, 
+#    creating a slow, echoing atmosphere of eerie tranquility.
+# ==========================================================

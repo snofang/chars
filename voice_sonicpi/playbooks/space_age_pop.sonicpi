@@ -1,0 +1,118 @@
+# ==========================================================
+# PLAYBOOK: 50s/60s SPACE AGE POP / EXOTICA
+# (Pioneered by Martin Denny, Juan García Esquivel, and Les Baxter)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 50s/60s Space Age Pop.
+# We have explored heavy bass music and dark cinematic genres. Exotica is 
+# the sound of 1950s post-war optimism, cocktail lounges, and imaginary 
+# tropical paradises. It relies on a bouncy, syncopated Latin drum beat, 
+# a warm, walking upright bass, lush, wide major 9th chords, and the iconic, 
+# glassy sound of the vibraphone and marimba. 
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a live 50s lounge band. By using the `:play_fm` synth 
+# with a high `divisor` and low `depth` to create a pristine, glassy 
+# vibraphone tone, and pairing it with bright, syncopated major chords, 
+# the engine creates a joyful, nostalgic, and deeply sophisticated atmosphere.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Bright, Bouncy, & Lush)
+# ==========================================================
+
+# The "Exotica" Kick. 
+# A bouncy, syncopated Latin march. Hits on step 0, the 'and' of 2 (step 6), 
+# and beat 3 (step 8).
+s_kick = gen_score("x.....x.x.......", [:c4, {note: :c4, amp: 0.8}, :c4])
+
+# Crisp, tight cross-stick/rimshot strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Swung, bouncing 16th shaker.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Walking Upright" Bass (D Major).
+# Plays a bouncy, melodic line. Mid cutoff (80) and short release (0.15) 
+# mimic a plucked upright bass.
+bass_notes = [:d2, :d2, :e2, :f2, :a2, :a2, :g2, :f2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 80, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x...x.x.x.x.....", bass_data)
+
+# Lush, "Lounge Piano" Chords (Dmaj9 to Gmaj9).
+# Hit strictly on the off-beats. High cutoff (100) and short release (0.2) 
+# create a sharp, staccato, sophisticated wall of sound.
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:d3, :fs3, :a3, :e4], cutoff: 100, release: 0.2, amp: 0.5},
+  {note: [:g2, :b2, :d3, :a3], cutoff: 100, release: 0.2, amp: 0.5}
+])
+
+# Bright, "Vibraphone/Marimba" Lead (D Major Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a pristine, 
+# glassy, sine-like wave. Routed through the engine's tape echo for a smear.
+lead_notes = [:d5, :a4, :d5, :e5, :fs5, :e5, :d5, :b4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Tiki Bird" / ambient room noise (Granular Synth).
+# Long size (0.2) and low density (1) creates a slow, evolving background 
+# texture that sounds like a distant, exotic bird in a tropical lounge.
+s_grain = gen_score("x...............", [
+  {note: :d4, buffer: :misc_lori, pos: 0.3, density: 1, size: 0.2, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Lounge - Just the walking bass, lush chords, and ambient noise (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the syncopated Latin drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The bright vibraphone melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN LOUNGE SOPHISTICATION]
+# 
+# 1. FM as a Vibraphone: Look at `s_lead`. The `:play_fm` synth is given a 
+#    high `divisor` (4) and a low `depth` (2). This gentle harmonic ratio 
+#    produces a pristine, glassy, sine-like wave that perfectly mimics the 
+#    iconic, echoing tones of a vibraphone or marimba. Routed through the 
+#    tape echo, the sparse notes cascade across the empty space, creating 
+#    a joyful, 1950s cocktail atmosphere.
+#
+# 2. The Walking Upright Bass: Look at `s_bass`. The `:play_sub` synth is 
+#    given a mid-range `cutoff` (80) and a short `release` (0.15). This 
+#    strips away the sub-frequencies and cuts the note off instantly, turning 
+#    the detuned sawtooth into a warm, bouncy "thwack" that perfectly mimics 
+#    a plucked upright bass walking a melodic line.
+#
+# 3. Lush Major 9th Harmony: Look at `s_chords`. The arrays form massive 
+#    4-note major 9th chords. By hitting strictly on the off-beats (steps 2, 6, 
+#    10, 14) with a high `cutoff` (100), the engine turns the `:blade` synth 
+#    into a sharp, sophisticated piano stab that perfectly mimics the lush, 
+#    wide-stereo arrangements of 50s Space Age Pop.
+# ==========================================================

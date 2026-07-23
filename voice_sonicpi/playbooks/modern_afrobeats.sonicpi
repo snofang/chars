@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 2020s MODERN AFROBEATS / NIGERIAN POP
+# (Pioneered by Burna Boy, Wizkid, and Davido)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2020s Modern Afrobeats.
+# We have explored Afro Swing and Afro House, but Modern Afrobeats is the 
+# sound of the current global pop charts. It fuses traditional West African 
+# polyrhythms with Western pop production, deep, round sub-bass, and lush, 
+# warm electric guitar/piano loops. 
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create a highly syncopated, "Galala" drum rhythm. By using a deep, 
+# melodic sub-bass and sparse, warm electric piano chords, the engine 
+# creates a relaxed, bouncy, and deeply infectious groove that feels 
+# like a warm night in Lagos.
+# ==========================================================
+
+use_bpm 108
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Warm, Bouncy, & Melodic)
+# ==========================================================
+
+# The "Galala" Kick. 
+# Highly syncopated. Hits on step 0, the 'and' of 2 (step 6), 
+# beat 3 (step 8), and the 'a' of 3 (step 11).
+s_kick = gen_score("x.....x.x..x....", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Crisp, organic snare/rimshot strictly on beats 2 and 4, 
+# with a syncopated ghost note on the 'e' of 3 (step 10).
+s_snare = gen_score("....x...x.x.....", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.9}
+])
+
+# Swung, bouncing 16th shaker.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# Deep, round sub-bass (F# Minor).
+# Walks a slow, melodic line. Low cutoff (60) and medium release (0.3) 
+# to create a warm, muffled undercurrent.
+bass_notes = [:fs1, :fs1, :a1, :fs1, :d1, :d1, :e1, :e1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 60, release: 0.3, amp: 1.2} }
+s_bass = gen_score("x.....x.x.....x.", bass_data)
+
+# Lush, "Electric Piano" Chords (F#m to Dmaj to C#m).
+# Hit on the off-beats. The slow 0.2-beat attack and massive 1.5-beat release 
+# blur the chords together into a continuous, warm wave.
+s_chords = gen_score("..x.....x.....x.", [
+  {note: [:fs3, :a3, :c4, :e4], cutoff: 80, attack: 0.2, release: 1.5, amp: 0.4},
+  {note: [:d3, :fs3, :a3, :c4], cutoff: 80, attack: 0.2, release: 1.5, amp: 0.4},
+  {note: [:cs3, :e3, :gs3, :b3], cutoff: 80, attack: 0.2, release: 1.5, amp: 0.4}
+])
+
+# Soft, "Marimba/Guitar" Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a warm, 
+# organic pluck. Routed through the engine's tape echo for a smear.
+lead_notes = [:fs5, :a5, :c6, :a5, :fs5, :e5, :cs5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Pitched-up, "Afro" vocal chant (Granular Synth).
+# High density, small size = a sharp, sugary vocal skip.
+s_vocal = gen_score("........x.......", [
+  {note: :fs4, buffer: :misc_lori, pos: 0.2, density: 2, size: 0.05, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the warm chords, sub-bass, and vocal chant (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Groove - Add the syncopated Galala drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Drop - The soft marimba melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN AFROBEATS BOUNCE]
+# 
+# 1. The "Galala" Syncopation: Look at `s_kick`. It completely avoids 
+#    landing on the standard 4/4 pulse. By hitting on steps 0, 6, 8, and 11, 
+#    the engine creates a lopsided, "dancing" groove that feels distinctly 
+#    West African. The engine's strict master clock ensures this complex 
+#    rhythm lands with absolute precision, creating the signature Afrobeats 
+#    bounce.
+#
+# 2. Lush Harmonic Warmth: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `0.2` and a `release` of `1.5`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of warm harmony that 
+#    perfectly mimics the lush electric piano loops of modern Nigerian pop.
+#
+# 3. Deep Sub-Bass Weight: Look at `s_bass`. The `:play_sub` synth is given 
+#    a `release` of `0.3` and a very low `cutoff` of `60`. This creates a 
+#    deep, round, and warm low-end that carries the melody, providing immense 
+#    weight without muddying the pristine high-end of the shaker and marimba.
+# ==========================================================

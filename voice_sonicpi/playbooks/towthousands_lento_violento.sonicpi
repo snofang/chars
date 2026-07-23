@@ -1,0 +1,114 @@
+# ==========================================================
+# PLAYBOOK: 2000s LENTO VIOLENTO / ITALIAN HARD SLOW
+# (Pioneered by Gigi D'Agostino, Luca Noise, and Federico Romanzi)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Lento Violento.
+# We have explored fast hardcore genres and slow ambient genres, but Lento 
+# Violento (Slow Violent) is a highly distinct Italian subgenre. It takes 
+# the aggressive, distorted energy of Gabber and slows it down to a dark, 
+# hypnotic 85 BPM. It relies on a relentless, continuous 16th-note "Cicca" 
+# bass (a distorted, rolling churn), heavy 4/4 kicks, and repetitive, 
+# "fairground" style synth melodies that feel like a haunted carousel.
+#
+# This playbook perfectly demonstrates the psychological effect of playing 
+# continuous 16th notes at a slow tempo. By locking a distorted, high-cutoff 
+# bassline to a rigid 85 BPM grid, the engine creates a massive, rolling, 
+# and deeply hypnotic wall of sound.
+# ==========================================================
+
+use_bpm 85
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Dark, Rolling, & Hypnotic)
+# ==========================================================
+
+# Relentless, heavy 4/4 kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry industrial snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats = gen_score("..x...x...x...x.", [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
+
+# The "Cicca" Bass (A Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# Extreme cutoff (120) and microscopic release (0.08) create a grinding, 
+# distorted, relentless churn that drives the track.
+bass_cycle = [:a1, :a2, :a1, :a2, :a1, :a2, :a1, :a2, 
+              :g1, :g2, :g1, :g2, :a1, :a2, :a1, :a2]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 120, release: 0.08, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, "Fairground" Organ Stabs (Am to G).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a sharp, 
+# buzzy staccato hit that mimics a distorted fairground organ.
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 3, release: 0.15, amp: 0.5},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.15, amp: 0.5}
+])
+
+# Repetitive, "Haunted Carousel" Lead (A Minor).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a piercing, 
+# glassy tone. Plays a repetitive, 8th-note melody that loops hypnotically.
+lead_notes = [:a5, :c6, :e6, :c6, :a5, :c6, :e6, :c6]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Pitched-down, "Italian MC" vocal drone (Granular Synth).
+# Low density, long size = a dark, repetitive vocal hit.
+s_vocal = gen_score("x...............", [
+  {note: :a3, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.1, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Loop - Just the relentless kick, rolling bass, and drone (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Vibe - Add the snares, hats, and organ stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_fm, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The haunted carousel lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_fm, s_chords, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SLOW HYPNOSIS]
+# 
+# 1. The "Cicca" Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:a1) and the 
+#    high octave (:a2). By using an extreme `cutoff` (120) and a microscopic 
+#    `release` (0.08), the engine turns the detuned sawtooth into a relentless, 
+#    grinding, distorted churn. At 85 BPM, this continuous 16th-note motion 
+#    creates a massive, rolling momentum that feels like a slow-motion train.
+#
+# 2. The Haunted Carousel: Look at `s_lead`. The `:play_fm` synth is given a 
+#    high `divisor` (3) and a low `depth` (2). This harmonic ratio produces a 
+#    piercing, glassy tone. By playing a repetitive, 4-note melody, the engine 
+#    creates a hypnotic, "fairground" atmosphere that feels like a distorted 
+#    music box looping infinitely.
+#
+# 3. Extreme Low-End Weight: Lento Violento relies on a massive, heavy low-end. 
+#    The `s_bass` uses a high `cutoff` to let all the harsh harmonics through, 
+#    while the slow 85 BPM tempo allows each distorted note to ring out just 
+#    enough to create a suffocating, continuous wall of sound that perfectly 
+#    anchors the repetitive lead melody.
+# ==========================================================

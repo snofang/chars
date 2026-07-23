@@ -1,0 +1,125 @@
+# ==========================================================
+# PLAYBOOK: 2000s SCOUSE HOUSE / UK BOUNCE (DONK)
+# (Pioneered by DJ秧歌, Clubland, and N-Trance)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Scouse House 
+# (affectionately known as "Donk" or UK Bounce). We have explored Hardbass 
+# and Melbourne Bounce, but Scouse House is the sound of 2000s UK working-class 
+# club culture. It is pure, unadulterated high-energy fun. It takes the rigid 
+# 4/4 grid and injects it with a highly distinctive, bouncy off-beat "Donk" 
+# bass (a pitch-shifted, sharp FM thud), massive, catchy synth riffs, and 
+# pitched-up, sugary vocal chops. 
+#
+# This playbook perfectly demonstrates how to algorithmically generate a 
+# "talking" bounce bass. By using Ruby's `.map.with_index` to rapidly cycle 
+# the FM `divisor` and `depth` on every off-beat hit, the engine creates 
+# a thick, squelching groove with zero repetitive code.
+# ==========================================================
+
+use_bpm 145
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Bouncy, High Energy, & Cheeky)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry rave clap strictly on beats 2 and 4.
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats = gen_score("..x...x...x...x.", [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
+
+# The "Donk" Bounce Bass (F# Minor).
+# Algorithmically generate changing FM parameters on the off-beats!
+bass_notes = [:fs2, :fs2, :a2, :fs2, :fs2, :fs2, :c3, :fs2]
+bass_data = bass_notes.map.with_index do |n, i|
+  # Rapidly cycle the divisor (2, 3, 4) and depth (4, 5, 6) on every hit
+  div = [2, 3, 4][i % 3]
+  dep = [4, 5, 6][i % 3]
+  {note: n, divisor: div, depth: dep, release: 0.12, amp: 1.0}
+end
+s_bass = gen_score("..x...x...x...x.", bass_data)
+
+# Deep, clean sub-bass (F# Minor).
+# Hits in sync with the FM bass. Very low cutoff (60) provides a pristine, 
+# distortion-free low-end thump.
+s_sub = gen_score("..x...x...x...x.", [
+  {note: :fs1, release: 0.15, amp: 1.0, cutoff: 60}, 
+  {note: :a1, release: 0.15, amp: 1.0, cutoff: 60},
+  {note: :c2, release: 0.15, amp: 1.0, cutoff: 60},
+  {note: :fs1, release: 0.15, amp: 1.0, cutoff: 60}
+])
+
+# Massive, wide off-beat chord stabs (F#m to A to C#).
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:fs3, :a3, :c4], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:fs3, :a3, :c4], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:cs3, :e3, :g3], cutoff: 110, release: 0.15, amp: 0.6}
+])
+
+# Catchy, "Clubland" Synth Lead (F# Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (4) to create a 
+# sharp, buzzy square wave that plays a rapid, 16th-note melody.
+lead_notes = [:fs5, :a5, :c6, :a5, :fs5, :e5, :d5, :e5, 
+              :fs5, :a5, :c6, :e6, :d6, :c6, :a5, :fs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 4, release: 0.1} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# Choppy, "Diva" vocal stutter (Granular Synth).
+s_vocal = gen_score("....x.......x...", [
+  {note: :fs4, buffer: :misc_lori, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
+  {note: :a4, buffer: :misc_lori, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the kick, donk bass, and sub (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_fm, s_bass, 4], [:play_sub, s_sub, 4] ],
+  
+  # Scene 2: The Vibe - Add the claps, hats, and chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_fm, s_bass, 8], [:play_sub, s_sub, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The catchy lead and vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_fm, s_bass, 8], [:play_sub, s_sub, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE BOUNCE]
+# 
+# 1. Algorithmic Morphing Bass: Look at `s_bass`. Instead of typing 
+#    repetitive Hashes, we use `.map.with_index do |n, i|`. The engine 
+#    checks the index `i` and cycles through arrays `[2, 3, 4]` and 
+#    `[4, 5, 6]` to assign the `divisor` and `depth`. This forces the FM 
+#    synth to radically reshape its waveform on every off-beat hit, creating 
+#    the thick, squelching, "talking" donk bounce that defines Scouse House.
+#
+# 2. Pristine Low-End Separation: Scouse House requires a massive, clean 
+#    low-end. By using `play_fm` for the squelching mid-bass and `play_sub` 
+#    with a low `cutoff` (60) for the off-beat thump, the engine separates 
+#    the harmonics. This provides immense weight without muddying the mix.
+#
+# 3. The Off-Beat Wall: Look at `s_bass`, `s_hats`, `s_chords`, and `s_sub`. 
+#    They ALL hit strictly on steps 2, 6, 10, and 14. The engine's strict 
+#    master clock locks these together perfectly at 145 BPM, creating a 
+#    massive, skipping "boom-cha" momentum that forces you to dance.
+# ==========================================================

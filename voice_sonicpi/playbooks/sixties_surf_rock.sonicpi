@@ -1,0 +1,113 @@
+# ==========================================================
+# PLAYBOOK: 60s SURF ROCK / INSTRUMENTAL ROCK
+# (Pioneered by Dick Dale, The Ventures, and The Chantays)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 60s Surf Rock.
+# We have explored Rockabilly and Spaghetti Western, but Surf Rock is the 
+# sound of 1960s California. It relies on a driving, galloping "surf beat" 
+# drum pattern, a deep, walking upright bass, and the iconic, rapid-fire 
+# "tremolo picking" on a twangy electric guitar drenched in spring reverb.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# simulate rapid tremolo picking. By using the `:play_lead` synth to play 
+# continuous, fast 16th notes in an exotic Phrygian dominant scale, the 
+# engine creates a high-energy, twangy, and deeply nostalgic surf atmosphere.
+# ==========================================================
+
+use_bpm 160
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Phrygian Dominant - Twangy, Driving, & Exotic)
+# ==========================================================
+
+# The "Surf Beat" Kick. Galloping march.
+s_kick = gen_score("x.....x.x.....x.", [:c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}])
+
+# Heavy, dry snare strictly on beats 2 and 4, with a galloping ghost note.
+s_snare = gen_score("....x.....x.x...", [:c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.9}])
+
+# Fast, driving 8th hats.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Walking" Upright Bass (E Phrygian Dominant).
+# Plays driving 8th notes. High cutoff (90) and short release (0.15) 
+# mimic a fast, picked upright bass.
+bass_notes = [:e1, :e1, :e1, :e1, :f1, :f1, :f1, :f1, 
+              :g1, :g1, :g1, :g1, :b1, :b1, :b1, :b1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Muffled, "Rhythm Guitar" Stabs (E5 to F5).
+# Uses :play_fm with a low divisor (2) and depth (4) to create a sharp, 
+# staccato "chuka" that mimics a muffled electric guitar.
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:e3, :b3], divisor: 2, depth: 4, release: 0.08, amp: 0.5},
+  {note: [:f3, :c4], divisor: 2, depth: 4, release: 0.08, amp: 0.5}
+])
+
+# Twangy, "Tremolo Picked" Lead (E Phrygian Dominant).
+# Uses :play_lead (Prophet + Echo) to create a twangy, echoing tone. 
+# Plays continuous, rapid 16th notes to mimic tremolo picking.
+lead_notes = [:e4, :f4, :gs4, :e4, :f4, :gs4, :b4, :gs4, 
+              :e4, :f4, :gs4, :e4, :d5, :b4, :gs4, :f4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 110, release: 0.1} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Scream" / vocal wail (Granular Synth).
+# Pitched UP to :e4. Long size (0.15) creates an echoing, high-pitched cry.
+s_vocal = gen_score("........x.......", [
+  {note: :e4, buffer: :misc_lori, pos: 0.6, density: 1, size: 0.15, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Beach - Just the driving drums, upright bass, and rhythm guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Wave - Add the distant vocal wail (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The twangy, tremolo-picked surf lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN TREMOLO MOMENTUM]
+# 
+# 1. The Tremolo Pick: Look at `s_lead`. The `:play_lead` synth plays on 
+#    EVERY single 16th step, mapping out a rapid, melodic line. By using a 
+#    high `cutoff` (110) and a very short `release` (0.1), the engine turns 
+#    the Prophet synth into a sharp, twangy "thwack" that perfectly mimics 
+#    a guitarist rapidly tremolo picking a single string, a hallmark of 
+#    60s surf rock.
+#
+# 2. The Galloping Surf Beat: Look at `s_kick` and `s_snare`. They completely 
+#    avoid landing on a standard 4/4 pulse. By hitting on syncopated, galloping 
+#    steps (0, 6, 8, 12), the engine creates a lopsided, driving groove that 
+#    feels like a live drummer playing a "surf beat", perfectly anchoring the 
+#    continuous 16th-note lead.
+#
+# 3. The Exotic Scale: Look at `s_lead` and `s_bass`. The melody uses E, F, 
+#    G#, A, B, C, D. The augmented 2nd interval between F and G# creates the 
+#    exotic, "Middle Eastern" sound that Dick Dale popularized in surf rock 
+#    (most famously in "Misirlou"). The engine's strict 16-step grid ensures 
+#    this rapid, complex melody fires flawlessly over the driving rhythm.
+# ==========================================================

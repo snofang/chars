@@ -1,0 +1,113 @@
+# ==========================================================
+# PLAYBOOK: 2010s POST-DUBSTEP / WONKY R&B
+# (Pioneered by James Blake, Mount Kimbie, and Burial)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2010s Post-Dubstep.
+# We have explored heavy Dubstep and 2-Step Garage, but Post-Dubstep 
+# (or "Wonky") is the sound of the early 2010s UK underground. It takes 
+# the syncopated, swinging 2-step drum grid and strips away the aggression, 
+# replacing it with deep, round sub-bass, pristine organic percussion, 
+# and massive, slow-evolving granular vocal pads that feel like rain 
+# falling on a cold city window.
+#
+# This playbook perfectly demonstrates the ambient power of the Granular 
+# Synthesizer. By using a massive grain `size` (0.5s) and a low `density`, 
+# the engine time-stretches a vocal sample into a slow, evolving, 
+# melancholic drone that floats perfectly over the swung beat.
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Nocturnal, Warm, & Swung)
+# ==========================================================
+
+# The "Swung 2-Step" Kick. 
+# Hits on step 0, then stutters on the 'a' of 2 (step 7) and beat 3 (step 8).
+s_kick = gen_score("x......xx.......", [:c4, {note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}])
+
+# Tight, organic snap strictly on beat 2 (step 4), with a ghost on the 'a' of 4.
+s_snare = gen_score("....x.........x.", [:c4, {note: :c4, amp: 0.3}])
+
+# Bouncing, organic 16th shaker. Notice the heavy velocity manipulation.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# Deep, warm Reese Sub-Bass (F Minor).
+# Massive release (2.0) and low cutoff (50) to create a dark, rumbling undercurrent.
+s_bass = gen_score("x...............", [
+  {note: :f1, release: 2.0, cutoff: 50, amp: 1.2}, 
+  {note: :ab1, release: 2.0, cutoff: 50, amp: 1.0}
+])
+
+# Lush, "Electric Piano" Chords (Fm9 to Abm9).
+# Hit on the downbeats. The 1.0-beat attack makes them slowly swell into the 
+# mix like a warm, melancholic memory.
+s_chords = gen_score("x.......x.......", [
+  {note: [:f3, :ab3, :c4, :eb4], cutoff: 70, attack: 1.0, release: 2.5, amp: 0.5},
+  {note: [:ab3, :cb4, :eb4, :gb4], cutoff: 70, attack: 1.0, release: 2.5, amp: 0.5}
+])
+
+# Distant, echoing "Woodblock/Click" (F Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a soft, 
+# organic click. Routed through the engine's tape echo for a cascading smear.
+s_fm = gen_score("..x.....x.....x.", [
+  {note: :f5, amp: 0.4, divisor: 4, depth: 2, release: 0.5}, 
+  {note: :ab5, amp: 0.3, divisor: 4, depth: 2, release: 0.5}
+])
+
+# The "Rain" Vocal Drone (Granular Synth).
+# Massive size (0.5s) and low density (1) time-stretches the sample into a 
+# slow, evolving background texture that sounds like a distant, pitched-down voice.
+s_grain = gen_score("x...............", [
+  {note: :f3, buffer: :misc_lori, pos: 0.4, density: 1, size: 0.5, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Night - Just the swelling chords, Reese bass, and vocal drone (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Streets - Add the swung 2-step drums and echoing clicks (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN NOCTURNAL SPACE]
+# 
+# 1. Ambient Granular Time-Stretching: Look at `s_grain`. The granular engine 
+#    is given a massive `size` of `0.5` (500 milliseconds) and a `density` of `1`. 
+#    By using sparse, long grains, the engine time-stretches the vocal sample 
+#    into a slow, formless drone. It no longer sounds like a rhythmic chop; it 
+#    sounds like a distant, melancholic memory echoing in the cold night.
+#
+# 2. The Swung 2-Step: Look at `s_kick`. After the initial hit on step 0, the 
+#    next kick doesn't hit until step 7 (the very last 16th note of beat 2), 
+#    followed immediately by step 8. Because the engine's master clock is rigid, 
+#    this specific placement creates a lopsided, "drunken" groove that feels 
+#    like walking through puddles on a wet street.
+#
+# 3. Subterranean Warmth: The `s_bass` sequence uses a very low `cutoff` (50) 
+#    and a massive `release` (2.0). This filters out all the harsh high 
+#    frequencies, leaving only a dark, warm rumble that rings out for two whole 
+#    beats. The engine's strict clock ensures this massive bass note perfectly 
+#    anchors the erratic, swung drums.
+# ==========================================================

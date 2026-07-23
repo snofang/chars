@@ -1,0 +1,122 @@
+# ==========================================================
+# PLAYBOOK: 2000s BHANGRA / PUNJABI ELECTRONICA
+# (Pioneered by Panjabi MC, RDB, and Lehmber Hussainpuri)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Bhangra.
+# We have explored Latin and African grooves, but Bhangra is the sound 
+# of the Punjabi diaspora crashing into Western dance music. It fuses 
+# the high-energy, driving rhythms of the traditional "Dhol" drum with 
+# deep, round sub-bass, massive sweeping string sections, and the iconic, 
+# high-pitched "Tumbi" plucked melody. 
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create a relentless, galloping groove. By locking the kick and snare 
+# into a continuous, interlocking 16th-note pattern, the engine simulates 
+# a live Dhol player, while the `:play_fm` synth handles the rapid, 
+# exotic Tumbi melody.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Phrygian Dominant - Festive, Driving, & Exotic)
+# ==========================================================
+
+# The "Dhol" Kick. 
+# A galloping, continuous 16th-note rhythm.
+s_kick = gen_score("x..x..x.x..x..x.", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.6}, :c4, {note: :c4, amp: 0.7}
+])
+
+# The "Dhol" Snare. 
+# Interlocks perfectly with the kick to create a continuous, driving percussion loop.
+s_snare = gen_score("..x.x.....x.x...", [
+  {note: :c4, amp: 0.9}, {note: :c4, amp: 0.5}, {note: :c4, amp: 0.9}, {note: :c4, amp: 0.5}
+])
+
+# Fast, rolling 16th shaker to drive the momentum.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# Deep, round sub-bass (E Phrygian Dominant).
+# Plays a driving 8th-note line. Low cutoff (60) and short release (0.15) 
+# to create a pristine, distortion-free bounce.
+bass_notes = [:e1, :e1, :e1, :e1, :f1, :f1, :f1, :f1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 60, release: 0.15, amp: 1.2} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Bollywood String" Chords (E to F).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic wave.
+s_chords = gen_score("x.......x.......", [
+  {note: [:e3, :g3, :b3, :e4], cutoff: 90, attack: 1.0, release: 3.0, amp: 0.5},
+  {note: [:f3, :a3, :c4, :f4], cutoff: 90, attack: 1.0, release: 3.0, amp: 0.5}
+])
+
+# High-pitched, "Tumbi" Lead (E Phrygian Dominant).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a piercing, 
+# glassy pluck. Plays a rapid, continuous 16th-note melody.
+lead_notes = [:e5, :b4, :e5, :fs5, :g5, :fs5, :e5, :b4, 
+              :c5, :g4, :c5, :d5, :eb5, :d5, :c5, :g4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.1} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# Pitched-up, "Balle Balle" vocal chant (Granular Synth).
+# Pitched UP to :e4 and :b4. High density, tiny size = a sharp, sugary vocal skip.
+vocal_notes = [:e4, :b4]
+vocal_data = vocal_notes.map { |n| {note: n, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6} }
+s_vocal = gen_score("....x.......x...", vocal_data)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Rhythm - Just the interlocking Dhol drums and sub-bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the sweeping strings and vocal chants (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The high-pitched Tumbi melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN PUNJABI FUSION]
+# 
+# 1. The Dhol Interlock: Look at `s_kick` and `s_snare`. They are densely 
+#    packed and completely avoid landing on the same beats. The engine's strict 
+#    master clock ensures these complex, overlapping hits fire with absolute 
+#    mathematical precision, perfectly mimicking the galloping, continuous 
+#    rhythm of a live Dhol drum.
+#
+# 2. FM as a Tumbi: The `s_lead` sequence uses `divisor: 4` and `depth: 2`. 
+#    This harmonic ratio produces a piercing, glassy pluck that perfectly 
+#    mimics the high-pitched, rapid-fire sound of the Tumbi, a traditional 
+#    Punjabi string instrument. By playing a continuous 16th-note melody, 
+#    the engine creates a frantic, high-energy hook.
+#
+# 3. The Exotic Scale: Look at `s_lead` and `s_chords`. The harmony uses E, F, 
+#    G#, A, B, C, D#. The augmented 2nd interval between F and G# creates the 
+#    exotic, "Middle Eastern" sound that defines Bhangra music. The engine's 
+#    strict 16-step grid ensures this rapid, complex melody fires flawlessly 
+#    over the driving rhythm section.
+# ==========================================================

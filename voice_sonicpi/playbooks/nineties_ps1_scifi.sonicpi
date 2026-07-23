@@ -1,0 +1,125 @@
+# ==========================================================
+# PLAYBOOK: 90s PS1 SCI-FI RACER / WIPEOUT SOUNDTRACK
+# (Pioneered by Cold Storage, The Prodigy, and Sasha)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s PS1 Sci-Fi Racer.
+# We have explored Goa Trance and Big Beat, but the PS1 Sci-Fi Racer 
+# (best exemplified by the *Wipeout* OST) is a highly specific fusion 
+# of 90s UK breakbeats, driving Goa synth leads, and a dark, futuristic 
+# atmosphere. It relies on a frantic, syncopated "Amen" breakbeat, a 
+# continuous, rolling 16th-note analog bass, and rapid, echoing FM 
+# arpeggios that feel like flying through a neon anti-gravity tunnel.
+#
+# This playbook perfectly demonstrates how to push the engine's master 
+# clock to a high tempo (145 BPM) while maintaining immense negative space. 
+# By locking a continuous 16th-note bassline to a chopped breakbeat and 
+# sparse, echoing FM chords, the engine creates a high-speed, adrenaline-fueled 
+# atmosphere.
+# ==========================================================
+
+use_bpm 145
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Frantic, Dark, & High-Speed)
+# ==========================================================
+
+# The "Amen" Kick. 
+# Highly syncopated. Hits on step 0, the 'a' of 1 (step 3), beat 3 (step 8), 
+# and the 'e' of 4 (step 12).
+s_kick = gen_score("x..x....x..x....", [
+  :c4, {note: :c4, amp: 0.6}, :c4, {note: :c4, amp: 0.5}
+])
+
+# The "Amen" Snare. 
+# Heavy hits on 2 and 4, with frantic rolls on the 'e' and 'and' of 3.
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.9}
+])
+
+# Fast, rolling 16th hats to drive the momentum.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# The "Rolling" Analog Bass (A Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# Mid cutoff (90) and short release (0.1) create a relentless, buzzing churn.
+bass_cycle = [:a1, :a1, :a2, :a1, :a1, :a1, :a2, :a1, 
+              :g1, :g1, :g2, :g1, :g1, :g1, :g2, :g1]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, echoing "Sci-Fi" Chords (Am to Gm).
+# Hit strictly on the off-beats. High cutoff (110) and long release (0.8) 
+# create a massive, echoing wall of sound that floats over the breakbeat.
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.8, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.8, amp: 0.5}
+])
+
+# Frantic, "Goa" Arpeggio (A Minor).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a piercing, 
+# glassy tone. Plays a rapid, continuous 16th-note melody.
+lead_notes = [:a5, :e5, :c6, :e5, :a5, :e5, :c6, :e5, 
+              :g5, :d5, :bb5, :d5, :g5, :d5, :bb5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.1} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# Ethereal, "Tunnel" drone (Granular Synth).
+# Long size (0.4) and low density (1) creates a slow, evolving background 
+# texture that sounds like wind rushing past a hovering ship.
+s_grain = gen_score("x...............", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Grid - Just the breakbeat, rolling bass, and drone (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Boost - Add the echoing sci-fi chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Finish Line - The frantic Goa arpeggio drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ADRENALINE]
+# 
+# 1. The Chopped Breakbeat: Look at `s_kick` and `s_snare`. They are densely 
+#    packed and completely avoid landing on the same beats. The engine's strict 
+#    master clock ensures these complex, overlapping hits fire with absolute 
+#    mathematical precision at 145 BPM, perfectly mimicking the chopped "Amen" 
+#    breakbeats of 90s UK rave music.
+#
+# 2. The Continuous 16th Roll: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating octaves. By using a mid-range `cutoff` 
+#    (90) and a short `release` (0.1), the engine creates a relentless, buzzing 
+#    churn that drives the track forward like a hovering engine.
+#
+# 3. Extreme Dynamic Contrast: The track relies on the stark contrast between 
+#    the frantic, high-speed rhythm section and the slow, lush, sweeping chords. 
+#    The `s_chords` sequence uses a long `release` (0.8) to blur the chords 
+#    into a continuous wave of sound that floats above the breakbeat, perfectly 
+#    anchoring the track's futuristic, anti-gravity atmosphere.
+# ==========================================================
