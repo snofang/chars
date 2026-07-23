@@ -1,0 +1,115 @@
+# ==========================================================
+# PLAYBOOK: 90s G-FUNK / WEST COAST HIP-HOP
+# (Pioneered by Dr. Dre, Warren G, and Snoop Dogg)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s G-Funk.
+# We have explored modern Trap and East Coast Boom-Bap, but G-Funk is 
+# the sound of 90s West Coast hip-hop. It fuses the heavy, laid-back 
+# groove of funk with high-pitched, whining synth leads (often a Moog 
+# or Prophet), deep, melodic basslines, and sparse, swinging drum beats. 
+#
+# This playbook perfectly demonstrates how to use the `gen_score` helper 
+# to create a "laid-back" groove. By pushing the kick and snare slightly 
+# late in the 16-step grid, and routing a high-pitched FM lead through 
+# the global tape echo, the engine creates a slow, swaggering, and 
+# deeply nostalgic West Coast atmosphere.
+# ==========================================================
+
+use_bpm 95
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Major - Laid-Back, Whiny, & Bouncy)
+# ==========================================================
+
+# The "Laid-Back" Kick. 
+# Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
+s_kick = gen_score("x.....x.x.......", [:c4, {note: :c4, amp: 0.8}, :c4])
+
+# Heavy, funk clap strictly on beats 2 and 4, pushed slightly late.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Swung, bouncing 16th hats. Notice the heavy velocity manipulation.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# Deep, melodic Moog-style bass (F Major).
+# Walks a bouncy line. Low cutoff (70) and medium release (0.2) 
+# to create a warm, muffled undercurrent.
+bass_notes = [:f1, :f1, :c2, :f1, :f1, :f1, :bb1, :f1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 70, release: 0.2, amp: 1.2} }
+s_bass = gen_score("x.....x.x.....x.", bass_data)
+
+# Lush, sustained minor 9th chords (Fm9 to Bbm9).
+# Hit on the downbeats. The slow 0.5-beat attack and massive 2.0-beat release 
+# blur the chords together into a continuous, warm funk pad.
+s_chords = gen_score("x.......x.......", [
+  {note: [:f3, :ab3, :c4, :eb4], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4},
+  {note: [:bb2, :db3, :f3, :ab3], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4}
+])
+
+# High-pitched, "Whiny" G-Funk Lead (F Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (4) to create a sharp, 
+# buzzy square wave. Routed through the global tape echo for a cinematic smear.
+lead_notes = [:f5, :ab5, :c6, :bb5, :ab5, :f5, :eb5, :c6]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 4, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Distant, "Siren" vocal wail (Granular Synth).
+# Pitched UP to :f4. Long size (0.15) creates a mournful, echoing cry.
+s_vocal = gen_score("x...............", [
+  {note: :f4, buffer: :misc_lori, pos: 0.6, density: 1, size: 0.15, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the laid-back drums, Moog bass, and chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Cruise - Add the distant vocal wail (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The high-pitched whining G-Funk lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN WEST COAST SWAGGER]
+# 
+# 1. The "Laid-Back" Push: Look at `s_kick`. Instead of hitting on step 4 
+#    (beat 2), it hits on step 6 (the 'and' of beat 2). In West Coast hip-hop, 
+#    drummers physically play slightly behind the beat. Because the engine's 
+#    grid is mathematically perfect, pushing the kick just one 16th note late 
+#    creates that heavy, leaning, "lowrider" bounce.
+#
+# 2. The Whiny FM Lead: The `s_lead` sequence uses `divisor: 2` and `depth: 4`. 
+#    This harmonic ratio produces a sharp, buzzy square wave. Because it plays 
+#    in the upper register (:f5, :c6) and is routed through the global tape 
+#    echo, the notes smear into a high-pitched, whining melody that perfectly 
+#    mimics the iconic Moog leads of 90s G-Funk.
+#
+# 3. Swelling Funk Pads: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `0.5` and a `release` of `2.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, warm wave of harmony that perfectly 
+#    anchors the track's laid-back, cinematic atmosphere.
+# ==========================================================

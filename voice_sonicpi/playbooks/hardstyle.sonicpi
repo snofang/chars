@@ -3,7 +3,7 @@ use_bpm 150
 # ==========================================================
 # 1. REQUIRE ENGINE
 # ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # update your path!
 
 # ==========================================================
 # 2. THE SCORES (E Phrygian - Aggressive & Epic)

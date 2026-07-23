@@ -1,0 +1,119 @@
+# ==========================================================
+# PLAYBOOK: 90s HAPPY HARDCORE / UK HARDCORE
+# (Pioneered by Scott Brown, Brisk, and Hixxy)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Happy Hardcore.
+# We have explored Pop-Punk and Balkan Beat, but Happy Hardcore is the 
+# absolute pinnacle of 90s UK rave energy. Operating at 170 BPM, it fuses 
+# a relentless, driving 4/4 beat with a massive, off-beat "bouncing" bass, 
+# bright, euphoric piano stabs, and high-pitched, pitched-up diva vocals. 
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create unstoppable, high-speed momentum. By locking the bass, chords, 
+# and open hats strictly to the off-beats (steps 2, 6, 10, 14), the 
+# engine creates a massive, bouncing "boom-cha" groove that forces the 
+# dancefloor to move at breakneck speed.
+# ==========================================================
+
+use_bpm 170
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Major - Euphoric, Frantic, & Bouncy)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, rave-style clap strictly on beats 2 and 4.
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Off-beat open hats to drive the momentum.
+s_hats = gen_score("..x...x...x...x.", [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
+
+# The "Off-Beat" Rave Bass (C Major).
+# Hits strictly on the off-beats. Very short release (0.1) creates a 
+# relentless, bouncing "pump" that drives the track forward.
+bass_notes = [:c2, :c2, :g1, :c2, :c2, :c2, :g1, :c2]
+bass_data = bass_notes.map { |n| {note: n, release: 0.1, cutoff: 90, amp: 1.0} }
+s_bass = gen_score("..x...x...x...x.", bass_data)
+
+# Massive, "Korg M1" Piano Stabs (Cmaj to Gmaj).
+# Hit strictly on the off-beats in sync with the bass. High cutoff (110) 
+# and short release (0.2) give them that piercing, 90s rave piano feel.
+chord_notes = [
+  {note: [:c3, :e3, :g3, :b3]}, {note: [:c3, :e3, :g3, :b3]}, 
+  {note: [:g2, :b2, :d3, :fs3]}, {note: [:c3, :e3, :g3, :b3]}
+]
+chord_data = chord_notes.map { |c| c.merge({cutoff: 110, release: 0.2, amp: 0.6}) }
+s_chords = gen_score("..x...x...x...x.", chord_data)
+
+# Piercing, high-pitched "Rave" Synth Lead (C Major Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
+# buzzy square wave that plays a rapid, 16th-note melody.
+lead_notes = [:c5, :e5, :g5, :e5, :c5, :d5, :g4, :c5, 
+              :c5, :e5, :g5, :c6, :b5, :g5, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 3, release: 0.1} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# High-pitched, soaring "Diva" Vocal Chops (Granular Synth).
+# Pitched UP to :c5 and :g4. High density, tiny size = a sharp, sugary vocal skip.
+vocal_notes = [:c5, :g4]
+vocal_data = vocal_notes.map { |n| {note: n, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6} }
+s_vocal = gen_score("....x.......x...", vocal_data)
+
+# Ethereal, granular "Cosmic" drone (using :ambi_choir).
+# Long size (0.3) and low density (1) creates a slow, evolving background 
+# texture that drifts behind the frantic beat.
+s_grain = gen_score("x...............", [
+  {note: :c4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the kick, off-beat bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps, cosmic drone, and piano stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_clap, 8], [:play_grain, s_grain, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The piercing synth lead and diva vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_clap, 8], [:play_grain, s_grain, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RAVE EUPHORIA]
+# 
+# 1. The Off-Beat Wall: Look at `s_bass`, `s_hats`, and `s_chords`. They 
+#    ALL hit strictly on steps 2, 6, 10, and 14. In a 16-step grid, these 
+#    are the exact midpoints between the kicks. The engine's strict master 
+#    clock locks these together perfectly at 170 BPM, creating a massive, 
+#    bouncing "boom-cha" momentum that forces you to dance.
+#
+# 2. The Korg M1 Illusion: Look at `s_chords`. The arrays form massive 
+#    4-note major chords. By using a high `cutoff` (110) and a short 
+#    `release` (0.2), the engine turns the `:blade` synth into a bright, 
+#    piercing piano stab that perfectly mimics the legendary Korg M1 
+#    "Organ 2" patch used in almost every 90s rave track.
+#
+# 3. Euphoric Granular Vocals: The `s_vocal` sequence uses the granular 
+#    engine to chop a vocal into microscopic shards (`size: 0.04`). By 
+#    pitching them UP to `:c5` and `:g4`, the vocal loses its dark tone 
+#    and becomes a soaring, sugary diva stutter that defines Happy Hardcore.
+# ==========================================================

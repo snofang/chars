@@ -1,0 +1,118 @@
+# ==========================================================
+# PLAYBOOK: 2000s MIDWEST EMO / MATH ROCK
+# (Pioneered by American Football, TTNG, and Tiny Moving Parts)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Midwest Emo.
+# We have explored Pop-Punk and Grunge, but Midwest Emo is the sound of 
+# 2000s suburban basements. It fuses fast, intricate, "math-rock" drum 
+# patterns with clean, twinkly, arpeggiated guitars, a driving, melodic 
+# bass, and shouted, passionate vocals. 
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a technical, live indie band. By using the `:play_fm` 
+# synth as a clean, high-pitched "twinkly" guitar and the `:play_sub` 
+# synth as a driving bass, the engine creates a nostalgic, deeply emotional, 
+# and technically precise atmosphere.
+# ==========================================================
+
+use_bpm 160
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Major - Twinkly, Technical, & Nostalgic)
+# ==========================================================
+
+# Fast, syncopated "Math Rock" Kick. 
+# Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
+s_kick = gen_score("x.....x.x.......", [:c4, {note: :c4, amp: 0.8}, :c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, intricate 16th hats.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# The "Driving" Bass (F# Major).
+# Plays continuous, fast 8th notes. Mid cutoff (90) and short release (0.1) 
+# create a punchy, melodic "thwack" that drives the track.
+bass_notes = [:fs2, :fs2, :a2, :fs2, :d2, :d2, :e2, :e2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Clean, "Twinkly" Guitar Arpeggio (F# Major).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# glassy, "twinkly" tone. Plays a continuous, fast 16th-note melody.
+guitar_notes = [:fs4, :a4, :c5, :e5, :d5, :c5, :a4, :fs4, 
+                :d4, :f4, :a4, :c5, :b4, :a4, :f4, :d4]
+guitar_data = guitar_notes.map { |n| {note: n, amp: 0.5, divisor: 3, depth: 2, release: 0.15} }
+s_guitar = gen_score("x.x.x.x.x.x.x.x.", guitar_data)
+
+# Sparse, "Minor" Chords (Dmaj7 to Emaj7).
+# Hit on the downbeats. Low cutoff (80) and medium release (1.0) 
+# create a warm, blurred background wave.
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :fs3, :a3, :c4], cutoff: 80, release: 1.0, amp: 0.4},
+  {note: [:e3, :gs3, :b3, :d4], cutoff: 80, release: 1.0, amp: 0.4}
+])
+
+# Piercing, "Shouted" Lead (F# Major Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# sharp, buzzy square wave that mimics a shouted vocal or distorted lead.
+lead_notes = [:fs4, :a4, :b4, :c5, :b4, :a4, :fs4, :e4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 5, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Basement - Just the fast drums, driving bass, and twinkly guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_guitar, 4] ],
+  
+  # Scene 2: The Build - Add the sparse, warm chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Climax - The piercing shouted lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MATH ROCK]
+# 
+# 1. The "Twinkly" Arpeggio: Look at `s_guitar`. The `:play_fm` synth is 
+#    given a high `divisor` (3) and a low `depth` (2). This harmonic ratio 
+#    produces a clean, glassy, bell-like tone that perfectly mimics the 
+#    clean, high-register guitar arpeggios that define Midwest Emo. By 
+#    playing a rapid, continuous 16th-note melody, the engine creates a 
+#    nostalgic, "twinkly" atmosphere.
+#
+# 2. The Driving Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a melodic line. By using a mid-range 
+#    `cutoff` (90) and a very short `release` (0.1), the engine turns the 
+#    detuned sawtooth into a punchy, driving "thwack" that perfectly mimics 
+#    a picked electric bass guitar locking in with the fast drums.
+#
+# 3. Math Rock Syncopation: Look at `s_kick`. It avoids landing on a 
+#    standard 4/4 pulse. By hitting on steps 0, 6, and 8, the engine creates 
+#    a syncopated, "math-rock" groove that feels like a technical drummer 
+#    playing a complex fill, perfectly anchoring the continuous 16th-note 
+#    guitar and bass.
+# ==========================================================

@@ -1,0 +1,128 @@
+# ==========================================================
+# PLAYBOOK: 80s 2-TONE SKA / SKA REVIVAL
+# (Pioneered by The Specials, Madness, and The Selecter)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s 2-Tone Ska.
+# We have explored 90s Ska Punk and 70s Reggae, but 2-Tone Ska is the 
+# sound of the late 70s/early 80s UK ska revival. It fuses the bouncing, 
+# off-beat rhythm of Jamaican ska with the fast, aggressive energy of 
+# punk rock. It relies on a driving 4/4 punk drum beat, a walking, 
+# melodic bassline, and the iconic, staccato "chuka-chuka" off-beat 
+# guitar/keyboard skank.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create a high-energy, bouncing groove. By using the `:play_pluck` synth 
+# with a microscopic `release` to simulate the staccato guitar skank, 
+# the engine creates a fast, frantic, and deeply infectious rhythm.
+# ==========================================================
+
+use_bpm 140
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (B Minor - Fast, Bouncy, & Aggressive)
+# ==========================================================
+
+# Fast, driving punk rock kick. Hits on 1, 2, 3, and 4.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 8th hats. 
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Walking" Bass (B Minor).
+# Plays continuous, fast 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive picked bass.
+bass_notes = [:b1, :b1, :d2, :b1, :g1, :g1, :b1, :g1, 
+              :a1, :a1, :c2, :a1, :b1, :b1, :d2, :b1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# The "Off-Beat Skank" Guitar (B Minor).
+# Uses :play_pluck. Hits strictly on the off-beats (steps 2, 6, 10, 14) 
+# to leave maximum room for the driving drums and bass.
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:b3, :fs4], amp: 0.6, release: 0.08, coef: 0.3}, 
+  {note: [:b3, :fs4], amp: 0.6, release: 0.08, coef: 0.3}, 
+  {note: [:g3, :d4], amp: 0.6, release: 0.08, coef: 0.3}, 
+  {note: [:a3, :e4], amp: 0.6, release: 0.08, coef: 0.3}
+])
+
+# Tight, "Hammond Organ" Stabs (Bm to G to A).
+# Uses :play_fm with a low divisor (2) and depth (3) to create a warm, 
+# buzzy staccato hit that mimics a Hammond organ locking in with the guitar.
+s_chords = gen_score("x.......x....x..", [
+  {note: [:b3, :d4, :fs4], divisor: 2, depth: 3, release: 0.2, amp: 0.5},
+  {note: [:g2, :b2, :d3], divisor: 2, depth: 3, release: 0.2, amp: 0.5},
+  {note: [:a2, :cs3, :e3], divisor: 2, depth: 3, release: 0.2, amp: 0.5}
+])
+
+# Piercing, "Lead Sax/Horn" Melody (B Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (1) to create a clean, 
+# piercing brass tone. Routed through the engine's tape echo.
+lead_notes = [:b4, :d5, :fs5, :e5, :d5, :b4, :a4, :b4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 1, release: 0.15} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Group Vocals" shout (Granular Synth).
+# Long size (0.08) and low density (1) creates a raw, repetitive vocal hit 
+# that mimics a crowd shouting "Selecter!".
+s_vocal = gen_score("........x.......", [
+  {note: :b3, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.08, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Skank - Just the fast drums, walking bass, and guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4] ],
+  
+  # Scene 2: The Vibe - Add the Hammond stabs and group vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_fm, s_chords, 8], 
+    [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The piercing lead sax melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_fm, s_chords, 8], 
+    [:play_grain, s_vocal, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SKA MOMENTUM]
+# 
+# 1. The Staccato Skank: Look at `s_guitar`. The `:play_pluck` synth hits 
+#    strictly on steps 2, 6, 10, and 14. In a 16-step grid, these are the 
+#    exact midpoints between the kicks. By using a microscopic `release` 
+#    (0.08) and a low `coef` (0.3), the engine turns the pluck into a sharp, 
+#    staccato "chuka" that perfectly mimics the clean, off-beat guitar 
+#    strums that define 2-Tone Ska.
+#
+# 2. The Walking Punk Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a fast, walking line. By using a high 
+#    `cutoff` (100) and a very short `release` (0.1), the engine turns the 
+#    detuned sawtooth into a punchy, aggressive "thwack" that perfectly 
+#    mimics the picked basslines of 80s ska, bridging the gap between 
+#    reggae and punk rock.
+#
+# 3. The Punk Rock Drive: 2-Tone Ska relies on a frantic, relentless 
+#    rhythm section. The `s_hats` play straight 8th notes, and the `s_kick` 
+#    hits on every beat (steps 0, 4, 8, 12). The engine's strict master 
+#    clock ensures this rigid, driving momentum locks perfectly with the 
+#    continuous 8th-note bass, creating a high-energy, forward-driving groove.
+# ==========================================================

@@ -1,0 +1,117 @@
+# ==========================================================
+# PLAYBOOK: 50s ROCKABILLY / SUN RECORDS ROCK & ROLL
+# (Pioneered by Elvis Presley, Carl Perkins, and Johnny Cash)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 50s Rockabilly.
+# We have explored modern electronic and rock genres, but Rockabilly is 
+# the absolute genesis of rock and roll. It relies on a driving 4/4 
+# beat with a heavy backbeat, a relentless, walking "slap" upright bass, 
+# chugging acoustic guitar, and a twangy electric guitar lead drenched 
+# in slapback echo. 
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a live 1950s rockabilly trio. By using the 
+# `:play_sub` synth as a fast, walking upright bass and the `:play_lead` 
+# synth routed through the global tape echo to simulate the twangy, 
+# echoing electric guitar, the engine creates a raw, vintage, and 
+# high-energy atmosphere.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Major - Raw, Driving, & Vintage)
+# ==========================================================
+
+# Driving 4/4 rock kick. Hits on 1 and 3.
+s_kick = gen_score("x.......x.......", [:c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Swung, driving 8th hats. 
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Slap" Upright Bass (A Major).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, acoustic "thwack" that mimics a slapped upright bass.
+bass_notes = [:a1, :a1, :cs2, :a1, :e1, :e1, :e2, :e1, 
+              :a1, :a1, :cs2, :a1, :d2, :d2, :e2, :e2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# The "Chugging" Acoustic Guitar (A to D to E).
+# Uses :play_pluck. Hits strictly on the off-beats to mimic a strummed acoustic.
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:a3, :e4], amp: 0.6, release: 0.1, coef: 0.6}, 
+  {note: [:a3, :e4], amp: 0.6, release: 0.1, coef: 0.6}, 
+  {note: [:d3, :a3], amp: 0.6, release: 0.1, coef: 0.6}, 
+  {note: [:e3, :b3], amp: 0.6, release: 0.1, coef: 0.6}
+])
+
+# Twangy, "Slapback" Electric Lead (A Major Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (4) to create a sharp, 
+# twangy tone. Routed through the engine's tape echo for a vintage smear.
+lead_notes = [:a4, :cs5, :e5, :a5, :gs5, :e5, :cs5, :a4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 4, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Hollar" vocal chant (Granular Synth).
+# Long size (0.1) and low density (1) creates a raw, repetitive vocal hit.
+s_vocal = gen_score("........x.......", [
+  {note: :a3, buffer: :misc_lori, pos: 0.1, density: 1, size: 0.1, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Jam - Just the driving drums, slap bass, and acoustic guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4] ],
+  
+  # Scene 2: The Vibe - Add the vocal hollar (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The twangy slapback guitar lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN VINTAGE ROCK]
+# 
+# 1. The Slap Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a fast, walking line. By using a high 
+#    `cutoff` (100) and a very short `release` (0.1), the engine turns the 
+#    detuned sawtooth into a punchy, acoustic "thwack" that perfectly mimics 
+#    a slapped upright bass driving the rhythm, a hallmark of 50s rockabilly.
+#
+# 2. The Slapback Echo: Look at `s_lead`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `4`, creating a sharp, twangy tone. 
+#    Because it's routed through the engine's global tape echo bus, the 
+#    sparse notes bounce rapidly across the empty space, perfectly mimicking 
+#    the vintage slapback echo used by guitarists like Scotty Moore and 
+#    Carl Perkins.
+#
+# 3. The Off-Beat Chug: Look at `s_guitar`. The `:play_pluck` synth hits 
+#    strictly on steps 2, 6, 10, and 14. In a 16-step grid, these are the 
+#    exact midpoints between the kicks. By using a short `release` (0.1) and 
+#    a mid `coef` (0.6), the engine turns the pluck into a sharp, staccato 
+#    "chuka" that perfectly mimics the off-beat acoustic guitar strums that 
+#    define rock and roll.
+# ==========================================================

@@ -1,0 +1,118 @@
+# ==========================================================
+# PLAYBOOK: 60s/70s SPAGHETTI WESTERN / CINEMATIC DESERT
+# (Pioneered by Ennio Morricone, Sergio Leone, and Bruno Nicolai)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 60s/70s Spaghetti Western.
+# We have explored Stadium Rock and Cinematic Funk, but the Spaghetti Western 
+# is the sound of the dusty, surreal Mexican desert. It relies on extreme 
+# sparsity, massive, echoing cavernous space, twangy "electric sitar" guitars, 
+# piercing harmonica/whistle melodies, and a relentless, ticking "rattlesnake" 
+# percussion loop.
+#
+# This playbook perfectly demonstrates the power of extreme negative space 
+# and slow envelopes. By using the `:play_pluck` synth to simulate a twangy 
+# guitar, and the `:play_fm` synth to simulate a piercing harmonica, the 
+# engine creates a slow, haunting, and deeply cinematic desert atmosphere.
+# ==========================================================
+
+use_bpm 85
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Haunting, Sparse, & Dusty)
+# ==========================================================
+
+# Heavy, slow marching kick. 
+# Hits only on beat 1 and the 'and' of 3.
+s_kick = gen_score("x.......x.......", [:c4, {note: :c4, amp: 0.8}])
+
+# Massive, cavernous snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# The "Rattlesnake" Shaker.
+# Continuous 16th notes with alternating amplitudes to simulate a rattling tail.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.15}, {note: :c4, amp: 0.1}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}
+])
+
+# Deep, "Upright Cello" Bass (A Minor).
+# Hits strictly on the downbeats. Low cutoff (60) and medium release (0.3) 
+# to create a heavy, continuous undercurrent.
+s_bass = gen_score("x...............", [
+  {note: :a1, release: 0.3, cutoff: 60, amp: 1.2}, 
+  {note: :e1, release: 0.3, cutoff: 60, amp: 1.0}
+])
+
+# The "Twangy Guitar" Stabs (Am to Dm).
+# Uses :play_pluck with a high `coef` (0.8) to create a sharp, twangy "thwack" 
+# that mimics a Fender Stratocaster or electric sitar.
+s_guitar = gen_score("..x.....x.....x.", [
+  {note: [:a3, :e4], amp: 0.6, release: 0.3, coef: 0.8}, 
+  {note: [:d3, :a3], amp: 0.6, release: 0.3, coef: 0.8}
+])
+
+# Piercing, "Harmonica/Whistle" Lead (A Harmonic Minor).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# piercing sine wave. Routed through the engine's tape echo for a cavernous smear.
+lead_notes = [:a4, :c5, :e5, :g5, :fs5, :e5, :c5, :a4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.5} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Haunting, "Coyote Howl" / vocal drone (Granular Synth).
+# Pitched UP to :a4. Long size (0.3) and low density (1) creates a slow, 
+# evolving background texture that sounds like a distant cry in the desert.
+s_grain = gen_score("x...............", [
+  {note: :a4, buffer: :misc_lori, pos: 0.4, density: 1, size: 0.3, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Desert - Just the rattlesnake, bass, and twangy guitar (4 bars)
+  [ [:play_hats, s_hats, 4], [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4], 
+    [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Standoff - Add the slow, heavy marching drums (8 bars)
+  [ [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8] ],
+    
+  # Scene 3: The Duel - The piercing harmonica melody drops (8 bars)
+  [ [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC SPACE]
+# 
+# 1. The Rattlesnake Tail: Look at `s_hats`. The hats play continuous 16th 
+#    notes, but the amplitudes swing wildly between 0.1, 0.15, and 0.2. By 
+#    emphasizing the off-beats, the engine simulates the rapid, uneven 
+#    shaking of a rattlesnake's tail, creating a tense, hypnotic rhythm 
+#    that drives the track without needing a fast tempo.
+#
+# 2. FM as a Harmonica: The `s_lead` sequence uses `divisor: 3` and `depth: 2`. 
+#    This gentle harmonic ratio produces a clean, piercing sine-like wave 
+#    that mimics a harmonica or a whistle. Because it's routed through the 
+#    engine's tape echo, the sparse notes cascade across the empty space, 
+#    perfectly anchoring the track's haunting, desert atmosphere.
+#
+# 3. Extreme Negative Space: Spaghetti Westerns rely on what you *don't* play. 
+#    90% of the `s_kick` and `s_bass` grids are `nil`. The engine honors 
+#    these rests perfectly, letting the massive reverb tails of the snare 
+#    and the delay tails of the harmonica ring out into the void, creating 
+#    a slow, echoing atmosphere of dread.
+# ==========================================================
