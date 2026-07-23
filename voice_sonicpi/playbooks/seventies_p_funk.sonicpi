@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 70s P-FUNK / PARLIAMENT-FUNKADELIC
+# (Pioneered by George Clinton, Bootsy Collins, and Bernie Worrell)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s P-Funk.
+# We have explored 80s Synth-Funk and 90s G-Funk, but P-Funk is the 
+# absolute motherload. It is the sound of cosmic slop. It relies on a 
+# deeply syncopated, bouncy drum break, a round, melodic Moog bass, 
+# staccato clavinet/Wah-Wah guitar stabs, and squelching synth leads 
+# that sound like a spaceship taking off.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create a heavily syncopated, live-band funk groove. By using the 
+# `:play_fm` synth to simulate both the clavinet stabs and the alien 
+# synth leads, the engine creates a raw, bouncy, and psychedelic funk 
+# atmosphere.
+# ==========================================================
+
+use_bpm 105
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Dorian - Cosmic, Bouncy, & Raw)
+# ==========================================================
+
+# The "Funky Drummer" Kick. 
+# Highly syncopated. Hits on step 0, the 'and' of 2 (step 6), beat 3 (step 8), 
+# and the 'e' of 4 (step 12).
+s_kick = gen_score("x.....x.x..x....", [:c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.6}])
+
+# Crisp, live snare on beats 2 and 4, with heavy ghost notes.
+s_snare = gen_score("....x.....x.x...", [:c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}])
+
+# Swung, bouncing 16th shaker.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}])
+
+# Deep, round "Moog" Bass (D Dorian).
+# Walks a syncopated line. Low cutoff (70) and medium release (0.2) 
+# to create a warm, bouncy undercurrent.
+s_bass = gen_score("x.....x.x.....x.", [
+  {note: :d1, release: 0.2, cutoff: 70, amp: 1.0}, 
+  {note: :f1, release: 0.2, cutoff: 70, amp: 0.8}, 
+  {note: :a1, release: 0.2, cutoff: 70, amp: 0.8}, 
+  {note: :d1, release: 0.2, cutoff: 70, amp: 1.0}
+])
+
+# Stark, "Clavinet/Wah-Wah" Stabs (Dm to Gm).
+# Uses :play_fm with a low divisor (2) and extreme depth (4) to create a 
+# sharp, buzzy clavinet tone. Hit strictly on the off-beats.
+s_chords = gen_score("..x.....x.....x.", [
+  {note: [:d3, :f3, :a3], divisor: 2, depth: 4, release: 0.05, amp: 0.5},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 4, release: 0.05, amp: 0.5}
+])
+
+# Squelchy, "Cosmic Slop" Lead (D Dorian Pentatonic).
+# Uses :play_fm. The 'divisor' and 'depth' change radically on every hit, 
+# forcing the FM synth to morph between a hollow click and a squelchy chirp.
+lead_notes = [
+  {note: :d5, divisor: 2, depth: 6}, {note: :f5, divisor: 3, depth: 5}, 
+  {note: :a5, divisor: 2, depth: 8}, {note: :c5, divisor: 4, depth: 4}
+]
+lead_data = lead_notes.map { |n| n.merge({amp: 0.6, release: 0.2}) }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Cosmic, pitched-up "Mothership" vocal chops (Granular Synth).
+s_vocal = gen_score("....x.......x...", [
+  {note: :d4, buffer: :misc_lori, pos: 0.2, density: 2, size: 0.05, amp: 0.6},
+  {note: :a4, buffer: :misc_lori, pos: 0.4, density: 2, size: 0.05, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the syncopated drums and Moog bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the clavinet stabs and vocal chops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The squelchy cosmic slop lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN COSMIC FUNK]
+# 
+# 1. FM as a Clavinet: Look at `s_chords`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `4`, with a microscopic `release` 
+#    of `0.05`. This forces the FM synth to produce a sharp, buzzy, staccato 
+#    "thwack" that perfectly mimics a Hohner Clavinet or a Wah-Wah guitar, 
+#    locking perfectly into the off-beats of the 16-step grid.
+#
+# 2. The "Funky Drummer" Syncopation: Look at `s_kick`. It completely 
+#    avoids landing on the standard 4/4 pulse. By hitting on steps 0, 6, 8, 
+#    and 11, the engine creates a lopsided, swaggering groove that feels 
+#    like a live drummer playing a 70s funk break, perfectly anchoring the 
+#    round Moog bass.
+#
+# 3. Morphing "Cosmic Slop": Look at `s_lead`. The `divisor` and `depth` 
+#    Hashes change on every single hit (e.g., from `divisor: 2, depth: 8` 
+#    to `divisor: 4, depth: 4`). Because the engine reads these Hashes 
+#    independently, the FM modulator radically reshapes the carrier wave 
+#    on every step, creating the squelchy, "talking" synth lead that defined 
+#    the P-Funk mothership.
+# ==========================================================

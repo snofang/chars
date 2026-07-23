@@ -1,0 +1,124 @@
+# ==========================================================
+# PLAYBOOK: 2010s FUTURE HOUSE (DRY)
+# (Pioneered by Oliver Heldens, Tchami, and Don Diablo)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2010s Future House.
+# We have explored Tech House and Deep House, but Future House is the 
+# sound of 2010s festival mainstages. It fuses the deep, groovy basslines 
+# of Chicago house with massive, festival-sized EDM energy. It relies 
+# on a rigid 4/4 beat, a highly distinctive, squelching off-beat FM bass, 
+# and bright, echoing pluck melodies.
+#
+# This playbook perfectly demonstrates how to use the `gen_score` helper 
+# and Ruby's `.map.with_index` to algorithmically generate a "talking" 
+# bounce bass. By rapidly cycling the FM `divisor` and `depth` on every 
+# off-beat hit, the engine creates a thick, morphing groove with zero 
+# repetitive code.
+# ==========================================================
+
+use_bpm 126
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Bouncy, Bright, & Festival-Ready)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry festival clap strictly on beats 2 and 4.
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats = gen_score("..x...x...x...x.", [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
+
+# The "Future House" Bounce Bass (G Minor).
+# DRY: Algorithmically generate changing FM parameters on the off-beats!
+bass_notes = [:g2, :bb2, :d2, :g2]
+bass_data = bass_notes.map.with_index do |n, i|
+  # Rapidly cycle the divisor (2, 3, 4) and depth (4, 5, 6) on every hit
+  div = [2, 3, 4][i % 3]
+  dep = [4, 5, 6][i % 3]
+  {note: n, divisor: div, depth: dep, release: 0.12, amp: 1.0}
+end
+s_bass = gen_score("..x...x...x...x.", bass_data)
+
+# Deep, clean sub-bass (G Minor).
+# Hits in sync with the FM bass. Very low cutoff (60) provides a pristine, 
+# distortion-free low-end thump.
+s_sub = gen_score("..x...x...x...x.", [
+  {note: :g1, release: 0.15, amp: 1.0, cutoff: 60}, 
+  {note: :bb1, release: 0.15, amp: 1.0, cutoff: 60},
+  {note: :d1, release: 0.15, amp: 1.0, cutoff: 60},
+  {note: :g1, release: 0.15, amp: 1.0, cutoff: 60}
+])
+
+# Massive, wide off-beat chord stabs (Gm to Ebmaj7).
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:g3, :bb3, :d4], cutoff: 100, release: 0.15, amp: 0.6},
+  {note: [:g3, :bb3, :d4], cutoff: 100, release: 0.15, amp: 0.6},
+  {note: [:eb3, :g3, :bb3], cutoff: 100, release: 0.15, amp: 0.6},
+  {note: [:eb3, :g3, :bb3], cutoff: 100, release: 0.15, amp: 0.6}
+])
+
+# Bright, echoing "Heldens" Pluck Lead (G Minor Pentatonic).
+# DRY: Define just the notes, merge default opts automatically.
+lead_notes = [:g5, :d5, :bb5, :f5, :g5, :d6, :bb5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Choppy, "Diva" vocal stutter (Granular Synth).
+s_vocal = gen_score("....x.......x...", [
+  {note: :g4, buffer: :misc_lori, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
+  {note: :bb4, buffer: :misc_lori, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the kick, bounce bass, and sub (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_fm, s_bass, 4], [:play_sub, s_sub, 4] ],
+  
+  # Scene 2: The Vibe - Add the claps, hats, and chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_fm, s_bass, 8], [:play_sub, s_sub, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The echoing pluck lead and vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_fm, s_bass, 8], [:play_sub, s_sub, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE BOUNCE]
+# 
+# 1. Algorithmic Morphing Bass: Look at `s_bass`. Instead of typing 
+#    repetitive Hashes, we use `.map.with_index do |n, i|`. The engine 
+#    checks the index `i` and cycles through arrays `[2, 3, 4]` and 
+#    `[4, 5, 6]` to assign the `divisor` and `depth`. This forces the FM 
+#    synth to radically reshape its waveform on every off-beat hit, creating 
+#    the thick, squelching, "talking" bounce that defines Future House.
+#
+# 2. Pristine Low-End Separation: Future House requires a massive, clean 
+#    low-end. By using `play_fm` for the squelching mid-bass and `play_sub` 
+#    with a low `cutoff` (60) for the off-beat thump, the engine separates 
+#    the harmonics. This provides immense weight without muddying the mix.
+#
+# 3. Echoing Pluck Space: The `s_lead` sequence plays a simple G minor 
+#    pentatonic melody, but leaves gaps (`nil`) between the notes. Because 
+#    the engine routes the `:play_lead` synth through a tape echo, those 
+#    empty spaces are filled by delay tails, creating a bright, cascading 
+#    soundscape that perfectly mimics modern festival house productions.
+# ==========================================================

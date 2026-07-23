@@ -1,0 +1,111 @@
+# ==========================================================
+# PLAYBOOK: 2000s POST-ROCK / CINEMATIC AMBIENT
+# (Pioneered by Explosions in the Sky, Mogwai, and Sigur Rós)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Post-Rock.
+# We have explored fast, rhythmic genres and heavy electronic music. 
+# Post-Rock is the sound of pure, cinematic emotion. It relies on clean, 
+# echoing guitar arpeggios that slowly build in intensity, massive, 
+# slow-attacking "volume swell" chords, and a heavy, driving drum beat 
+# that feels like a rolling thunderstorm. 
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# to create immense, slow-building tension. By using massive `attack` 
+# and `release` times on the chords, and routing a continuous arpeggio 
+# through the global tape echo, the engine creates a massive, cinematic 
+# wall of sound that feels like the climax of a movie.
+# ==========================================================
+
+use_bpm 90
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Major - Emotional, Sweeping, & Massive)
+# ==========================================================
+
+# Heavy, driving "Thunderstorm" Kick. 
+# Hits on step 0, beat 2 (step 4), beat 3 (step 8), and beat 4 (step 12).
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 8th hats to maintain momentum.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}])
+
+# Deep, warm drone bass (C Major).
+# Hits strictly on the downbeats. Very low cutoff (60) and massive release 
+# (2.0) create a heavy, continuous undercurrent.
+s_bass = gen_score("x.......x.......", [
+  {note: :c1, release: 2.0, cutoff: 60, amp: 1.2}, 
+  {note: :g1, release: 2.0, cutoff: 60, amp: 1.0}
+])
+
+# Massive, "Volume Swell" Chords (Cmaj9 to Gmaj7).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic wave.
+s_chords = gen_score("x.......x.......", [
+  {note: [:c3, :g3, :d4, :e4], cutoff: 90, attack: 2.0, release: 4.0, amp: 0.6},
+  {note: [:g2, :d3, :a3, :b3], cutoff: 90, attack: 2.0, release: 4.0, amp: 0.6}
+])
+
+# Clean, "Chiming" Guitar Arpeggio (C Major).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# glassy guitar tone. Routed through the engine's tape echo for a smear.
+guitar_notes = [:c4, :g3, :e4, :g3, :c4, :g3, :e4, :g3]
+guitar_data = guitar_notes.map { |n| {note: n, amp: 0.5, divisor: 3, depth: 2, release: 0.3} }
+s_guitar = gen_score("x..x..x..x..x..x", guitar_data)
+
+# Ethereal, "String/Angel" drone (Granular Synth).
+# Long size (0.4) and low density (1) creates a slow, evolving background 
+# texture that drifts behind the massive beat like a cold wind.
+s_grain = gen_score("x...............", [
+  {note: :c4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Calm - Just the clean guitar, swelling chords, and drone (4 bars)
+  [ [:play_fm, s_guitar, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Build - Add the driving thunderstorm drums and bass (8 bars)
+  [ [:play_fm, s_guitar, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC TENSION]
+# 
+# 1. The Volume Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `2.0` and a `release` of `4.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix 
+#    and fade away over six whole beats, creating a continuous, blurred 
+#    wave of sound that perfectly mimics the volume-pedal swells of 
+#    post-rock guitars.
+#
+# 2. Echoing Arpeggios: The `s_guitar` sequence plays a continuous 8th-note 
+#    arpeggio. Because the engine routes the `:play_fm` synth through a 
+#    tape echo, the sparse notes cascade across the empty space, creating 
+#    a shimmering, stadium-sized soundscape that feels like a clean electric 
+#    guitar echoing in a massive hall.
+#
+# 3. The Thunderstorm Drive: Post-Rock relies on a stark contrast between 
+#    the ethereal, floating textures and a heavy, driving rhythm section. 
+#    The `s_kick` plays a rigid 4/4 beat, and the `s_bass` rings out with 
+#    a massive `release` (2.0). The engine's strict master clock ensures 
+#    this heavy momentum locks perfectly with the floating chords.
+# ==========================================================
