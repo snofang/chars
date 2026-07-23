@@ -1,0 +1,106 @@
+# ==========================================================
+# PLAYBOOK: BASSLINE / UK NICHE
+# (Pioneered by T2, DJ Q, and H2O)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Bassline (or Niche).
+# We have explored dark, minimalistic genres (Minimal Techno) and heavy 
+# bass music (Brostep). Bassline is the sound of northern England 
+# (Sheffield, Leeds). It takes the bouncy 4/4 grid of speed garage but 
+# pushes the bassline to the absolute front of the mix, using loud, wobbly 
+# LFO filters and frantic, high-pitched R&B vocal chops.
+#
+# This playbook perfectly demonstrates how to simulate an LFO wobble 
+# purely via data. By rapidly alternating the `cutoff` Hashes between 60 
+# and 120 on every 16th step, the engine forces the `:play_sub` synth to 
+# "wobble" frantically, creating that signature bouncy, heavy Niche sound.
+# ==========================================================
+
+use_bpm 138
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Bouncy, Heavy, & Wobbly)
+# ==========================================================
+
+# Driving 4/4 kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, dry clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# The "Wobble" Bass (F# Minor).
+# Plays continuous 16th notes. The 'cutoff' Hash rapidly alternates 
+# between 60 (muffled) and 120 (bright) on every step, simulating a 
+# fast LFO filter wobble that defines Bassline music.
+s_bass  = (ring {:note => :fs2, :cutoff => 60}, {:note => :fs2, :cutoff => 120}, {:note => :fs2, :cutoff => 60}, {:note => :fs2, :cutoff => 120}, 
+           {:note => :a2, :cutoff => 60}, {:note => :a2, :cutoff => 120}, {:note => :a2, :cutoff => 60}, {:note => :a2, :cutoff => 120}, 
+           {:note => :c3, :cutoff => 60}, {:note => :c3, :cutoff => 120}, {:note => :c3, :cutoff => 60}, {:note => :c3, :cutoff => 120}, 
+           {:note => :e2, :cutoff => 60}, {:note => :e2, :cutoff => 120}, {:note => :e2, :cutoff => 60}, {:note => :e2, :cutoff => 120})
+
+# Lush, minor 9th chords (F#m9 to C#m9).
+# Hit on the off-beats to leave maximum room for the wobble bass.
+s_chords= (ring nil, nil, [:fs3, :a3, :c4, :e4], nil, nil, nil, [:fs3, :a3, :c4, :e4], nil, nil, nil, [:cs3, :e3, :g3, :b3], nil, nil, nil, [:cs3, :e3, :g3, :b3], nil)
+
+# High-pitched, bouncy R&B melody (F# Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (2) to create a sharp, 
+# plasticky riff that cuts through the heavy wobble bass.
+s_fm    = (ring {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :e6, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil)
+
+# Frantic, high-pitched "Diva" vocal chops (Granular Synth).
+# FIXED: Exactly 16 steps. High density, small size = a sharp, sugary R&B vocal skip.
+s_vocal = (ring nil, nil, nil, nil, 
+           {:note => :fs4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
+           nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.04, :amp => 0.6}, nil, 
+           nil, nil, {:note => :fs4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.6}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the kick, off-beat hats, and wobble bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps and lush chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The bouncy melody and diva vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE WOBBLE]
+# 
+# 1. Data-Driven LFO: Look at `s_bass`. It plays on every single 16th step, 
+#    but the `cutoff` Hash rapidly alternates between `60` (muffled) and 
+#    `120` (bright). Because the engine reads these Hashes independently 
+#    on every step, the filter opens and closes frantically, simulating a 
+#    fast LFO filter wobble without needing a dedicated LFO oscillator.
+#
+# 2. The Niche Bounce: Bassline relies on a relentless, bouncy energy. The 
+#    `s_bass`, `s_hats`, and `s_chords` all hit strictly on the off-beats 
+#    (steps 2, 6, 10, 14). The engine's strict master clock locks these 
+#    together perfectly at 138 BPM, creating a massive, skipping "boom-cha" 
+#    momentum that forces you to dance.
+#
+# 3. Diva Vocals: The `s_vocal` sequence uses the granular engine to chop a 
+#    vocal into microscopic shards (`size: 0.04`). By pitching them up to 
+#    `:fs4` and `:a4`, the vocal loses its dark tone and becomes a frantic, 
+#    sugary R&B stutter that dances on top of the heavy wobble bass.
+# ==========================================================

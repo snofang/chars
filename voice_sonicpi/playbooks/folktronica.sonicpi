@@ -1,0 +1,103 @@
+# ==========================================================
+# PLAYBOOK: FOLKTRONICA / ORGANIC ELECTRONICA
+# (Pioneered by Bonobo, Four Tet, and Caribou)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Folktronica.
+# We have explored heavy, aggressive bass music (Brostep) and rigid, 
+# clinical genres (Minimal Techno). Folktronica is the sound of nature 
+# meeting the machine. It blends warm, organic acoustic samples (like 
+# chopped guitars and vocal hums) with intricate, syncopated electronic 
+# percussion and deep, round sub-bass.
+#
+# This playbook perfectly demonstrates how to use the Granular 
+# Synthesizer to chop an acoustic guitar sample (`:guit_harmonics`) 
+# into a rhythmic, melodic loop. It also showcases how the `:play_fm` 
+# synth can be tuned to sound like an organic Kalimba or Marimba.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Warm, Organic, & Melodic)
+# ==========================================================
+
+# Soft, syncopated acoustic-style kick. 
+# Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
+s_kick  = (ring {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil)
+
+# Crisp, organic rimshot/snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 0.4}, nil)
+
+# Intricate, swinging organic shaker.
+# Notice the heavy amplitude manipulation to simulate a human shaker pattern.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2})
+
+# Warm, round sub-bass (D Major).
+# Walking bassline. Low cutoff (75) and medium release to create a warm undercurrent.
+s_bass  = (ring {:note => :d2, :release => 0.4, :cutoff => 75}, nil, nil, nil, nil, nil, {:note => :f2, :release => 0.4, :cutoff => 75}, nil, {:note => :a2, :release => 0.4, :cutoff => 75}, nil, nil, nil, {:note => :g2, :release => 0.4, :cutoff => 75}, nil, nil, nil)
+
+# Lush, warm Major 9th chords (Dmaj9 to Amaj7).
+# Hit on the downbeats. The 0.2-beat attack makes them slowly fade in 
+# like a warm Rhodes piano.
+s_chords= (ring {:note => [:d3, :fs3, :a3, :e4], :cutoff => 90, :release => 1.0, :attack => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a2, :cs3, :e3, :b3], :cutoff => 90, :release => 1.0, :attack => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# The "Kalimba/Marimba" Melody (D Major Pentatonic).
+# Uses :play_fm with a specific divisor (3) and depth (2) to create 
+# a hollow, wooden, organic bell tone.
+s_fm    = (ring nil, {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, {:note => :a4, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, {:note => :fs5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, {:note => :e5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil)
+
+# The "Chopped Acoustic Guitar" Loop (Granular Synth).
+# Uses the :guit_harmonics buffer. High density, small size = a rhythmic, 
+# organic skip that weaves between the drums and the Kalimba.
+s_vocal = (ring nil, nil, nil, nil, {:note => :d4, :buffer => :guit_harmonics, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, {:note => :a4, :buffer => :guit_harmonics, :pos => 0.4, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, {:note => :fs4, :buffer => :guit_harmonics, :pos => 0.6, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the chopped guitar, bass, and chords (4 bars)
+  [ [:play_grain, s_vocal, 4], [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Groove - Add the syncopated organic drums (8 bars)
+  [ [:play_grain, s_vocal, 8], [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Melody - The wooden Kalimba melody drops (8 bars)
+  [ [:play_grain, s_vocal, 8], [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ORGANIC ELECTRONICA]
+# 
+# 1. Granular Guitar Chops: Look at `s_vocal`. The granular engine is 
+#    given the `:guit_harmonics` buffer. By using a small `size` (0.05) 
+#    and a `density` of 2, the engine chops the acoustic guitar into a 
+#    rhythmic, melodic loop that sounds like Four Tet slicing up a vinyl 
+#    record. The engine's strict master clock ensures these chops land 
+#    perfectly between the kick drums.
+#
+# 2. FM as Wood: The `s_fm` sequence uses `divisor: 3` and `depth: 2`. 
+#    This narrows the harmonic ratio so that the sine waves cancel out 
+#    their digital overtones, leaving a hollow, woody thunk that perfectly 
+#    mimics an African Kalimba or Marimba.
+#
+# 3. Warmth and Space: Folktronica relies on leaving massive room for the 
+#    acoustic textures. The `s_bass` uses a low `cutoff` (75) to keep it 
+#    round and warm, while the `s_chords` use a slow `attack` (0.2) to 
+#    fade in softly. The engine's strict 16-step grid ensures these lush, 
+#    slow elements never clash with the intricate, syncopated drum pattern.
+# ==========================================================

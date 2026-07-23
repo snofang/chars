@@ -1,0 +1,108 @@
+# ==========================================================
+# PLAYBOOK: 80s ART POP / NEW WAVE
+# (Pioneered by Peter Gabriel, Tears for Fears, and Prince)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Art Pop.
+# We have explored 80s Synthwave (which is rigid and retro) and 80s 
+# Hi-NRG (which is frantic and club-focused). Art Pop is the sound of 
+# high-end 80s studio production. It relies on the legendary LinnDrum 
+# machine's swing, massive gated snares, deep analog Prophet synths, 
+# and pristine FM bells (like the Yamaha DX7).
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# to simulate the famous LinnDrum swing. By alternating the amplitude 
+# Hashes on the 16-step grid and leaving specific gaps, the engine 
+# creates a polished, studio-perfect groove that feels cinematic and 
+# deeply emotional.
+# ==========================================================
+
+use_bpm 112
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Polished, Emotional, & Driven)
+# ==========================================================
+
+# The "LinnDrum" Kick. 
+# Syncopated. Hits on step 0, the 'a' of 1 (step 3), beat 3 (step 8), 
+# and the 'a' of 3 (step 11).
+s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil)
+
+# Massive, gated snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'a' of 2 (step 7).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.2}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 1.2}, nil, nil, nil)
+
+# The "LinnDrum Swing" Hi-Hats.
+# Notice the alternating amplitudes (0.3 vs 0.15) and gaps (`nil`) that 
+# simulate the famous 60% swing quantize of 80s drum machines.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4})
+
+# Deep, analog Moog-style Bass (D Minor).
+# Walks a melodic line. Low cutoff (85) and medium release (0.2) 
+# create a warm, 80s analog undercurrent.
+s_bass  = (ring {:note => :d2, :release => 0.2, :cutoff => 85}, nil, nil, nil, nil, {:note => :d2, :release => 0.2, :cutoff => 85}, nil, {:note => :f2, :release => 0.2, :cutoff => 85}, nil, {:note => :a2, :release => 0.2, :cutoff => 85}, nil, nil, {:note => :g2, :release => 0.2, :cutoff => 85}, nil, nil, nil)
+
+# Lush, wide synth stabs (Dm to Gm to Am).
+# Hit on the off-beats. High cutoff (110) gives them a bright, soaring 
+# "Prophet-5" wall of sound feel.
+s_chords= (ring nil, nil, {:note => [:d3, :f3, :a3], :cutoff => 110, :release => 0.2, :amp => 0.7}, nil, nil, nil, {:note => [:d3, :f3, :a3], :cutoff => 110, :release => 0.2, :amp => 0.7}, nil, nil, nil, {:note => [:g3, :bb3, :d4], :cutoff => 110, :release => 0.2, :amp => 0.7}, nil, nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 110, :release => 0.2, :amp => 0.7}, nil)
+
+# Pristine, echoing "DX7" FM Bells (D Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and depth (2) to create a 
+# glassy, digital bell tone. Routed through the engine's tape echo.
+s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.5}, nil, {:note => :f5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil, {:note => :g5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil)
+
+# Ethereal, sweeping vocal "Ahh" (Granular Synth).
+# Long size (0.2) and low density (1) creates a slow, evolving celestial 
+# texture that drifts in the background.
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.3, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Atmosphere - Just the synths, bass, and vocal pad (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Groove - Add the swung LinnDrum beat (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Melody - The echoing DX7 bells drop (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80s PRODUCTION]
+# 
+# 1. The LinnDrum Swing: Look at `s_hats`. The hats don't just play straight 
+#    16th notes; their amplitudes swing wildly between 0.15 and 0.4, and 
+#    they leave gaps (`nil`) on the downbeats. By emphasizing the off-beats, 
+#    the engine simulates the famous 60% swing quantize that gave 80s pop 
+#    its polished, bouncy feel.
+#
+# 2. The Gated Snare: Look at `s_snare`. It uses a massive amplitude (`1.2`). 
+#    Because the engine routes the `:play_snare` instrument through a massive 
+#    hall reverb (`with_fx :reverb`), pushing the amplitude this high creates 
+#    a massive, booming snare that perfectly mimics the gated drum sounds of 
+#    Phil Collins and Peter Gabriel.
+#
+# 3. FM as Digital Glass: The `s_fm` sequence uses `divisor: 3` and `depth: 2`. 
+#    This harmonic ratio produces a pristine, glassy bell tone that perfectly 
+#    mimics the Yamaha DX7 presets that dominated 80s Art Pop. Routed through 
+#    the tape echo, the sparse notes cascade across the empty space, creating 
+#    a deeply emotional and cinematic atmosphere.
+# ==========================================================

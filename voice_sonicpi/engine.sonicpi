@@ -1,13 +1,20 @@
 # ==========================================================
-# VOICE SONIC PI ENGINE - OPTIMIZED (FX Routing)
+# VOICE SONIC PI ENGINE - OPTIMIZED (Minimalist Cache)
 # ==========================================================
 
 # ----------------------------------------------------------
-# 1. PARAMETER PARSER (Bulletproof - Unchanged)
+# 1. PARAMETER PARSER (Bulletproof + Cached)
 # ----------------------------------------------------------
+@parse_cache = {}
+
 define :parse_step do |step, defaults|
   return nil, nil unless step
   
+  # Simple cache key
+  key = [step, defaults]
+  return @parse_cache[key] if @parse_cache.key?(key)
+  
+  # Original logic unchanged
   if step.is_a?(Hash)
     note = step[:note]
     opts = defaults.merge(step)
@@ -22,7 +29,9 @@ define :parse_step do |step, defaults|
     return nil, opts if note.empty?
   end
   
-  return note, opts
+  result = [note, opts]
+  @parse_cache[key] = result
+  result
 end
 
 # ----------------------------------------------------------
@@ -57,10 +66,10 @@ live_loop :snare_fx do
 end
 
 # ----------------------------------------------------------
-# 3. THE SYNTHESIZERS (Optimized)
+# 3. THE SYNTHESIZERS (Unchanged)
 # ----------------------------------------------------------
 
-# 1. SUBTRACTIVE BASS (No FX - unchanged)
+# 1. SUBTRACTIVE BASS
 define :play_sub do |n|
   use_synth :dsaw
   note, opts = parse_step(n, {release: 0.25, amp: 1.5, cutoff: 80})
@@ -73,14 +82,14 @@ define :play_lead do |n|
   @lead_notes << [note, opts] if note
 end
 
-# 3. WARM CHORDS / NEO-SOUL PAD (No FX - unchanged)
+# 3. WARM CHORDS / NEO-SOUL PAD
 define :play_chords do |n|
   use_synth :blade
   note, opts = parse_step(n, {release: 1.5, amp: 0.7, attack: 0.2, cutoff: 80})
   play note, **opts if note
 end
 
-# 4. GRANULAR CLOUD (No FX - unchanged)
+# 4. GRANULAR CLOUD
 define :play_grain do |n|
   return unless n
   note, opts = parse_step(n, {amp: 0.5})
@@ -110,28 +119,28 @@ define :play_grain do |n|
   end
 end
 
-# 5. FM BELL (No FX - unchanged)
+# 5. FM BELL
 define :play_fm do |n|
   use_synth :fm
   note, opts = parse_step(n, {release: 0.3, amp: 0.8, divisor: 2.0, depth: 3})
   play note, **opts if note
 end
 
-# 6. PHYSICAL MODELING (Pluck) (No FX - unchanged)
+# 6. PHYSICAL MODELING (Pluck)
 define :play_pluck do |n|
   use_synth :pluck
   note, opts = parse_step(n, {release: 0.3, amp: 0.8, coef: rrand(0.3, 0.7)})
   play note, **opts if note
 end
 
-# 7. DARK AMBIENT PAD (No FX - unchanged)
+# 7. DARK AMBIENT PAD
 define :play_pad do |n|
   use_synth :dark_ambience
   note, opts = parse_step(n, {release: 1.5, amp: 0.6, attack: 0.5})
   play note, **opts if note
 end
 
-# 8. PITCHED KICK (No FX - unchanged)
+# 8. PITCHED KICK
 define :play_kick do |n|
   note, opts = parse_step(n, {amp: 1.5})
   sample :bd_haus, pitch: (note(note) - note(:c4)), **opts if note
@@ -143,7 +152,7 @@ define :play_snare do |n|
   @snare_notes << [note, opts] if note
 end
 
-# 10. MICRO-TIMED HI-HATS (No FX - unchanged)
+# 10. MICRO-TIMED HI-HATS
 define :play_hats do |n|
   note, opts = parse_step(n, {amp: 0.3})
   if note

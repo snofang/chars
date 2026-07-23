@@ -1,0 +1,101 @@
+# ==========================================================
+# PLAYBOOK: G-HOUSE / GANGSTER HOUSE
+# (Pioneered by Amine Edge & DANCE, Malaa, and Tchami)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose G-House.
+# We have explored Tech House (groovy) and Slap House (bouncy). 
+# G-House (Gangster House) is the dark, swaggering underworld of 
+# 4/4 dance music. It fuses the deep, rolling basslines of Chicago 
+# house with aggressive, pitched-down rap vocal chops and dark, 
+# minimal synth stabs.
+#
+# This playbook perfectly demonstrates how to use the Granular 
+# Synthesizer to pitch a vocal *down* into a menacing, demonic 
+# rap grunt. By using a low `note` (`:g3`) and a small `size`, the 
+# engine turns a vocal sample into a raw, rhythmic hip-hop stab 
+# that locks perfectly with the heavy house beat.
+# ==========================================================
+
+use_bpm 122
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Dark, Swaggering, & Deep)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, dry, organic clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Rolling" G-House Bass (G Minor).
+# Uses :play_fm with a low divisor (2) and depth (4) to create a thick, 
+# dark, wobbling bassline that syncopates around the kick.
+s_bass  = (ring {:note => :g1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 1.0}, nil, nil, {:note => :g1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 0.8}, nil, {:note => :bb1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 1.0}, nil, {:note => :d2, :divisor => 2, :depth => 4, :release => 0.15, :amp => 0.8}, nil, nil, {:note => :g1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 1.0}, nil, nil, {:note => :f1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 0.8}, nil, {:note => :g1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 1.0})
+
+# Dark, sparse minor chord stabs (Gm to Fm).
+# Hit sparingly on the off-beats to leave maximum room for the bassline.
+s_chords= (ring nil, nil, nil, nil, {:note => [:g3, :bb3, :d4], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:f3, :a3, :c4], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil, nil, nil)
+
+# High-pitched, bleepy "Siren" Synth (G Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) to create a sharp, robotic pluck.
+s_fm    = (ring nil, nil, nil, nil, {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, {:note => :bb5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :g5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.2}, nil)
+
+# Pitched-down "Gangster" Rap Vocal Chops (Granular Synth).
+# Pitched DOWN to :g3. High density, small size = a dark, percussive rap skip.
+s_vocal = (ring nil, nil, nil, {:note => :g3, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil, {:note => :d3, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil, nil, {:note => :g3, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the kick, off-beat hats, and dark bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_fm, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps and sparse chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The bleepy siren and gangster vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DARK SWAGGER]
+# 
+# 1. Demonic Granular Vocals: Look at `s_vocal`. The granular engine is 
+#    given a `note` of `:g3` and `:d3` (very low for a vocal). By pitching 
+#    the vocal down and using a small `size` (0.05), the engine chops the 
+#    sample into a dark, menacing rap grunt that sounds like a hip-hop MC 
+#    whispering over a heavy house beat.
+#
+# 2. The Rolling FM Bass: Look at `s_bass`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `4`. This creates a thick, square-
+#    wave bassline that syncopates around the rigid 4/4 kick. The engine's 
+#    strict master clock ensures this complex bassline locks perfectly 
+#    with the drums, creating the relentless, swaggering groove that 
+#    defines G-House.
+#
+# 3. Extreme Sparsity: G-House relies on leaving massive room for the bass 
+#    and vocals. The `s_chords` sequence only hits twice per bar (steps 4 
+#    and 12). The engine's strict 16-step grid ensures these sparse, dark 
+#    stabs land with absolute precision, making the groove feel incredibly 
+#    tight, heavy, and club-ready.
+# ==========================================================

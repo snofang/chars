@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: CLASSIC CHICAGO DEEP HOUSE
+# (Pioneered by Larry Heard (Mr. Fingers), Marshall Jefferson, and Ron Trent)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Classic Chicago 
+# Deep House. We have explored modern tech house and UK garage, but 
+# Chicago Deep House is the absolute root of the tree. It is the sound of 
+# the 80s underground. It takes the rigid 4/4 grid but softens it with 
+# lush, analog jazz chords, deep, round sub-bass, and a distinct 909 
+# drum machine swing. 
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# to simulate the legendary Korg M1 "Organ Bass" and warm analog pads. 
+# By using low `cutoff` values and medium `release` times, the engine 
+# creates a deep, soulful, and hypnotic groove that feels like walking 
+# into a dark, smoky club in 1986.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Deep, Soulful, & Warm)
+# ==========================================================
+
+# Classic, driving 4/4 kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Thick, vinyl-crackle clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# 909 Swung Hi-Hats.
+# Notice the alternating amplitudes (0.4 vs 0.2) and gaps to create 
+# the classic Chicago "shuffle" feel without breaking the grid.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4})
+
+# The "Korg M1" Deep Organ Bass (F Minor).
+# Walks a soulful melody. Low cutoff (70) and medium release (0.3) 
+# give it that classic warm, rounded analog house sound.
+s_bass  = (ring {:note => :f2, :release => 0.3, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :f2, :release => 0.3, :cutoff => 70}, nil, {:note => :ab2, :release => 0.3, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :c3, :release => 0.3, :cutoff => 70}, nil)
+
+# Lush, warm minor 9th chords (Fm9 to Abm9).
+# Hit on the off-beats (steps 2, 6, 10, 14). The low cutoff (85) 
+# gives them that classic "played through a wall" muffled feel.
+s_chords= (ring nil, nil, [:f3, :ab3, :c4, :eb4], nil, nil, nil, [:f3, :ab3, :c4, :eb4], nil, nil, nil, [:ab3, :cb4, :eb4, :gb4], nil, nil, nil, [:eb3, :g3, :bb3, :db4], nil)
+
+# Warm, echoing "Rhodes" melody (F Minor Pentatonic).
+# Uses :play_fm with a low divisor (3) and depth (2) to create a soft, 
+# organic electric piano tone. Routed through the engine's tape echo.
+s_fm    = (ring nil, nil, nil, nil, {:note => :f5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, {:note => :c5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil, nil, nil, {:note => :eb5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, {:note => :c5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.5}, nil)
+
+# Soulful, pitched-down "Diva" vocal hit (Granular Synth).
+# Long size (0.1) and low density (1) creates a smooth, ambient vocal smear.
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.4, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the swinging drums and deep bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Groove - Add the lush, muffled chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Late Night - The Rhodes melody and diva vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_fm, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DEEP WARMTH]
+# 
+# 1. The M1 Organ Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `cutoff` of `70` and a `release` of `0.3`. This filters out all the 
+#    harsh high frequencies and cuts the note off cleanly, perfectly 
+#    mimicking the legendary Korg M1 organ bass patch used in almost every 
+#    classic 80s house track.
+#
+# 2. The 909 Shuffle: Look at `s_hats`. The hats don't just play straight 
+#    16th notes; their amplitudes swing wildly between 0.15 and 0.4. By 
+#    emphasizing the off-beats (the 'e' and 'a') and leaving gaps (`nil`), 
+#    the engine simulates the famous 909 16th-note shuffle that gives 
+#    Chicago house its bouncy, human feel.
+#
+# 3. The Off-Beat Pocket: The `s_chords` hit strictly on steps 2, 6, 10, 
+#    and 14. By using a low `cutoff` (85), the engine turns the `:blade` 
+#    synth into a warm, muffled pad that locks perfectly between the 
+#    kicks and the bassline, creating that deep, head-nodding "pocket".
+# ==========================================================

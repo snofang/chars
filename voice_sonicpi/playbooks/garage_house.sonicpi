@@ -1,0 +1,108 @@
+# ==========================================================
+# PLAYBOOK: GARAGE HOUSE / VOCAL HOUSE
+# (Pioneered by Todd Edwards, MK, and Roy Davis Jr.)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Garage House.
+# We have explored bass-heavy genres (Bassline, Brostep) and rigid 
+# techno (Minimal, Peak-Time). Garage House is the sound of 90s New York 
+# and New Jersey. It takes the 4/4 grid but injects it with a deep, 
+# swinging soulfulness. It is famous for lush minor 9th chords, deep 
+# round basslines, and intricate, chopped R&B vocal collages.
+#
+# This playbook perfectly demonstrates how to push the Granular 
+# Synthesizer to its absolute rhythmic limit. By scattering pitched 
+# vocal grains across the off-beats of the 16-step grid, the engine 
+# turns a vocal sample into a syncopated, collaged instrument that weaves 
+# perfectly between the swinging drums.
+# ==========================================================
+
+use_bpm 124
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Soulful, Deep, & Swinging)
+# ==========================================================
+
+# Classic 4/4 kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Thick, organic NYC clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# "Swung" 16th hats. Alternating amplitudes simulate a classic garage skip.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15})
+
+# Deep, round sub-bass (G Minor).
+# Walks a soulful melody. Low cutoff (70) and medium release.
+s_bass  = (ring {:note => :g1, :release => 0.3, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :g1, :release => 0.3, :cutoff => 70}, nil, {:note => :eb1, :release => 0.3, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :d1, :release => 0.3, :cutoff => 70}, nil)
+
+# Lush, soulful minor 9th chords (Gm9 to Dm9).
+# Hit on the off-beats to leave maximum room for the vocals and bass.
+s_chords= (ring nil, nil, [:g3, :bb3, :d4, :f4], nil, nil, nil, [:g3, :bb3, :d4, :f4], nil, nil, nil, [:eb3, :gb3, :bb3, :db4], nil, nil, nil, [:d3, :f3, :a3, :c4], nil)
+
+# The "Todd Edwards" Vocal Collage (Granular Synth).
+# FIXED: Exactly 16 steps. Pitched and scattered across the grid. 
+# High density, tiny size = a rhythmic, collaged R&B stutter.
+s_vocal = (ring {:note => :g4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
+           {:note => :d4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.5}, nil, 
+           {:note => :g4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, {:note => :bb4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.04, :amp => 0.5}, 
+           nil, {:note => :d4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
+           {:note => :eb4, :buffer => :misc_lori, :pos => 0.7, :density => 2, :size => 0.04, :amp => 0.5}, nil, 
+           {:note => :d4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
+           {:note => :g4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.5}, nil, 
+           {:note => :bb4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.04, :amp => 0.6})
+
+# Bright, echoing organ/marimba melody (G Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) to create a sharp, organic pluck.
+s_fm    = (ring {:note => :g5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, {:note => :d5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, {:note => :eb5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, {:note => :d5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the swinging drums and deep bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the lush chords and organ melody (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_fm, s_fm, 8] ],
+    
+  # Scene 3: The Collage - The chopped R&B vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_fm, s_fm, 8], 
+    [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN VOCAL COLLAGE]
+# 
+# 1. Rhythmic Vocal Chopping: Look at `s_vocal`. The granular engine is 
+#    used not for ambient drones, but as a rhythmic instrument. By 
+#    pitching different grains (:g4, :d4, :bb4) and scattering them on 
+#    the off-beats, the engine simulates the legendary Todd Edwards 
+#    technique of chopping an R&B vocal into a syncopated collage.
+#
+# 2. The Swung Pocket: Garage House relies on a "swing" feel. Look at 
+#    `s_hats`. The amplitudes alternate wildly between 0.15 and 0.4. By 
+#    emphasizing the off-beats (the 'e' and 'a' of the beat), the engine 
+#    creates a bouncy, head-nodding groove that feels human, all while 
+#    maintaining a rigid `sleep 0.25` master clock.
+#
+# 3. Deep Harmonic Space: The `s_bass` uses a very low `cutoff` (70) to 
+#    keep it round and warm, while the `s_chords` hit strictly on the 
+#    off-beats (steps 2, 6, 10, 14). The engine's strict 16-step grid 
+#    ensures these deep, lush elements never clash with the frantic, 
+#    chopped vocal grains, creating a massive, soulful wall of sound.
+# ==========================================================

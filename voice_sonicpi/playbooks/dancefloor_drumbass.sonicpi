@@ -1,0 +1,99 @@
+# ==========================================================
+# PLAYBOOK: DANCEFLOOR DRUM & BASS
+# (Pioneered by Sub Focus, Dimension, and Culture Shock)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Dancefloor DnB.
+# We have explored dark Neurofunk, lush Liquid, and bouncy Jump Up. 
+# Dancefloor DnB is the massive, stadium-sized sound of modern Drum & 
+# Bass. It takes the frantic 174 BPM grid but pairs it with euphoric, 
+# wide supersaw chords and a specific "off-beat" Reese bass that hits 
+# strictly between the kicks, creating a huge, driving, festival energy.
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# to create an off-beat wobble bass. By hitting strictly on the off-beats 
+# (steps 2, 6, 10, 14) and alternating the `cutoff`, the engine creates 
+# a massive, breathing bounce that drives the track forward.
+# ==========================================================
+
+use_bpm 174
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Euphoric, Massive, & Driving)
+# ==========================================================
+
+# Tight, syncopated DnB breakbeat kick.
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Massive, echoing snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# Fast, rolling 16th hats with a rising amplitude roll at the end.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6})
+
+# The "Off-Beat" Reese Bass (G Minor).
+# Hits strictly on the off-beats (steps 2, 6, 10, 14). The alternating 
+# 'cutoff' Hashes (70 vs 120) simulate a slow LFO filter wobble.
+s_bass  = (ring nil, nil, {:note => :g1, :cutoff => 70, :release => 0.2}, nil, nil, nil, {:note => :g1, :cutoff => 120, :release => 0.2}, nil, nil, nil, {:note => :eb1, :cutoff => 70, :release => 0.2}, nil, nil, nil, {:note => :d1, :cutoff => 120, :release => 0.2}, nil)
+
+# Massive, euphoric Supersaw Chords (Gm to Ebmaj7).
+# Hit on the downbeats with a high cutoff (110) to create a soaring wall of sound.
+s_chords= (ring {:note => [:g3, :bb3, :d4, :f4], :cutoff => 110, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:eb3, :g3, :bb3, :db4], :cutoff => 110, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# High-pitched, echoing Top-Line Melody (G Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) to create a sharp, organic pluck.
+# Routed through the engine's tape echo for a cascading, stadium smear.
+s_fm    = (ring nil, nil, nil, {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, nil, nil, {:note => :eb5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :d5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil)
+
+# Ethereal, granular vocal pad (using :misc_lori).
+# Long size (0.2) and low density (1) creates a slow, evolving celestial texture.
+s_grain = (ring {:note => :g4, :buffer => :misc_lori, :pos => 0.3, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :eb4, :buffer => :misc_lori, :pos => 0.6, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Atmosphere - Just the chords, vocal pad, and Reese bass (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_grain, s_grain, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Drop - Add the fast DnB drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Climax - The echoing top-line melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN STADIUM DnB]
+# 
+# 1. The Off-Beat Wobble: Look at `s_bass`. It hits strictly on steps 2, 6, 
+#    10, and 14—the exact midpoints between the kicks. By alternating the 
+#    `cutoff` Hash between 70 (muffled) and 120 (bright), the engine creates 
+#    a massive, bouncing Reese bass that drives the track forward without 
+#    clashing with the kick drum.
+#
+# 2. Euphoric Supersaws: Look at `s_chords`. The arrays form massive 4-note 
+#    chords. By using a high `cutoff` (110) and a medium `release` (0.8), 
+#    the engine turns the `:blade` synth into a bright, soaring wall of 
+#    sound that contrasts heavily with the dark, rumbling Reese bass.
+#
+# 3. Echoing Top-Line: The `s_fm` sequence plays a simple G minor pentatonic 
+#    melody, but leaves massive gaps (`nil`) between the notes. Because the 
+#    engine routes the `:play_fm` synth through a tape echo, those empty 
+#    spaces are filled by delay tails, creating a cascading, stadium-sized 
+#    soundscape that perfectly mimics modern Dancefloor DnB.
+# ==========================================================

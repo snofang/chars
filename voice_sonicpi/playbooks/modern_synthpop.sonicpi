@@ -1,0 +1,113 @@
+# ==========================================================
+# PLAYBOOK: MODERN SYNTHPOP / ELECTROPOP
+# (Pioneered by The Weeknd, Dua Lipa, and Robyn)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Modern Synthpop.
+# We have explored 80s retro genres (Synthwave, Italo Disco) and heavy 
+# bass music (Brostep, Phonk). Modern Synthpop is the sound of current 
+# mainstream radio. It takes the dark, driving 16-step grid of 80s 
+# synthwave but updates it with massive, punchy 808 drums, wide stereo 
+# supersaws, and pristine, syncopated vocal chops.
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# to create a continuous, driving 16th-note bassline that never stops, 
+# while the chords and vocals hit strictly on the off-beats to create 
+# that massive, festival-stage "pocket".
+# ==========================================================
+
+use_bpm 118
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Dark, Punchy, & Driving)
+# ==========================================================
+
+# Driving 4/4 punchy kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, modern pop clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Driving" Analog Bass (F# Minor).
+# Plays continuous 16th notes. Alternating octaves (:fs2, :fs3) with a 
+# high cutoff (90) creates a relentless, rolling pulse.
+s_bass  = (ring {:note => :fs2, :cutoff => 90, :release => 0.1}, {:note => :fs2, :cutoff => 90, :release => 0.1}, {:note => :fs3, :cutoff => 90, :release => 0.1}, {:note => :fs2, :cutoff => 90, :release => 0.1}, 
+           {:note => :fs2, :cutoff => 90, :release => 0.1}, {:note => :fs2, :cutoff => 90, :release => 0.1}, {:note => :a2, :cutoff => 90, :release => 0.1}, {:note => :a2, :cutoff => 90, :release => 0.1}, 
+           {:note => :a2, :cutoff => 90, :release => 0.1}, {:note => :a2, :cutoff => 90, :release => 0.1}, {:note => :a3, :cutoff => 90, :release => 0.1}, {:note => :a2, :cutoff => 90, :release => 0.1}, 
+           {:note => :e2, :cutoff => 90, :release => 0.1}, {:note => :e2, :cutoff => 90, :release => 0.1}, {:note => :d2, :cutoff => 90, :release => 0.1}, {:note => :c2, :cutoff => 90, :release => 0.1})
+
+# Massive, wide Supersaw Chords (F#m to Am to Dm).
+# Hit strictly on the off-beats (steps 2, 6, 10, 14) in sync with the hats.
+s_chords= (ring nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:fs3, :a3, :c4], nil, 
+           nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:d3, :f3, :a3], nil)
+
+# Bright, echoing Arpeggio Lead (F# Minor Pentatonic).
+# FIXED: Exactly 16 steps (8 notes, 8 rests).
+s_fm    = (ring {:note => :fs5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, 
+           {:note => :c5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, 
+           {:note => :e5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, 
+           {:note => :fs5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.2}, nil, 
+           {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, 
+           {:note => :e5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, 
+           {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, 
+           {:note => :c5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil)
+
+# Choppy, modern pop vocal stutter (Granular Synth).
+# High density, tiny size = a sharp, pristine vocal skip.
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :fs4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
+           nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.04, :amp => 0.6}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Drive - Just the kick, off-beat hats, and rolling bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps and supersaw chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The echoing arpeggio and vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MODERN POP MOMENTUM]
+# 
+# 1. The Relentless 16th Roll: Look at `s_bass`. It plays on EVERY single 
+#    16th step. By alternating between the low octave (:fs2) and the high 
+#    octave (:fs3), the engine creates a continuous, rolling pulse that 
+#    drives the track forward unstoppably. This is the exact sequencer 
+#    technique used by producers like Max Martin to keep modern pop tracks 
+#    feeling incredibly high-energy.
+#
+# 2. The Off-Beat Pocket: Look at `s_chords` and `s_hats`. They hit strictly 
+#    on steps 2, 6, 10, and 14. The engine's strict master clock locks these 
+#    together perfectly, creating a massive, bouncing "boom-cha" groove. 
+#    By leaving the downbeats empty, the track feels incredibly spacious 
+#    and danceable.
+#
+# 3. Cascading FM Echoes: The `s_fm` sequence plays a bright F# minor 
+#    arpeggio, but leaves a `nil` between every note. Because the engine 
+#    routes the `:play_fm` synth through a tape echo, those empty spaces 
+#    are filled by delay tails, creating a massive, shimmering stadium 
+#    soundscape that perfectly mimics modern electro-pop productions.
+# ==========================================================

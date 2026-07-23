@@ -1,0 +1,113 @@
+# ==========================================================
+# PLAYBOOK: TROPICAL HOUSE
+# (Pioneered by Kygo, Thomas Jack, and Matoma)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Tropical House.
+# We have explored heavy, dark genres (Phonk, Midtempo) and fast, chaotic 
+# genres (Hardcore, Footwork). Tropical House is the sound of pure, 
+# sun-drenched relaxation. It slows the 4/4 house grid down to 100 BPM, 
+# replacing harsh synths with warm marimbas, deep round sub-bass, and 
+# massive, wide major chords that hit strictly on the off-beats.
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# to create that signature "off-beat pocket" while keeping the bass 
+# incredibly warm and muffled. By using the `:play_fm` synth as a 
+# melodic marimba, the engine creates a bouncy, beach-side atmosphere.
+# ==========================================================
+
+use_bpm 100
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (Db Major - Warm, Sunny, & Bouncy)
+# ==========================================================
+
+# Soft, driving 4/4 kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Thick, organic clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Bouncing, off-beat 16th hats. 
+# Notice they hit exactly on the off-beats (steps 2, 6, 10, 14) to create the groove.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil)
+
+# Deep, round sub-bass (Db Major).
+# Hits on the downbeats. Very low cutoff (60) and long release (0.5) 
+# to create a warm, muffled undercurrent that anchors the track.
+s_bass  = (ring {:note => :db1, :release => 0.5, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil, {:note => :ab1, :release => 0.5, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil)
+
+# Lush, wide Major 9th chords (Dbmaj9 to Abmaj7).
+# Hit strictly on the off-beats (steps 2, 6, 10, 14) in sync with the hats.
+# The high cutoff (100) gives them a bright, soaring, festival feel.
+s_chords= (ring nil, nil, {:note => [:db3, :f3, :ab3, :c4], :cutoff => 100, :release => 0.6, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:db3, :f3, :ab3, :c4], :cutoff => 100, :release => 0.6, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:ab2, :c3, :eb3, :g3], :cutoff => 100, :release => 0.6, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:ab2, :c3, :eb3, :g3], :cutoff => 100, :release => 0.6, :amp => 0.6}, nil)
+
+# The "Marimba/Steel Drum" Melody (Db Major Pentatonic).
+# FIXED: Exactly 16 steps (8 notes, 8 rests).
+s_fm    = (ring {:note => :ab4, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, 
+           {:note => :db5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, 
+           {:note => :eb5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, 
+           {:note => :db5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, 
+           {:note => :ab4, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, 
+           {:note => :c5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, 
+           {:note => :bb4, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil,
+           {:note => :ab4, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil)
+
+# Choppy, airy "Beach" vocal stutter (Granular Synth).
+# High density, tiny size = a sharp, pristine vocal skip.
+s_vocal = (ring nil, nil, nil, nil, 
+           {:note => :db4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.5}, nil, nil, nil, 
+           nil, nil, nil, nil, 
+           {:note => :bb3, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.04, :amp => 0.5}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the kick, off-beat hats, and deep bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Groove - Add the heavy claps and lush major chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The marimba melody and vocal chops drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SUNSHINE]
+# 
+# 1. The Off-Beat Pocket: Look at `s_hats` and `s_chords`. They hit strictly 
+#    on steps 2, 6, 10, and 14. In a 16-step grid, these are the exact 
+#    midpoints between the kicks. The engine's strict master clock locks 
+#    these together perfectly, creating that massive, bouncing "boom-cha" 
+#    groove that makes Tropical House feel so relaxing and danceable.
+#
+# 2. FM as a Marimba: The `s_fm` sequence uses `divisor: 3` and `depth: 2`. 
+#    This narrows the harmonic ratio so that the sine waves cancel out 
+#    their digital overtones, leaving a hollow, woody thunk that perfectly 
+#    mimics a Caribbean steel drum or marimba. The engine's strict clock 
+#    ensures these sparse notes land perfectly between the kicks.
+#
+# 3. Deep Sub Warmth: The `s_bass` sequence uses a very low `cutoff` (60) 
+#    and a `release` of `0.5`. This filters out all the harsh high 
+#    frequencies, leaving only a deep, warm rumble that anchors the bright, 
+#    airy chords and marimba melody, creating a perfectly balanced mix.
+# ==========================================================

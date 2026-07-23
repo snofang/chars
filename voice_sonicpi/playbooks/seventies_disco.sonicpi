@@ -1,0 +1,103 @@
+# ==========================================================
+# PLAYBOOK: 70s DISCO / NU-DISCO
+# (Pioneered by Giorgio Moroder, Chic, and Daft Punk)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Disco.
+# We have explored French House (which sampled it) and modern Pop, but 
+# 70s Disco is the absolute genesis of the dancefloor. It relies on a 
+# rigid, driving 4/4 "four-on-the-floor" kick, syncopated 16th hi-hats 
+# with open off-beats, a melodic walking bassline, and lush, staccato 
+# string/horn stabs.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create a relentless, live-energy groove. By using a high `cutoff` on 
+# the `:play_sub` synth, the engine turns the detuned sawtooth into a 
+# punchy, picked electric bass that drives the track forward unstoppably.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Funky, Driving, & Glamorous)
+# ==========================================================
+
+# Relentless 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Crisp, live-style snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with syncopated ghost notes on the 'a' of 2 (step 7) and 'a' of 4 (step 15).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# The classic Disco Hat pattern.
+# 16th notes with a louder open hat on the off-beats (steps 2, 6, 10, 14).
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Walking" Electric Bass (F# Minor).
+# Plays a syncopated, melodic line. High cutoff (100) and very short 
+# release (0.15) mimic an aggressive, picked bass guitar.
+s_bass  = (ring {:note => :fs2, :cutoff => 100, :release => 0.15}, nil, nil, {:note => :fs2, :cutoff => 100, :release => 0.15}, nil, {:note => :a2, :cutoff => 100, :release => 0.15}, nil, {:note => :c3, :cutoff => 100, :release => 0.15}, nil, {:note => :a2, :cutoff => 100, :release => 0.15}, nil, {:note => :fs2, :cutoff => 100, :release => 0.15}, nil, nil, {:note => :e2, :cutoff => 100, :release => 0.15}, nil)
+
+# Lush, staccato string/horn stabs (F#m to A to E).
+# Hit strictly on the off-beats in sync with the open hats.
+s_chords= (ring nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:e3, :g3, :b3], nil)
+
+# Bright, funky "Clavinet/Guitar" Melody (F# Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (2) to create a sharp, 
+# percussive riff that weaves between the bassline.
+s_fm    = (ring {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil)
+
+# Choppy, "Diva" vocal stutter (Granular Synth).
+# High density, tiny size = a sharp, percussive vocal skip.
+s_vocal = (ring nil, nil, nil, nil, nil, nil, {:note => :fs4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the 4/4 beat, walking bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the lush string stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The funky clavinet and diva vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE GROOVE]
+# 
+# 1. The Picked Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `cutoff` of `100` and a `release` of `0.15`. This strips away the 
+#    sub-frequencies and cuts the note off instantly, turning the detuned 
+#    sawtooth into an aggressive, funky "thwack" that perfectly mimics a 
+#    picked electric bass guitar driving the rhythm.
+#
+# 2. The Four-on-the-Floor: Disco relies on absolute rhythmic stability. 
+#    The `s_kick` hits strictly on steps 0, 4, 8, and 12. The engine's 
+#    strict master clock ensures this pulse never wavers, creating a 
+#    hypnotic foundation that allows the syncopated bass and hats to 
+#    bounce around it.
+#
+# 3. Off-Beat Stabs & Open Hats: Look at `s_chords` and `s_hats`. The 
+#    string stabs and the louder open hats hit strictly on steps 2, 6, 10, 
+#    and 14. The engine's strict 16-step grid locks these together perfectly, 
+#    creating that massive, bouncing "boom-cha" momentum that defined 
+#    70s dancefloors and later inspired House music.
+# ==========================================================

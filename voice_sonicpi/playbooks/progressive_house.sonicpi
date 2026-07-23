@@ -1,0 +1,113 @@
+# ==========================================================
+# PLAYBOOK: 2000s PROGRESSIVE HOUSE / PRYDA
+# (Pioneered by Eric Prydz, deadmau5, and Sasha)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Progressive House.
+# We have explored ambient techno (which is slow and atmospheric) and 
+# mainstage EDM (which is aggressive and chaotic). 2000s Progressive 
+# House is the sound of pure, hypnotic club tension. It relies on a 
+# relentless 4/4 beat, a deep 16th-note rolling bass, and a specific 
+# sound design staple: the "Pryda Pluck"—an echoing, short FM note 
+# that leaves massive gaps for the reverb and delay tails to fill.
+#
+# This playbook perfectly demonstrates how to use sparsity (`nil`) on 
+# the 16-step grid to create immense psychological space. By leaving 
+# massive gaps between the FM plucks, the engine's tape echo fills the 
+# void, creating a massive, cascading stadium soundscape.
+# ==========================================================
+
+use_bpm 128
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Driving, Hypnotic, & Emotional)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Deep, analog clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil)
+
+# The "Rolling" Sub-Bass (F# Minor).
+# Plays continuous 16th notes. Very short release (0.1) to create a 
+# relentless, hypnotic "pump" that drives the track forward.
+s_bass  = (ring {:note => :fs1, :release => 0.1, :cutoff => 80}, {:note => :fs1, :release => 0.1, :cutoff => 80}, {:note => :fs2, :release => 0.1, :cutoff => 80}, {:note => :fs1, :release => 0.1, :cutoff => 80}, 
+           {:note => :fs1, :release => 0.1, :cutoff => 80}, {:note => :fs1, :release => 0.1, :cutoff => 80}, {:note => :a1, :release => 0.1, :cutoff => 80}, {:note => :a1, :release => 0.1, :cutoff => 80}, 
+           {:note => :a1, :release => 0.1, :cutoff => 80}, {:note => :a1, :release => 0.1, :cutoff => 80}, {:note => :a2, :release => 0.1, :cutoff => 80}, {:note => :a1, :release => 0.1, :cutoff => 80}, 
+           {:note => :e1, :release => 0.1, :cutoff => 80}, {:note => :e1, :release => 0.1, :cutoff => 80}, {:note => :d1, :release => 0.1, :cutoff => 80}, {:note => :e1, :release => 0.1, :cutoff => 80})
+
+# Sparse, emotional off-beat chord stabs (F#m to A to D to E).
+# Hit strictly on the off-beats (steps 2, 6, 10, 14) in sync with the hats.
+s_chords= (ring nil, nil, {:note => [:fs3, :a3, :c4], :cutoff => 100, :release => 0.5, :amp => 0.5}, nil, 
+           nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 100, :release => 0.5, :amp => 0.5}, nil, 
+           nil, nil, {:note => [:d3, :fs3, :a3], :cutoff => 100, :release => 0.5, :amp => 0.5}, nil, 
+           nil, nil, {:note => [:e3, :g3, :b3], :cutoff => 100, :release => 0.5, :amp => 0.5}, nil)
+
+# The "Pryda Pluck" Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and depth (2) to create a sharp, 
+# organic pluck. Notice the massive gaps (`nil`) between the notes. 
+# Routed through the engine's tape echo, these empty spaces are filled 
+# by delay tails, creating a cascading, stadium-sized soundscape.
+s_fm    = (ring {:note => :fs5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, {:note => :c6, :amp => 0.6, :divisor => 3, :depth => 2, :release => 1.0}, nil, 
+           {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, {:note => :fs5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 1.0}, nil)
+
+# Subtle, ethereal vocal "Sigh" (Granular Synth).
+# Long size (0.15) and low density (1) creates a slow, evolving background 
+# texture that drifts behind the driving beat.
+s_grain = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :fs4, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Hypnosis - Just the kick, rolling bass, and vocal sigh (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Build - Add the off-beat hats, claps, and sparse chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_hats, s_hats, 8], [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Release - The echoing Pryda Pluck melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_hats, s_hats, 8], [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN TENSION & SPACE]
+# 
+# 1. The Pryda Pluck Illusion: Look at `s_fm`. The melody only plays on 
+#    steps 0, 3, 6, 8, 11, and 14. 10 out of the 16 steps are `nil`. Because 
+#    the engine routes the `:play_fm` synth through a tape echo, those empty 
+#    spaces are filled by the delay tails bouncing across the beat. The 
+#    engine's strict master clock ensures the original notes hit with 
+#    absolute precision, allowing the echo to create a massive, shimmering 
+#    wall of sound without cluttering the grid.
+#
+# 2. The 16th-Note Pump: Look at `s_bass`. It plays on EVERY single 16th 
+#    step, alternating between the low octave (:fs1) and the high octave 
+#    (:fs2). By using a very short `release` (0.1), the engine creates a 
+#    relentless, hypnotic "pump" that drives the track forward unstoppably, 
+#    perfectly mimicking the sidechained rolling bass of 2000s club music.
+#
+# 3. The Off-Beat Pocket: The `s_chords` and `s_hats` hit strictly on 
+#    steps 2, 6, 10, and 14. The engine's strict master clock locks these 
+#    together perfectly, creating a massive, bouncing "boom-cha" groove. 
+#    By leaving the downbeats empty, the track feels incredibly spacious, 
+#    allowing the echoing pluck to shine.
+# ==========================================================

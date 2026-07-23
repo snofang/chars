@@ -1,0 +1,105 @@
+# ==========================================================
+# PLAYBOOK: MODERN K-POP / EDM DANCE BREAK
+# (Pioneered by BLACKPINK, BTS, and EXO)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Modern K-Pop.
+# We have explored underground genres (Witch House, Gqom) and classic 
+# club genres (House, Techno). K-Pop is arguably the most polished, 
+# high-energy pop genre in the world right now. Its "dance breaks" are 
+# notorious for fusing heavy Trap/Bass elements with massive, bright 
+# Supersaws and pristine, chopped vocal stutters.
+#
+# This playbook perfectly demonstrates how to create a stadium-sized 
+# pop drop. By combining a deep, rhythmic 808 bass with wide, off-beat 
+# supersaw chords and a rising hi-hat roll, the engine creates a massive, 
+# festival-ready energy that feels like the climax of a sold-out stadium 
+# concert.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - High Energy, Polished, & Heavy)
+# ==========================================================
+
+# Driving, punchy 4/4 kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, modern pop clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# The "Dance Break" Hi-Hat Roll.
+# Plays 16ths, but notice the rising amplitude Hashes (0.3 to 0.8) at the 
+# end of the bar (steps 12-15) to simulate a massive trap roll.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.7}, {:note => :c4, :amp => 0.8})
+
+# Deep, rhythmic 808 Bass (F# Minor).
+# Hits a syncopated melody. Short release (0.3) makes it punchy.
+s_bass  = (ring {:note => :fs1, :release => 0.3}, nil, nil, {:note => :fs1, :release => 0.3}, nil, nil, {:note => :a1, :release => 0.3}, nil, {:note => :fs1, :release => 0.3}, nil, nil, {:note => :fs1, :release => 0.3}, nil, nil, {:note => :e1, :release => 0.3}, nil)
+
+# Massive, wide Supersaw Chords (F#m to A to E).
+# Hit strictly on the off-beats (steps 2, 6, 10, 14). High cutoff (110) 
+# and medium release (0.5) create a bright, soaring wall of sound.
+s_chords= (ring nil, nil, {:note => [:fs3, :a3, :c4], :cutoff => 110, :release => 0.5, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:fs3, :a3, :c4], :cutoff => 110, :release => 0.5, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 110, :release => 0.5, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:e3, :g3, :b3], :cutoff => 110, :release => 0.5, :amp => 0.6}, nil)
+
+# Bright, piercing "Synth Brass/Pluck" Lead (F# Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
+# buzzy square wave that cuts through the heavy mix.
+s_fm    = (ring {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, nil, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :c5, :amp => 0.7, :divisor => 2, :depth => 3, :release => 0.1})
+
+# High-pitched, pristine "K-Pop" Vocal Stutter (Granular Synth).
+# High density, tiny size = a sharp, sugary, rhythmic vocal skip.
+s_vocal = (ring nil, nil, nil, nil, nil, {:note => :fs4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Build - Just the kick, bass, and vocal chops (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps and rolling hats (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Drop - The massive supersaws and brass lead drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN STADIUM POP]
+# 
+# 1. The Dance Break Roll: Look at `s_hats`. The amplitudes in the Hashes 
+#    rise linearly from 0.2 to 0.8 at the end of the bar (steps 10-15). 
+#    Because the engine fires these on the strict 16-step grid, it creates 
+#    a machine-gun roll that builds massive tension, perfectly mimicking 
+#    the high-energy drum fills of a K-Pop dance break.
+#
+# 2. The Supersaw Wall: Look at `s_chords`. The chords hit strictly on the 
+#    off-beats (steps 2, 6, 10, 14). By using a high `cutoff` (110), the 
+#    engine turns the `:blade` synth into a bright, soaring wall of sound 
+#    that contrasts heavily with the deep, rumbling 808 bass.
+#
+# 3. Rhythmic 808s: The `s_bass` sequence doesn't just hold a root note; 
+#    it plays a syncopated melody with a short `release` (0.3). The engine's 
+#    strict master clock ensures this deep bassline locks perfectly with 
+#    the kick drum, creating the heavy, bouncing low-end that defines 
+#    modern pop and trap productions.
+# ==========================================================
