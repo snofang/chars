@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 70s PROGRESSIVE ROCK / SYMPHONIC ROCK
+# (Pioneered by Yes, Genesis, and Emerson, Lake & Palmer)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Progressive Rock.
+# We have explored Krautrock and Post-Rock, but Prog Rock is the sound 
+# of 70s technical virtuosity. It fuses classical music structures with 
+# heavy rock instrumentation. It relies on complex, busy drum fills, 
+# continuous, driving 16th-note Moog bass, massive, sweeping Hammond/Leslie 
+# organ chords, and piercing Minimoog synth leads.
+#
+# This playbook perfectly demonstrates how to push the engine's master 
+# clock to create a dense, technical wall of sound. By locking a continuous 
+# 16th-note bassline to a busy, syncopated drum pattern, the engine creates 
+# a high-energy, classical-rock atmosphere.
+# ==========================================================
+
+use_bpm 110
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Dorian - Technical, Driving, & Massive)
+# ==========================================================
+
+# Complex, busy "Prog Rock" Kick. 
+# Syncopated hits to mimic a technical drum fill.
+s_kick = gen_score("x.....x...x.....", [
+  :c4, {note: :c4, amp: 0.7}, :c4
+])
+
+# Heavy, echoing snare on beats 2 and 4, with busy ghost notes.
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.9}
+])
+
+# Rigid, driving 16th hats to maintain high-speed momentum.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# The "Moog Taurus" Bass (D Dorian).
+# Plays continuous, driving 16th notes. 
+# High cutoff (100) and short release (0.1) create a punchy, aggressive churn.
+bass_notes = [:d1, :d2, :d1, :d2, :d1, :d2, :c1, :c2, 
+              :d1, :d2, :d1, :d2, :a1, :a2, :a1, :a2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "Hammond Organ" Chords (Dm to Cmaj7).
+# Hit on the downbeats. The slow 0.5-beat attack and massive 2.0-beat release 
+# blur the chords into a continuous, cinematic wave.
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :f3, :a3, :c4], cutoff: 90, attack: 0.5, release: 2.0, amp: 0.5},
+  {note: [:c3, :e3, :g3, :b3], cutoff: 90, attack: 0.5, release: 2.0, amp: 0.5}
+])
+
+# Piercing, "Minimoog" Lead (D Dorian Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# sharp, buzzing lead that cuts through the heavy mix.
+lead_notes = [:d4, :a4, :d5, :e5, :d5, :a4, :g4, :a4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 5, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Sweeping, "Mellotron String" drone (Granular Synth).
+# Long size (0.3) and low density (1) creates a slow, evolving background 
+# texture that sounds like a classical string section.
+s_grain = gen_score("x...............", [
+  {note: :d4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Overture - Just the Moog bass, organ chords, and Mellotron (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drive - Add the complex, busy drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The piercing Minimoog lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN TECHNICAL ROCK]
+# 
+# 1. The Moog Taurus Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:d1) and the 
+#    high octave (:d2). By using a high `cutoff` (100) and a very short 
+#    `release` (0.1), the engine turns the detuned sawtooth into a relentless, 
+#    buzzing churn that perfectly mimics the heavy, foot-pedal Moog Taurus 
+#    basslines used by 70s Prog Rock bands.
+#
+# 2. FM as a Minimoog: The `s_lead` sequence uses `divisor: 2` and an extreme 
+#    `depth` of `5`. This harsh harmonic ratio produces a piercing, buzzing 
+#    square wave that perfectly mimics the legendary Minimoog synth solos of 
+#    the 1970s. Routed through the tape echo, the sparse notes cascade across 
+#    the empty space, creating a stadium-sized soundscape.
+#
+# 3. Complex Drumming: Look at `s_kick` and `s_snare`. They completely avoid 
+#    landing on a standard 4/4 pulse. By hitting on syncopated steps with 
+#    heavy ghost notes, the engine creates a busy, technical groove that 
+#    feels like a virtuoso drummer playing a complex rock fill, perfectly 
+#    anchoring the continuous 16th-note bass.
+# ==========================================================

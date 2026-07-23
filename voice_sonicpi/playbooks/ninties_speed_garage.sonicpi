@@ -1,0 +1,117 @@
+# ==========================================================
+# PLAYBOOK: 90s SPEED GARAGE / UK SPEED GARAGE
+# (Pioneered by Armand Van Helden, 187 Lockdown, and RIP Productions)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Speed Garage.
+# We have explored Bassline (Niche) and modern 2-Step, but Speed Garage 
+# is the wild, heavy ancestor of them both. It fuses the relentless 4/4 
+# house beat with a massive, warping sub-bass, heavily swung drum patterns, 
+# and pitched-up R&B diva vocal chops. It is raw, bouncy, and designed 
+# for peak-time club energy.
+#
+# This playbook perfectly demonstrates how to algorithmically generate 
+# a rapid "wobble" bass. By using Ruby's `.map.with_index` to alternate 
+# the `cutoff` Hash on every 16th step, the engine creates the signature 
+# Speed Garage filter wobble with zero repetitive code.
+# ==========================================================
+
+use_bpm 135
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Heavy, Bouncy, & Raw)
+# ==========================================================
+
+# Relentless, driving 4/4 kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry garage snare/clap on beats 2 and 4, with a syncopated ghost.
+s_snare = gen_score("....x.....x.x...", [:c4, {note: :c4, amp: 0.4}])
+
+# Swung, bouncing 16th hats.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# The "Speed Garage" Wobble Bass (F# Minor).
+# Algorithmically generate the wobble by alternating the cutoff on every step.
+bass_cycle = [:fs1, :fs1, :a1, :fs1, :fs1, :fs1, :c2, :fs1]
+bass_data = bass_cycle.map.with_index do |n, i|
+  # Alternate cutoff between 60 (muffled) and 130 (bright) for a fast LFO wobble
+  cutoff = (i % 2 == 0) ? 60 : 130
+  {note: n, cutoff: cutoff, release: 0.1, amp: 1.2}
+end
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Stark, "Warp" Synth Stabs (F#m to C#m).
+# Hit strictly on the off-beats to leave maximum room for the wobble bass.
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:fs3, :a3, :c4], cutoff: 100, release: 0.2, amp: 0.5},
+  {note: [:cs3, :e3, :g3], cutoff: 100, release: 0.2, amp: 0.5}
+])
+
+# Piercing, "Siren" FX Lead (F# Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# sharp, aggressive alarm that cuts through the heavy bass.
+s_fm = gen_score("x...x...x...x...", [
+  {note: :fs5, amp: 0.6, divisor: 2, depth: 6, release: 0.1}, 
+  {note: :cs5, amp: 0.5, divisor: 2, depth: 6, release: 0.1}
+])
+
+# High-pitched, "Diva" vocal stutter (Granular Synth).
+# Pitched UP to :fs4 and :a4. High density, tiny size = a sharp, sugary R&B vocal skip.
+s_vocal = gen_score("....x.......x...", [
+  {note: :fs4, buffer: :misc_lori, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
+  {note: :a4, buffer: :misc_lori, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the 4/4 beat and the wobble bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Vibe - Add the garage snares and warp synth stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The piercing siren FX and diva vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE WOBBLE]
+# 
+# 1. Algorithmic Wobble Bass: Look at `s_bass`. Instead of typing 8 repetitive 
+#    Hashes, we use `.map.with_index do |n, i|`. The engine checks if the index 
+#    `i` is even. If true, it sets `cutoff: 60` (muffled). If false, it sets 
+#    `cutoff: 130` (bright). Because the engine reads these Hashes independently 
+#    on every 16th step, the filter opens and closes frantically, simulating a 
+#    fast LFO filter wobble that defines Speed Garage.
+#
+# 2. The Swing Pocket: Look at `s_hats` and `s_snare`. The hats play continuous 
+#    16th notes with varying amplitudes, and the snare has a syncopated ghost 
+#    note on the 'and' of 3. The engine's strict master clock ensures this 
+#    bouncy, "swung" groove locks perfectly with the 4/4 kick, creating the 
+#    unmistakable UK Garage feel.
+#
+# 3. Pristine High-End: Speed Garage relies on a stark contrast between the 
+#    massive, dark sub-bass and the high-pitched, pristine elements. The 
+#    `s_vocal` sequence uses the granular engine to chop a vocal into a sharp, 
+#    sugary stutter, while the `s_fm` siren cuts through the mix like a knife.
+# ==========================================================

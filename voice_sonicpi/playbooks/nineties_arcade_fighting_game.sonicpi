@@ -1,0 +1,124 @@
+# ==========================================================
+# PLAYBOOK: 90s ARCADE FIGHTING GAME / SEGA GENESIS DANCE
+# (Pioneered by Yuzo Koshiro, Hideki Abe, and Hitoshi Sakimoto)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Arcade Fighting Game.
+# We have explored 8-Bit Chiptune and 16-Bit JRPG, but the Arcade Fighting 
+# genre (think Streets of Rage or Street Fighter II) is the sound of pure 
+# adrenaline. It fuses the relentless energy of 90s house music with the 
+# metallic, glassy FM synthesis of the Yamaha YM2612 sound chip. It relies 
+# on frantic, continuous 16th-note basslines, syncopated "breakbeat" drums, 
+# and rapid, piercing FM melodies that sound like a fast-paced brawl.
+#
+# This playbook perfectly demonstrates how to push the `:play_fm` synth to 
+# its upper register. By using a high `divisor` (4) and rapid 16th notes, 
+# the engine creates a glassy, aggressive lead that perfectly mimics the 
+# metallic sound chips of 90s arcade cabinets.
+# ==========================================================
+
+use_bpm 140
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Frantic, Aggressive, & Metallic)
+# ==========================================================
+
+# Syncopated "Breakbeat" Kick. 
+# Hits on step 0, the 'and' of 2 (step 6), beat 3 (step 8), and step 11.
+s_kick = gen_score("x.....x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.8}
+])
+
+# Heavy, dry snare on beats 2 and 4, with frantic ghost notes.
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Rigid, driving 16th hats to maintain high-speed momentum.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# The "Arcade" Bass (E Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# High cutoff (110) and microscopic release (0.08) create a relentless, 
+# aggressive churn that drives the track like a ticking timer.
+bass_notes = [:e1, :e2, :e1, :e2, :e1, :e2, :g1, :g2, 
+              :a1, :a2, :a1, :a2, :b1, :b2, :b1, :b2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.08, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, "Metallic" Synth Stabs (Em to Cmaj).
+# Uses :play_fm with a low divisor (2) and extreme depth (4) to create a 
+# sharp, buzzy hit that mimics the arcade sound chip.
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:e3, :g3, :b3], divisor: 2, depth: 4, release: 0.15, amp: 0.5},
+  {note: [:c3, :e3, :g3], divisor: 2, depth: 4, release: 0.15, amp: 0.5}
+])
+
+# Frantic, "Glassy" Lead (E Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a clean, 
+# glassy, metallic tone. Plays a rapid, continuous 16th-note melody.
+lead_notes = [:e5, :b4, :e5, :g5, :a5, :g5, :e5, :b4, 
+              :d5, :a4, :d5, :f5, :g5, :f5, :d5, :a4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Power Up" FX (Granular Synth).
+# Uses :elec_piano buffer. High density, tiny size = a sharp, digital glitch.
+s_fx = gen_score("........x.......", [
+  {note: :e4, buffer: :elec_piano, pos: 0.8, density: 4, size: 0.03, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Round 1 - Just the breakbeat drums and relentless bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Fight - Add the metallic synth stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8] ],
+    
+  # Scene 3: The Combo - The frantic lead melody and FX drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], 
+    [:play_lead, s_lead, 8], [:play_grain, s_fx, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ARCADE ENERGY]
+# 
+# 1. FM as a Sound Chip: Look at `s_lead`. The `:play_fm` synth is given a 
+#    high `divisor` (4) and a low `depth` (2). This harmonic ratio produces 
+#    a clean, glassy, metallic tone that perfectly mimics the legendary 
+#    Yamaha YM2612 sound chip found in the Sega Genesis and 90s arcade 
+#    cabinets. By playing a rapid, 16th-note melody, the engine creates 
+#    a frantic, aggressive energy that feels like a fast-paced brawl.
+#
+# 2. The Relentless Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:e1) and the 
+#    high octave (:e2). By using a high `cutoff` (110) and a microscopic 
+#    `release` (0.08), the engine turns the detuned sawtooth into a relentless, 
+#    aggressive churn that drives the track forward like a ticking timer.
+#
+# 3. The Breakbeat Syncopation: Look at `s_kick` and `s_snare`. They completely 
+#    avoid landing on a standard 4/4 pulse. By hitting on syncopated steps with 
+#    heavy ghost notes, the engine creates a busy, technical groove that 
+#    feels like a fighting game combo, perfectly anchoring the continuous 
+#    16th-note bass and lead.
+# ==========================================================

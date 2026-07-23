@@ -1,0 +1,103 @@
+# ==========================================================
+# PLAYBOOK: 90s ALTERNATIVE ROCK / GRUNGE
+# (Pioneered by Nirvana, Pearl Jam, and Soundgarden)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Alternative Rock / Grunge.
+# We have explored Stadium Rock and Nu-Metal, but Grunge is the sound of 
+# 90s Seattle. It relies on the "loud/quiet" dynamic, heavily distorted, 
+# sludgy power chords, a driving, melodic bassline, and stark, cavernous drums. 
+#
+# This playbook perfectly demonstrates how to use a purely electronic engine 
+# to simulate a heavy rock power trio. By using the `:play_fm` synth with 
+# extreme `depth` to simulate a distorted guitar, and the `:play_sub` synth 
+# to create a driving, melodic bass, the engine creates a raw, angsty, and 
+# massive rock atmosphere.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Heavy, Raw, & Dynamic)
+# ==========================================================
+
+# Heavy, cavernous rock kick. Hits on 1, 2, 3, and 4.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Massive, echoing snare strictly on beats 2 and 4, with a ghost note 
+# on the 'and' of 3 (step 10).
+s_snare = gen_score("....x...x.x.....", [:c4, {note: :c4, amp: 0.4}])
+
+# Rigid, driving 8th hats.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Driving" Bass (F# Minor).
+# Plays continuous 8th notes. Mid cutoff (90) and short release (0.1) 
+# mimic a picked, chorus-soaked electric bass.
+bass_notes = [:fs2, :fs2, :fs2, :fs2, :a2, :a2, :a2, :a2, 
+              :fs2, :fs2, :fs2, :fs2, :e2, :e2, :e2, :e2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (F#5 to A5 to E5).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# sharp, buzzy square wave that mimics a heavily distorted electric guitar.
+# Hits only on beats 1 and 3 to simulate the "loud/quiet" dynamic.
+s_chords = gen_score("x.......x.......", [
+  {note: [:fs3, :cs4], divisor: 2, depth: 5, release: 0.3, amp: 0.7},
+  {note: [:e3, :b3], divisor: 2, depth: 5, release: 0.3, amp: 0.7}
+])
+
+# Piercing, "Feedbacking" Guitar Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and extreme depth (4) to create a 
+# sharp, piercing lead that cuts through the heavy mix.
+lead_notes = [:fs4, :a4, :b4, :cs5, :b4, :a4, :fs4, :e4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 4, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Verse - Just the driving drums, bass, and sparse chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Chorus - Add the piercing feedbacking guitar lead (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ROCK DYNAMICS]
+# 
+# 1. FM as a Distorted Amp: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `5`. This harsh harmonic 
+#    ratio forces the FM modulator to shatter the carrier wave, creating a 
+#    piercing, buzzy square wave that perfectly mimics a heavily distorted 
+#    electric guitar playing power chords.
+#
+# 2. The Picked Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a melodic line. By using a mid-range 
+#    `cutoff` (90) and a very short `release` (0.1), the engine turns the 
+#    detuned sawtooth into a punchy, aggressive "thwack" that perfectly 
+#    mimics a picked electric bass guitar driving the rhythm, a hallmark 
+#    of 90s alternative rock.
+#
+# 3. The Loud/Quiet Dynamic: Grunge relies on stark contrast. The `s_chords` 
+#    sequence hits only on beats 1 and 3 (steps 0 and 8), leaving massive 
+#    gaps (`nil`) in the grid. The engine honors these rests perfectly, 
+#    letting the driving bass and drums carry the verse, before the massive 
+#    power chords drop back in for the chorus.
+# ==========================================================

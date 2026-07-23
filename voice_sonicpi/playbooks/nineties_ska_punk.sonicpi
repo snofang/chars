@@ -1,0 +1,112 @@
+# ==========================================================
+# PLAYBOOK: 90s SKA PUNK / THIRD WAVE SKA
+# (Pioneered by Reel Big Fish, Less Than Jake, and The Mighty Mighty Bosstones)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Ska Punk.
+# We have explored Pop-Punk and Motown, but Ska Punk is the sound of 
+# 90s skater culture. It fuses fast, aggressive punk rock drums with 
+# the syncopated, bouncing off-beat "skank" guitar of Jamaican ska, 
+# and tight, staccato brass/horn sections. 
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth 
+# as a tight horn section, and how to use `:play_pluck` to simulate 
+# the clean, staccato off-beat guitar strums that define the genre.
+# ==========================================================
+
+use_bpm 150
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Fast, Bouncy, & Aggressive)
+# ==========================================================
+
+# Fast, driving punk rock kick. Hits on 1, 2, 3, and 4.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 8th hats. 
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Walking" Bass (D Major).
+# Plays continuous, fast 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive picked bass.
+bass_notes = [:d2, :d2, :a2, :d2, :g2, :g2, :d2, :a2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# The "Off-Beat Skank" Guitar (D Major).
+# Uses :play_pluck. Hits strictly on the off-beats (steps 2, 6, 10, 14) 
+# to leave maximum room for the driving drums and bass.
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:d3, :a3], amp: 0.6, release: 0.1, coef: 0.4}, 
+  {note: [:g3, :d4], amp: 0.6, release: 0.1, coef: 0.4}
+])
+
+# Tight, "Horn Section" Stabs (Dmaj to Gmaj).
+# Uses :play_fm with a low divisor (2) and depth (3) to create a warm, 
+# brassy staccato hit that mimics a live horn section.
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :fs3, :a3], divisor: 2, depth: 3, release: 0.2, amp: 0.6},
+  {note: [:g2, :b2, :d3], divisor: 2, depth: 3, release: 0.2, amp: 0.6}
+])
+
+# Piercing, "Lead Trumpet" Melody (D Major Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (1) to create a 
+# clean, piercing brass tone. Routed through the tape echo.
+lead_notes = [:d5, :a4, :d5, :fs5, :e5, :d5, :cs5, :a4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 1, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Skank - Just the fast drums, walking bass, and guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4] ],
+  
+  # Scene 2: The Horns - Add the tight brass stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_fm, s_chords, 8] ],
+    
+  # Scene 3: The Solo - The piercing lead trumpet melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_fm, s_chords, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SKA MOMENTUM]
+# 
+# 1. The Off-Beat Skank: Look at `s_guitar`. The `:play_pluck` synth hits 
+#    strictly on steps 2, 6, 10, and 14. In a 16-step grid, these are the 
+#    exact midpoints between the kicks. By using a short `release` (0.1) 
+#    and a low `coef` (0.4), the engine turns the pluck into a sharp, 
+#    staccato "chuka" that perfectly mimics the clean, off-beat guitar 
+#    strums that define Ska music.
+#
+# 2. The Walking Punk Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a fast, walking line. By using a high 
+#    `cutoff` (100) and a very short `release` (0.1), the engine turns the 
+#    detuned sawtooth into a punchy, aggressive "thwack" that perfectly 
+#    mimics the picked basslines of 90s ska punk.
+#
+# 3. FM as a Horn Section: Look at `s_chords` and `s_lead`. The `:play_fm` 
+#    synth is given a `divisor` of `2` and a `depth` of `3`, with a short 
+#    `release` (0.2). This forces the FM synth to produce a warm, brassy, 
+#    staccato "hit" that perfectly mimics a live horn section locking in 
+#    with the rhythm section.
+# ==========================================================
