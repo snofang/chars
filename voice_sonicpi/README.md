@@ -1,6 +1,9 @@
-# Voice Sonic Pi Engine
+Here is the updated `README.md`, tailored specifically for your newly optimized engine architecture. It reflects the performance caching, the global FX buses, and the expanded instrument set.
 
-A declarative, strict-schema step-sequencer and granular synthesizer built for Sonic Pi. 
+```markdown
+# Voice Sonic Pi Engine (Optimized)
+
+A declarative, strict-schema step-sequencer, granular synthesizer, and sampling engine built for Sonic Pi. 
 
 This engine separates musical *data* (the playbooks) from the *synthesis and timing logic* (the engine). It enforces a rigid 16-step, 4/4 time signature grid, allowing the composer to focus entirely on crafting arrays of notes, chords, and parameters without worrying about thread management, timing drift, or concurrency bugs.
 
@@ -8,9 +11,10 @@ This engine separates musical *data* (the playbooks) from the *synthesis and tim
 
 1. **Single Master Clock:** The entire engine runs inside a single `live_loop`. There are no `in_thread` calls, no `cue`/`sync` race conditions, and zero timing drift. All instruments are triggered sequentially step-by-step.
 2. **Strict Schema Validation:** Every score must be exactly 16 steps long. If a score has 15 or 17 steps, the engine "fails fast" and throws an error, preventing hidden timing bugs.
-3. **Single-Note Triggers:** Instruments (like `:play_sub`) are completely "dumb." They do not know about sequences or time. They only know how to play one note/chord when handed one. The Engine handles all iteration.
-4. **Bulletproof Parameter Hashing:** A step in a score can be a simple note (`:c4`), a rest (`nil`), an array of notes (a chord), or a Hash of parameters (`{note: :c4, amp: 0.5}`). The engine's `parse_step` function sanitizes all incoming data—automatically cleaning out `nil` values from arrays to prevent runtime crashes.
-5. **Professional Signal Chain:** FX routing (reverbs, echoes) is encapsulated directly inside the instrument definitions, keeping the musical data clean.
+3. **Bulletproof Parameter Hashing:** A step in a score can be a simple note (`:c4`), a rest (`nil`), an array of notes (a chord), or a Hash of parameters (`{note: :c4, amp: 0.5}`). The engine's `parse_step` function sanitizes all incoming data—automatically cleaning out `nil` values from arrays to prevent runtime crashes.
+4. **Performance Caching:** To handle high-BPM, dense genres (like Gabber or Breakcore) without CPU spikes, the engine memoizes (caches) the results of `parse_step` and MIDI note calculations in instance variables (`@parse_cache`, `@note_cache`).
+5. **Global FX Buses:** Instantiating audio effects (`with_fx`) is computationally expensive. The engine routes specific instruments (like `:play_lead` and `:play_snare`) through global FX buses using queues (`@lead_notes`, `@snare_notes`). A dedicated `live_loop` processes these queues through a single, persistent Echo and Reverb instance, mimicking professional DAW routing.
+6. **Professional Signal Chain:** FX routing is encapsulated directly inside the instrument definitions, keeping the musical data clean.
 
 ## The Schema
 
@@ -51,17 +55,27 @@ start_engine(playbook)
 ## Engine API Reference
 
 ### Instruments
-The engine comes with built-in instrument functions. You can call them by passing them a single note, a chord, or a parameter Hash. All instruments are pitched relative to `:c4` (MIDI 60).
+The engine comes with 13 built-in instrument functions. All pitched instruments map relative to `:c4` (MIDI 60).
 
+**Bass & Sub:**
 *   `:play_sub` - Distorted subtractive bass (`:dsaw`).
-*   `:play_lead` - Wavetable lead (`:prophet`) routed through a tape echo.
+*   `:play_subbass` - Clean, pure sine wave sub-bass. Ideal for cinematic booms and deep low-end.
+
+**Synths & Leads:**
+*   `:play_lead` - Wavetable lead (`:prophet`) routed through the **Global Tape Echo Bus**.
 *   `:play_chords` - Warm sustained pad (`:blade`) designed to play arrays of notes (chords).
-*   `:play_grain` - **True Granular Synthesizer.** (See Granular Parameters below).
-*   `:play_fm` - FM Bell (`:fm`).
+*   `:play_fm` - FM Bell/Synth (`:fm`).
 *   `:play_pluck` - Physical modeling (`:pluck`).
 *   `:play_pad` - Dark ambient drone (`:dark_ambience`).
+
+**Granular & Sampling:**
+*   `:play_grain` - **True Granular Synthesizer.** (See Granular Parameters below).
+*   `:play_sample` - Sample player. Pass `sample: :sample_name` in the Hash to trigger any built-in Sonic Pi sample. Pitch shifts relative to `:c4`.
+*   `:play_noise` - Filtered noise generator. The `note` passed in the Hash controls the `cutoff` frequency, allowing you to sequence filter sweeps/risers purely via data.
+
+**Drums & Percussion:**
 *   `:play_kick` - Pitched kick drum sampler.
-*   `:play_snare` - Snare sampler routed through a massive hall reverb.
+*   `:play_snare` - Snare sampler routed through the **Global Hall Reverb Bus**.
 *   `:play_hats` - Micro-timed hi-hats with ghost notes.
 
 ### The Granular Synthesizer (`:play_grain`)
@@ -78,6 +92,16 @@ The `:play_grain` instrument is a fully featured granular engine. You can contro
 {note: :c4, buffer: :misc_lori, pos: 0.5, density: 8, size: 0.08}
 ```
 
+### The Noise Generator (`:play_noise`)
+The `:play_noise` instrument maps the incoming `note` to a filter `cutoff`. This allows you to use the 16-step grid to create massive cinematic risers and transitions.
+
+**Example Noise Riser Step:**
+```ruby
+# As the notes go up, the filter opens up
+{note: :c4, amp: 0.2, release: 0.1}
+{note: :c6, amp: 1.0, release: 0.1}
+```
+
 ## Execution
 
 To use the engine, load it into memory using `eval_file` in your composition script, define your scores and playbook, and call `start_engine`.
@@ -91,4 +115,5 @@ eval_file "path/to/engine.sonicpi"
 # Define playbook...
 
 start_engine(playbook)
+```
 ```

@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: 90s TRIP-HOP / BRISTOL SOUND
+# (Pioneered by Massive Attack, Portishead, and Tricky)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Trip-Hop.
+# We have explored Neo-Soul and Lo-Fi Hip-Hop, but Trip-Hop is the 
+# sound of 90s Bristol. It is darker, slower, and more cinematic. 
+# It takes the hip-hop drum grid, slows it down to a crawling 80 BPM, 
+# and pairs it with massive, melancholic "Reese" basslines, dusty 
+# samples, and echoing, haunting vocal fragments.
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# to create immense weight and space. By using massive release times 
+# on the sub-bass and sparse, echoing FM notes, the engine creates a 
+# dark, suffocating atmosphere that defined the 90s UK underground.
+# ==========================================================
+
+use_bpm 80
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Dark, Cinematic, & Heavy)
+# ==========================================================
+
+# The "Laid-Back" Kick. 
+# Hits on step 0, the 'a' of 2 (step 7), and the 'e' of 3 (step 10).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil)
+
+# Heavy, dusty snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+
+# Slow, echoing, lazy 16th hats. 
+# Notice the massive gaps (nil) and low amplitudes to create a sense of space.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, nil)
+
+# Massive, echoing "Reese" Bass (A Minor).
+# Hits a slow melody. Massive release (1.5) and low cutoff (60) make the 
+# low-end ring out and decay naturally, creating immense weight.
+s_bass  = (ring {:note => :a1, :release => 1.5, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil, {:note => :f1, :release => 1.5, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil)
+
+# Melancholic, sweeping minor chords (Am9 to Fmaj9).
+# Hit on the downbeats. The slow 0.5-beat attack makes them slowly swell 
+# into the mix like a ghost.
+s_chords= (ring {:note => [:a3, :c4, :e4, :g4], :cutoff => 80, :release => 2.0, :attack => 0.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:f3, :a3, :c4, :e4], :cutoff => 80, :release => 2.0, :attack => 0.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Distant, echoing "Wurlitzer/Rhodes" Melody (A Minor Pentatonic).
+# Uses :play_fm with a low divisor (3) and depth (1) to create a soft, 
+# organic sine wave. Routed through the engine's tape echo for a cavernous, 
+# cinematic smear.
+s_fm    = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil, {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil, {:note => :c5, :amp => 0.4, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil)
+
+# Ethereal, haunting "Vocal" drone (Granular Synth).
+# Long size (0.3) and low density (1) creates a slow, evolving background 
+# texture that sounds like a choir echoing in an empty cathedral.
+s_grain = (ring {:note => :a4, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.5, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Shadows - Just the swelling chords, massive bass, and vocal drone (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Pulse - Add the slow, heavy drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Echo - The distant Rhodes melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC WEIGHT]
+# 
+# 1. The Reese Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `release` of `1.5` (nearly two whole beats) and a very low `cutoff` 
+#    of `60`. Because the BPM is 80, that low A note rings out for over a 
+#    second, creating a massive, booming low-end that carries the melody 
+#    and provides immense, suffocating weight.
+#
+# 2. Swelling Ghosts: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `0.5` and a `release` of `2.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of dark harmony.
+#
+# 3. Cavernous Space: Trip-Hop relies on extreme sparsity. 80% of the 
+#    `s_hats` and `s_fm` grids are `nil`. The engine honors these rests 
+#    perfectly, letting the reverb tails of the snare and the delay tails 
+#    of the FM melody ring out into the void, creating a dark, cinematic 
+#    atmosphere that feels like wandering through an empty city at night.
+# ==========================================================

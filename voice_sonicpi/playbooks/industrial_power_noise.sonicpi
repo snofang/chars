@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: INDUSTRIAL / POWER NOISE
+# (Pioneered by Combichrist, Noisuf-X, and Nachtmahr)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Industrial / Power Noise.
+# We have explored heavy genres (Gabber, Breakcore) and dark genres 
+# (Darkwave, Witch House). Industrial / Power Noise is the sound of the 
+# dystopian factory floor. It takes the rigid 4/4 grid and replaces all 
+# traditional melodies with rhythmic, distorted noise sweeps, metallic 
+# clangs, and hammering, clean sub-bass.
+#
+# This playbook perfectly demonstrates the power of your newly added 
+# `play_noise`, `play_sample`, and `play_subbass` instruments. By mapping 
+# ascending notes to the noise synth, the engine creates rhythmic filter 
+# chops. By using the sample player, we trigger metallic industrial hits.
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Aggressive, Metallic, & Rhythmic)
+# ==========================================================
+
+# Relentless, hammering 4/4 kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, dry industrial snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Rhythmic Noise" Chopper.
+# Uses the new play_noise. The alternating low/high notes (:fs3 vs :fs5) 
+# force the filter cutoff to jump back and forth, creating a rhythmic, 
+# chopping noise effect.
+s_noise = (ring {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1}, {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1}, 
+           {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1}, {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1}, 
+           {:note => :a3, :amp => 0.4, :release => 0.1}, {:note => :a5, :amp => 0.6, :release => 0.1}, {:note => :a3, :amp => 0.4, :release => 0.1}, {:note => :a5, :amp => 0.6, :release => 0.1}, 
+           {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1}, {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1})
+
+# The "Hammer" Sub-Bass.
+# Uses the new play_subbass. Clean sine wave. Hits strictly on the off-beats 
+# to provide a massive, distortion-free low-end thump.
+s_sub   = (ring nil, nil, {:note => :fs1, :release => 0.15, :amp => 1.0}, nil, nil, nil, {:note => :fs1, :release => 0.15, :amp => 1.0}, nil, nil, nil, {:note => :a1, :release => 0.15, :amp => 1.0}, nil, nil, nil, {:note => :fs1, :release => 0.15, :amp => 1.0}, nil)
+
+# Metallic, industrial impacts.
+# Uses the new play_sample to trigger :elec_blip pitched down.
+s_metal = (ring nil, nil, nil, {:note => :g4, :sample => :elec_blip, :release => 0.2, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :sample => :elec_blip, :release => 0.2, :amp => 0.6}, nil, nil, nil, nil)
+
+# The "Grinding" Granular FX.
+# Uses :elec_piano buffer. High density, tiny size = grinding metal.
+s_grind = (ring {:note => :fs3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :a3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :fs3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :e3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Factory - Just the kick, sub-bass, and chopping noise (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_subbass, s_sub, 4], [:play_noise, s_noise, 4] ],
+  
+  # Scene 2: The Machine - Add the snares, hats, and metallic hits (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_subbass, s_sub, 8], [:play_noise, s_noise, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_sample, s_metal, 8] ],
+    
+  # Scene 3: The Meltdown - The grinding granular FX drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_subbass, s_sub, 8], [:play_noise, s_noise, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_sample, s_metal, 8], 
+    [:play_grain, s_grind, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INDUSTRIAL NOISE]
+# 
+# 1. Data-Driven Noise Chops: Look at `s_noise`. By passing alternating 
+#    low/high notes (:fs3 vs :fs5) to the new `play_noise` instrument, 
+#    the engine forces the filter cutoff to jump back and forth on every 
+#    16th step. This creates a rhythmic, stuttering noise effect that 
+#    sounds like a factory machine churning.
+#
+# 2. Clean Low-End Separation: Industrial music often gets muddy when 
+#    distorted kicks and basses clash. By using the new `play_subbass` 
+#    (a pure sine wave) on the off-beats, the engine provides a massive, 
+#    clean low-end thump that cuts through the chaotic noise without 
+#    muddying the mix.
+#
+# 3. Infinite Sampling: Look at `s_metal`. The new `play_sample` instrument 
+#    allows us to trigger ANY built-in Sonic Pi sample just by passing 
+#    `:sample => :elec_blip` in the Hash. This allows us to easily inject 
+#    metallic, industrial textures into the rigid 16-step grid without 
+#    writing custom synth code.
+# ==========================================================

@@ -1,0 +1,91 @@
+# ==========================================================
+# PLAYBOOK: CINEMATIC TRAILER / EPIC ORCHESTRAL HYBRID
+# (Pioneered by Hans Zimmer, Two Steps From Hell, and Junkie XL)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# We have explored almost every dance and hip-hop genre. Cinematic 
+# Trailer music is the absolute test of sound design and weight. It 
+# slows the grid down to 90 BPM and uses immense negative space. 
+# It relies on massive, clean sub-booms, rising filtered noise sweeps, 
+# and stark, echoing percussion.
+#
+# This playbook perfectly demonstrates the power of your newly added 
+# `play_subbass`, `play_noise`, and `play_sample` instruments to create 
+# a slow, dramatic, and terrifyingly massive atmosphere.
+# ==========================================================
+
+use_bpm 90
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Minor - Massive, Dark, & Dramatic)
+# ==========================================================
+
+# Massive, clean cinematic sub-booms.
+# Uses the new play_subbass. Long release (2.0) lets the clean sine wave ring out.
+s_boom  = (ring {:note => :c2, :release => 2.0, :amp => 1.2}, nil, nil, nil, nil, nil, nil, nil, {:note => :g1, :release => 2.0, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# The "Riser" / Tension Sweep.
+# Uses the new play_noise. The rising notes force the filter cutoff to open, 
+# creating a massive cinematic riser over the 16 steps.
+s_riser = (ring {:note => :c4, :amp => 0.1, :release => 0.1}, {:note => :d4, :amp => 0.2, :release => 0.1}, {:note => :e4, :amp => 0.3, :release => 0.1}, {:note => :f4, :amp => 0.4, :release => 0.1}, 
+           {:note => :g4, :amp => 0.5, :release => 0.1}, {:note => :a4, :amp => 0.6, :release => 0.1}, {:note => :b4, :amp => 0.7, :release => 0.1}, {:note => :c5, :amp => 0.8, :release => 0.1}, 
+           {:note => :d5, :amp => 0.9, :release => 0.1}, {:note => :e5, :amp => 1.0, :release => 0.1}, {:note => :f5, :amp => 1.0, :release => 0.1}, {:note => :g5, :amp => 1.0, :release => 0.1}, 
+           {:note => :a5, :amp => 1.0, :release => 0.1}, {:note => :b5, :amp => 1.0, :release => 0.1}, {:note => :c6, :amp => 1.0, :release => 0.1}, {:note => :d6, :amp => 1.0, :release => 0.1})
+
+# The "Taiko" Driving Pulse.
+# Uses play_sub. Continuous 8th notes with a high cutoff create a marching pulse.
+s_pulse = (ring {:note => :c2, :release => 0.2, :cutoff => 100, :amp => 0.8}, nil, {:note => :c2, :release => 0.2, :cutoff => 100, :amp => 0.6}, nil, {:note => :c2, :release => 0.2, :cutoff => 100, :amp => 0.8}, nil, {:note => :c2, :release => 0.2, :cutoff => 100, :amp => 0.6}, nil, {:note => :c2, :release => 0.2, :cutoff => 100, :amp => 0.8}, nil, {:note => :c2, :release => 0.2, :cutoff => 100, :amp => 0.6}, nil, {:note => :g1, :release => 0.2, :cutoff => 100, :amp => 0.8}, nil, {:note => :g1, :release => 0.2, :cutoff => 100, :amp => 0.6}, nil)
+
+# Metallic, cinematic impacts.
+# Uses the new play_sample to trigger an electric cymbal pitched down.
+s_metal = (ring nil, nil, nil, nil, {:note => :g4, :sample => :elec_cymbal, :amp => 0.6, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :sample => :elec_cymbal, :amp => 0.8, :release => 1.0}, nil, nil, nil)
+
+# Ethereal, granular string/choir pad (using :ambi_choir).
+# Long size (0.3) and low density (1) creates a slow, evolving celestial texture.
+s_choir = (ring {:note => :c4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :g3, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the sub-booms and sweeping riser (4 bars)
+  [ [:play_subbass, s_boom, 4], [:play_noise, s_riser, 4], [:play_grain, s_choir, 4] ],
+  
+  # Scene 2: The March - Add the driving Taiko pulse (8 bars)
+  [ [:play_subbass, s_boom, 8], [:play_noise, s_riser, 8], [:play_grain, s_choir, 8], 
+    [:play_sub, s_pulse, 8] ],
+    
+  # Scene 3: The Climax - Add the metallic impacts (8 bars)
+  [ [:play_subbass, s_boom, 8], [:play_noise, s_riser, 8], [:play_grain, s_choir, 8], 
+    [:play_sub, s_pulse, 8], [:play_sample, s_metal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC WEIGHT]
+# 
+# 1. Data-Driven Risers: Look at `s_riser`. By passing ascending notes 
+#    (:c4 to :d6) to the new `play_noise` instrument, the engine forces 
+#    the filter cutoff to open up over 16 steps. This creates a massive, 
+#    hydraulic riser purely via data, without needing automation curves.
+#
+# 2. Clean Low-End: Look at `s_boom`. By using the new `play_subbass` 
+#    (a pure sine wave), the low-end rings out perfectly clean without 
+#    the harsh harmonics of a sawtooth. This provides the massive, 
+#    chest-rattling weight required for movie trailers.
+#
+# 3. Infinite Sampling: Look at `s_metal`. The new `play_sample` instrument 
+#    allows us to trigger ANY built-in Sonic Pi sample just by passing 
+#    `:sample => :elec_cymbal` in the Hash. This opens up thousands of 
+#    new sonic possibilities without changing the engine code.
+# ==========================================================

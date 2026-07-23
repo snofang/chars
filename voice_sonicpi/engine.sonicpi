@@ -1,5 +1,5 @@
 # ==========================================================
-# VOICE SONIC PI ENGINE - OPTIMIZED (Full Cache)
+# VOICE SONIC PI ENGINE - OPTIMIZED (Full Instrument Set)
 # ==========================================================
 
 # ----------------------------------------------------------
@@ -76,7 +76,7 @@ live_loop :snare_fx do
 end
 
 # ----------------------------------------------------------
-# 4. THE SYNTHESIZERS (Fully Optimized)
+# 4. THE SYNTHESIZERS (Full Instrument Set)
 # ----------------------------------------------------------
 
 # 1. SUBTRACTIVE BASS
@@ -86,20 +86,48 @@ define :play_sub do |n|
   play note, **opts if note
 end
 
-# 2. SUBTRACTIVE LEAD (FX moved to global bus)
+# 2. SUB BASS (Pure sine - CLEAN LOW END)
+define :play_subbass do |n|
+  use_synth :sine
+  note, opts = parse_step(n, {release: 0.5, amp: 0.8})
+  play note, **opts if note
+end
+
+# 3. SUBTRACTIVE LEAD (FX moved to global bus)
 define :play_lead do |n|
   note, opts = parse_step(n, {release: 0.2, amp: 1.0, cutoff: rrand(80, 110)})
   @lead_notes << [note, opts] if note
 end
 
-# 3. WARM CHORDS / NEO-SOUL PAD
+# 4. WARM CHORDS / NEO-SOUL PAD
 define :play_chords do |n|
   use_synth :blade
   note, opts = parse_step(n, {release: 1.5, amp: 0.7, attack: 0.2, cutoff: 80})
   play note, **opts if note
 end
 
-# 4. GRANULAR CLOUD (with note cache)
+# 5. DARK AMBIENT PAD
+define :play_pad do |n|
+  use_synth :dark_ambience
+  note, opts = parse_step(n, {release: 1.5, amp: 0.6, attack: 0.5})
+  play note, **opts if note
+end
+
+# 6. FM BELL
+define :play_fm do |n|
+  use_synth :fm
+  note, opts = parse_step(n, {release: 0.3, amp: 0.8, divisor: 2.0, depth: 3})
+  play note, **opts if note
+end
+
+# 7. PHYSICAL MODELING (Pluck)
+define :play_pluck do |n|
+  use_synth :pluck
+  note, opts = parse_step(n, {release: 0.3, amp: 0.8, coef: rrand(0.3, 0.7)})
+  play note, **opts if note
+end
+
+# 8. GRANULAR CLOUD (with note cache)
 define :play_grain do |n|
   return unless n
   note, opts = parse_step(n, {amp: 0.5})
@@ -129,40 +157,37 @@ define :play_grain do |n|
   end
 end
 
-# 5. FM BELL
-define :play_fm do |n|
-  use_synth :fm
-  note, opts = parse_step(n, {release: 0.3, amp: 0.8, divisor: 2.0, depth: 3})
-  play note, **opts if note
+# 9. SAMPLE PLAYER (Trigger any sample with pitch)
+define :play_sample do |n|
+  note, opts = parse_step(n, {amp: 0.8})
+  if note && opts[:sample]
+    sample opts[:sample], 
+      pitch: (note_cached(note) - note_cached(:c4)), 
+      **opts
+  end
 end
 
-# 6. PHYSICAL MODELING (Pluck)
-define :play_pluck do |n|
-  use_synth :pluck
-  note, opts = parse_step(n, {release: 0.3, amp: 0.8, coef: rrand(0.3, 0.7)})
-  play note, **opts if note
+# 10. FILTERED NOISE (For transitions & FX)
+define :play_noise do |n|
+  note, opts = parse_step(n, {amp: 0.5, release: 0.3, cutoff: 60})
+  use_synth :noise
+  # Note controls filter cutoff
+  play :c4, cutoff: note_cached(note) - note_cached(:c4) + 60, **opts if note
 end
 
-# 7. DARK AMBIENT PAD
-define :play_pad do |n|
-  use_synth :dark_ambience
-  note, opts = parse_step(n, {release: 1.5, amp: 0.6, attack: 0.5})
-  play note, **opts if note
-end
-
-# 8. PITCHED KICK (with note cache)
+# 11. PITCHED KICK (with note cache)
 define :play_kick do |n|
   note, opts = parse_step(n, {amp: 1.5})
   sample :bd_haus, pitch: (note_cached(note) - note_cached(:c4)), **opts if note
 end
 
-# 9. PITCHED SNARE (FX moved to global bus + note cache)
+# 12. PITCHED SNARE (FX moved to global bus + note cache)
 define :play_snare do |n|
   note, opts = parse_step(n, {amp: 0.8})
   @snare_notes << [note, opts] if note
 end
 
-# 10. MICRO-TIMED HI-HATS
+# 13. MICRO-TIMED HI-HATS
 define :play_hats do |n|
   note, opts = parse_step(n, {amp: 0.3})
   if note
