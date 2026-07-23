@@ -1,0 +1,102 @@
+# ==========================================================
+# PLAYBOOK: BALEARIC HOUSE / IBIZA SUNSET
+# (Pioneered by Café del Mar, Jose Padilla, and Afterlife)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Balearic House.
+# We have explored heavy, dark genres (Industrial, Phonk) and rigid, 
+# chaotic genres (Gabber, Singeli). Balearic House is the sound of the 
+# Mediterranean sunset. It slows the 4/4 grid down to a relaxed 108 BPM, 
+# focusing on organic, swinging percussion, deep round bass, and lush, 
+# warm major chords. 
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth 
+# to simulate a warm, plucked Spanish guitar. By using a low `divisor` 
+# and routing it through the engine's tape echo, the engine creates a 
+# relaxed, echoing melody that feels like watching the sun go down.
+# ==========================================================
+
+use_bpm 108
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Warm, Organic, & Relaxing)
+# ==========================================================
+
+# Soft, syncopated organic kick. 
+# Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil)
+
+# Crisp, organic shaker. 
+# FIXED: Exactly 16 steps. Notice the gaps (nil) and amplitude manipulation to create a human, swing feel.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# Deep, round sub-bass (D Major).
+# Walks a slow, melodic line. Very low cutoff (70) and long release (0.5) 
+# to create a warm, muffled undercurrent.
+s_bass  = (ring {:note => :d2, :release => 0.5, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :d2, :release => 0.5, :cutoff => 70}, nil, {:note => :a1, :release => 0.5, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :g1, :release => 0.5, :cutoff => 70}, nil)
+
+# Lush, warm Major 9th chords (Dmaj9 to Gmaj7).
+# Hit on the downbeats. The slow 0.3-beat attack makes them slowly fade in 
+# like a warm Rhodes piano.
+s_chords= (ring {:note => [:d3, :fs3, :a3, :e4], :cutoff => 90, :release => 1.5, :attack => 0.3, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:g3, :b3, :d4, :a4], :cutoff => 90, :release => 1.5, :attack => 0.3, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# The "Spanish Guitar" Melody (D Major Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (2) to create a warm, 
+# plucked string tone. Routed through the engine's tape echo for a 
+# cavernous, Mediterranean smear.
+s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.8}, nil, {:note => :fs5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :a5, :amp => 0.7, :divisor => 2, :depth => 2, :release => 0.8}, nil)
+
+# Ethereal, ambient vocal "Sigh" (Granular Synth).
+# Long size (0.2) and low density (1) creates a slow, evolving background 
+# texture that sounds like a distant voice echoing across a beach.
+s_grain = (ring {:note => :d4, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Sunset - Just the warm chords, bass, and vocal sigh (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the swinging organic drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Night - The echoing Spanish guitar melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RELAXATION]
+# 
+# 1. FM as a Spanish Guitar: Look at `s_fm`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and a `depth` of `2`. This creates a warm, plucked 
+#    string tone that perfectly mimics a Spanish guitar. Because it's 
+#    routed through the engine's tape echo, the sparse notes smear across 
+#    the empty space, creating a cavernous, Mediterranean atmosphere.
+#
+# 2. Organic Swing: Look at `s_hats`. The hats don't just play straight 
+#    16th notes; they leave gaps (`nil`) on the downbeats and have varying 
+#    amplitudes (0.2 to 0.4). By emphasizing the off-beats, the engine 
+#    creates a relaxed, human "swing" feel that feels like a live percussionist 
+#    playing along to the sunset.
+#
+# 3. Deep Harmonic Warmth: The `s_bass` uses a very low `cutoff` (70) and a 
+#    long `release` (0.5) to keep it round and warm. The `s_chords` use a 
+#    slow `attack` (0.3) to fade in softly. The engine's strict 16-step grid 
+#    ensures these lush, slow elements never clash with the organic percussion, 
+#    creating a perfectly balanced, chill-out mix.
+# ==========================================================

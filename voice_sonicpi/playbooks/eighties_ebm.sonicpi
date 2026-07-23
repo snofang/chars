@@ -1,0 +1,111 @@
+# ==========================================================
+# PLAYBOOK: 80s EBM / INDUSTRIAL DANCE
+# (Pioneered by Front 242, Nitzer Ebb, and Skinny Puppy)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s EBM 
+# (Electronic Body Music). We have explored Synthpop and Electro, but 
+# EBM is the dark, aggressive, rhythmic sound of the Belgian/Canadian 
+# underground. It relies on a relentless 4/4 beat, a heavy, distorted 
+# "Pulse" bassline that plays continuous 16th notes, and aggressive, 
+# shouted vocal stabs.
+#
+# This playbook perfectly demonstrates how to use the `:play_sub` synth 
+# as a harsh, driving sequenced bass. By pushing the `cutoff` high and 
+# using a very short `release`, the engine turns the detuned sawtooth 
+# into a relentless, robotic pulse that drives the track forward like 
+# a machine gun.
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Minor - Aggressive, Stark, & Mechanical)
+# ==========================================================
+
+# Relentless, heavy 4/4 kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, metallic snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'a' of 2 (step 7).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil)
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# The "Distorted Pulse" Bass (C Minor).
+# Plays continuous 16th notes. The high cutoff (110) and very short release 
+# (0.1) create a relentless, aggressive, buzzing sequence that drives the track.
+s_bass  = (ring {:note => :c2, :cutoff => 110, :release => 0.1}, {:note => :c2, :cutoff => 110, :release => 0.1}, {:note => :c3, :cutoff => 110, :release => 0.1}, {:note => :c2, :cutoff => 110, :release => 0.1}, 
+           {:note => :c2, :cutoff => 110, :release => 0.1}, {:note => :c2, :cutoff => 110, :release => 0.1}, {:note => :eb2, :cutoff => 110, :release => 0.1}, {:note => :c2, :cutoff => 110, :release => 0.1}, 
+           {:note => :g2, :cutoff => 110, :release => 0.1}, {:note => :g2, :cutoff => 110, :release => 0.1}, {:note => :g3, :cutoff => 110, :release => 0.1}, {:note => :g2, :cutoff => 110, :release => 0.1}, 
+           {:note => :bb2, :cutoff => 110, :release => 0.1}, {:note => :bb2, :cutoff => 110, :release => 0.1}, {:note => :g2, :cutoff => 110, :release => 0.1}, {:note => :c2, :cutoff => 110, :release => 0.1})
+
+# Stark, minor chord stabs (Cm to Bb).
+# Hit sparingly on the off-beats to leave maximum room for the pulse bass.
+s_chords= (ring nil, nil, [:c3, :eb3, :g3], nil, nil, nil, [:c3, :eb3, :g3], nil, 
+           nil, nil, [:bb2, :d3, :f3], nil, nil, nil, [:bb2, :d3, :f3], nil)
+
+# Piercing, metallic FM "Alarm" Lead (C Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and extreme depth (5) to create a 
+# sharp, robotic square wave that cuts through the heavy bass.
+s_fm    = (ring {:note => :c5, :amp => 0.6, :divisor => 3, :depth => 5, :release => 0.1}, nil, {:note => :eb5, :amp => 0.5, :divisor => 3, :depth => 5, :release => 0.1}, nil, 
+           {:note => :g5, :amp => 0.7, :divisor => 3, :depth => 5, :release => 0.1}, nil, {:note => :c6, :amp => 0.5, :divisor => 3, :depth => 5, :release => 0.1}, nil, 
+           {:note => :bb4, :amp => 0.6, :divisor => 3, :depth => 5, :release => 0.1}, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 5, :release => 0.1}, nil, 
+           {:note => :f5, :amp => 0.7, :divisor => 3, :depth => 5, :release => 0.1}, nil, {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 5, :release => 0.1}, nil)
+
+# Aggressive, pitched-down "Shout" vocal (Granular Synth).
+# Pitched DOWN to :c3. High density, small size = a dark, percussive vocal hit.
+s_vocal = (ring nil, nil, nil, nil, 
+           {:note => :c3, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.8}, nil, nil, nil, 
+           nil, nil, nil, nil, 
+           {:note => :c3, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.8}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Machine - Just the relentless kick and pulse bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Factory - Add the metallic drums and stark chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Meltdown - The piercing FM lead and vocal shouts drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INDUSTRIAL MOMENTUM]
+# 
+# 1. The Distorted Pulse: Look at `s_bass`. The `:play_sub` synth is given 
+#    a `cutoff` of `110` and a `release` of `0.1` on EVERY single 16th step. 
+#    This strips away the sub-frequencies and cuts the note off instantly, 
+#    turning the detuned sawtooth into a relentless, buzzing "chug" that 
+#    perfectly mimics the classic Roland SH-101 sequences of 80s EBM.
+#
+# 2. Extreme FM Aggression: The `s_fm` sequence uses `divisor: 3` and an 
+#    extreme `depth` of `5`. This harsh harmonic ratio forces the FM 
+#    modulator to shatter the carrier wave, creating a piercing, metallic 
+#    alarm sound that cuts through the heavy bass and drums without needing 
+#    external distortion effects.
+#
+# 3. Demonic Granular Vocals: The `s_vocal` sequence uses the granular engine 
+#    to chop a vocal into a sharp, percussive hit. By pitching it DOWN to `:c3`, 
+#    the vocal loses its original form and becomes a dark, commanding shout 
+#    that locks perfectly with the snare on beats 2 and 4.
+# ==========================================================

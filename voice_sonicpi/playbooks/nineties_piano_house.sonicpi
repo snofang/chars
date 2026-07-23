@@ -1,0 +1,102 @@
+# ==========================================================
+# PLAYBOOK: 90s PIANO HOUSE / HANDBAG HOUSE
+# (Pioneered by Black Box, K-Klass, and Robin S)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Piano House.
+# We have explored French Touch (which is filtered disco) and modern 
+# Slap House (which is pop-focused). 90s Piano House is the sound of 
+# pure, unadulterated rave euphoria. It takes the rigid 4/4 grid and 
+# injects it with massive, bright Korg M1 piano stabs, soaring diva 
+# vocals, and a relentless, bouncing off-beat bassline.
+#
+# This playbook perfectly demonstrates how to use the `:play_chords` 
+# synth to simulate a classic house piano. By hitting strictly on the 
+# off-beats with a high `cutoff`, the engine creates a soaring wall of 
+# sound that feels like the climax of a 90s warehouse rave.
+# ==========================================================
+
+use_bpm 124
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Euphoric, Bouncy, & Uplifting)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, organic rave clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Off-Beat" Bouncing Bass (G Minor).
+# Hits strictly on the off-beats (steps 2, 6, 10, 14). Very short release 
+# (0.15) creates a relentless, bouncing "pump" that drives the track forward.
+s_bass  = (ring nil, nil, {:note => :g1, :release => 0.15}, nil, nil, nil, {:note => :g1, :release => 0.15}, nil, nil, nil, {:note => :bb1, :release => 0.15}, nil, nil, nil, {:note => :d2, :release => 0.15}, nil)
+
+# Massive, bright "Korg M1" Piano Stabs (Gm to Bb to D).
+# Hit strictly on the off-beats in sync with the bass and hats. High cutoff 
+# (110) gives them that piercing, soaring 90s rave piano feel.
+s_chords= (ring nil, nil, [:g3, :bb3, :d4, :f4], nil, nil, nil, [:g3, :bb3, :d4, :f4], nil, nil, nil, [:bb3, :db4, :f4, :ab4], nil, nil, nil, [:d3, :f3, :a3, :c4], nil)
+
+# Piercing, high-pitched "Rave" Synth Lead (G Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
+# buzzy square wave that cuts through the heavy piano and bass.
+s_fm    = (ring {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :bb5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :d6, :amp => 0.7, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :f5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :g5, :amp => 0.7, :divisor => 2, :depth => 3, :release => 0.1}, nil)
+
+# High-pitched, soaring "Diva" Vocal Chops (Granular Synth).
+# Pitched UP to :g4, :bb4, and :d5. High density, tiny size = a sharp, 
+# sugary, euphoric vocal skip that dances over the piano.
+s_vocal = (ring nil, nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :bb4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, {:note => :d5, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04, :amp => 0.6}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the kick, off-beat bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps and massive piano stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The piercing synth lead and diva vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RAVE EUPHORIA]
+# 
+# 1. The Off-Beat Wall: Look at `s_bass`, `s_hats`, and `s_chords`. They 
+#    ALL hit strictly on steps 2, 6, 10, and 14. In a 16-step grid, these 
+#    are the exact midpoints between the kicks. The engine's strict master 
+#    clock locks these together perfectly at 124 BPM, creating a massive, 
+#    bouncing "boom-cha" momentum that forces you to dance.
+#
+# 2. The Korg M1 Illusion: Look at `s_chords`. The arrays form massive 
+#    4-note minor chords. By using a high `cutoff` (110), the engine turns 
+#    the `:blade` synth into a bright, piercing piano stab that perfectly 
+#    mimics the legendary Korg M1 "Organ 2" patch used in almost every 
+#    90s house track.
+#
+# 3. Euphoric Granular Vocals: The `s_vocal` sequence uses the granular 
+#    engine to chop a vocal into microscopic shards (`size: 0.04`). By 
+#    pitching them UP to `:g4` and `:d5`, the vocal loses its dark tone 
+#    and becomes a soaring, sugary diva stutter that defines the 90s 
+#    handbag house aesthetic.
+# ==========================================================

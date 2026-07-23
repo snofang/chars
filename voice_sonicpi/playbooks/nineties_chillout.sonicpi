@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: 90s CHILLOUT / DOWNTempo
+# (Pioneered by Thievery Corporation, Zero 7, and Bonobo)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Chillout / Downtempo.
+# We have explored high-energy genres (Trance, Hardcore) and minimal genres 
+# (Microhouse). 90s Chillout is the sound of the café and the lounge. It takes 
+# the hip-hop drum grid, slows it down to 85 BPM, and pairs it with warm, 
+# acoustic bass, lush electric piano chords, and organic, echoing percussion.
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth to 
+# create a warm, Rhodes electric piano tone, and how to use the Granular 
+# engine to create a distant, ambient vocal texture that drifts over the beat.
+# ==========================================================
+
+use_bpm 85
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Warm, Organic, & Relaxed)
+# ==========================================================
+
+# Soft, "laid-back" kick. 
+# Hits on step 0, the 'a' of 2 (step 7), and beat 3 (step 10).
+s_kick  = (ring {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil)
+
+# Crisp, organic snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'a' of 2 (step 7) and 'a' of 4 (step 15).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# Swung, organic shaker. 
+# Notice the gaps (nil) and amplitude manipulation to create a human, swing feel.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# Warm, "Acoustic" Upright Bass (F Minor).
+# Walks a slow, melodic line. Low cutoff (70) and medium release (0.4) 
+# to create a warm, muffled undercurrent.
+s_bass  = (ring {:note => :f2, :release => 0.4, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :f2, :release => 0.4, :cutoff => 70}, nil, nil, {:note => :ab2, :release => 0.4, :cutoff => 70}, nil, nil, nil, nil, {:note => :c3, :release => 0.4, :cutoff => 70}, nil)
+
+# Lush, warm minor 9th chords (Fm9 to Dbm9).
+# Hit on the downbeats. The low cutoff (85) gives them that classic warm, 
+# "Rhodes electric piano" feel.
+s_chords= (ring {:note => [:f3, :ab3, :c4, :eb4], :cutoff => 85, :release => 1.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:db3, :e3, :ab3, :b3], :cutoff => 85, :release => 1.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Soft, echoing "Rhodes" Melody (F Minor Pentatonic).
+# Uses :play_fm with a low divisor (3) and depth (1) to create a soft, 
+# organic sine wave. Routed through the engine's tape echo for a cavernous smear.
+s_fm    = (ring nil, nil, nil, nil, {:note => :c5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil, nil, nil, {:note => :ab4, :amp => 0.4, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil, nil, nil)
+
+# Distant, ambient vocal "Sigh" (Granular Synth).
+# Long size (0.2) and low density (1) creates a slow, evolving background 
+# texture that sounds like a distant voice in a smoky room.
+s_grain = (ring {:note => :f4, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the warm chords, bass, and vocal sigh (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the swung organic drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Late Night - The echoing Rhodes melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RELAXATION]
+# 
+# 1. FM as a Rhodes Piano: Look at `s_fm`. The `:play_fm` synth is given 
+#    a `divisor` of `3` and a `depth` of `1`. This gentle harmonic ratio 
+#    produces a soft, sine-like wave that perfectly mimics a Fender Rhodes 
+#    electric piano. Because it's routed through the engine's tape echo, 
+#    the sparse notes cascade across the empty space, creating a cavernous, 
+#    relaxing atmosphere.
+#
+# 2. Organic Swing: Look at `s_hats`. The hats don't just play straight 
+#    16th notes; they leave gaps (`nil`) on the downbeats and have varying 
+#    amplitudes (0.2 to 0.4). By emphasizing the off-beats, the engine 
+#    creates a relaxed, human "swing" feel that feels like a live drummer 
+#    playing with brushes.
+#
+# 3. Deep Harmonic Warmth: The `s_bass` uses a very low `cutoff` (70) and a 
+#    medium `release` (0.4) to keep it round and warm. The `s_chords` use a 
+#    low `cutoff` (85) to stay muffled and soft. The engine's strict 16-step 
+#    grid ensures these lush, slow elements never clash with the organic 
+#    percussion, creating a perfectly balanced, chill-out mix.
+# ==========================================================

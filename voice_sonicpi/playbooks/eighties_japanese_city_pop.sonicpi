@@ -1,0 +1,102 @@
+# ==========================================================
+# PLAYBOOK: 80s JAPANESE CITY POP / BOOGIE
+# (Pioneered by Tatsuro Yamashita, Mariya Takeuchi, and Toshiki Kadomatsu)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Japanese City Pop.
+# We have explored Western 80s genres (Synthwave, Italo Disco, Art Pop),
+# but City Pop is the sound of 80s Tokyo. It is famous for its pristine,
+# high-end studio production, highly syncopated slap bass, and warm, 
+# jazzy major 7th chords played on FM electric pianos (like the Yamaha DX7).
+#
+# This playbook perfectly demonstrates how to simulate a "slap bass" guitar 
+# using the `:play_sub` synth. By using a high `cutoff` and a very short 
+# `release` on continuous 16th notes, the engine creates a bouncy, percussive 
+# low-end that drives the track forward with undeniable funk.
+# ==========================================================
+
+use_bpm 105
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Warm, Bouncy, & Pristine)
+# ==========================================================
+
+# Soft, driving 4/4 kick with a syncopated 16th hit on the 'a' of 4 (step 14).
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, {:note => :c4, :amp => 0.6}, nil)
+
+# Crisp, polished snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# "LinnDrum Swing" Hi-Hats.
+# Notice the alternating amplitudes and gaps (`nil`) that simulate a polished 
+# 80s drum machine with a 54% swing quantize.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4})
+
+# The "Slap Bass" (D Major).
+# Plays continuous, syncopated 16th notes. The high cutoff (110) and very 
+# short release (0.1) mimic an aggressive, picked/slapped electric bass.
+s_bass  = (ring {:note => :d2, :cutoff => 110, :release => 0.1}, nil, {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :d3, :cutoff => 110, :release => 0.1}, nil, {:note => :a2, :cutoff => 110, :release => 0.1}, nil, {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :d3, :cutoff => 110, :release => 0.1}, nil, {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :e2, :cutoff => 110, :release => 0.1}, nil, {:note => :f2, :cutoff => 110, :release => 0.1}, nil, {:note => :e2, :cutoff => 110, :release => 0.1})
+
+# Warm, jazzy Major 9th chords (Dmaj9 to Em9).
+# Hit on the downbeats. The high cutoff (100) gives them a bright, pristine 
+# "Yamaha DX7" electric piano feel.
+s_chords= (ring {:note => [:d3, :f3, :a3, :e4], :cutoff => 100, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:e3, :g3, :b3, :f4], :cutoff => 100, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Mellow, soaring "Synth Sax" Melody (D Major Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (2) to create a warm, 
+# brassy tone. Routed through the engine's tape echo for a cascading smear.
+s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.5}, nil, {:note => :f5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.5}, nil, nil, nil, nil, nil, {:note => :a5, :amp => 0.7, :divisor => 2, :depth => 2, :release => 0.5}, nil, {:note => :d6, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.5}, nil)
+
+# Ethereal, ambient vocal "Ahh" (Granular Synth).
+# Long size (0.2) and low density (1) creates a slow, evolving background 
+# texture that sounds like a distant voice echoing across a Tokyo skyline.
+s_grain = (ring {:note => :d4, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the slap bass, chords, and vocal pad (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the swung LinnDrum beat (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Night - The soaring synth sax melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80s FUNK]
+# 
+# 1. The Slap Bass Illusion: Look at `s_bass`. The `:play_sub` synth (usually 
+#    a deep rumble) is given a `cutoff` of `110` and a `release` of `0.1`. 
+#    This strips away the sub-frequencies and cuts the note off instantly, 
+#    turning the detuned sawtooth into an aggressive, percussive "thwack" 
+#    that perfectly mimics a slapped electric bass guitar driving the rhythm.
+#
+# 2. Jazzy FM Keys: Look at `s_chords`. The arrays form lush 4-note major 9th 
+#    chords. By using a high `cutoff` (100), the engine turns the `:blade` 
+#    synth into a bright, pristine electric piano that perfectly mimics the 
+#    legendary Yamaha DX7 presets that defined 80s City Pop.
+#
+# 3. Polished Swing: Look at `s_hats`. The hats don't just play straight 
+#    16th notes; they leave gaps (`nil`) on the downbeats and have varying 
+#    amplitudes (0.15 to 0.4). By emphasizing the off-beats, the engine 
+#    creates a polished, bouncy swing feel that perfectly captures the 
+#    high-end, studio-perfect groove of 80s Japanese pop.
+# ==========================================================

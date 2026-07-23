@@ -1,0 +1,107 @@
+# ==========================================================
+# PLAYBOOK: CLASSIC DUBSTEP (Wobble Bass)
+# (Pioneered by Skream, Benga, and Coki)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Classic Dubstep.
+# We have explored modern heavy bass (Brostep) and dark garage (Future 
+# Garage), but Classic Dubstep is the origin. At 140 BPM, it relies on 
+# a half-time groove, massive sub-bass, and the iconic "LFO wobble"—a 
+# filter that rapidly opens and closes in sync with the tempo.
+#
+# This playbook perfectly demonstrates how to simulate a hardware LFO 
+# filter wobble purely via data. By playing continuous 16th notes and 
+# rapidly alternating the `cutoff` Hashes between 60 (muffled) and 130 
+# (bright) on every step, the engine forces the `:play_sub` synth to 
+# "wub-wub" perfectly in time with the master clock.
+# ==========================================================
+
+use_bpm 140
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Dark, Heavy, & Wobbling)
+# ==========================================================
+
+# Half-time kick. Hits on step 0, with a ghost kick on the 'a' of 4 (step 14).
+s_kick  = (ring {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil)
+
+# Massive, echoing snare strictly on beat 3 (step 8).
+s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil, nil, nil, nil, nil)
+
+# Syncopated, bouncing hats.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil)
+
+# The "Wobble" Bass (F Minor).
+# Plays continuous 16th notes. The 'cutoff' Hash rapidly alternates 
+# between 60 (muffled) and 130 (bright) on every step, simulating a 
+# fast LFO filter wobble locked perfectly to the 140 BPM master clock.
+s_bass  = (ring {:note => :f1, :cutoff => 60}, {:note => :f1, :cutoff => 130}, {:note => :f1, :cutoff => 60}, {:note => :f1, :cutoff => 130}, 
+           {:note => :f1, :cutoff => 60}, {:note => :f1, :cutoff => 130}, {:note => :f1, :cutoff => 60}, {:note => :f1, :cutoff => 130}, 
+           {:note => :ab1, :cutoff => 60}, {:note => :ab1, :cutoff => 130}, {:note => :ab1, :cutoff => 60}, {:note => :ab1, :cutoff => 130}, 
+           {:note => :ab1, :cutoff => 60}, {:note => :ab1, :cutoff => 130}, {:note => :ab1, :cutoff => 60}, {:note => :ab1, :cutoff => 130})
+
+# Dark, sparse minor chord stabs (Fm).
+# Hit sparingly on the downbeats to leave maximum room for the wobble bass.
+s_chords= (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => [:f3, :ab3, :c4, :eb4], :cutoff => 90, :release => 0.5, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# Deep, echoing "Blip" FX (F Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and high depth (4) to create a 
+# sharp, robotic sound that cuts through the massive wobble bass.
+s_fm    = (ring nil, nil, nil, {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.3}, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.3}, nil, nil, nil)
+
+# Pitched-down, demonic vocal grunt (Granular Synth).
+# Pitched DOWN to :f3. Long size (0.1) and low density (1) creates a 
+# slow, menacing grunt that anchors the heavy groove.
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Wobble - Just the half-time drums and LFO bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the dark chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The echoing blips and vocal grunts drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE WOBBLE]
+# 
+# 1. Data-Driven LFO: Look at `s_bass`. It plays on every single 16th step, 
+#    but the `cutoff` Hash rapidly alternates between `60` (muffled) and 
+#    `130` (bright). Because the engine reads these Hashes independently 
+#    on every step, the filter opens and closes frantically, simulating a 
+#    fast LFO filter wobble locked perfectly to the 140 BPM master clock 
+#    without needing a dedicated LFO oscillator.
+#
+# 2. The Half-Time Illusion: The engine's master clock is ticking at 140 BPM. 
+#    But because the `s_kick` only hits on step 0, and the `s_snare` only 
+#    hits on step 8, the psychological tempo feels like 70 BPM. The 
+#    syncopated hi-hats fill in the gaps, creating that signature Dubstep 
+#    bounce of slow heaviness over fast momentum.
+#
+# 3. Demonic Granular: The `s_vocal` sequence uses a `density` of `1` and a 
+#    `size` of `0.1`. By pitching the vocal down to `:f3` and using sparse, 
+#    long grains, the engine time-stretches the sample into a formless, 
+#    monstrous grunt that perfectly anchors the aggressive, high-pitched 
+#    wobble bass.
+# ==========================================================

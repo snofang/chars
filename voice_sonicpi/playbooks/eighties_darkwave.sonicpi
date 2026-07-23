@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: 80s DARKWAVE / GOTH ROCK
+# (Pioneered by Bauhaus, Sisters of Mercy, and Christian Death)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Darkwave / Goth.
+# We have explored Post-Punk (which is stark and motorik) and Synthpop 
+# (which is bright and polished). Darkwave is the absolute darkest end of 
+# the 80s spectrum. It relies on a heavy, cavernous drum machine beat, 
+# deep, chorus-soaked electric bass, and cold, sweeping synth pads that 
+# sound like a cathedral at midnight.
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# to create immense, gothic weight. By using a high `cutoff` on the bass 
+# to simulate a picked electric guitar, and low `cutoff` sweeping chords, 
+# the engine creates a dramatic, moody atmosphere.
+# ==========================================================
+
+use_bpm 110
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Dark, Theatrical, & Cold)
+# ==========================================================
+
+# Heavy, cavernous 4/4 kick. 
+# Hits on step 0 and beat 3 (step 8).
+s_kick  = (ring {:note => :c4, :amp => 1.1}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil, nil, nil, nil, nil)
+
+# Crisp, retro snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil)
+
+# Rigid, driving 8th hats.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# The "Chorus Bass" (A Minor).
+# Plays driving 8th notes. The high cutoff (90) and short release (0.2) 
+# mimic a picked, chorus-soaked electric bass guitar.
+s_bass  = (ring {:note => :a1, :release => 0.2, :cutoff => 90}, nil, {:note => :a1, :release => 0.2, :cutoff => 90}, nil, {:note => :a1, :release => 0.2, :cutoff => 90}, nil, {:note => :g1, :release => 0.2, :cutoff => 90}, nil, {:note => :f1, :release => 0.2, :cutoff => 90}, nil, {:note => :f1, :release => 0.2, :cutoff => 90}, nil, {:note => :e1, :release => 0.2, :cutoff => 90}, nil, {:note => :e1, :release => 0.2, :cutoff => 90}, nil)
+
+# Cold, sweeping minor chords (Am to F to E).
+# Hit on the downbeats. The low cutoff (80) and massive release (2.0) 
+# blur the chords together into a continuous, gothic wave.
+s_chords= (ring {:note => [:a3, :c4, :e4], :cutoff => 80, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:f3, :a3, :c4], :cutoff => 80, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Melancholic, echoing "Synth" Melody (A Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (1) to create a soft, 
+# sine-like wave. Routed through the engine's tape echo for a cavernous, 
+# gothic smear.
+s_fm    = (ring nil, nil, nil, nil, {:note => :a4, :amp => 0.5, :divisor => 2, :depth => 1, :release => 0.5}, nil, nil, nil, nil, nil, {:note => :c5, :amp => 0.4, :divisor => 2, :depth => 1, :release => 0.5}, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 1, :release => 0.5}, nil)
+
+# Ethereal, ghostly vocal "Sigh" (Granular Synth).
+# Long size (0.2) and low density (1) creates a slow, evolving background 
+# texture that sounds like a choir echoing in an empty cathedral.
+s_grain = (ring {:note => :a3, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :f3, :buffer => :misc_lori, :pos => 0.6, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Shadows - Just the sweeping chords, bass, and vocal sigh (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The March - Add the heavy, cavernous drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Night - The echoing synth melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN GOTHIC ATMOSPHERE]
+# 
+# 1. The Chorus Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `cutoff` of `90` and a `release` of `0.2`. This strips away the 
+#    sub-frequencies and cuts the note off cleanly, turning the detuned 
+#    sawtooth into a punchy, driving "thwack" that perfectly mimics the 
+#    chorus-soaked Fender Bass VI used by bands like Bauhaus and The Cure.
+#
+# 2. Sweeping Cold Waves: Look at `s_chords`. The Hashes specify a `release` 
+#    of `2.0`. Because the engine reads these Hashes, the chords don't just 
+#    hit; they slowly swell and fade away, creating a continuous, blurred 
+#    wave of dark harmony that feels like a cold wind blowing through a 
+#    cathedral.
+#
+# 3. Ghostly Granular: The `s_grain` sequence uses a `density` of `1` and a 
+#    `size` of `0.2`. By pitching the vocal down to `:a3` and using sparse, 
+#    long grains, the engine time-stretches the sample into a formless, 
+#    haunting drone that perfectly anchors the dramatic, theatrical atmosphere 
+#    of 80s Darkwave.
+# ==========================================================

@@ -1,0 +1,105 @@
+# ==========================================================
+# PLAYBOOK: NEUE DEUTSCHE HÄRTE / INDUSTRIAL METAL
+# (Pioneered by Rammstein, Oomph!, and Eisbrecher)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Neue Deutsche Härte (NDH).
+# We have explored 80s EBM and Cyberpunk Darksynth. NDH is the sound of 
+# German industrial metal. It fuses the rigid, marching 4/4 grid of electronic 
+# music with massive, distorted guitar riffs, orchestral choirs, and deep, 
+# commanding vocals. It relies on a relentless 16th-note "chug" bassline 
+# that mimics heavy down-tuned guitar picking.
+#
+# This playbook perfectly demonstrates how to push the `:play_sub` synth 
+# into overdrive to simulate a heavy metal rhythm guitar. By using an 
+# extreme `cutoff` (120) and a microscopic `release` (0.1) on continuous 
+# 16th notes, the engine creates a grinding, aggressive wall of sound.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Heavy, Marching, & Orchestral)
+# ==========================================================
+
+# Relentless, heavy 4/4 marching kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, metallic snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil)
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil)
+
+# The "Distorted Guitar Chug" Bass (D Minor).
+# Plays continuous 16th notes, alternating octaves (:d2, :d3). 
+# Extreme cutoff (120) and short release (0.1) create a grinding, distorted churn.
+s_bass  = (ring {:note => :d2, :cutoff => 120, :release => 0.1}, {:note => :d2, :cutoff => 120, :release => 0.1}, {:note => :d3, :cutoff => 120, :release => 0.1}, {:note => :d2, :cutoff => 120, :release => 0.1}, 
+           {:note => :d2, :cutoff => 120, :release => 0.1}, {:note => :d2, :cutoff => 120, :release => 0.1}, {:note => :f2, :cutoff => 120, :release => 0.1}, {:note => :d2, :cutoff => 120, :release => 0.1}, 
+           {:note => :bb1, :cutoff => 120, :release => 0.1}, {:note => :bb1, :cutoff => 120, :release => 0.1}, {:note => :bb2, :cutoff => 120, :release => 0.1}, {:note => :bb1, :cutoff => 120, :release => 0.1}, 
+           {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :f2, :cutoff => 120, :release => 0.1}, {:note => :a2, :cutoff => 120, :release => 0.1})
+
+# Stark, orchestral minor chord stabs (Dm to Bb).
+# Hit sparingly on the downbeats. High cutoff (100) gives them a soaring, 
+# symphonic wall of sound feel.
+s_chords= (ring {:note => [:d3, :f3, :a3], :cutoff => 100, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:bb2, :d3, :f3], :cutoff => 100, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Piercing, metallic FM Lead (D Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and extreme depth (4) to create 
+# a sharp, robotic square wave that cuts through the heavy guitar chug.
+s_fm    = (ring {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 4, :release => 0.1}, nil, {:note => :f5, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.1}, nil, {:note => :a5, :amp => 0.7, :divisor => 3, :depth => 4, :release => 0.1}, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 4, :release => 0.1}, nil, nil, {:note => :c5, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.1}, nil, {:note => :a4, :amp => 0.6, :divisor => 3, :depth => 4, :release => 0.1}, nil, nil, nil)
+
+# Pitched-down, demonic "Choir" drone (Granular Synth).
+# Pitched DOWN to :d3. Long size (0.2) and low density (1) creates a 
+# slow, haunting background texture that sounds like a choir in a cathedral.
+s_vocal = (ring {:note => :d3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :bb3, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The March - Just the relentless kick and guitar chug (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Orchestra - Add the metallic drums and symphonic chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Riff - The piercing FM lead and demonic choir drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INDUSTRIAL METAL]
+# 
+# 1. The Guitar Chug: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:d2) and 
+#    the high octave (:d3). By using an extreme `cutoff` (120) and a very 
+#    short `release` (0.1), the engine turns the detuned sawtooth into a 
+#    relentless, grinding "chug" that perfectly mimics a heavily distorted 
+#    electric guitar playing palm-muted 16th notes.
+#
+# 2. Orchestral Contrast: NDH relies on the contrast between the aggressive, 
+#    electronic rhythm section and soaring, symphonic chords. The `s_chords` 
+#    hit sparingly on the downbeats with a high `cutoff` (100), creating a 
+#    massive, theatrical wall of sound that swells above the marching beat.
+#
+# 3. Demonic Granular Choir: The `s_vocal` sequence uses a `density` of `1` 
+#    and a `size` of `0.2`. By pitching the vocal down to `:d3` and using 
+#    sparse, long grains, the engine time-stretches the sample into a 
+#    formless, haunting drone that sounds like a deep, commanding choir 
+#    echoing through a massive hall.
+# ==========================================================

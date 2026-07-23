@@ -1,0 +1,107 @@
+# ==========================================================
+# PLAYBOOK: ELECTROCLASH / 2000s BLOGHOUSE
+# (Pioneered by Felix da Housecat, Miss Kittin, and Tiga)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Electroclash.
+# We have explored pristine 80s Pop and heavy modern Bass music. 
+# Electroclash is the sound of the early 2000s underground. It fuses 
+# the rigid 4/4 grid of house music with the aggressive, dirty aesthetic 
+# of punk and 80s synthpop. It relies on relentless, distorted 16th-note 
+# analog basslines, stark drum machines, and deadpan, pitched-down 
+# vocal chants.
+#
+# This playbook perfectly demonstrates how to push the `:play_sub` synth 
+# into a relentless, buzzing "pulse" and how to use the Granular engine 
+# to create a deadpan, robotic vocal stutter that feels like an MC 
+# whispering in a dark Berlin club.
+# ==========================================================
+
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Stark, Dirty, & Relentless)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Stark, dry 808 snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil)
+
+# Rigid, alternating 16th hats. 
+# Notice the stark amplitude difference (0.4 vs 0.2) that creates a robotic march.
+s_hats  = (ring {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2})
+
+# The "Dirty" Analog Pulse Bass (D Minor).
+# Plays continuous 16th notes, alternating octaves (:d2, :d3). 
+# High cutoff (100) and short release (0.1) create a relentless, buzzing churn.
+s_bass  = (ring {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, 
+           {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, 
+           {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a3, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a3, :cutoff => 100, :release => 0.1}, 
+           {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1})
+
+# Stark, staccato minor chord stabs (Dm to Am to Gm).
+# Hit strictly on the off-beats (steps 2, 6, 10, 14) in sync with the hats.
+s_chords= (ring nil, nil, [:d3, :f3, :a3], nil, nil, nil, [:d3, :f3, :a3], nil, 
+           nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:g3, :bb3, :d4], nil)
+
+# Piercing, bleepy "8-Bit / Rave" FM Lead (D Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (4) to create 
+# a sharp, robotic, video-game styled blip that cuts through the heavy bass.
+s_fm    = (ring {:note => :d5, :amp => 0.6, :divisor => 4, :depth => 4, :release => 0.1}, nil, nil, {:note => :f5, :amp => 0.5, :divisor => 4, :depth => 4, :release => 0.1}, nil, {:note => :a5, :amp => 0.7, :divisor => 4, :depth => 4, :release => 0.1}, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 4, :depth => 4, :release => 0.1}, nil, nil, {:note => :c5, :amp => 0.5, :divisor => 4, :depth => 4, :release => 0.1}, nil, {:note => :a4, :amp => 0.6, :divisor => 4, :depth => 4, :release => 0.1}, nil, nil)
+
+# Deadpan, pitched-down "MC" Vocal Stutter (Granular Synth).
+# Pitched DOWN to :d3. High density, small size = a sharp, deadpan vocal skip.
+s_vocal = (ring nil, nil, nil, nil, {:note => :d3, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :d3, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.8}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Machine - Just the kick, hats, and relentless pulse bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Club - Add the stark snares and off-beat chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The bleepy FM lead and deadpan vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 2000s DIRTY POP]
+# 
+# 1. The Analog Pulse: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:d2) and 
+#    the high octave (:d3). By using a high `cutoff` (100) and a very short 
+#    `release` (0.1), the engine turns the detuned sawtooth into a relentless, 
+#    buzzing churn that drives the track forward unstoppably, perfectly 
+#    mimicking the dirty, overdriven analog basslines of Electroclash.
+#
+# 2. Extreme FM Bleeps: The `s_fm` sequence uses a high `divisor` (4) and 
+#    an extreme `depth` (4). This harsh harmonic ratio forces the FM synth 
+#    to produce a piercing, robotic square wave that cuts through the heavy 
+#    bass and drums, perfectly mimicking the cheap, 8-bit video game synths 
+#    that defined the 2000s electro-bloghouse era.
+#
+# 3. Deadpan Granular Vocals: The `s_vocal` sequence uses the granular engine 
+#    to chop a vocal into a sharp, percussive hit. By pitching it DOWN to `:d3`, 
+#    the vocal loses its melodic form and becomes a dark, deadpan mutter that 
+#    locks perfectly with the snare on beats 2 and 4, creating the signature 
+#    "Miss Kittin" aesthetic.
+# ==========================================================

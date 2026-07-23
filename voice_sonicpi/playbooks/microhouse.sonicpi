@@ -1,0 +1,102 @@
+# ==========================================================
+# PLAYBOOK: MICROHOUSE / MINIMAL DEEP TECH
+# (Pioneered by Ricardo Villalobos, Luciano, and Akufen)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Microhouse.
+# We have explored heavy, dense genres (Breakcore, Complextro) and 
+# sparse, minimal genres (Minimal Techno). Microhouse is the sound of 
+# the after-hours club. It takes the 4/4 grid but strips away all the 
+# weight, focusing on tiny, microscopic percussion clicks, deep, round 
+# sub-bass, and lush, highly muffled chords. 
+#
+# This playbook perfectly demonstrates how to use extreme sparsity 
+# (`nil`) and low amplitudes to create a hypnotic, shuffle-heavy groove 
+# that feels like a clock ticking in a dimly lit room.
+# ==========================================================
+
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Sparse, Clean, & Hypnotic)
+# ==========================================================
+
+# Soft, driving 4/4 kick. Lower amplitude for a gentle pulse.
+s_kick  = (ring {:note => :c4, :amp => 0.7}, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+
+# Very sparse, metallic micro-percussion. 
+# Notice the tiny amplitudes (0.1 to 0.2) that create a subtle, ticking shuffle.
+s_hats  = (ring {:note => :c4, :amp => 0.15}, nil, nil, {:note => :c4, :amp => 0.1}, nil, nil, nil, {:note => :c4, :amp => 0.15}, nil, nil, nil, nil, {:note => :c4, :amp => 0.1}, nil, nil, {:note => :c4, :amp => 0.2})
+
+# Deep, round sub-bass (A Minor).
+# Walks a sparse, melodic line. Very low cutoff (60) and medium release (0.3) 
+# to create a warm, muffled undercurrent.
+s_bass  = (ring {:note => :a1, :release => 0.3, :cutoff => 60}, nil, nil, nil, nil, nil, {:note => :a1, :release => 0.3, :cutoff => 60}, nil, nil, {:note => :e1, :release => 0.3, :cutoff => 60}, nil, nil, nil, nil, {:note => :g1, :release => 0.3, :cutoff => 60}, nil)
+
+# Lush, heavily muffled minor chords (Am to Gm).
+# Hit sparingly on the off-beats. The extreme low cutoff (60) makes them 
+# sound like they are playing in the next room.
+s_chords= (ring nil, nil, nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 60, :release => 0.2, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil, {:note => [:g3, :bb3, :d4], :cutoff => 60, :release => 0.2, :amp => 0.4}, nil, nil, nil)
+
+# Microscopic, bleepy FM "Clicks" (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (4) to create 
+# a piercing, tiny "click" that dances over the groove.
+s_fm    = (ring nil, nil, {:note => :e6, :amp => 0.3, :divisor => 4, :depth => 4, :release => 0.02}, nil, nil, {:note => :a5, :amp => 0.2, :divisor => 4, :depth => 4, :release => 0.02}, nil, nil, nil, {:note => :c6, :amp => 0.3, :divisor => 4, :depth => 4, :release => 0.02}, nil, nil, {:note => :e6, :amp => 0.2, :divisor => 4, :depth => 4, :release => 0.02}, nil, nil, nil)
+
+# Tiny, rhythmic vocal "Glitch" (Granular Synth).
+# FIXED: Exactly 16 steps. High density, microscopic size (0.02) = a tiny, 
+# percussive vocal skip that locks perfectly with the FM clicks.
+s_vocal = (ring nil, nil, nil, 
+           {:note => :a4, :buffer => :misc_lori, :pos => 0.1, :density => 1, :size => 0.02, :amp => 0.3}, nil, nil, nil, 
+           nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.3, :density => 1, :size => 0.02, :amp => 0.3}, nil, nil, 
+           nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.1, :density => 1, :size => 0.02, :amp => 0.3}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Shuffle - Just the kick, micro-percussion, and sub-bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavily muffled chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The After Hours - The FM clicks and vocal glitches drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
+    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SUBTRACTION]
+# 
+# 1. Microscopic Dynamics: Look at `s_hats`. The amplitudes are incredibly 
+#    low (0.1 to 0.2), and 12 out of 16 steps are `nil`. Because the engine's 
+#    strict master clock fires these tiny hits with absolute precision, they 
+#    don't sound like a drum beat; they sound like a clock ticking or a 
+#    machine breathing in the background.
+#
+# 2. Extreme Muffling: Look at `s_chords`. The `:play_chords` synth is given 
+#    a `cutoff` of `60`. In Sonic Pi, this is near the bottom of the audible 
+#    filter range. By pushing the filter down this hard, the engine strips 
+#    away all the brightness, making the chords sound like they are muffled 
+#    behind a wall, creating a deep, warm, and hypnotic atmosphere.
+#
+# 3. FM as a Click: The `s_fm` sequence uses `divisor: 4`, an extreme `depth` 
+#    of `4`, and a microscopic `release` of `0.02`. This forces the FM synth 
+#    to produce a tiny, piercing "click" that dances over the groove. The 
+#    engine's strict 16-step grid ensures these microscopic elements lock 
+#    perfectly with the sub-bass, creating the signature intricate, 
+#    minimalist sound of Microhouse.
+# ==========================================================

@@ -1,0 +1,101 @@
+# ==========================================================
+# PLAYBOOK: MODERN DARK R&B / PBR&B
+# (Pioneered by The Weeknd, FKA Twigs, and Kelela)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Modern Dark R&B.
+# We have explored 90s Neo-Soul and modern pop, but PBR&B is the sound of 
+# the modern underground. It takes the slow 16-step grid, strips away the 
+# swing, and fills it with massive, echoing 808s, dark minor 9th chords, 
+# and pitched-down, cavernous vocal chops that feel like singing in an 
+# empty cathedral.
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes to 
+# create immense space and weight. By using massive release times and deep 
+# sub-basses, the engine creates a slow, suffocating atmosphere that defined 
+# the early 2010s alternative R&B wave.
+# ==========================================================
+
+use_bpm 70
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C# Minor - Dark, Atmospheric, & Massive)
+# ==========================================================
+
+# Slow, heavy 808 kick. 
+# Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
+s_kick  = (ring {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Crisp, metallic snap strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+
+# Very sparse, slow hi-hats.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# Massive, echoing "808" Bass (C# Minor).
+# Hits a slow melody. Massive release (2.0) makes the low-end ring out 
+# and decay naturally, creating immense weight.
+s_bass  = (ring {:note => :cs1, :release => 2.0, :cutoff => 80}, nil, nil, nil, nil, nil, nil, nil, {:note => :a1, :release => 2.0, :cutoff => 80}, nil, nil, nil, nil, nil, nil, nil)
+
+# Dark, lush minor 9th chords (C#m9 to Amaj7).
+# Hit on the downbeats. The slow 0.5-beat attack makes them slowly swell 
+# into the mix like a ghost.
+s_chords= (ring {:note => [:cs3, :e3, :gs3, :b3], :cutoff => 90, :attack => 0.5, :release => 3.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a2, :cs3, :e3, :gs3], :cutoff => 90, :attack => 0.5, :release => 3.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Distant, echoing "Triangle/Synth" Melody (C# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (1) to create a soft, 
+# sine-like wave. Routed through the engine's tape echo for a cavernous smear.
+s_fm    = (ring nil, nil, nil, nil, {:note => :gs5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :e5, :amp => 0.4, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil)
+
+# Pitched-down, cavernous "Vocal" drone (Granular Synth).
+# Pitched DOWN to :cs3. Long size (0.2) and low density (1) creates a 
+# slow, haunting background texture that sounds like a choir in a cave.
+s_grain = (ring {:note => :cs3, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :misc_lori, :pos => 0.6, :density => 1, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the massive bass, swelling chords, and vocal drone (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Pulse - Add the slow, heavy drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Echo - The distant synth melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MODERN DARKNESS]
+# 
+# 1. The 808 Weight: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `release` of `2.0` (two whole beats). Because the BPM is 70, that low 
+#    C# note rings out for almost two seconds, creating a massive, booming 
+#    low-end that carries the melody and provides immense weight.
+#
+# 2. Swelling Ghosts: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `0.5` and a `release` of `3.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of dark harmony.
+#
+# 3. Cavernous Granular: The `s_grain` sequence uses a `density` of `1` and a 
+#    `size` of `0.2`. By pitching the vocal down to `:cs3` and using sparse, 
+#    long grains, the engine time-stretches the sample into a formless, 
+#    haunting drone that perfectly mimics the pitched-down vocal samples 
+#    used by The Weeknd and FKA Twigs.
+# ==========================================================

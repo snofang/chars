@@ -1,0 +1,111 @@
+# ==========================================================
+# PLAYBOOK: FRENCH TOUCH / FILTER HOUSE
+# (Pioneered by Daft Punk, Stardust, and Cassius)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose French Touch.
+# We have explored Bass House (which is aggressive) and Disco (which 
+# is live). French Touch is the sound of 90s Paris. It takes a looped 
+# disco sample and pushes it through a massive, sidechained Moog 
+# filter, creating a relentless, pumping "wall of sound."
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes 
+# (`amp` and `cutoff`) to simulate heavy sidechain compression and 
+# filter sweeps purely via data. By making the bass volume dip on every 
+# kick hit, and sweeping the chord filter open and closed, the engine 
+# creates that massive, breathing, dancefloor momentum.
+# ==========================================================
+
+use_bpm 124
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Pumping, Filtered, & Funky)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, organic disco clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Sidechained" Pumping Bass (G Minor).
+# Plays continuous 16th notes. The 'amp' Hashes dip the volume to 0.2 when 
+# the kick hits (steps 0, 4, 8, 12) and spike it to 1.0 in between.
+# The 'cutoff' Hash also sweeps, simulating a filter moving with the pump.
+s_bass  = (ring {:note => :g1, :amp => 0.2, :cutoff => 80}, {:note => :g1, :amp => 0.9, :cutoff => 90}, {:note => :g1, :amp => 1.0, :cutoff => 100}, {:note => :g1, :amp => 0.8, :cutoff => 110}, 
+           {:note => :g1, :amp => 0.2, :cutoff => 80}, {:note => :g1, :amp => 0.9, :cutoff => 90}, {:note => :bb1, :amp => 1.0, :cutoff => 100}, {:note => :bb1, :amp => 0.8, :cutoff => 110}, 
+           {:note => :bb1, :amp => 0.2, :cutoff => 80}, {:note => :bb1, :amp => 0.9, :cutoff => 90}, {:note => :d2, :amp => 1.0, :cutoff => 100}, {:note => :d2, :amp => 0.8, :cutoff => 110}, 
+           {:note => :d2, :amp => 0.2, :cutoff => 80}, {:note => :d2, :amp => 0.9, :cutoff => 90}, {:note => :g1, :amp => 1.0, :cutoff => 100}, {:note => :g1, :amp => 0.8, :cutoff => 110})
+
+# The "Filtered Disco" Chords (Gm9 to Cm9).
+# Hit strictly on the off-beats (steps 2, 6, 10, 14). The 'cutoff' Hash 
+# alternates between 70 (muffled) and 100 (bright), simulating a DJ 
+# slowly opening and closing a filter on a disco sample.
+s_chords= (ring nil, nil, {:note => [:g3, :bb3, :d4, :f4], :cutoff => 70, :release => 0.3, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:g3, :bb3, :d4, :f4], :cutoff => 90, :release => 0.3, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:c4, :eb4, :g4, :bb4], :cutoff => 70, :release => 0.3, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:c4, :eb4, :g4, :bb4], :cutoff => 90, :release => 0.3, :amp => 0.6}, nil)
+
+# Bright, echoing "Brass" Riff (G Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (2) to create a sharp, 
+# funky brass stab. Routed through the engine's tape echo for a smear.
+s_fm    = (ring {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :bb5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :d6, :amp => 0.7, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :c6, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :bb5, :amp => 0.7, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, nil)
+
+# Choppy, "Diva" vocal stutter (Granular Synth).
+# High density, tiny size = a sharp, percussive vocal skip.
+s_vocal = (ring nil, nil, nil, nil, 
+           {:note => :g4, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
+           {:note => :bb4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
+           {:note => :d5, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Pump - Just the kick, sidechained bass, and vocal chops (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Filter - Add the heavy claps, hats, and filtered chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Riff - The echoing brass melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE PUMP]
+# 
+# 1. Data-Driven Sidechain: Look at `s_bass`. A real French Touch track 
+#    uses heavy sidechain compression to make the bass "duck" when the 
+#    kick hits. Because our engine reads Parameter Hashes, we simulate 
+#    this perfectly by just setting the bass `amp` to `0.2` on steps 0, 4, 
+#    8, and 12 (where the kick hits), and `1.0` on the steps in between.
+#
+# 2. The Filter Sweep: Look at `s_chords`. The `cutoff` Hash alternates 
+#    between `70` and `90`. Because the engine reads these Hashes 
+#    independently on every step, the filter opens and closes on the 
+#    off-beats, perfectly mimicking the sound of a DJ twisting a Moog 
+#    filter knob on a looped disco sample.
+#
+# 3. The 16th-Note Roll: The `s_bass` plays on EVERY single 16th step. 
+#    By combining the continuous rhythm with the data-driven amplitude 
+#    dips, the engine creates a relentless, pumping "gallop" that drives 
+#    the track forward unstoppably, defining the 90s Paris club sound.
+# ==========================================================

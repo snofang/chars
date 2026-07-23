@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: TRIBAL HOUSE / LATIN TRIBAL
+# (Pioneered by Danny Tenaglia, Junior Vasquez, and Peter Rauhofer)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Tribal House.
+# We have explored Tech House (which is groovy) and Deep House (which 
+# is warm). Tribal House is the sound of the dark, sweaty New York 
+# and Miami underground. It takes the rigid 4/4 grid and injects it 
+# with dense, polyrhythmic FM percussion (congas, toms, woodblocks), 
+# removing traditional melodies in favor of pure, hypnotic drum 
+# loops and cavernous vocal chants.
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth 
+# as an organic percussion instrument. By using a high `divisor` and 
+# a tiny `release`, the engine turns the FM synth into a hollow, 
+# woody conga loop that weaves perfectly between the kicks.
+# ==========================================================
+
+use_bpm 128
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Dark, Hypnotic, & Polyrhythmic)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, dry, organic clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil)
+
+# Deep, round sub-bass (A Minor).
+# Hits strictly on the off-beats. Low cutoff (70) and short release (0.1) 
+# create a relentless, hypnotic "pump" that drives the track forward.
+s_bass  = (ring nil, nil, {:note => :a1, :release => 0.1, :cutoff => 70}, nil, nil, nil, {:note => :a1, :release => 0.1, :cutoff => 70}, nil, nil, nil, {:note => :a1, :release => 0.1, :cutoff => 70}, nil, nil, nil, {:note => :a1, :release => 0.1, :cutoff => 70}, nil)
+
+# The "Polyrhythmic Conga" Loop (A Minor).
+# Uses :play_fm with a high divisor (4) and depth (1) to create a hollow, 
+# woody conga/tom sound. The syncopated, interlocking hits create a 
+# hypnotic, tribal polyrhythm over the 4/4 grid.
+s_toms  = (ring {:note => :a3, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05}, nil, nil, {:note => :e3, :amp => 0.7, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :a3, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :c4, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, {:note => :e3, :amp => 0.7, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :a3, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :g3, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :e3, :amp => 0.7, :divisor => 4, :depth => 1, :release => 0.05}, nil)
+
+# Dark, sparse minor chord stabs (Am).
+# Hit sparingly on the downbeats to anchor the chaotic percussion.
+s_chords= (ring {:note => [:a3, :c4, :e4], :cutoff => 90, :release => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 90, :release => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# Cavernous, pitched-down "Chant" vocal (Granular Synth).
+# Long size (0.1) and low density (1) creates a slow, haunting background 
+# texture that sounds like a voice echoing in a massive cave.
+s_vocal = (ring {:note => :a3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :e3, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.1, :amp => 0.5}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Rhythm - Just the kick, bass, and polyrhythmic toms (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_fm, s_toms, 4] ],
+  
+  # Scene 2: The Groove - Add the heavy claps, hats, and sparse chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_toms, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Cave - The cavernous vocal chants drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_toms, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN POLYRHYTHMIC HYPNOSIS]
+# 
+# 1. FM as Congas: Look at `s_toms`. The `:play_fm` synth is given a 
+#    `divisor` of `4` and a `release` of `0.05`. This extreme harmonic 
+#    ratio and tiny decay force the FM synth to produce a hollow, woody 
+#    "thwack" that perfectly mimics a live conga or tom. The engine's 
+#    strict master clock ensures this complex loop locks perfectly with 
+#    the 4/4 kick.
+#
+# 2. The Off-Beat Pump: Look at `s_bass`. It hits strictly on steps 2, 6, 
+#    10, and 14—the exact midpoints between the kicks. By using a very 
+#    short `release` (0.1) and a low `cutoff` (70), the engine creates a 
+#    relentless, hypnotic "pump" that drives the track forward unstoppably.
+#
+# 3. Cavernous Space: Tribal House relies on leaving massive room for the 
+#    percussion. The `s_chords` sequence only hits twice per bar (steps 0 
+#    and 8), and the `s_vocal` uses a long `size` (0.1) to smear the vocal 
+#    into a distant, echoing drone. The engine's strict 16-step grid 
+#    ensures these sparse, dark elements land with absolute precision, 
+#    making the groove feel incredibly tight and cavernous.
+# ==========================================================
