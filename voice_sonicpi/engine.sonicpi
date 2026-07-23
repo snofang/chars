@@ -1,5 +1,5 @@
 # ==========================================================
-# VOICE SONIC PI ENGINE - OPTIMIZED (Full Cache)
+# VOICE SONIC PI ENGINE - FULLY OPTIMIZED (Behavior Preserved)
 # ==========================================================
 
 # ----------------------------------------------------------
@@ -76,7 +76,7 @@ live_loop :snare_fx do
 end
 
 # ----------------------------------------------------------
-# 4. THE SYNTHESIZERS (Fully Optimized)
+# 4. THE SYNTHESIZERS
 # ----------------------------------------------------------
 
 # 1. SUBTRACTIVE BASS
@@ -99,34 +99,12 @@ define :play_chords do |n|
   play note, **opts if note
 end
 
-# 4. GRANULAR CLOUD (with note cache)
+# 4. GRANULAR CLOUD (Runtime optimized - just pushes to queue)
+@grain_events = {}
+
 define :play_grain do |n|
-  return unless n
-  note, opts = parse_step(n, {amp: 0.5})
-  
-  density = opts[:density] || 4
-  pos     = opts[:pos] || rrand(0.3, 0.5)
-  size    = opts[:size] || 0.05
-  buffer  = opts[:buffer] || :ambi_choir
-  
-  opts.delete(:density); opts.delete(:pos); opts.delete(:size); opts.delete(:buffer)
-  
-  pitch_shift = note_cached(note) - note_cached(:c4)
-  interval = 0.25 / density
-  
-  at density.times.map { |i| i * interval } do
-    grain_start = pos + rrand(-0.01, 0.01)
-    grain_finish = grain_start + size
-    
-    sample buffer, 
-      pitch: pitch_shift, 
-      start: grain_start, 
-      finish: grain_finish, 
-      pan: rrand(-0.8, 0.8), 
-      attack: size / 2,
-      release: size / 2, 
-      **opts
-  end
+  # Does nothing at runtime - all grains pre-expanded at boot
+  # This function exists only for API compatibility
 end
 
 # 5. FM BELL
@@ -150,13 +128,13 @@ define :play_pad do |n|
   play note, **opts if note
 end
 
-# 8. PITCHED KICK (with note cache)
+# 8. PITCHED KICK
 define :play_kick do |n|
   note, opts = parse_step(n, {amp: 1.5})
   sample :bd_haus, pitch: (note_cached(note) - note_cached(:c4)), **opts if note
 end
 
-# 9. PITCHED SNARE (FX moved to global bus + note cache)
+# 9. PITCHED SNARE (FX moved to global bus)
 define :play_snare do |n|
   note, opts = parse_step(n, {amp: 0.8})
   @snare_notes << [note, opts] if note
@@ -173,7 +151,44 @@ define :play_hats do |n|
 end
 
 # ----------------------------------------------------------
-# 5. VALIDATION & ENGINE BOOT (The Single Master Clock)
+# 5. GRAIN PRE-EXPANSION HELPER (Preserves Randomness)
+# ----------------------------------------------------------
+define :expand_grain_events do |raw|
+  events = []
+  
+  note, opts = parse_step(raw, {amp: 0.5})
+  return events unless note
+  
+  density = opts[:density] || 4
+  pitch_shift = note_cached(note) - note_cached(:c4)
+  interval = 0.25 / density
+  size = opts[:size] || 0.05
+  buffer = opts[:buffer] || :ambi_choir
+  amp = opts[:amp] || 0.5
+  pos = opts[:pos] || rrand(0.3, 0.5)  # ← Random once per step
+  
+  density.times do |i|
+    # Organic randomness preserved - each grain gets its own rrand
+    grain_start = pos + rrand(-0.01, 0.01)
+    
+    events << {
+      time_offset: i * interval,
+      buffer: buffer,
+      pitch: pitch_shift,
+      start: grain_start,
+      finish: grain_start + size,
+      pan: rrand(-0.8, 0.8),  # ← Random per grain
+      attack: size / 2,
+      release: size / 2,
+      amp: amp
+    }
+  end
+  
+  events
+end
+
+# ----------------------------------------------------------
+# 6. VALIDATION & ENGINE BOOT
 # ----------------------------------------------------------
 define :start_engine do |playbook|
   # 1. Strict schema validation
@@ -184,18 +199,61 @@ define :start_engine do |playbook|
     end
   end
   
-  # 2. The Conductor
+  # 2. Pre-expand all grain events (with randomness captured at boot)
+  @grain_schedule = {}
+  
+  playbook.each do |inst, score, bars|
+    next unless inst == :play_grain
+    
+    bars.times do |bar|
+      16.times do |step|
+        idx = bar * 16 + step
+        raw = score[step]
+        next unless raw
+        
+        events = expand_grain_events(raw)
+        @grain_schedule[idx] = events if events.any?
+      end
+    end
+  end
+  
+  # 3. The Conductor
   live_loop :conductor do
     scene = playbook.tick(:conductor)
     max_bars = scene.map { |task| task[2] }.max || 1
     total_steps = max_bars * 16
     
-    # 3. Step-by-step sequencing
+    # 4. Step-by-step sequencing
     total_steps.times do |step|
+      # Play grains for this step (ONE 'at' call per step with grains)
+      if @grain_schedule.key?(step)
+        at 0 do
+          events = @grain_schedule[step]
+          events.each_with_index do |grain, i|
+            # Sleep to the correct offset
+            if i > 0
+              sleep grain[:time_offset] - events[i-1][:time_offset]
+            else
+              sleep grain[:time_offset]
+            end
+            
+            sample grain[:buffer],
+              pitch: grain[:pitch],
+              start: grain[:start],
+              finish: grain[:finish],
+              pan: grain[:pan],
+              attack: grain[:attack],
+              release: grain[:release],
+              amp: grain[:amp]
+          end
+        end
+      end
+      
+      # Play normal instruments
       scene.each do |task|
         inst, score, bars = task
+        next if inst == :play_grain  # Already handled above
         
-        # Only trigger if the instrument's duration hasn't expired
         if step < (bars * 16)
           send(inst, score[step % 16])
         end

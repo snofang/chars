@@ -1,0 +1,107 @@
+# ==========================================================
+# PLAYBOOK: 70s CINEMATIC FUNK / BLAXPLOITATION
+# (Pioneered by Isaac Hayes, Curtis Mayfield, and Bobby Womack)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Cinematic Funk.
+# We have explored 80s Synth-Funk and 90s Big Beat, but Cinematic Funk is 
+# the sound of 1970s Blaxploitation films (like *Shaft* and *Superfly*). 
+# It relies on a bouncy, syncopated drum break, a deep, melodic bassline, 
+# wah-wah guitar stabs, and sweeping, orchestral string/vocal drones that 
+# feel like walking down a gritty city street in the 70s.
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth 
+# to simulate a wah-wah guitar/clavinet. By passing arrays of notes 
+# (chords) to the FM synth with a specific `divisor` and `depth`, the 
+# engine creates a sharp, staccato funk riff that drives the track.
+# ==========================================================
+
+use_bpm 95
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Dorian - Gritty, Bouncy, & Cinematic)
+# ==========================================================
+
+# The "Funky Drummer" Kick. 
+# Syncopated. Hits on step 0, the 'and' of 2 (step 6), beat 3 (step 8), 
+# and the 'e' of 4 (step 10).
+s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, nil, nil)
+
+# Crisp, live snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'and' of 2 (step 7).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# Swung, bouncing 16th hats.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# Deep, melodic bass (F Dorian).
+# Walks a syncopated line. Low cutoff (70) and medium release (0.3) 
+# to create a warm, muffled undercurrent.
+s_bass  = (ring {:note => :f2, :release => 0.3, :cutoff => 70}, nil, nil, nil, {:note => :f2, :release => 0.3, :cutoff => 70}, nil, {:note => :ab2, :release => 0.3, :cutoff => 70}, nil, {:note => :c3, :release => 0.3, :cutoff => 70}, nil, nil, nil, {:note => :bb2, :release => 0.3, :cutoff => 70}, nil, nil, nil)
+
+# The "Wah-Wah Guitar" Chords (Fm to Ebm).
+# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
+# staccato guitar/clavinet tone. Passing arrays of notes to the FM synth 
+# perfectly mimics a funk rhythm guitar.
+s_chords= (ring nil, nil, {:note => [:f3, :ab3, :c4], :divisor => 2, :depth => 3, :release => 0.1, :amp => 0.5}, nil, nil, nil, {:note => [:f3, :ab3, :c4], :divisor => 2, :depth => 3, :release => 0.1, :amp => 0.5}, nil, nil, nil, {:note => [:eb3, :g3, :bb3], :divisor => 2, :depth => 3, :release => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil)
+
+# Piercing, "Wah-Wah" Melody (F Dorian Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (4) to create a 
+# sharp, brassy tone. Routed through the engine's tape echo for a smear.
+s_fm    = (ring {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.2}, nil, nil, nil, {:note => :ab5, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.2}, nil, {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.2}, nil, nil, {:note => :bb5, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.2}, nil, {:note => :ab5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.2}, nil, nil, nil, nil)
+
+# Cinematic, sweeping string/vocal drone (Granular Synth).
+# Long size (0.3) and low density (1) creates a slow, evolving background 
+# texture that sounds like a lush cinematic string section.
+s_grain = (ring {:note => :f3, :buffer => :misc_lori, :pos => 0.3, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :eb3, :buffer => :misc_lori, :pos => 0.6, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Street - Just the funky drums, bass, and wah-wah chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Vibe - Add the cinematic string drone (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8] ],
+    
+  # Scene 3: The Chase - The piercing wah-wah melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC FUNK]
+# 
+# 1. FM as a Wah-Wah Guitar: Look at `s_chords` and `s_fm`. The `:play_fm` 
+#    synth is given a `divisor` of `2` and a `depth` of `3` or `4`. In Sonic 
+#    Pi, the `:fm` synth natively accepts arrays, playing multiple oscillators 
+#    at once. This harmonic ratio produces a sharp, staccato "thwack" that 
+#    perfectly mimics a 70s wah-wah guitar or clavinet.
+#
+# 2. The Funky Drummer Syncopation: Look at `s_kick`. It completely avoids 
+#    landing on the standard 4/4 pulse. By hitting on steps 0, 6, 8, and 10, 
+#    the engine creates a lopsided, swaggering groove that feels like a live 
+#    drummer playing a 70s funk break, perfectly bridging the gap between 
+#    hip-hop and cinematic soul.
+#
+# 3. Orchestral Contrast: Cinematic Funk relies on the stark contrast 
+#    between the gritty, syncopated rhythm section and the lush, sweeping 
+#    orchestral strings. The `s_grain` sequence uses a massive `size` (0.3) 
+#    to time-stretch the vocal sample into a slow, evolving drone that sounds 
+#    like a cinematic string section swelling in the background.
+# ==========================================================
