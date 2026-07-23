@@ -1,0 +1,117 @@
+# ==========================================================
+# PLAYBOOK: 90s ATMOSPHERIC JUNGLE / DRUMFUNK
+# (Pioneered by LTJ Bukem, Paradox, and Photek)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Atmospheric Jungle.
+# We have explored Liquid DnB (which is smooth) and Breakcore (which is 
+# chaotic). Atmospheric Jungle, and its darker cousin "Drumfunk", is the 
+# sound of 170 BPM sci-fi serenity. It relies on heavily layered, ultra-precise 
+# chopped breakbeats, deep, continuous Reese bass, and massive, sweeping 
+# ambient pads. 
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create a highly complex, layered drum groove. By combining dense kick 
+# and snare patterns with continuous rolling hats, the engine creates a 
+# frantic rhythm section that floats perfectly over a calm, cosmic backdrop.
+# ==========================================================
+
+use_bpm 170
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Deep, Frantic, & Cosmic)
+# ==========================================================
+
+# The "Drumfunk" Kick. Highly syncopated and layered.
+s_kick = gen_score("x..x..x.x..x..x.", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.5}, :c4, {note: :c4, amp: 0.6}
+])
+
+# The "Chopped Amen" Snare. Frantic ghost notes and rolls.
+s_snare = gen_score("..x.x.....x.x.x.", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}, 
+  :c4, {note: :c4, amp: 0.5}, {note: :c4, amp: 0.3}
+])
+
+# Relentless, rolling 16th hats to maintain high-speed momentum.
+s_hats = gen_score("xxxxxxxxxxxxxxxx", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# Deep, continuous Reese bass (F# Minor).
+# Massive release (2.0) and low cutoff (60) create a dark, rumbling undercurrent.
+s_bass = gen_score("x.......x.......", [
+  {note: :fs1, release: 2.0, cutoff: 60, amp: 1.2}, 
+  {note: :e1, release: 2.0, cutoff: 60, amp: 1.0}
+])
+
+# Lush, sweeping "Ambient" Chords (F#m9 to Emaj9).
+# Hit on the downbeats. The slow 1.5-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cosmic wave.
+s_chords = gen_score("x...............", [
+  {note: [:fs3, :a3, :c4, :e4], cutoff: 80, attack: 1.5, release: 4.0, amp: 0.5}
+])
+
+# Distant, echoing "Sci-Fi" FM bleeps (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2). Routed through 
+# the engine's tape echo for a cavernous, deep-space smear.
+fm_notes = [:fs5, :c5, :a5, :e5]
+fm_data = fm_notes.map { |n| {note: n, amp: 0.5, divisor: 3, depth: 2, release: 1.0} }
+s_fm = gen_score("x...x...x...x...", fm_data)
+
+# Ethereal, granular "Nebula" drone (using :ambi_choir).
+# Long size (0.4) and low density (1) creates a slow, evolving background 
+# texture that drifts behind the frantic drums.
+s_grain = gen_score("x...............", [
+  {note: :fs4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Cosmos - Just the sweeping chords, Reese bass, and drone (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Break - Add the chopped drumfunk drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Void - The echoing sci-fi FM bleeps drop (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RHYTHMIC CONTRAST]
+# 
+# 1. The Chopped Breakbeat: Look at `s_kick` and `s_snare`. They are 
+#    densely packed and completely avoid landing on the same beats. The 
+#    engine's strict master clock ensures these complex, overlapping hits 
+#    fire with absolute mathematical precision at 170 BPM, perfectly 
+#    mimicking the chopped "Amen" breakbeats of 90s atmospheric jungle.
+#
+# 2. Extreme Dynamic Contrast: Atmospheric Jungle relies on the stark 
+#    contrast between the frantic, high-speed rhythm section and the slow, 
+#    lush, sweeping ambient pads. The `s_chords` sequence uses a slow 
+#    `attack` (1.5) and massive `release` (4.0) to blur the chords into a 
+#    continuous, calm wave of sound that floats above the chaotic drums.
+#
+# 3. Deep Space Echoes: The `s_fm` sequence plays a simple F# minor 
+#    pentatonic melody, but leaves massive gaps (`nil`) between the notes. 
+#    Because the engine routes the synth through a tape echo, those empty 
+#    spaces are filled by delay tails, creating a cascading, deep-space 
+#    soundscape that perfectly anchors the track's sci-fi atmosphere.
+# ==========================================================

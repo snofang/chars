@@ -1,0 +1,116 @@
+# ==========================================================
+# PLAYBOOK: 2010s EMO RAP / SOUNDCLOUD RAP
+# (Pioneered by Lil Peep, XXXTentacion, and Juice WRLD)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2010s Emo Rap.
+# We have explored modern Trap and Lo-Fi Hip-Hop, but Emo Rap is the 
+# sound of the 2010s SoundCloud underground. It fuses the heavy 808s 
+# and hi-hats of Atlanta trap with melancholic, acoustic guitar loops, 
+# massive, sliding basses, and pitched-up, angelic vocal chops that 
+# sound like a broken heart.
+#
+# This playbook perfectly demonstrates how to use the `:play_pluck` synth 
+# to simulate an acoustic guitar arpeggio, and how to use the DRY 
+# `gen_score` helper to algorithmically generate a melodic, looping 
+# guitar sequence with zero repetitive code.
+# ==========================================================
+
+use_bpm 75
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Melancholic, Heavy, & Nostalgic)
+# ==========================================================
+
+# Slow, half-time trap kick. 
+# Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
+s_kick = gen_score("x.....x.x........", [:c4, {note: :c4, amp: 0.8}, :c4])
+
+# Heavy, dry snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Slow, rolling trap hats with a long pause in the middle.
+s_hats = gen_score("x..x...x..x..x.x", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}
+])
+
+# Massive, sliding 808 Bass (E Minor).
+# Massive release (1.5) allows the bass to ring out and carry the dark melody.
+s_bass = gen_score("x.......x.......", [
+  {note: :e1, release: 1.5, cutoff: 60, amp: 1.2}, 
+  {note: :c1, release: 1.5, cutoff: 60, amp: 1.0}
+])
+
+# The "Acoustic Guitar" Arpeggio (E Minor).
+# Uses :play_pluck to simulate a picked acoustic guitar.
+# DRY: Define just the notes, map them with default opts automatically.
+guitar_notes = [:e3, :g3, :b3, :e4, :b3, :g3, :e3, :g3]
+guitar_data = guitar_notes.map { |n| {note: n, amp: 0.6, release: 0.4, coef: 0.6} }
+s_guitar = gen_score("x.x.x.x.x.x.x.x.", guitar_data)
+
+# Lush, dark "Synth Choir" Pad (Em to Cmaj7).
+# Hit on the downbeats. Low cutoff (70) and slow attack (1.0) 
+# blur the chords together into a continuous, sad drone.
+s_chords = gen_score("x.......x.......", [
+  {note: [:e3, :g3, :b3, :e4], cutoff: 70, attack: 1.0, release: 2.5, amp: 0.5},
+  {note: [:c3, :e3, :g3, :b3], cutoff: 70, attack: 1.0, release: 2.5, amp: 0.5}
+])
+
+# Pitched-up, "Angelic" vocal stutter (Granular Synth).
+# Pitched UP to :e5 and :g5. Long size (0.08) creates a mournful, crying vocal skip.
+s_vocal = gen_score("....x...x...x...", [
+  {note: :e5, buffer: :misc_lori, pos: 0.1, density: 2, size: 0.08, amp: 0.6},
+  {note: :g5, buffer: :misc_lori, pos: 0.3, density: 2, size: 0.08, amp: 0.5},
+  {note: :b4, buffer: :misc_lori, pos: 0.5, density: 2, size: 0.08, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the acoustic guitar, 808, and synth pad (4 bars)
+  [ [:play_pluck, s_guitar, 4], [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Groove - Add the slow trap drums (8 bars)
+  [ [:play_pluck, s_guitar, 8], [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Drop - The angelic vocal chops drop (8 bars)
+  [ [:play_pluck, s_guitar, 8], [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS DRY APPROACH A MASTERCLASS IN MELODY]
+# 
+# 1. Algorithmic Guitar Arpeggio: Look at `s_guitar`. Instead of typing 
+#    8 repetitive Hashes, we define an array of just the notes 
+#    `[:e3, :g3, :b3, :e4...]`, and then use Ruby's `.map` to inject 
+#    the default parameters (`amp`, `release`, `coef`) into every step. 
+#    This keeps the code incredibly clean and allows the melody to be 
+#    changed in seconds.
+#
+# 2. The Pluck Synth: Look at `s_guitar`. By using the `:play_pluck` 
+#    instrument with a `coef` of `0.6`, the engine simulates the sharp 
+#    attack and slow decay of a picked acoustic guitar string, perfectly 
+#    capturing the melancholic, acoustic texture of 2010s Emo Rap.
+#
+# 3. The Sliding 808: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `release` of `1.5` (nearly two whole beats) and a very low `cutoff` 
+#    of `60`. Because the BPM is 75, that low E note rings out for over a 
+#    second, creating a massive, booming low-end that carries the dark 
+#    melody and provides immense, suffocating weight.
+# ==========================================================

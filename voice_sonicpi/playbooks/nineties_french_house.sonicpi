@@ -1,0 +1,113 @@
+# ==========================================================
+# PLAYBOOK: 90s FRENCH HOUSE / FILTER HOUSE (DRY)
+# (Pioneered by Daft Punk, Stardust, and Cassius)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# We have explored Tech House and Disco. French Touch is the sound of 
+# 90s Paris. It takes a looped disco sample and pushes it through a 
+# massive, sidechained filter, creating a relentless, pumping "wall of sound."
+#
+# This playbook perfectly demonstrates the sheer power of the new DRY 
+# `gen_score` helper. By using Ruby's `.map` function, we simulate heavy 
+# sidechain compression and filter sweeps across a continuous 16th-note 
+# bassline with literally zero repetitive code.
+# ==========================================================
+
+use_bpm 124
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Pumping, Filtered, & Funky)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic disco clap strictly on beats 2 and 4.
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Off-beat open hats to drive the momentum.
+s_hats = gen_score("..x...x...x...x.", [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
+
+# The "Sidechained" Pumping Bass (G Minor).
+# DRY: Generate a 16-step filter and amplitude sweep automatically!
+# The volume dips to 0.2 and filter closes to 60 on steps 0, 4, 8, 12 (where the kick hits).
+bass_data = 16.times.map do |i|
+  is_kick = (i % 4 == 0)
+  {
+    note: :g1,
+    amp: is_kick ? 0.2 : 1.0,
+    cutoff: is_kick ? 60 : 110,
+    release: 0.1
+  }
+end
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# The "Filtered Disco" Chords (Gm9 to Cm9).
+# Hit strictly on the off-beats. The cutoff alternates to simulate a DJ twisting a filter.
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:g3, :bb3, :d4, :f4], cutoff: 70, release: 0.3, amp: 0.6},
+  {note: [:g3, :bb3, :d4, :f4], cutoff: 90, release: 0.3, amp: 0.6},
+  {note: [:c3, :eb3, :g3, :bb3], cutoff: 70, release: 0.3, amp: 0.6},
+  {note: [:c3, :eb3, :g3, :bb3], cutoff: 90, release: 0.3, amp: 0.6}
+])
+
+# Bright, echoing "Brass" Riff (G Minor Pentatonic).
+# DRY: Define just the notes, merge default opts automatically.
+fm_notes = [:g5, :d5, :bb5, :d6, :g5, :c6, :bb5]
+fm_data = fm_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 2, release: 0.1} }
+s_fm = gen_score("x.x.x.x.x.x.x.x.", fm_data)
+
+# Choppy, "Diva" vocal stutter (Granular Synth).
+s_vocal = gen_score("....x.......x...", [
+  {note: :g4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
+  {note: :bb4, buffer: :misc_lori, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Pump - Just the kick, sidechained bass, and vocal chops (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Filter - Add the heavy claps, hats, and filtered chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Riff - The echoing brass melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS DRY APPROACH A MASTERCLASS IN PRODUCTIVITY]
+# 
+# 1. Algorithmic Sidechain: Look at `s_bass`. Instead of typing 16 
+#    repetitive Hashes, we use `16.times.map do |i|`. The engine checks 
+#    if `i % 4 == 0` (the kick steps). If true, it sets `amp: 0.2` and 
+#    `cutoff: 60`. If false, it sets `amp: 1.0` and `cutoff: 110`. This 
+#    perfectly simulates sidechain compression and a filter sweep in just 
+#    7 lines of code.
+#
+# 2. Visual Rhythm: Look at `s_fm`. The string `"x.x.x.x.x.x.x.x."` 
+#    instantly tells you the rhythm is continuous 8th notes. The `gen_score` 
+#    helper translates this string into a 16-element ring of notes and `nil`s, 
+#    eliminating all manual step counting.
+#
+# 3. Hash Merging: Look at `fm_data`. We define an array of just the notes 
+#    `[:g5, :d5, :bb5...]`, and then use Ruby's `.merge()` to inject the 
+#    default parameters (`amp`, `divisor`, `depth`, `release`) into every 
+#    step. This keeps the code incredibly clean and modular.
+# ==========================================================

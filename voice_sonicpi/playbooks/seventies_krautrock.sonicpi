@@ -1,0 +1,114 @@
+# ==========================================================
+# PLAYBOOK: 70s KRAUTROCK / MOTORIK
+# (Pioneered by Neu!, Kraftwerk, and Can)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Krautrock.
+# We have explored Berlin School (which is spacey) and Post-Punk (which 
+# is stark). Krautrock is the sound of 70s German experimental rock. 
+# It relies on the legendary "Motorik" beat—a relentless, hypnotic 4/4 
+# drum pattern with a driving 16th-note bassline and sweeping, 
+# atmospheric synth pads. 
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create unstoppable, mechanical momentum. By locking a continuous 
+# 16th-note bassline to a rigid 4/4 beat, the engine creates a 
+# hypnotic, forward-driving groove that feels like a high-speed train 
+# moving through a neon landscape.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Hypnotic, Mechanical, & Driving)
+# ==========================================================
+
+# Relentless, driving 4/4 "Motorik" kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Crisp, organic snare on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 16th hats.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Motorik" Bass (A Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# High cutoff (100) and short release (0.1) create a relentless, buzzing churn.
+bass_cycle = [:a1, :a1, :a2, :a1, :a1, :a1, :a2, :a1, :g1, :g1, :g2, :g1, :e1, :e1, :e2, :e1]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Sweeping, "Analog String" Chords (Am to G to Em).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic wave.
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4], cutoff: 90, attack: 1.0, release: 3.0, amp: 0.5},
+  {note: [:g3, :b3, :d4], cutoff: 90, attack: 1.0, release: 3.0, amp: 0.5}
+])
+
+# Echoing, "Krautrock" Synth Melody (A Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (3) to create a warm, 
+# organic pluck. Routed through the engine's tape echo for a smear.
+lead_notes = [:a4, :c5, :e5, :d5, :c5, :a4, :g4, :a4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 3, release: 0.2} }
+s_fm = gen_score("x..x..x..x..x..x", lead_data)
+
+# Ethereal, granular "Cosmic" drone (using :ambi_choir).
+# Long size (0.4) and low density (1) creates a slow, evolving background 
+# texture that drifts behind the relentless beat.
+s_grain = gen_score("x...............", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Engine - Just the relentless beat and sweeping chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drive - Add the continuous 16th-note bass (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: The Journey - The echoing synth melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HYPNOTIC MOMENTUM]
+# 
+# 1. The Motorik Pulse: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:a1) and 
+#    the high octave (:a2). By using a high `cutoff` (100) and a very short 
+#    `release` (0.1), the engine turns the detuned sawtooth into a relentless, 
+#    buzzing churn that perfectly mimics the driving, sequenced basslines of 
+#    70s German experimental rock.
+#
+# 2. Sweeping Analog Waves: Look at `s_chords`. The Hashes specify an 
+#    `attack` of `1.0` and a `release` of `3.0`. Because the engine reads 
+#    these Hashes, the chords don't just hit; they slowly swell into the mix 
+#    and fade away, creating a continuous, blurred wave of harmony that 
+#    floats above the relentless rhythm section.
+#
+# 3. Echoing Space: The `s_fm` sequence plays a simple A minor pentatonic 
+#    melody, but leaves massive gaps (`nil`) between the notes. Because the 
+#    engine routes the `:play_fm` synth through a tape echo, those empty 
+#    spaces are filled by delay tails, creating a cascading, cosmic soundscape 
+#    that perfectly anchors the track's hypnotic, forward-driving atmosphere.
+# ==========================================================
