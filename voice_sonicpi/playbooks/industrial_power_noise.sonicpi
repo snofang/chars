@@ -8,13 +8,14 @@
 # We have explored heavy genres (Gabber, Breakcore) and dark genres 
 # (Darkwave, Witch House). Industrial / Power Noise is the sound of the 
 # dystopian factory floor. It takes the rigid 4/4 grid and replaces all 
-# traditional melodies with rhythmic, distorted noise sweeps, metallic 
+# traditional melodies with rhythmic, distorted bass pulses, metallic 
 # clangs, and hammering, clean sub-bass.
 #
-# This playbook perfectly demonstrates the power of your newly added 
-# `play_noise`, `play_sample`, and `play_subbass` instruments. By mapping 
-# ascending notes to the noise synth, the engine creates rhythmic filter 
-# chops. By using the sample player, we trigger metallic industrial hits.
+# This playbook perfectly demonstrates how to use the core 10 instruments 
+# to create an industrial wall of sound. By pushing the `:play_sub` synth 
+# to a high `cutoff` (120), we create a buzzing pulse. By rapidly alternating 
+# the `divisor` on the `:play_fm` synth, we simulate rhythmic, metallic noise 
+# chops without needing a dedicated noise synthesizer.
 # ==========================================================
 
 use_bpm 130
@@ -37,43 +38,45 @@ s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4,
 # Rigid, off-beat open hats to drive the momentum.
 s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
 
-# The "Rhythmic Noise" Chopper.
-# Uses the new play_noise. The alternating low/high notes (:fs3 vs :fs5) 
-# force the filter cutoff to jump back and forth, creating a rhythmic, 
-# chopping noise effect.
-s_noise = (ring {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1}, {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1}, 
-           {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1}, {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1}, 
-           {:note => :a3, :amp => 0.4, :release => 0.1}, {:note => :a5, :amp => 0.6, :release => 0.1}, {:note => :a3, :amp => 0.4, :release => 0.1}, {:note => :a5, :amp => 0.6, :release => 0.1}, 
-           {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1}, {:note => :fs3, :amp => 0.4, :release => 0.1}, {:note => :fs5, :amp => 0.6, :release => 0.1})
+# The "Industrial Pulse" Bass (F# Minor).
+# Uses play_sub. Plays continuous 16th notes. The extreme cutoff (120) and 
+# very short release (0.1) create a relentless, buzzing, distorted churn.
+s_bass  = (ring {:note => :fs1, :cutoff => 120, :release => 0.1}, {:note => :fs1, :cutoff => 120, :release => 0.1}, {:note => :fs2, :cutoff => 120, :release => 0.1}, {:note => :fs1, :cutoff => 120, :release => 0.1}, 
+           {:note => :fs1, :cutoff => 120, :release => 0.1}, {:note => :fs1, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, 
+           {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :a2, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, 
+           {:note => :e1, :cutoff => 120, :release => 0.1}, {:note => :e1, :cutoff => 120, :release => 0.1}, {:note => :fs1, :cutoff => 120, :release => 0.1}, {:note => :e1, :cutoff => 120, :release => 0.1})
 
-# The "Hammer" Sub-Bass.
-# Uses the new play_subbass. Clean sine wave. Hits strictly on the off-beats 
-# to provide a massive, distortion-free low-end thump.
-s_sub   = (ring nil, nil, {:note => :fs1, :release => 0.15, :amp => 1.0}, nil, nil, nil, {:note => :fs1, :release => 0.15, :amp => 1.0}, nil, nil, nil, {:note => :a1, :release => 0.15, :amp => 1.0}, nil, nil, nil, {:note => :fs1, :release => 0.15, :amp => 1.0}, nil)
+# Stark, minor chord stabs (F#m to A to E).
+# Hit sparingly on the off-beats to leave maximum room for the pulse bass.
+s_chords= (ring nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:e3, :g3, :b3], nil)
 
-# Metallic, industrial impacts.
-# Uses the new play_sample to trigger :elec_blip pitched down.
-s_metal = (ring nil, nil, nil, {:note => :g4, :sample => :elec_blip, :release => 0.2, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :sample => :elec_blip, :release => 0.2, :amp => 0.6}, nil, nil, nil, nil)
+# The "Metallic Noise" Chopper.
+# Uses :play_fm. The alternating low/high notes (:fs3 vs :fs5) force the 
+# FM divisor to jump back and forth, creating a rhythmic, chopping metallic effect.
+s_fm    = (ring {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, 
+           {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, 
+           {:note => :a3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, {:note => :a3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, 
+           {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05})
 
 # The "Grinding" Granular FX.
 # Uses :elec_piano buffer. High density, tiny size = grinding metal.
-s_grind = (ring {:note => :fs3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :a3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :fs3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :e3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil)
+s_grain = (ring {:note => :fs3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :a3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :fs3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :e3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: The Factory - Just the kick, sub-bass, and chopping noise (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_subbass, s_sub, 4], [:play_noise, s_noise, 4] ],
+  # Scene 1: The Factory - Just the kick, pulse bass, and metallic chops (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_fm, s_fm, 4] ],
   
-  # Scene 2: The Machine - Add the snares, hats, and metallic hits (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_subbass, s_sub, 8], [:play_noise, s_noise, 8], 
-    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_sample, s_metal, 8] ],
+  # Scene 2: The Machine - Add the snares, hats, and stark chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
     
   # Scene 3: The Meltdown - The grinding granular FX drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_subbass, s_sub, 8], [:play_noise, s_noise, 8], 
-    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_sample, s_metal, 8], 
-    [:play_grain, s_grind, 8] ]
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_grain, s_grain, 8] ]
 )
 
 # ==========================================================
@@ -84,21 +87,22 @@ start_engine(playbook)
 # ==========================================================
 # [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INDUSTRIAL NOISE]
 # 
-# 1. Data-Driven Noise Chops: Look at `s_noise`. By passing alternating 
-#    low/high notes (:fs3 vs :fs5) to the new `play_noise` instrument, 
-#    the engine forces the filter cutoff to jump back and forth on every 
-#    16th step. This creates a rhythmic, stuttering noise effect that 
-#    sounds like a factory machine churning.
+# 1. Data-Driven Noise Chops: Look at `s_fm`. By passing alternating 
+#    low/high notes (:fs3 vs :fs5) and rapidly changing the `divisor` 
+#    (from 4 to 2), the engine forces the FM synth to jump between 
+#    a hollow click and a piercing square wave. This creates a rhythmic, 
+#    stuttering metallic noise effect that sounds like a factory machine 
+#    churning, purely via data.
 #
-# 2. Clean Low-End Separation: Industrial music often gets muddy when 
-#    distorted kicks and basses clash. By using the new `play_subbass` 
-#    (a pure sine wave) on the off-beats, the engine provides a massive, 
-#    clean low-end thump that cuts through the chaotic noise without 
-#    muddying the mix.
+# 2. The Distorted Pulse: Look at `s_bass`. The `:play_sub` synth is given 
+#    an extreme `cutoff` of `120` on every single 16th step. This leaves 
+#    the filter wide open, letting all the harsh, high-frequency harmonics 
+#    of the detuned sawtooth through. This creates a relentless, buzzing 
+#    "chug" that perfectly mimics the classic industrial EBM pulse.
 #
-# 3. Infinite Sampling: Look at `s_metal`. The new `play_sample` instrument 
-#    allows us to trigger ANY built-in Sonic Pi sample just by passing 
-#    `:sample => :elec_blip` in the Hash. This allows us to easily inject 
-#    metallic, industrial textures into the rigid 16-step grid without 
-#    writing custom synth code.
+# 3. Grinding Granular Metal: The `s_grain` sequence uses a tiny `size` 
+#    (`0.02`) and high `density` (`6`). By targeting the very end of the 
+#    electric piano buffer (`pos: 0.8`), the engine shatters the sample 
+#    into metallic, machine-like static that sits perfectly in the 
+#    background of a dark warehouse.
 # ==========================================================

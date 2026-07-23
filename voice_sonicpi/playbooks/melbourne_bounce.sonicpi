@@ -1,0 +1,83 @@
+# ==========================================================
+# PLAYBOOK: 2010s MELBOURNE BOUNCE (Refactored)
+# ==========================================================
+
+use_bpm 126
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Bouncy, High Energy, & Festival-Ready)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, dry festival clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Bounce" Bass (E Minor).
+# Uses :play_fm with rapidly changing 'divisor' and 'depth' Hashes on every 
+# hit to create a squelching, talking bassline that drives the groove.
+s_bass  = (ring nil, nil, {:note => :e2, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, nil, 
+           nil, nil, {:note => :e2, :divisor => 3, :depth => 5, :release => 0.12, :amp => 0.8}, nil, 
+           nil, nil, {:note => :g2, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, nil, 
+           nil, nil, {:note => :d2, :divisor => 4, :depth => 6, :release => 0.12, :amp => 0.8}, nil)
+
+# The "Off-Beat" Sub Bass (Refactored).
+# Uses play_sub with a low cutoff (60). Hits strictly on the off-beats in sync 
+# with the FM bass. Very short release (0.15) provides a pristine, distortion-free "pump".
+s_sub   = (ring nil, nil, {:note => :e1, :release => 0.15, :amp => 1.0, :cutoff => 60}, nil, 
+           nil, nil, {:note => :e1, :release => 0.15, :amp => 1.0, :cutoff => 60}, nil, 
+           nil, nil, {:note => :g1, :release => 0.15, :amp => 1.0, :cutoff => 60}, nil, 
+           nil, nil, {:note => :d1, :release => 0.15, :amp => 1.0, :cutoff => 60}, nil)
+
+# The "Snare Rush" / Riser (Refactored).
+# Uses :play_fm with a high divisor (3). The notes ascend while the amplitudes 
+# rapidly increase, creating a massive, rising synth tension builder.
+s_riser = (ring nil, nil, {:note => :e5, :amp => 0.2, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :f5, :amp => 0.3, :divisor => 3, :depth => 2, :release => 0.1}, 
+           {:note => :g5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, 
+           {:note => :b5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :c6, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.1}, 
+           nil, nil, nil, nil, nil, nil, nil, nil)
+
+# Massive, wide off-beat chord stabs (Em to G to D).
+# Hit strictly on the off-beats (steps 2, 6, 10, 14). High cutoff (110) 
+# and short release (0.2) create a sharp, festival-sized wall of sound.
+s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:g3, :b3, :d4], nil, nil, nil, [:d3, :f3, :a3], nil)
+
+# Piercing, high-pitched "Horn" Lead (E Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (4) to create a 
+# sharp, brassy square wave that cuts through the heavy bounce bass.
+s_fm    = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.1}, nil, nil, nil, {:note => :g5, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.1}, nil, nil, nil, {:note => :b5, :amp => 0.7, :divisor => 2, :depth => 4, :release => 0.1}, nil, nil, nil)
+
+# Rhythmic, metallic percussion hit (Refactored).
+# Uses :play_fm with a high divisor (4) to act as a metallic blip.
+s_blip  = (ring nil, nil, nil, {:note => :c5, :divisor => 4, :depth => 2, :release => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :e5, :divisor => 4, :depth => 2, :release => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, {:note => :g5, :divisor => 4, :depth => 2, :release => 0.2, :amp => 0.6})
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the kick, bounce bass, and off-beat sub (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_fm, s_bass, 4], [:play_sub, s_sub, 4] ],
+  
+  # Scene 2: The Build - Add the claps, hats, and synth riser (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_fm, s_bass, 8], [:play_sub, s_sub, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_fm, s_riser, 8] ],
+    
+  # Scene 3: The Drop - The chords, horn lead, and blips drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_fm, s_bass, 8], [:play_sub, s_sub, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_fm, s_riser, 8], 
+    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8], [:play_fm, s_blip, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

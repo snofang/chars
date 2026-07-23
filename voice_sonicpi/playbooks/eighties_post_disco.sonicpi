@@ -1,0 +1,110 @@
+# ==========================================================
+# PLAYBOOK: 80s POST-DISCO / BOOGIE
+# (Pioneered by D-Train, Mtume, and Sharon Redd)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Post-Disco / Boogie.
+# We have explored 70s Disco and 80s Synth-Funk, but Post-Disco is the 
+# crucial bridge between them. Emerging in the early 80s after the "disco 
+# backlash," it stripped away the lush strings and replaced them with 
+# raw, syncopated 808 drum machines and squelching analog synths. 
+#
+# This playbook perfectly demonstrates how to use the `play_sub` synth 
+# as a highly active, melodic slap bass, and how to use the `play_noise` 
+# instrument to create rhythmic, 16th-note "shaker" loops that sit perfectly 
+# in the pocket of the groove.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Dorian - Funky, Raw, & Groovy)
+# ==========================================================
+
+# The "808" Kick. 
+# Syncopated. Hits on step 0, the 'a' of 1 (step 3), the 'and' of 2 (step 6), 
+# and beat 3 (step 8), with a ghost on the 'a' of 3 (step 11).
+s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, {:note => :c4, :amp => 0.8}, nil, :c4, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, {:note => :c4, :amp => 0.8}, nil)
+
+# Heavy, dry 808 clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# The "Rhythmic Noise" Shaker.
+# Uses play_noise. The alternating low/high notes (:f3 vs :f5) force the 
+# filter cutoff to jump back and forth, creating a 16th-note shaker effect.
+s_noise = (ring {:note => :f3, :amp => 0.2, :release => 0.05}, {:note => :f5, :amp => 0.3, :release => 0.05}, {:note => :f3, :amp => 0.2, :release => 0.05}, {:note => :f5, :amp => 0.3, :release => 0.05}, 
+           {:note => :f3, :amp => 0.2, :release => 0.05}, {:note => :f5, :amp => 0.3, :release => 0.05}, {:note => :f3, :amp => 0.2, :release => 0.05}, {:note => :f5, :amp => 0.3, :release => 0.05}, 
+           {:note => :f3, :amp => 0.2, :release => 0.05}, {:note => :f5, :amp => 0.3, :release => 0.05}, {:note => :f3, :amp => 0.2, :release => 0.05}, {:note => :f5, :amp => 0.3, :release => 0.05}, 
+           {:note => :f3, :amp => 0.2, :release => 0.05}, {:note => :f5, :amp => 0.3, :release => 0.05}, {:note => :f3, :amp => 0.2, :release => 0.05}, {:note => :f5, :amp => 0.3, :release => 0.05})
+
+# The "Slap Bass" (F Dorian).
+# Plays a continuous, melodic 16th-note line. The high cutoff (100) and very 
+# short release (0.1) mimic an aggressive, picked/slapped electric bass.
+s_bass  = (ring {:note => :f2, :cutoff => 100, :release => 0.1}, nil, {:note => :f2, :cutoff => 100, :release => 0.1}, {:note => :f3, :cutoff => 100, :release => 0.1}, 
+           nil, {:note => :f2, :cutoff => 100, :release => 0.1}, nil, {:note => :ab2, :cutoff => 100, :release => 0.1}, 
+           {:note => :f2, :cutoff => 100, :release => 0.1}, nil, {:note => :f2, :cutoff => 100, :release => 0.1}, {:note => :f3, :cutoff => 100, :release => 0.1}, 
+           nil, {:note => :c3, :cutoff => 100, :release => 0.1}, nil, {:note => :d3, :cutoff => 100, :release => 0.1})
+
+# Clean, deep sub-bass (F Dorian).
+# Uses play_subbass. Hits strictly on the downbeats to anchor the melodic slap bass.
+s_sub   = (ring {:note => :f1, :release => 0.3, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :ab1, :release => 0.3, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Stark, staccato minor chord stabs (Fm to Bbm to Cm).
+# Hit strictly on the off-beats to leave maximum room for the slap bass.
+s_chords= (ring nil, nil, [:f3, :ab3, :c4], nil, nil, nil, [:f3, :ab3, :c4], nil, nil, nil, [:bb3, :db4, :f4], nil, nil, nil, [:c3, :eb3, :g3], nil)
+
+# Bright, "Prophet" Synth Lead (F Dorian Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (2) to create a sharp, 
+# brassy tone that cuts through the mix.
+s_fm    = (ring nil, {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, {:note => :ab5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, {:note => :d6, :amp => 0.7, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, {:note => :c6, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :bb5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the 808 beat, slap bass, and sub (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_noise, s_noise, 4], 
+    [:play_sub, s_bass, 4], [:play_subbass, s_sub, 4] ],
+  
+  # Scene 2: The Vibe - Add the stark chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_noise, s_noise, 8], 
+    [:play_sub, s_bass, 8], [:play_subbass, s_sub, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The bright Prophet synth lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_noise, s_noise, 8], 
+    [:play_sub, s_bass, 8], [:play_subbass, s_sub, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN POST-DISCO FUNK]
+# 
+# 1. Data-Driven Shaker: Look at `s_noise`. By passing alternating low/high 
+#    notes (:f3 vs :f5) to the `play_noise` instrument, the engine forces 
+#    the filter cutoff to jump back and forth on every 16th step. This 
+#    creates a rhythmic, shaking noise effect that perfectly mimics an 
+#    80s drum machine shaker without needing a sample.
+#
+# 2. The Slap Bass Illusion: Look at `s_bass`. The `:play_sub` synth is 
+#    given a `cutoff` of `100` and a `release` of `0.1`. This strips away 
+#    the sub-frequencies and cuts the note off instantly, turning the 
+#    detuned sawtooth into an aggressive, percussive "thwack" that perfectly 
+#    mimics a slapped electric bass guitar driving the rhythm.
+#
+# 3. Clean Low-End Separation: Post-Disco relies on a clean, driving low-end. 
+#    By using `play_sub` for the melodic slap bass and `play_subbass` for 
+#    the downbeat thump, the engine separates the harmonics. This provides 
+#    immense weight without muddying the mix, keeping the syncopated groove 
+#    incredibly punchy.
+# ==========================================================
