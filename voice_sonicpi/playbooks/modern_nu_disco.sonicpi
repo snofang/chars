@@ -1,0 +1,118 @@
+# ==========================================================
+# PLAYBOOK: MODERN NU-DISCO / DISCO-POP REVIVAL
+# (Pioneered by Dua Lipa, Jessie Ware, and The Weeknd)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Modern Nu-Disco.
+# We have explored 70s Disco and French Touch, but the 2020s Disco-Pop 
+# Revival is the sound of modern mainstream radio. It takes the lush, 
+# string-laden grooves of the 70s and polishes them to a pristine, 
+# high-energy sheen. It relies on a driving 4/4 beat, a highly syncopated 
+# slap bass, and massive, wide chord stabs.
+#
+# This playbook perfectly demonstrates how to use the `:play_sub` synth 
+# as a funky, melodic slap bass, and how to use the `:play_lead` synth 
+# to create a soaring, emotional pop melody that cuts through the mix.
+# ==========================================================
+
+use_bpm 118
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Pristine, Funky, & Driving)
+# ==========================================================
+
+# Driving 4/4 kick with a syncopated 16th hit on the 'a' of 4 (step 14).
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, {:note => :c4, :amp => 0.6}, nil)
+
+# Crisp, polished snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# "Nu-Disco Swing" Hi-Hats.
+# Notice the alternating amplitudes (0.3 vs 0.2) and gaps that simulate a 
+# polished, modern dance groove.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil)
+
+# The "Slap Bass" (F# Minor).
+# Plays a continuous, syncopated 16th-note line. The high cutoff (110) and 
+# very short release (0.1) mimic an aggressive, picked/slapped electric bass.
+s_bass  = (ring {:note => :fs2, :cutoff => 110, :release => 0.1}, nil, nil, {:note => :fs2, :cutoff => 110, :release => 0.1}, 
+           {:note => :a2, :cutoff => 110, :release => 0.1}, nil, {:note => :a2, :cutoff => 110, :release => 0.1}, nil, 
+           {:note => :c3, :cutoff => 110, :release => 0.1}, nil, nil, {:note => :c3, :cutoff => 110, :release => 0.1}, 
+           {:note => :e2, :cutoff => 110, :release => 0.1}, nil, {:note => :fs2, :cutoff => 110, :release => 0.1}, nil)
+
+# Lush, wide "String/Synth" Chords (F#m to Amaj7 to C#m).
+# Hit strictly on the off-beats (steps 2, 6, 10, 14). High cutoff (100) 
+# and medium release (0.3) create a sharp, stadium-sized wall of sound.
+s_chords= (ring nil, nil, [:fs3, :a3, :c4, :e4], nil, nil, nil, [:fs3, :a3, :c4, :e4], nil, 
+           nil, nil, [:a3, :c4, :e4, :g4], nil, nil, nil, [:e3, :g3, :b3, :d4], nil)
+
+# Bright, bouncing "Pluck" Arpeggio (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) to create a sharp, organic pluck.
+s_fm    = (ring {:note => :fs5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :a5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.1}, nil, 
+           {:note => :c6, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :e6, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.1}, nil, 
+           {:note => :c6, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :a5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.1}, nil, 
+           {:note => :fs5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.1}, nil, nil, nil)
+
+# Soaring, emotional "Pop Synth" Lead (F# Minor).
+# Uses :play_lead routed through the global echo bus. The long release (0.5) 
+# and massive gaps (`nil`) create a cascading, stadium-sized melody.
+s_lead  = (ring nil, nil, nil, nil, {:note => :fs5, :amp => 0.6, :release => 0.5}, nil, {:note => :a5, :amp => 0.5, :release => 0.5}, nil, 
+           {:note => :c6, :amp => 0.7, :release => 0.8}, nil, nil, nil, {:note => :b5, :amp => 0.5, :release => 0.5}, nil, {:note => :a5, :amp => 0.6, :release => 0.5}, nil)
+
+# Choppy, "Diva" vocal stutter (Granular Synth).
+# High density, tiny size = a sharp, pristine vocal skip.
+s_vocal = (ring nil, nil, nil, nil, {:note => :fs4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.5}, nil, nil, nil, 
+           nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.04, :amp => 0.5}, nil, 
+           {:note => :c4, :buffer => :misc_lori, :pos => 0.7, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the driving 4/4 beat, slap bass, and chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Vibe - Add the bouncing pluck arpeggio and vocal chops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_fm, s_fm, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The soaring pop synth lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_fm, s_fm, 8], [:play_grain, s_vocal, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MODERN POP]
+# 
+# 1. The Slap Bass Illusion: Look at `s_bass`. The `:play_sub` synth (usually 
+#    a deep rumble) is given a `cutoff` of `110` and a `release` of `0.1`. 
+#    This strips away the sub-frequencies and cuts the note off instantly, 
+#    turning the detuned sawtooth into an aggressive, percussive "thwack" 
+#    that perfectly mimics a slapped electric bass guitar driving the rhythm.
+#
+# 2. The Off-Beat Pocket: Look at `s_chords`. The lush 4-note chords hit 
+#    strictly on steps 2, 6, 10, and 14. In a 16-step grid, these are the 
+#    exact midpoints between the kicks. The engine's strict master clock 
+#    locks these stabs perfectly between the bassline notes, creating that 
+#    signature bouncing, "boom-cha" groove that defines modern Nu-Disco.
+#
+# 3. Cascading Echoes: The `s_lead` sequence leaves massive gaps (`nil`) 
+#    between the notes. Because the engine routes the `:play_lead` synth 
+#    through the global tape echo bus, those empty spaces are filled by 
+#    delay tails, creating a massive, shimmering stadium soundscape that 
+#    perfectly mimics modern pop productions.
+# ==========================================================

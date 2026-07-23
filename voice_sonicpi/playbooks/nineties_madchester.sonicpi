@@ -1,0 +1,112 @@
+# ==========================================================
+# PLAYBOOK: 90s MADCHESTER / BAGGY INDIE DANCE
+# (Pioneered by The Stone Roses, Happy Mondays, and Inspiral Carpets)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Madchester / Baggy.
+# We have explored 70s Disco and 80s Synthpop, but Madchester is the sound 
+# of the UK "Second Summer of Love" in 1989. It fuses the rhythmic swagger 
+# of 60s psychedelic rock with the rolling, 4/4 groove of acid house. 
+# It relies on a live, "Funky Drummer" style breakbeat, a continuous, 
+# melodic 16th-note bassline, and droning, hypnotic Hammond organ chords.
+#
+# This playbook perfectly demonstrates how to simulate a live, organic 
+# rock groove on a rigid 16-step sequencer. By using a high `cutoff` on 
+# the `:play_sub` synth for a driving, picked bass, and pairing it with 
+# wide, sustained chords, the engine creates a swaggering, psychedelic 
+# dancefloor atmosphere.
+# ==========================================================
+
+use_bpm 105
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Mixolydian - Swaggering, Psychedelic, & Rolling)
+# ==========================================================
+
+# The "Funky Drummer" Kick. 
+# Syncopated. Hits on step 0, the 'and' of 2 (step 6), beat 3 (step 8), 
+# and the 'a' of 4 (step 14).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil)
+
+# Heavy, live snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'e' of 3 (step 9).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# Swung, lazy 16th hats.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# The "Rolling" Bass (A Mixolydian).
+# Plays continuous 16th notes. The high cutoff (100) and short release (0.15) 
+# mimic a picked, chorus-soaked electric bass driving the groove.
+s_bass  = (ring {:note => :a2, :cutoff => 100, :release => 0.15}, {:note => :a2, :cutoff => 100, :release => 0.15}, {:note => :e2, :cutoff => 100, :release => 0.15}, {:note => :a2, :cutoff => 100, :release => 0.15}, 
+           {:note => :a2, :cutoff => 100, :release => 0.15}, {:note => :a2, :cutoff => 100, :release => 0.15}, {:note => :g2, :cutoff => 100, :release => 0.15}, {:note => :a2, :cutoff => 100, :release => 0.15}, 
+           {:note => :d2, :cutoff => 100, :release => 0.15}, {:note => :d2, :cutoff => 100, :release => 0.15}, {:note => :a2, :cutoff => 100, :release => 0.15}, {:note => :d2, :cutoff => 100, :release => 0.15}, 
+           {:note => :g2, :cutoff => 100, :release => 0.15}, {:note => :g2, :cutoff => 100, :release => 0.15}, {:note => :e2, :cutoff => 100, :release => 0.15}, {:note => :a2, :cutoff => 100, :release => 0.15})
+
+# Drifting, "Hammond Organ" Chords (A7 to G7 to D7).
+# Hit on the downbeats. The high cutoff (100) and long release (1.0) 
+# create a hypnotic, droning wall of sound.
+s_chords= (ring {:note => [:a3, :c4, :e4, :g4], :cutoff => 100, :release => 1.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:g3, :b3, :d4, :f4], :cutoff => 100, :release => 1.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Hooky, "Indie Guitar" Riff (A Mixolydian Pentatonic).
+# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
+# buzzy guitar tone. Routed through the engine's tape echo for a smear.
+s_fm    = (ring {:note => :a4, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, nil, 
+           {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, nil, 
+           {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, nil, 
+           {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, nil)
+
+# Psychedelic, "Baggy" vocal sample (Granular Synth).
+# Long size (0.15) and low density (1) creates a slow, evolving background 
+# texture that sounds like a distant singer echoing in a warehouse.
+s_grain = (ring {:note => :a3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :d3, :buffer => :misc_lori, :pos => 0.5, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the rolling bass, drums, and Hammond chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Vibe - Add the psychedelic vocal sample (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8] ],
+    
+  # Scene 3: The Drop - The hooky indie guitar riff drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INDIE DANCE]
+# 
+# 1. The Rolling 16th Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, driving the track forward unstoppably. By using a 
+#    high `cutoff` (100) and a very short `release` (0.15), the engine turns 
+#    the detuned sawtooth into a punchy, picked bass that perfectly mimics the 
+#    chorus-soaked basslines of 90s Madchester bands like The Stone Roses.
+#
+# 2. The Funky Drummer Syncopation: Look at `s_kick`. It completely avoids 
+#    landing on the standard 4/4 pulse. By hitting on steps 0, 6, 8, and 14, 
+#    the engine creates a lopsided, swaggering groove that feels like a live 
+#    drummer playing a 70s funk break, perfectly bridging the gap between rock 
+#    and house music.
+#
+# 3. Mixolydian Psychedelia: The entire track is built around A Mixolydian 
+#    (A, B, C#, D, E, F#, G). The flattened 7th (G) in the bassline and chords 
+#    creates a droning, hypnotic, and psychedelic tension that defined the 
+#    "Baggy" era, perfectly anchoring the track's dancefloor momentum.
+# ==========================================================

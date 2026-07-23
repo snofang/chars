@@ -1,0 +1,111 @@
+# ==========================================================
+# PLAYBOOK: 2000s PROGRESSIVE BREAKS / TRANCE BREAKS
+# (Pioneered by BT, Sasha, and Hybrid)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Progressive Breaks.
+# We have explored Progressive Trance (which is rigid 4/4) and Liquid DnB 
+# (which is fast and breakbeat). Progressive Breaks is the sound of the 
+# 2000s sunset festival. It fuses the emotional, sweeping chords of trance 
+# with a heavy, syncopated breakbeat, a continuous 16th-note rolling bass, 
+# and plucked, echoing FM synths.
+#
+# This playbook perfectly demonstrates how to create a driving breakbeat 
+# groove that still feels incredibly smooth and spacious. By pairing the 
+# broken kick pattern with a relentless 16th-note sub-bass and long, 
+# cascading FM delays, the engine creates a massive, cinematic soundscape.
+# ==========================================================
+
+use_bpm 128
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Sweeping, Cinematic, & Driving)
+# ==========================================================
+
+# The "Progressive Breakbeat" Kick. 
+# Syncopated. Hits on step 0, the 'and' of 2 (step 6), beat 3 (step 8), 
+# and the 'e' of 4 (step 10).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, {:note => :c4, :amp => 1.0}, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, nil, nil)
+
+# Heavy, echoing snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'and' of 3 (step 10).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# Bouncing, off-beat 16th hats.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# The "Rolling" Sub Bass (F Minor).
+# Plays continuous 16th notes, alternating octaves (:f1, :f2). 
+# Medium cutoff (80) and short release (0.1) create a relentless, hypnotic pump.
+s_bass  = (ring {:note => :f1, :cutoff => 80, :release => 0.1}, {:note => :f1, :cutoff => 80, :release => 0.1}, {:note => :f2, :cutoff => 80, :release => 0.1}, {:note => :f1, :cutoff => 80, :release => 0.1}, 
+           {:note => :f1, :cutoff => 80, :release => 0.1}, {:note => :f1, :cutoff => 80, :release => 0.1}, {:note => :ab1, :cutoff => 80, :release => 0.1}, {:note => :ab1, :cutoff => 80, :release => 0.1}, 
+           {:note => :ab1, :cutoff => 80, :release => 0.1}, {:note => :ab1, :cutoff => 80, :release => 0.1}, {:note => :ab2, :cutoff => 80, :release => 0.1}, {:note => :ab1, :cutoff => 80, :release => 0.1}, 
+           {:note => :eb1, :cutoff => 80, :release => 0.1}, {:note => :eb1, :cutoff => 80, :release => 0.1}, {:note => :c1, :cutoff => 80, :release => 0.1}, {:note => :f1, :cutoff => 80, :release => 0.1})
+
+# Massive, sweeping "Trance Pad" Chords (Fm to Ab to Eb).
+# Hit sparingly on the downbeats. The long release (2.0) lets them wash 
+# over the relentless bassline like a cinematic wave.
+s_chords= (ring {:note => [:f3, :ab3, :c4, :eb4], :cutoff => 100, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:ab2, :c3, :eb3, :g3], :cutoff => 100, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Plucked, echoing "BT" Arpeggio (F Minor Pentatonic).
+# Uses :play_fm with a high divisor (3). Notice the massive gaps (`nil`) 
+# between the notes. Routed through the global echo bus, these empty spaces 
+# are filled by delay tails, creating a cascading, stadium soundscape.
+s_fm    = (ring {:note => :f5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.8}, nil, nil, nil, 
+           {:note => :ab5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.8}, nil, nil, nil, 
+           {:note => :c6, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.8}, nil, nil, nil, 
+           {:note => :eb5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.8}, nil, nil, nil)
+
+# Ethereal, granular vocal pad (using :ambi_choir).
+# Long size (0.4) and low density (1) creates a slow, evolving celestial 
+# texture that drifts behind the breakbeat.
+s_grain = (ring {:note => :f4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :ab4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Sunrise - Just the sweeping chords, rolling bass, and vocal pad (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drive - Add the syncopated breakbeat drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Flight - The echoing plucked arpeggio drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC BREAKS]
+# 
+# 1. The Breakbeat Illusion: Look at `s_kick`. It completely avoids landing 
+#    on the standard 4/4 pulse. By hitting on steps 0, 6, 8, and 10, the 
+#    engine creates a lopsided, swaggering groove that feels like a live 
+#    drummer, perfectly contrasting the rigid 16th-note bassline.
+#
+# 2. The 16th-Note Pump: Progressive Breaks relies on continuous motion. 
+#    The `s_bass` never stops. The engine's strict master clock ensures 
+#    this 16-note sequence fires with absolute mathematical precision at 
+#    128 BPM, creating a relentless, hypnotic pulse that drives the track 
+#    forward unstoppably.
+#
+# 3. Cascading Echoes: The `s_fm` sequence plays a simple F minor pentatonic 
+#    melody, but leaves massive gaps (`nil`) between the notes. Because the 
+#    engine routes the `:play_fm` synth through the global tape echo, those 
+#    empty spaces are filled by delay tails, creating a massive, shimmering 
+#    soundscape that perfectly mimics the stadium-sized productions of BT.
+# ==========================================================

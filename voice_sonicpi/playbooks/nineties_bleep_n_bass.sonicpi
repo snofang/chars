@@ -1,0 +1,100 @@
+# ==========================================================
+# PLAYBOOK: 90s BLEEP & BASS / YORKSHIRE TECHNO
+# (Pioneered by LFO, Unique 3, and Sweet Exorcist)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Bleep & Bass.
+# We have explored Detroit Techno (which is futuristic and American) and 
+# 90s Rave (which is frantic). Bleep & Bass is the sound of the early 90s 
+# UK North. It was the bridge between Detroit Techno and UK Rave. It is 
+# famous for two specific things: massive, wobbling "Reese" sub-basslines 
+# and high-pitched, 8-bit "bleep" FM melodies.
+#
+# This playbook perfectly demonstrates how to use the `:play_sub` synth 
+# as a massive, continuous low-end anchor, and how to use `:play_fm` 
+# to create cold, robotic, 8-bit bleeps that feel like an old Commodore 64.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Cold, Robotic, & Heavy)
+# ==========================================================
+
+# Relentless, driving 4/4 kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, dry 909 clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Reese" Bass (E Minor).
+# Massive release (1.0) and low cutoff (60) to create a dark, continuous rumble.
+s_bass  = (ring {:note => :e1, :release => 1.0, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil, {:note => :g1, :release => 1.0, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil)
+
+# The "8-Bit Bleep" Melody (E Minor).
+# Uses :play_fm with a high divisor (4) and depth (1) to create a piercing, 
+# hollow, digital square wave that cuts through the heavy bass.
+s_fm    = (ring nil, nil, {:note => :e5, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.1}, nil, 
+           nil, nil, {:note => :b4, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.1}, nil, 
+           nil, nil, {:note => :g5, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.1}, nil, 
+           nil, nil, {:note => :a5, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.1}, nil)
+
+# Stark, minor chord stabs (Em).
+# Hit sparingly on the off-beats to leave maximum room for the Reese.
+s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil)
+
+# Pitched-down, robotic vocal "Chant" (Granular Synth).
+# Low density, tiny size = a dark, percussive vocal hit.
+s_vocal = (ring {:note => :e3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.04, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :e3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.04, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the kick, massive Reese, and 8-bit bleeps (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_fm, s_fm, 4] ],
+  
+  # Scene 2: The Groove - Add the claps, hats, and stark chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The robotic vocal chants drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN UK BLEEP & BASS]
+# 
+# 1. The Reese Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `release` of `1.0` (a whole beat) and a very low `cutoff` of `60`. 
+#    This creates a massive, continuous low-end rumble that anchors the 
+#    track. The engine's strict 16-step grid ensures this massive bass 
+#    note perfectly overlaps with the frantic 8-bit bleeps.
+#
+# 2. FM as an 8-Bit Bleep: The `s_fm` sequence uses `divisor: 4` and 
+#    `depth: 1`. This extreme harmonic ratio produces a piercing, hollow 
+#    square wave that perfectly mimics the sound of an old Commodore 64 
+#    or Amiga computer, which is the absolute genetic code of the Bleep 
+#    & Bass genre.
+#
+# 3. Robotic Granular Vocals: The `s_vocal` sequence uses the granular 
+#    engine to chop a vocal into a sharp, percussive hit. By pitching it 
+#    DOWN to `:e3` and using a tiny `size` (0.04), the engine turns the 
+#    vocal into a dark, robotic chant that locks perfectly with the kick.
+# ==========================================================

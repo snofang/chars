@@ -1,0 +1,110 @@
+# ==========================================================
+# PLAYBOOK: 80s ZOUK / FRENCH CARIBBEAN DANCE
+# (Pioneered by Kassav', Francky Vincent, and Zouk Machine)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Zouk.
+# We have explored Soca, Dancehall, and Latin genres, but Zouk is the 
+# sound of the French Caribbean (Martinique and Guadeloupe). It is famous 
+# for a highly distinctive, continuous 16th-note hi-hat pattern (simulating 
+# the traditional "Tibwa" percussion), a deep, melodic synth bass, and 
+# massive, sweeping digital brass chords. 
+#
+# This playbook perfectly demonstrates how to create a relentless, 
+# syncopated "Tibwa" groove on the 16-step grid. By pairing the fast hats 
+# with a warm, walking bass and bright FM brass stabs, the engine creates 
+# a festive, romantic, and distinctly Caribbean atmosphere.
+# ==========================================================
+
+use_bpm 110
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Minor - Festive, Syncopated, & Warm)
+# ==========================================================
+
+# The "Zouk" Kick. 
+# Syncopated. Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Heavy, dry snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+
+# The "Tibwa" Hi-Hats.
+# Plays continuous 16th notes with heavy amplitude manipulation to simulate 
+# the traditional Caribbean stick percussion.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2})
+
+# The "Walking Synth" Bass (C Minor).
+# Plays a melodic, syncopated line. Mid cutoff (80) and short release (0.2) 
+# mimic a warm, 80s analog synth bass.
+s_bass  = (ring {:note => :c2, :release => 0.2, :cutoff => 80}, nil, nil, {:note => :c2, :release => 0.2, :cutoff => 80}, nil, {:note => :f2, :release => 0.2, :cutoff => 80}, nil, nil, {:note => :g2, :release => 0.2, :cutoff => 80}, nil, nil, {:note => :c2, :release => 0.2, :cutoff => 80}, nil, {:note => :f2, :release => 0.2, :cutoff => 80}, nil, nil)
+
+# Lush, wide "Digital Brass" Chords (Cm to Fm to Gm).
+# Hit strictly on the off-beats (steps 2, 6, 10, 14). High cutoff (100) 
+# and medium release (0.3) create a sharp, 80s festival-sized wall of sound.
+s_chords= (ring nil, nil, [:c3, :eb3, :g3], nil, nil, nil, [:f3, :ab3, :c4], nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil, [:c3, :eb3, :g3], nil)
+
+# Bright, "Synth Sax/Brass" Melody (C Minor Pentatonic).
+# FIXED: Exactly 16 steps. Uses :play_fm with a low divisor (2) and depth (3) 
+# to create a warm, brassy tone. Routed through the engine's tape echo.
+s_fm    = (ring nil, {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.2}, nil, nil, 
+           {:note => :eb5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.2}, nil, 
+           {:note => :c5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.2}, nil, nil, nil, 
+           {:note => :g5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.2}, nil, 
+           {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.2}, nil, nil, nil)
+
+# Rhythmic, pitched-up "Carnival" vocal chant (Granular Synth).
+# High density, small size = a sharp, sugary vocal skip.
+s_vocal = (ring nil, nil, nil, nil, 
+           {:note => :c4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil, 
+           nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.4, :density => 2, :size => 0.05, :amp => 0.5}, nil, 
+           nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Carnival - Just the "Tibwa" hats, bass, and brass chords (4 bars)
+  [ [:play_hats, s_hats, 4], [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Groove - Add the syncopated kick and snares (8 bars)
+  [ [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8] ],
+    
+  # Scene 3: The Drop - The bright synth sax melody and vocal chants drop (8 bars)
+  [ [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CARIBBEAN SYNCOPATION]
+# 
+# 1. The "Tibwa" Illusion: Look at `s_hats`. The hats play continuous 16th 
+#    notes, but the amplitudes swing wildly between 0.15, 0.3, and 0.4. By 
+#    emphasizing the off-beats, the engine simulates the traditional "Tibwa" 
+#    stick percussion of Zouk, creating a relentless, bouncing groove that 
+#    feels distinctly French Caribbean.
+#
+# 2. The Walking Synth Bass: Look at `s_bass`. Instead of just playing the 
+#    root note, the bassline walks between C, F, and G. By using a mid-range 
+#    `cutoff` (80), the engine turns the `:dsaw` synth into a warm, 80s analog 
+#    bass that perfectly mimics the synth basslines of Kassav'.
+#
+# 3. FM as a Synth Sax: The `s_fm` sequence uses `divisor: 2` and `depth: 3`. 
+#    This harmonic ratio produces a warm, brassy tone that perfectly mimics 
+#    the digital saxophone presets that defined 80s Zouk. Routed through the 
+#    engine's tape echo, the sparse notes cascade across the empty space, 
+#    perfectly anchoring the track's festive, romantic atmosphere.
+# ==========================================================

@@ -1,0 +1,108 @@
+# ==========================================================
+# PLAYBOOK: DECONSTRUCTED CLUB / AVANT-GARDE ELECTRONIC
+# (Pioneered by Arca, SOPHIE, and Amnesia Scanner)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Deconstructed Club.
+# We have explored pristine pop and rigid techno. Deconstructed Club is the 
+# sound of the 2010s/2020s avant-garde underground. It takes the familiar 
+# elements of a club track (kicks, basses, vocals) and shatters them. 
+# It relies on hyper-quantized, metallic FM percussion, massive distorted 
+# sub-bass impacts, and pitch-shifted, sugary vocal glitches that sound 
+# like plastic melting.
+#
+# This playbook perfectly demonstrates how to push the `:play_fm` synth 
+# to its absolute breaking point. By using extreme `divisor` and `depth` 
+# Hashes, the engine turns the FM synth into latex, metal, and glass, 
+# creating a chaotic, futuristic soundscape.
+# ==========================================================
+
+use_bpm 140
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Chaotic, Metallic, & Hyper-Digital)
+# ==========================================================
+
+# Sparse, syncopated kick. 
+# Hits on step 0, the 'a' of 2 (step 7), and the 'e' of 3 (step 10).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil)
+
+# The "Metallic Latex" Clap (A Minor).
+# Uses :play_fm instead of a sample. The high divisor (4) and extreme depth (5) 
+# create a sharp, metallic, plastic "snap" that cuts through the mix.
+s_clap  = (ring nil, nil, nil, nil, {:note => :c5, :amp => 0.7, :divisor => 4, :depth => 5, :release => 0.05}, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :amp => 0.7, :divisor => 3, :depth => 6, :release => 0.05}, nil, nil, nil)
+
+# Massive, distorted sub-bass impacts (A Minor).
+# Uses play_sub. Hits strictly on the downbeats. Very low cutoff (50) and 
+# massive release (1.5) create a heavy, suffocating industrial rumble.
+s_bass  = (ring {:note => :a1, :release => 1.5, :cutoff => 50, :amp => 1.2}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :g1, :release => 0.2, :cutoff => 120, :amp => 1.0}, nil)
+
+# The "Shattered" FM Lead/Percussion (A Minor Pentatonic).
+# FIXED: Exactly 16 steps. Uses :play_fm. The divisor and depth change radically 
+# on every single hit, forcing the synth to morph between a hollow click, a 
+# piercing square wave, and a squelchy robotic chirp.
+s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 8, :release => 0.05}, nil, nil, 
+           {:note => :e4, :amp => 0.5, :divisor => 4, :depth => 3, :release => 0.05}, nil, 
+           {:note => :c6, :amp => 0.7, :divisor => 3, :depth => 6, :release => 0.05}, nil, nil, 
+           {:note => :a4, :amp => 0.6, :divisor => 5, :depth => 4, :release => 0.05}, nil, nil, 
+           {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 8, :release => 0.05}, nil, 
+           {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 5, :release => 0.05}, nil, nil)
+
+# Dissonant, wide chord stabs (Am to Gm).
+# Hit sparingly on the off-beats. The extreme high cutoff (130) and tiny 
+# release (0.1) create a sharp, digital "razor" stab.
+s_chords= (ring nil, nil, nil, nil, {:note => [:a3, :c4, :eb4, :fs4], :cutoff => 130, :release => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => [:g3, :bb3, :db4, :e4], :cutoff => 130, :release => 0.1, :amp => 0.5}, nil, nil, nil)
+
+# Hyper-glitched, "Sugary" Vocal FX (Granular Synth).
+# Pitched UP and scattered. Extreme density (5) and microscopic size (0.02) 
+# turn the vocal into a sharp, digital, plastic stutter.
+s_vocal = (ring nil, nil, {:note => :a5, :buffer => :misc_lori, :pos => 0.1, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, nil, {:note => :c4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.5}, nil, nil, {:note => :e5, :buffer => :misc_lori, :pos => 0.3, :density => 4, :size => 0.02, :amp => 0.6}, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.4, :density => 5, :size => 0.02, :amp => 0.5}, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the massive sub-bass, metallic claps, and FM blips (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_clap, 4], [:play_fm, s_fm, 4] ],
+  
+  # Scene 2: The Machine - Add the sparse kick and dissonant chords (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_clap, 8], [:play_fm, s_fm, 8], 
+    [:play_kick, s_kick, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Meltdown - The hyper-glitched vocal FX drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_clap, 8], [:play_fm, s_fm, 8], 
+    [:play_kick, s_kick, 8], [:play_chords, s_chords, 8], 
+    [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN AVANT-GARDE SOUND DESIGN]
+# 
+# 1. FM as Latex and Metal: Look at `s_clap` and `s_fm`. Instead of using 
+#    drum samples, the engine uses the `:play_fm` synth with extreme `divisor` 
+#    (4) and `depth` (5/8) Hashes. This forces the FM modulator to shatter 
+#    the carrier wave, creating sharp, metallic, plastic "snaps" and "chirps" 
+#    that perfectly mimic the sound design of SOPHIE and Arca.
+#
+# 2. Extreme Dynamic Contrast: The track relies on the stark contrast between 
+#    the massive, slow sub-bass (`s_bass` with a cutoff of 50) and the 
+#    high-pitched, hyper-quantized FM blips. The engine's strict master clock 
+#    ensures these vastly different sound design elements lock together with 
+#    absolute mathematical precision.
+#
+# 3. Micro-Glitched Granular: Look at `s_vocal`. The granular engine is given 
+#    a microscopic `size` (0.02) and high `density` (5). By pitching the grains 
+#    UP (:a5, :e5), the engine shatters the vocal into a sharp, sugary, digital 
+#    stutter that sounds more like a computer glitch than a human voice.
+# ==========================================================

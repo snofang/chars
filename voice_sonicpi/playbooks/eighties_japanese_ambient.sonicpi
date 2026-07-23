@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: 80s JAPANESE AMBIENT / KANKYO ONGAKU
+# (Pioneered by Hiroshi Yoshimura, Midori Takada, and Satoshi Ashikawa)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Japanese Ambient 
+# (Kankyo Ongaku, or "Environmental Music"). We have explored high-energy 
+# electronic genres and dark, cinematic genres. Kankyo Ongaku is the sound 
+# of pure, pristine tranquility. It was designed to blend with nature. 
+# It relies on extreme sparsity, lush, slow-attacking granular textures, 
+# and soft, glassy FM bells (like the Yamaha DX7) that feel like water 
+# droplets falling in a zen garden.
+#
+# This playbook perfectly demonstrates the power of extreme negative space 
+# and slow envelopes. By leaving 90% of the 16-step grid empty (`nil`), 
+# the engine creates a slow, breathing atmosphere that feels like stepping 
+# into a tranquil, 80s minimalist dream.
+# ==========================================================
+
+use_bpm 60
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Calm, Pristine, & Spacious)
+# ==========================================================
+
+# Ultra-sparse, soft kick. 
+# Hits only once per bar on step 0.
+s_kick  = (ring {:note => :c4, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+# Very sparse, organic shaker.
+# Hits on the 'and' of 2 (step 6) and the 'and' of 4 (step 14).
+s_hats  = (ring nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.1}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.15}, nil)
+
+# Massive, slow-attacking "String Synth" Chords (Dmaj9 to Amaj7).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, warm wave.
+s_chords= (ring {:note => [:d3, :f3, :a3, :e4], :cutoff => 80, :attack => 2.0, :release => 4.0, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a2, :c3, :e3, :b3], :cutoff => 80, :attack => 2.0, :release => 4.0, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# Deep, warm drone bass (D Major).
+# Hits strictly on the downbeats. Very low cutoff (60) and massive release 
+# (2.0) to create a continuous, muffled undercurrent.
+s_bass  = (ring {:note => :d1, :release => 2.0, :cutoff => 60, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :a1, :release => 2.0, :cutoff => 60, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil)
+
+# Soft, "Water Droplet" FM Bells (D Major Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (1) to create a soft, 
+# glassy, sine-like wave. Routed through the engine's tape echo for a smear.
+s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.4, :divisor => 3, :depth => 1, :release => 2.0}, nil, nil, nil, 
+           nil, nil, nil, nil, {:note => :a4, :amp => 0.3, :divisor => 3, :depth => 1, :release => 2.0}, nil, 
+           {:note => :f4, :amp => 0.3, :divisor => 3, :depth => 1, :release => 2.0}, nil)
+
+# Lush, granular "Garden" texture (using :elec_piano buffer).
+# Massive size (0.5s) and low density (1) time-stretches the sample into a 
+# slow, evolving background drone that sounds like wind chimes or water.
+s_grain = (ring {:note => :d4, :buffer => :elec_piano, :pos => 0.1, :density => 1, :size => 0.5, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :elec_piano, :pos => 0.4, :density => 1, :size => 0.5, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Garden - Just the slow chords, drone bass, and granular texture (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Rain - Add the ultra-sparse drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Stillness - The water droplet FM bells drop (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN TRANQUILITY]
+# 
+# 1. Extreme Negative Space: Kankyo Ongaku relies on what you *don't* play. 
+#    90% of the `s_kick`, `s_hats`, and `s_fm` grids are `nil`. The engine 
+#    honors these rests perfectly, letting the massive release tails of the 
+#    chords and bass ring out into the void, creating a slow, breathing 
+#    atmosphere that feels like stepping into an empty zen garden.
+#
+# 2. Data-Driven Swells: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `2.0` and a `release` of `4.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over six whole beats, creating a continuous, blurred wave 
+#    of warm harmony.
+#
+# 3. Granular Water: The `s_grain` sequence uses a massive `size` of `0.5` 
+#    (500 milliseconds). By time-stretching the electric piano sample to 
+#    half a second per grain, the engine turns the sample into a slow, 
+#    evolving drone that sounds more like wind chimes or flowing water than 
+#    a synthesizer, perfectly anchoring the track's environmental aesthetic.
+# ==========================================================

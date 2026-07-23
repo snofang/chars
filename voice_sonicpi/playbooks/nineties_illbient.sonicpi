@@ -1,0 +1,103 @@
+# ==========================================================
+# PLAYBOOK: 90s ILLBIENT / NYC EXPERIMENTAL HIP-HOP
+# (Pioneered by DJ Spooky, Dr. Octagon, and We™)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Illbient.
+# We have explored Trip-Hop (which is melancholic) and Dark R&B (which 
+# is cinematic). Illbient is the sound of 90s New York City underground.
+# It blends the slow, dragging groove of hip-hop with the massive, echoing 
+# delays of dub music and dark, dissonant ambient textures. 
+#
+# This playbook perfectly demonstrates how to use extreme negative space 
+# and massive `release` times to create a slow, suffocating, and eerie 
+# atmosphere. By using a very low `cutoff` on the bass and long, sweeping 
+# granular drones, the engine creates a soundscape that feels like 
+# wandering through an abandoned subway station at 3 AM.
+# ==========================================================
+
+use_bpm 75
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Dark, Dubby, & Eerie)
+# ==========================================================
+
+# Sparse, dub-style kick. 
+# Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 10).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil)
+
+# Heavy, echoing snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+
+# Very sparse, reversed-sounding hats.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.15}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.2}, nil, nil, nil, nil, nil)
+
+# Deep, massive dub sub-bass (E Minor).
+# Hits strictly on the downbeats. Very low cutoff (60) and massive release 
+# (2.0) create a heavy, continuous rumble.
+s_bass  = (ring {:note => :e1, :release => 2.0, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil, {:note => :g1, :release => 2.0, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil)
+
+# Eerie, dissonant minor chords (Em to Cmaj7#5).
+# Hit sparingly on the downbeats. The slow 0.5-beat attack and massive 2.5-beat 
+# release blur the chords together into a continuous, haunting drone.
+s_chords= (ring {:note => [:e3, :g3, :b3], :cutoff => 70, :attack => 0.5, :release => 2.5, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => [:c3, :e3, :g3, :b3], :cutoff => 70, :attack => 0.5, :release => 2.5, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# Sci-fi, echoing "Blip" Melody (E Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a soft, 
+# hollow tone. Routed through the engine's tape echo for a cavernous smear.
+s_fm    = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, nil, {:note => :b4, :amp => 0.4, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, nil, {:note => :g5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, nil)
+
+# Pitched-down, time-stretched "Subway" vocal drone (Granular Synth).
+# Long size (0.4) and low density (1) creates a slow, evolving background 
+# texture that sounds like a distant voice echoing in a tunnel.
+s_grain = (ring {:note => :e3, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.4, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :c3, :buffer => :misc_lori, :pos => 0.6, :density => 1, :size => 0.4, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Tunnel - Just the massive bass, eerie chords, and vocal drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Echo - Add the sparse, dub-style drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Void - The echoing sci-fi blips drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN URBAN DREAD]
+# 
+# 1. The Dub Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `release` of `2.0` (nearly three whole beats) and a very low `cutoff` 
+#    of `60`. Because the BPM is 75, that low E note rings out for over two 
+#    seconds, creating a massive, suffocating low-end that carries the dark 
+#    harmony and provides immense weight.
+#
+# 2. Extreme Negative Space: Illbient relies on what you *don't* play. 
+#    90% of the `s_hats` and `s_fm` grids are `nil`. The engine honors 
+#    these rests perfectly, letting the reverb tails of the snare and the 
+#    delay tails of the FM melody ring out into the void, creating a slow, 
+#    echoing atmosphere that feels like wandering through an empty city.
+#
+# 3. Swelling Dissonance: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `0.5` and a `release` of `2.5`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of eerie harmony that 
+#    perfectly anchors the track's hallucinatory atmosphere.
+# ==========================================================
