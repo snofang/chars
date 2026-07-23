@@ -1,0 +1,111 @@
+# ==========================================================
+# PLAYBOOK: 80s DETROIT TECHNO / BELLEVILLE THREE
+# (Pioneered by Derrick May, Juan Atkins, and Kevin Saunderson)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Detroit Techno.
+# We have explored Peak-Time Techno (which is modern and heavy) and Minimal 
+# Techno (which is sparse and clinical). 80s Detroit Techno is the absolute 
+# genesis of the genre. It was born from the fusion of Kraftwerk's robotic 
+# electronic pop and funk. It relies on a relentless 4/4 grid, a continuous 
+# 16th-note analog bassline (the Roland SH-101 sound), and massive, 
+# emotional string stabs that feel like dancing in an abandoned Detroit 
+# warehouse.
+#
+# This playbook perfectly demonstrates how to use the `:play_sub` synth 
+# to create a relentless, rolling "pulse" and how to use the `:play_chords` 
+# synth to simulate massive, echoing string stabs.
+# ==========================================================
+
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Robotic, Emotional, & Driving)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, analog clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "SH-101" Rolling Bass (D Minor).
+# Plays continuous 16th notes, alternating octaves (:d2, :d3). 
+# High cutoff (100) and short release (0.1) create a relentless, buzzing churn.
+s_bass  = (ring {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, {:note => :d2, :cutoff => 100, :release => 0.1}, 
+           {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :f2, :cutoff => 100, :release => 0.1}, {:note => :f2, :cutoff => 100, :release => 0.1}, 
+           {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :g3, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, 
+           {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :f2, :cutoff => 100, :release => 0.1})
+
+# Massive, emotional "String Stab" Chords (Dm to G to A).
+# Hit strictly on the off-beats (steps 2, 6, 10, 14). High cutoff (110) 
+# and long release (1.5) create a soaring, stadium-sized wall of sound.
+s_chords= (ring nil, nil, {:note => [:d3, :f3, :a3], :cutoff => 110, :release => 1.5, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:d3, :f3, :a3], :cutoff => 110, :release => 1.5, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:g3, :b3, :d4], :cutoff => 110, :release => 1.5, :amp => 0.6}, nil, 
+           nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 110, :release => 1.5, :amp => 0.6}, nil)
+
+# High-pitched, echoing "Starlight" Melody (D Minor Pentatonic).
+# Uses :play_fm with a high divisor (3). Notice the massive gaps (`nil`) 
+# between the notes. Routed through the global echo bus, these empty spaces 
+# are filled by delay tails, creating a cascading, futuristic soundscape.
+s_fm    = (ring {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, {:note => :f5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, {:note => :g5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, nil)
+
+# Ethereal, granular cosmic drone (using :ambi_choir).
+# Long size (0.3) and low density (1) creates a slow, evolving celestial 
+# texture that drifts in the background like a distant galaxy.
+s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.5, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Warehouse - Just the kick, rolling bass, and cosmic drone (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drive - Add the claps, hats, and massive string stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Future - The echoing "Starlight" melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DETROIT FUTURISM]
+# 
+# 1. The SH-101 Pulse: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:d2) and 
+#    the high octave (:d3). By using a high `cutoff` (100) and a very short 
+#    `release` (0.1), the engine turns the detuned sawtooth into a relentless, 
+#    buzzing "chug" that perfectly mimics the classic Roland SH-101 sequences 
+#    used to anchor early Detroit Techno.
+#
+# 2. The String Stab: Look at `s_chords`. The arrays form massive 3-note 
+#    minor chords. By using a high `cutoff` (110) and a long `release` (1.5), 
+#    the engine turns the `:blade` synth into a soaring, echoing string stab 
+#    that washes over the relentless bassline, perfectly mimicking the 
+#    emotional, orchestral samples used by Derrick May.
+#
+# 3. Echoing Starlight: The `s_fm` sequence plays a simple D minor pentatonic 
+#    melody, but leaves massive gaps (`nil`) between the notes. Because the 
+#    engine routes the `:play_fm` synth through a tape echo, those empty 
+#    spaces are filled by delay tails, creating a cascading, futuristic 
+#    soundscape that feels like flying through space.
+# ==========================================================

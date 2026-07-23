@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: 2020s STUTTER HOUSE / UK GARAGE REVIVAL
+# (Pioneered by Fred again.., PinkPantheress, and salute)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2020s Stutter House.
+# We have explored classic 90s Garage and modern Tech House, but Stutter 
+# House is the defining sound of the 2020s internet era. It fuses the 
+# bouncy 130 BPM 2-step drum grid with massive, emotional, chopped vocal 
+# stutters and lush, nostalgic major chords. 
+#
+# This playbook perfectly demonstrates how to push the Granular Synthesizer 
+# to its absolute rhythmic limit. By scattering tiny, high-pitched vocal 
+# grains across the 16-step grid, the engine turns a vocal sample into the 
+# main melody, creating a deeply emotional, viral, and contemporary sound.
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (Eb Major - Nostalgic, Bouncy, & Emotional)
+# ==========================================================
+
+# The "Swung 2-Step" Kick. 
+# Hits on step 0, then stutters on the 'a' of 2 (step 7) and beat 3 (step 8).
+s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil)
+
+# Tight, metallic snare strictly on beat 2 (step 4), with a ghost on the 'a' of 4.
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.3})
+
+# Bouncing, syncopated 16th hats.
+s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil)
+
+# Deep, warm Reese Sub-Bass (Eb Major).
+# Massive release (1.5) and low cutoff (60) to create a dark, rumbling undercurrent.
+s_bass  = (ring {:note => :eb1, :release => 1.5, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil, {:note => :ab1, :release => 1.5, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil)
+
+# Lush, nostalgic Major 9th chords (Ebmaj9 to Abmaj7).
+# Hit on the downbeats. The 0.5-beat attack makes them slowly swell into the 
+# mix like a warm memory.
+s_chords= (ring {:note => [:eb3, :g3, :bb3, :d4], :cutoff => 90, :attack => 0.5, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:ab2, :c3, :eb3, :g3], :cutoff => 90, :attack => 0.5, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# The "Chopped Vocal" Melody (Granular Synth).
+# Pitched UP to :eb4, :g4, :bb4. High density (3), tiny size (0.04) = a sharp, 
+# emotional vocal stutter that acts as the main hook of the track.
+s_vocal = (ring {:note => :eb4, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
+           {:note => :bb4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
+           {:note => :eb5, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04, :amp => 0.7}, nil, nil, nil, 
+           {:note => :g4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
+           {:note => :ab4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
+           {:note => :c5, :buffer => :misc_lori, :pos => 0.6, :density => 3, :size => 0.04, :amp => 0.7}, nil, nil, nil)
+
+# Soft, echoing "Music Box" Counter-Melody (Eb Major Pentatonic).
+# FIXED: Exactly 16 steps. Uses :play_fm with a high divisor (3) and low depth (1) 
+# to create a soft, sine-like wave. Routed through the engine's tape echo.
+s_fm    = (ring nil, nil, nil, {:note => :eb5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 0.5}, 
+           nil, nil, nil, nil, nil, {:note => :c5, :amp => 0.4, :divisor => 3, :depth => 1, :release => 0.5}, 
+           nil, nil, nil, nil, {:note => :bb4, :amp => 0.5, :divisor => 3, :depth => 1, :release => 0.5}, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Memory - Just the swelling chords, Reese bass, and vocal chops (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Groove - Add the swung 2-step drums and music box (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MODERN NOSTALGIA]
+# 
+# 1. Granular as a Lead: Look at `s_vocal`. The granular engine is used not 
+#    for ambient drones, but as the main melodic hook. By pitching the grains 
+#    UP (:eb4, :bb4) and using a tiny `size` (0.04), the engine chops the 
+#    vocal into a sharp, sugary stutter that perfectly mimics the signature 
+#    "Fred again.." chopped vocal style.
+#
+# 2. The Swung 2-Step: Look at `s_kick`. After the initial hit on step 0, 
+#    the next kick doesn't hit until step 7 (the very last 16th note of 
+#    beat 2), followed immediately by step 8. Because the engine's master 
+#    clock is rigid, this specific placement creates a lopsided, "drunken" 
+#    groove that feels like walking through puddles on a wet street.
+#
+# 3. Swelling Emotion: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `0.5` and a `release` of `2.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of nostalgic harmony 
+#    that perfectly anchors the frantic vocal chops.
+# ==========================================================

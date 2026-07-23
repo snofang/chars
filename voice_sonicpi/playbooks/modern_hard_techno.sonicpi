@@ -1,0 +1,103 @@
+# ==========================================================
+# PLAYBOOK: MODERN HARD TECHNO / PEAK-TIME INDUSTRIAL
+# (Pioneered by I Hate Models, 999999999, and Charlie Sparks)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Modern Hard Techno.
+# We have explored Detroit Techno (which is melodic) and Minimal Techno 
+# (which is sparse). Modern Hard Techno is the sound of the current 
+# underground festival circuit (like Awakenings and Time Warp). It pushes 
+# the tempo to 138 BPM and relies on a relentless 4/4 kick, a massively 
+# distorted, continuous 16th-note rolling bass, and piercing, industrial 
+# FM "alarm" stabs.
+#
+# This playbook perfectly demonstrates how to push the `:play_sub` synth 
+# into absolute overdrive. By using an extreme `cutoff` (120) and a 
+# microscopic `release` (0.1) on continuous 16th notes, the engine creates 
+# a grinding, aggressive wall of sound that drives the track forward 
+# unstoppably.
+# ==========================================================
+
+use_bpm 138
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Relentless, Distorted, & Industrial)
+# ==========================================================
+
+# Relentless, heavy 4/4 kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Heavy, dry industrial clap strictly on beats 2 and 4 (steps 4 and 12).
+s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+
+# Rigid, off-beat open hats to drive the momentum.
+s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# The "Distorted" Rolling Bass (D Minor).
+# Plays continuous 16th notes, alternating octaves (:d1, :d2). 
+# Extreme cutoff (120) and short release (0.1) create a grinding, distorted churn.
+s_bass  = (ring {:note => :d1, :cutoff => 120, :release => 0.1}, {:note => :d1, :cutoff => 120, :release => 0.1}, {:note => :d2, :cutoff => 120, :release => 0.1}, {:note => :d1, :cutoff => 120, :release => 0.1}, 
+           {:note => :d1, :cutoff => 120, :release => 0.1}, {:note => :d1, :cutoff => 120, :release => 0.1}, {:note => :f1, :cutoff => 120, :release => 0.1}, {:note => :f1, :cutoff => 120, :release => 0.1}, 
+           {:note => :f1, :cutoff => 120, :release => 0.1}, {:note => :f1, :cutoff => 120, :release => 0.1}, {:note => :f2, :cutoff => 120, :release => 0.1}, {:note => :f1, :cutoff => 120, :release => 0.1}, 
+           {:note => :g1, :cutoff => 120, :release => 0.1}, {:note => :g1, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :d1, :cutoff => 120, :release => 0.1})
+
+# Stark, minor chord stabs (Dm to Gm).
+# Hit sparingly on the off-beats to leave maximum room for the rolling bass.
+s_chords= (ring nil, nil, [:d3, :f3, :a3], nil, nil, nil, [:d3, :f3, :a3], nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil, [:g3, :bb3, :d4], nil)
+
+# Piercing, "Industrial Alarm" FM Lead (D Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and extreme depth (4) to create a 
+# sharp, robotic square wave that cuts through the heavy bass.
+s_fm    = (ring nil, nil, nil, nil, {:note => :d6, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.1}, nil, {:note => :a5, :amp => 0.4, :divisor => 3, :depth => 4, :release => 0.1}, nil, nil, {:note => :d6, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.1}, nil, {:note => :f6, :amp => 0.6, :divisor => 3, :depth => 4, :release => 0.1}, nil, nil, {:note => :a5, :amp => 0.4, :divisor => 3, :depth => 4, :release => 0.1}, nil)
+
+# The "Grinding" Granular FX.
+# Uses :elec_piano buffer. High density, tiny size = industrial, machine-like static.
+s_grain = (ring {:note => :d3, :buffer => :elec_piano, :pos => 0.1, :density => 6, :size => 0.05, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil, {:note => :d3, :buffer => :elec_piano, :pos => 0.5, :density => 6, :size => 0.05, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Warehouse - Just the relentless kick and distorted bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Machine - Add the claps, hats, and stark chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Meltdown - The piercing FM alarm and granular static drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_fm, 8], [:play_grain, s_grain, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INDUSTRIAL MOMENTUM]
+# 
+# 1. Data-Driven Overdrive: Look at `s_bass`. The `:play_sub` synth is given 
+#    an extreme `cutoff` of `120` on every single 16th step. This leaves the 
+#    filter wide open, letting all the harsh, high-frequency harmonics of the 
+#    detuned sawtooth through. This creates a relentless, buzzing "chug" that 
+#    perfectly mimics the overdriven modular basslines of modern Hard Techno.
+#
+# 2. The 16th-Note Roll: Hard Techno relies on continuous motion. The `s_bass` 
+#    never stops. The engine's strict master clock ensures this 16-note 
+#    sequence fires with absolute mathematical precision at 138 BPM, creating 
+#    a relentless, hypnotic pulse that drives the track forward unstoppably.
+#
+# 3. Extreme FM Aggression: The `s_fm` sequence uses `divisor: 3` and an 
+#    extreme `depth` of `4`. This harsh harmonic ratio forces the FM synth 
+#    to produce a piercing, metallic alarm sound that cuts through the heavy 
+#    bass and drums without needing external distortion effects.
+# ==========================================================

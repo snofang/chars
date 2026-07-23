@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: 80s NEW ROMANTIC / EARLY SYNTHPOP
+# (Pioneered by Duran Duran, Visage, and Spandau Ballet)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s New Romantic.
+# We have explored dark, cold genres (Darkwave, Post-Punk) and high-energy 
+# dance genres (Italo Disco, Hi-NRG). New Romantic is the sound of early 
+# 80s glamour. It relies on pristine, punchy LinnDrum beats, deep, melodic 
+# "fretless" basslines, and massive, sweeping string synthesizer pads that 
+# feel like walking into a lavish, neon-lit ballroom.
+#
+# This playbook perfectly demonstrates how to use the `:play_sub` synth 
+# with a mid-range `cutoff` to simulate a melodic fretless bass, and how 
+# to use `:play_chords` with long attacks and releases to create lush, 
+# cinematic string pads.
+# ==========================================================
+
+use_bpm 118
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Lush, Melodic, & Glamorous)
+# ==========================================================
+
+# Pristine, punchy LinnDrum-style 4/4 kick.
+s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+
+# Crisp, organic LinnDrum snare strictly on beats 2 and 4 (steps 4 and 12), 
+# with a ghost snare on the 'a' of 4 (step 14).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.3}, nil)
+
+# Rigid, alternating 16th hats. 
+# Notice the amplitude difference (0.3 vs 0.15) that creates a robotic march.
+s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15})
+
+# The "Fretless" Melodic Bass (D Major).
+# Plays a slow, melodic line. Mid cutoff (90) and medium release (0.3) 
+# mimic the warm, gliding tone of a fretless electric bass.
+s_bass  = (ring {:note => :d2, :release => 0.3, :cutoff => 90}, nil, nil, nil, {:note => :d2, :release => 0.3, :cutoff => 90}, nil, nil, nil, {:note => :f2, :release => 0.3, :cutoff => 90}, nil, nil, nil, {:note => :g2, :release => 0.3, :cutoff => 90}, nil, nil, nil)
+
+# Lush, sweeping "String Synth" Chords (Dmaj7 to Gmaj7).
+# Hit on the downbeats. The slow 0.5-beat attack and massive 2.0-beat release 
+# blur the chords together into a continuous, cinematic string pad.
+s_chords= (ring {:note => [:d3, :a3, :d4, :fs4], :cutoff => 100, :attack => 0.5, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:g2, :d3, :g3, :b3], :cutoff => 100, :attack => 0.5, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Bright, shimmering "Marimba/Celesta" Melody (D Major Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (1) to create a soft, 
+# glassy, sine-like wave. Routed through the engine's tape echo for a smear.
+s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 0.3}, nil, {:note => :a4, :amp => 0.4, :divisor => 3, :depth => 1, :release => 0.3}, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 0.3}, nil, {:note => :g4, :amp => 0.4, :divisor => 3, :depth => 1, :release => 0.3}, nil, {:note => :a4, :amp => 0.5, :divisor => 3, :depth => 1, :release => 0.3}, nil, nil, nil)
+
+# Ethereal, sweeping "Choir" Pad (Granular Synth).
+# Long size (0.2) and low density (1) creates a slow, evolving background 
+# texture that sounds like a massive choir in a concert hall.
+s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.2, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.6, :density => 2, :size => 0.2, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Ballroom - Just the fretless bass, string chords, and choir (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the pristine LinnDrum beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Dance - The shimmering marimba melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S GLAMOUR]
+# 
+# 1. The Fretless Bass Illusion: Look at `s_bass`. The `:play_sub` synth is 
+#    given a `cutoff` of `90` and a `release` of `0.3`. This strips away the 
+#    sub-frequencies and lets the note ring out just slightly, perfectly 
+#    mimicking the warm, gliding tone of a fretless electric bass driving 
+#    a melodic progression.
+#
+# 2. Sweeping String Synths: Look at `s_chords`. The Hashes specify an 
+#    `attack` of `0.5` and a `release` of `2.0`. Because the engine reads 
+#    these Hashes, the chords don't just hit; they slowly swell into the mix 
+#    and fade away, creating a continuous, blurred wave of lush harmony that 
+#    perfectly mimics 80s Roland Jupiter-8 string pads.
+#
+# 3. Shimmering FM: The `s_fm` sequence uses `divisor: 3` and `depth: 1`. 
+#    This gentle ratio produces a soft, glassy, sine-like wave that mimics 
+#    a marimba or celesta. Routed through the tape echo, the sparse notes 
+#    cascade across the empty space, perfectly anchoring the track's lavish, 
+#    romantic atmosphere.
+# ==========================================================

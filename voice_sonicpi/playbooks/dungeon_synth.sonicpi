@@ -1,0 +1,97 @@
+# ==========================================================
+# PLAYBOOK: DUNGEON SYNTH / DARK AMBIENT
+# (Pioneered by Mortiis, Fief, and Erang)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# We have explored high-energy rave genres and dark techno. Dungeon Synth 
+# is the sound of 90s black metal side-projects. It is deeply atmospheric, 
+# nostalgic, and slow. It relies on continuous 16th-note harpsichord 
+# arpeggios, massive sustained choir pads, and sparse, heavy drums.
+#
+# This playbook perfectly demonstrates how to create a medieval fantasy 
+# atmosphere purely via data. By using a high `cutoff` on the FM synth for 
+# a buzzy harpsichord, and massive `release` times on the chords, the 
+# engine creates a cavernous, haunting soundscape.
+# ==========================================================
+
+use_bpm 80
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Medieval, Haunting, & Majestic)
+# ==========================================================
+
+# Slow, heavy marching kick. 
+# Hits on step 0, beat 3 (step 8), and a ghost on the 'a' of 4 (step 14).
+s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+
+# Massive, echoing snare strictly on beats 2 and 4 (steps 4 and 12).
+s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+
+# The "Harpsichord" Arpeggio (D Minor).
+# Uses :play_fm with a low divisor (2) and high depth (3) to create a sharp, 
+# buzzy string tone. Plays continuous, relentless 16th notes.
+s_fm    = (ring {:note => :d4, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :a4, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :f5, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, 
+           {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :a4, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :f5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :d5, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, 
+           {:note => :a4, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :e5, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :c5, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, 
+           {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :e5, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :a4, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1})
+
+# Deep, slow drone bass (D Minor).
+# Uses play_sub. Hits strictly on the downbeats. Low cutoff (60) and massive 
+# release (2.0) create a heavy, continuous undercurrent.
+s_bass  = (ring {:note => :d1, :release => 2.0, :cutoff => 60, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :a1, :release => 2.0, :cutoff => 60, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+
+# Massive, sweeping minor chords (Dm to Am).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, haunted choir wave.
+s_chords= (ring {:note => [:d3, :f3, :a3, :d4], :cutoff => 90, :attack => 1.0, :release => 3.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a2, :c3, :e3, :a3], :cutoff => 90, :attack => 1.0, :release => 3.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+
+# Ethereal, granular "Cave/Choir" drone (using :ambi_choir).
+# Long size (0.4) and low density (1) creates a slow, evolving celestial 
+# texture that drifts in the background like a cold wind.
+s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Crypt - Just the drone bass, choir, and harpsichord (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_grain, s_grain, 4], [:play_fm, s_fm, 4] ],
+  
+  # Scene 2: The March - Add the slow, heavy drums and sweeping chords (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_fm, s_fm, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_chords, s_chords, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MEDIEVAL ATMOSPHERE]
+# 
+# 1. FM as a Harpsichord: Look at `s_fm`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `3`. This creates a sharp, buzzy 
+#    string tone that perfectly mimics a medieval harpsichord. By playing 
+#    continuous 16th notes, the engine creates a relentless, hypnotic 
+#    arpeggio that drives the track forward without needing a fast tempo.
+#
+# 2. Swelling Ghosts: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `1.0` and a `release` of `3.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over three whole beats, creating a continuous, blurred wave 
+#    of dark harmony that sounds like a choir echoing in a cavern.
+#
+# 3. Extreme Sub-Weight: Dungeon Synth relies on a deep, rumbling low-end. 
+#    The `s_bass` sequence uses a very low `cutoff` (60) and a massive 
+#    `release` (2.0) to keep it muffled and continuous. The engine's strict 
+#    16-step grid ensures this massive bass note perfectly anchors the 
+#    frantic harpsichord arpeggio, creating a feeling of immense weight and 
+#    dread.
+# ==========================================================
