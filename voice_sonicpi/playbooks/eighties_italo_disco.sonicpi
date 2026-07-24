@@ -1,0 +1,114 @@
+# ==========================================================
+# PLAYBOOK: 80s ITALO DISCO / EURO-DISCO
+# (Pioneered by Giorgio Moroder, Sabrina, and Ryan Paris)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Italo Disco.
+# We have explored Synthpop and Spacesynth, but Italo Disco is the sound 
+# of 80s Mediterranean club nights. It fuses a relentless, driving 4/4 beat 
+# with the famous "Moroder" bass (a continuous, octave-jumping 16th-note 
+# analog sequence), stark, staccato synth stabs, and a piercing, echoing 
+# FM arpeggio that feels like driving a convertible down the Amalfi Coast 
+# at midnight.
+#
+# This playbook perfectly demonstrates how to use the DRY `gen_score` helper 
+# to algorithmically generate a continuous, octave-jumping 16th-note bassline 
+# with zero repetitive code, creating an unstoppable, cinematic momentum.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Driving, Melodic, & Neon-Lit)
+# ==========================================================
+
+# Relentless, driving 4/4 kick. (4 x's, 1 element - cycles perfectly)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry electronic snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}
+])
+
+# The "Moroder" Bass (A Minor).
+# Generate 16 continuous 16th notes with alternating octaves automatically. (16 x's, 16 elements)
+bass_cycle = [:a1, :a2, :a1, :a2, :a1, :a2, :a1, :a2, 
+              :f1, :f2, :f1, :f2, :g1, :g2, :g1, :g2]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 100, release: 0.08, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, "Synth Stabs" (Am to F to G).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.15) 
+# create a sharp, staccato wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:f3, :a3, :c4], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.15, amp: 0.6}
+])
+
+# Piercing, "Glassy" Arpeggio (A Minor).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a pristine, 
+# glassy tone. Routed through the global tape echo for a cinematic smear. (8 x's, 8 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :a5, :e5, :c6, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Pitched-down, "Robotic Vocoder" vocal stutter. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a3, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Drive - Just the Moroder bass, off-beat hats, and stabs (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_hats, s_hats, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Vibe - Add the relentless 4/4 drums and vocoder vocal (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The piercing glassy arpeggio drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S MOMENTUM]
+# 
+# 1. Algorithmic Octave Bass: Look at `s_bass`. Instead of typing 16 
+#    repetitive Hashes, we define an array `bass_cycle` that alternates 
+#    between the low octave (:a1) and the high octave (:a2). We then use 
+#    `.map` to inject the default parameters into every step. This creates 
+#    the relentless, driving 16th-note "gallop" that defines Italo Disco, 
+#    with zero repetitive code.
+#
+# 2. FM as a Glass Arp: The `s_lead` sequence uses `divisor: 3` and `depth: 2`. 
+#    This gentle harmonic ratio produces a pristine, glassy, sine-like wave 
+#    that perfectly mimics the classic Roland Juno arpeggios of the 80s. 
+#    Routed through the global tape echo, the sparse notes cascade across 
+#    the empty space, creating a shimmering, neon-lit soundscape.
+#
+# 3. The Off-Beat Wall: Look at `s_hats` and `s_chords`. They ALL hit 
+#    strictly on steps 2, 6, 10, and 14. The engine's strict master clock 
+#    locks these together perfectly at 120 BPM, creating a massive, bouncing 
+#    "boom-cha" momentum that forces you to dance.
+# ==========================================================

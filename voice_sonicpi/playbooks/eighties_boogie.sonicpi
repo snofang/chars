@@ -1,0 +1,132 @@
+# ==========================================================
+# PLAYBOOK: 80s BOOGIE / 80s R&B DANCE
+# (Pioneered by D-Train, Evelyn "Champagne" King, and Kashif)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Boogie.
+# We have explored Synth-Funk and Post-Disco, but 80s Boogie is the 
+# sound of early 80s underground club R&B. It relies on a highly 
+# syncopated, bouncy drum machine beat, a massive, walking synth bassline, 
+# stark, staccato brass/ synth stabs, and a clean, plucked rhythm guitar 
+# that locks perfectly into the pocket.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create a highly syncopated, bouncy groove. By using the `:play_fm` synth 
+# for both the walking bass and the brass stabs, the engine creates a 
+# sophisticated, deeply funky atmosphere that defined the 80s Boogie era.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Bouncy, Syncopated, & Funky)
+# ==========================================================
+
+# The "Boogie" Kick. 
+# A bouncy, syncopated march. (4 x's, 4 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Crisp, 808 snare strictly on beats 2 and 4, with a syncopated ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Rigid, bouncing 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Walking Synth" Bass (F# Minor).
+# Plays a syncopated, melodic line. (4 x's, 4 elements)
+s_bass = gen_score("..x...x...x...x.", [
+  {note: :fs2, divisor: 2, depth: 3, release: 0.15, amp: 1.0}, 
+  {note: :fs2, divisor: 2, depth: 3, release: 0.15, amp: 1.0}, 
+  {note: :a2, divisor: 2, depth: 3, release: 0.15, amp: 1.0}, 
+  {note: :e2, divisor: 2, depth: 3, release: 0.15, amp: 1.0}
+])
+
+# Stark, "Brass Section" Stabs (F#m to C#m).
+# Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:fs3, :a3, :cs4], cutoff: 100, release: 0.15, amp: 0.6},
+  {note: [:fs3, :a3, :cs4], cutoff: 100, release: 0.15, amp: 0.6},
+  {note: [:cs3, :e3, :gs3], cutoff: 100, release: 0.15, amp: 0.6},
+  {note: [:cs3, :e3, :gs3], cutoff: 100, release: 0.15, amp: 0.6}
+])
+
+# Clean, "Plucked" Rhythm Guitar (F#m to C#m).
+# Uses :play_pluck. Hits strictly on the off-beats. (4 x's, 4 elements)
+s_guitar = gen_score("x...x...x...x...", [
+  {note: [:fs3, :a3, :cs4], amp: 0.5, release: 0.1, coef: 0.4}, 
+  {note: [:fs3, :a3, :cs4], amp: 0.5, release: 0.1, coef: 0.4}, 
+  {note: [:cs3, :e3, :gs3], amp: 0.5, release: 0.1, coef: 0.4}, 
+  {note: [:cs3, :e3, :gs3], amp: 0.5, release: 0.1, coef: 0.4}
+])
+
+# Soaring, "Synth Sax" Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# piercing tone. Routed through the engine's tape echo. (8 x's, 8 elements)
+lead_notes = [:fs5, :cs5, :fs5, :a5, :gs5, :fs5, :e5, :cs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Diva" Vocal Chops (Granular Synth).
+# High density, tiny size = a sharp, sugary vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :fs4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
+  {note: :cs4, buffer: :misc_lori, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the syncopated drums, bass, and guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_fm, s_bass, 4], [:play_pluck, s_guitar, 4] ],
+  
+  # Scene 2: The Vibe - Add the brass stabs and diva vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_chords, s_chords, 8], 
+    [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The soaring synth sax lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_chords, s_chords, 8], 
+    [:play_grain, s_vocal, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S FUNK]
+# 
+# 1. FM as a Brass Section: Look at `s_chords` and `s_bass`. The `:play_fm` 
+#    synth is given a `divisor` of `2` and a `depth` of `3`, with a short 
+#    `release` (0.15). This forces the FM synth to produce a warm, brassy, 
+#    staccato "hit" that perfectly mimics a live horn section or a classic 
+#    analog synth bass, locking perfectly into the off-beats of the 16-step grid.
+#
+# 2. The Syncopated Pocket: Look at `s_kick`. It completely avoids landing 
+#    on a standard 4/4 pulse. By hitting on syncopated steps (0, 3, 6, 8, 11), 
+#    the engine creates a lopsided, bouncy groove that feels like a live 
+#    drummer playing a complex funk break. The engine's strict master clock 
+#    ensures this complex rhythm lands with absolute precision.
+#
+# 3. The Plucked Rhythm Guitar: Look at `s_guitar`. The `:play_pluck` synth 
+#    hits strictly on the downbeats. By using a short `release` (0.1) and a 
+#    low `coef` (0.4), the engine turns the pluck into a sharp, staccato "chuka" 
+#    that perfectly mimics the clean, rhythmic guitar strums that defined the 
+#    80s Boogie sound.
+# ==========================================================

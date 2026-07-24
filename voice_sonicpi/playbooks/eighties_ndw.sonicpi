@@ -1,0 +1,114 @@
+# ==========================================================
+# PLAYBOOK: 80s NEUE DEUTSCHE WELLE (NDW) / GERMAN SYNTH-POP
+# (Pioneered by D.A.F., Kraftwerk, and Nena)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Neue Deutsche Welle (NDW).
+# We have explored Synthpop and EBM, but NDW is the sound of the early 80s 
+# West German underground. It fuses the rigid, mechanical sequencing of 
+# Kraftwerk with a raw, punk-rock energy. It relies on a relentless, 
+# driving 4/4 drum machine, a continuous, buzzing 16th-note sequencer bass, 
+# stark, robotic synth stabs, and quirky, repetitive FM melodies.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to create 
+# a relentless, mechanical momentum. By using the `:play_fm` synth with an 
+# extreme `depth` to simulate a distorted bass synth, and a high `divisor` 
+# for a robotic lead, the engine creates a stark, futuristic atmosphere.
+# ==========================================================
+
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Rigid, Mechanical, & Buzzing)
+# ==========================================================
+
+# Relentless, driving 4/4 drum machine kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Stark, dry electronic snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, alternating 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Sequencer" Bass (A Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# Extreme cutoff (110) and microscopic release (0.08) create a relentless, 
+# distorted, buzzing churn that drives the track.
+bass_cycle = [:a1, :a2, :a1, :a2, :a1, :a2, :a1, :a2, 
+              :f1, :f2, :f1, :f2, :g1, :g2, :g1, :g2]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 110, release: 0.08, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, "Robotic" Synth Stabs (Am to F to G).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a sharp, 
+# buzzy staccato hit. (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 3, release: 0.1, amp: 0.6},
+  {note: [:f3, :a3, :c4], divisor: 2, depth: 3, release: 0.1, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.1, amp: 0.6}
+])
+
+# Quirky, "Robotic" Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a piercing, 
+# glassy, computer-like tone. Routed through the engine's tape echo. (8 x's, 8 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :g5, :d5, :b5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Pitched-down, "German MC" vocal drone (Granular Synth).
+# Long size (0.1) and low density (1) creates a dark, repetitive vocal hit. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :a3, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.1, amp: 0.6},
+  {note: :g3, buffer: :misc_lori, pos: 0.4, density: 1, size: 0.1, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Machine - Just the relentless drums and sequencer bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the robotic synth stabs and vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The quirky robotic lead melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN GERMAN EFFICIENCY]
+# 
+# 1. The Sequencer Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating octaves. By using an extreme `cutoff` 
+#    (110) and a microscopic `release` (0.08), the engine turns the detuned 
+#    sawtooth into a relentless, distorted, buzzing churn. This perfectly mimics 
+#    the early analog sequencer basslines of D.A.F. and Kraftwerk.
+#
+# 2. FM as a Computer: The `s_lead` sequence uses `divisor: 4` and `depth: 2`. 
+#    This gentle harmonic ratio produces a piercing, glassy, sine-like wave 
+#    that sounds more like a 1980s mainframe computer than a synthesizer. By 
+#    playing a repetitive, 8th-note melody, the engine creates a quirky, 
+#    robotic hook that perfectly anchors the NDW genre.
+#
+# 3. Rigid Negative Space: Look at `s_chords`. The stark, minor chords hit 
+#    only on steps 0, 6, and 10. The engine's strict master clock ensures 
+#    these stabs land with absolute mathematical precision, leaving massive 
+#    gaps (`nil`) that let the relentless 16th-note bass drive the track forward.
+# ==========================================================
