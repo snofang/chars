@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 2000s NORTEC / MEXICAN ELECTRONICA
+# (Pioneered by Nortec Collective, Bostich, and Fussible)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Nortec.
+# We have explored Cumbia and Merengue, but Nortec is the sound of 
+# the Tijuana electronic scene. It fuses the traditional sounds of 
+# Northern Mexican folk music (Norteño)—specifically the accordion and 
+# the "Tambora" (marching snare)—with the driving, mechanical rhythms 
+# of minimal techno and house. 
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a live cultural fusion. By using the `:play_fm` synth 
+# to simulate a melodic accordion and mapping a syncopated "Tambora" 
+# rhythm to the snare, the engine creates a relentless, high-energy, 
+# and deeply festive border-town atmosphere.
+# ==========================================================
+
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Festive, Driving, & Mechanical)
+# ==========================================================
+
+# Driving 4/4 techno kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# The "Tambora" Snare. 
+# Marching band style on beats 2 and 4, with syncopated ghost notes. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Relentless, continuous 16th shaker. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# Deep, round sub-bass (A Minor).
+# Plays a driving, syncopated line. (3 x's, 3 elements)
+s_bass = gen_score("x.....x.x.....x.", [
+  {note: :a1, release: 0.2, cutoff: 60, amp: 1.2}, 
+  {note: :e1, release: 0.2, cutoff: 60, amp: 1.0}, 
+  {note: :d1, release: 0.2, cutoff: 60, amp: 1.0}
+])
+
+# The "Accordion" Stabs (Am to Dm).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a warm, 
+# buzzy staccato hit that mimics a Mexican accordion. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 3, release: 0.15, amp: 0.6},
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 3, release: 0.15, amp: 0.6},
+  {note: [:d3, :f3, :a3], divisor: 2, depth: 3, release: 0.15, amp: 0.6},
+  {note: [:d3, :f3, :a3], divisor: 2, depth: 3, release: 0.15, amp: 0.6}
+])
+
+# Melancholic, "Accordion" Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# piercing tone. Routed through the engine's tape echo. (6 x's, 6 elements)
+lead_notes = [:a5, :e5, :c6, :a5, :g5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Pitched-up, "Grito" vocal shout (Granular Synth).
+# High density, tiny size = a sharp, pristine vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Border - Just the driving drums, bass, and accordion stabs (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Vibe - Add the "Grito" vocal shout (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The melancholic accordion melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CULTURAL FUSION]
+# 
+# 1. FM as an Accordion: Look at `s_chords` and `s_lead`. The `:play_fm` synth 
+#    is given a `divisor` of `2` or `3` and a `depth` of `2` or `3`. This 
+#    harmonic ratio produces a warm, buzzy, reedy tone that perfectly mimics 
+#    the sound of a Mexican accordion. By playing staccato off-beat stabs and 
+#    a melancholic melody, the engine bridges the gap between folk music and 
+#    electronic sequencing.
+#
+# 2. The Tambora Syncopation: Look at `s_snare`. It hits on beats 2 and 4, 
+#    but adds a syncopated ghost note on the 'and' of 3 (step 10). This mimics 
+#    the marching band "Tambora" drum used in Norteño music. The engine's strict 
+#    master clock ensures this live-sounding rhythm locks perfectly with the 
+#    rigid 4/4 techno kick.
+#
+# 3. Algorithmic Accordion Lead: Look at `s_lead`. Instead of typing repetitive 
+#    Hashes, we define an array `lead_notes` and use `.map` to inject the default 
+#    parameters into every step. This creates a rapid, melodic accordion solo 
+#    with zero repetitive code, perfectly anchoring the track's festive, 
+#    border-town atmosphere.
+# ==========================================================

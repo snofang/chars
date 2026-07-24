@@ -1,0 +1,125 @@
+# ==========================================================
+# PLAYBOOK: 90s NORWEGIAN BLACK METAL / SECOND WAVE
+# (Pioneered by Mayhem, Darkthrone, and Burzum)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Norwegian Black Metal.
+# We have explored Heavy Metal and Grunge, but Second Wave Black Metal is the 
+# sound of pure, freezing Scandinavian aggression. It relies on the legendary 
+# "blast beat" (continuous, rapid 8th or 16th notes on kick and snare), 
+# a massively distorted, continuous 16th-note "tremolo picked" guitar riff, 
+# and a piercing, high-pitched "shriek" vocal. 
+#
+# This playbook perfectly demonstrates how to push a purely electronic engine 
+# to simulate a relentless, live extreme metal band. By using the `:play_fm` 
+# synth with an extreme `depth` to simulate a distorted guitar, and locking 
+# the kick and snare into a continuous 8th-note blast beat, the engine 
+# creates a chaotic, freezing, and undeniably aggressive atmosphere.
+# ==========================================================
+
+use_bpm 160
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Dark, Fast, & Relentless)
+# ==========================================================
+
+# The "Blast Beat" Kick. 
+# Plays continuous, driving 8th notes. (8 x's, 8 elements)
+s_kick = gen_score("x.x.x.x.x.x.x.x.", [
+  :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4
+])
+
+# The "Blast Beat" Snare. 
+# Plays continuous 8th notes in sync with the kick. (8 x's, 8 elements)
+s_snare = gen_score("x.x.x.x.x.x.x.x.", [
+  :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4
+])
+
+# Fast, driving 16th hats to add to the chaotic wall of sound. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Tremolo Picked" Distorted Guitar (E Minor).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# harsh, buzzy square wave. Plays continuous, rapid 16th notes. (16 x's, 16 elements)
+guitar_chords = [
+  {note: [:e3, :b3]}, {note: [:e3, :b3]}, {note: [:e3, :b3]}, {note: [:e3, :b3]}, 
+  {note: [:e3, :b3]}, {note: [:e3, :b3]}, {note: [:e3, :b3]}, {note: [:e3, :b3]}, 
+  {note: [:d3, :a3]}, {note: [:d3, :a3]}, {note: [:d3, :a3]}, {note: [:d3, :a3]}, 
+  {note: [:c3, :g3]}, {note: [:c3, :g3]}, {note: [:c3, :g3]}, {note: [:c3, :g3]}
+]
+guitar_data = guitar_chords.map { |c| c.merge({divisor: 2, depth: 5, release: 0.05, amp: 0.7}) }
+s_guitar = gen_score("xxxxxxxxxxxxxxxx", guitar_data)
+
+# Deep, distorted bass (E Minor).
+# Plays continuous 8th notes. High cutoff (110) and short release (0.1). (8 x's, 8 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :d1, :d1, :c1, :b0]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.1, amp: 1.2} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Piercing, "Shriek" Lead (E Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.3) 
+# and massive gaps (`nil`) create a piercing, soaring melody that mimics a 
+# detuned guitar solo or a high-pitched synth. (8 x's, 8 elements)
+lead_notes = [:e5, :d5, :e5, :b4, :g4, :b4, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# High-pitched, "Shriek" vocal (Granular Synth).
+# Pitched UP to :e4. Long size (0.15) creates an eerie, echoing cry. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :e4, buffer: :misc_lori, pos: 0.6, density: 1, size: 0.15, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Blizzard - Just the blast beat, bass, and tremolo guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_guitar, 4] ],
+  
+  # Scene 2: The Forest - Add the piercing shriek vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Climax - The soaring piercing lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EXTREME METAL]
+# 
+# 1. The Blast Beat: Look at `s_kick` and `s_snare`. They both play 
+#    continuous 8th notes at 160 BPM, hitting simultaneously on every beat. 
+#    This creates a relentless, mechanical wall of percussion that perfectly 
+#    mimics the legendary "blast beat" drumming of 90s Norwegian Black Metal. 
+#    The engine's strict master clock ensures this chaotic rhythm locks 
+#    together with absolute mathematical precision.
+#
+# 2. FM as a Distorted Amp: Look at `s_guitar`. The `:play_fm` synth is 
+#    given a `divisor` of `2` and an extreme `depth` of `5`. This harsh 
+#    harmonic ratio forces the FM modulator to shatter the carrier wave, 
+#    creating a piercing, buzzy square wave. By playing continuous, rapid 
+#    16th notes, the engine perfectly mimics the "tremolo picking" technique 
+#    used by black metal guitarists.
+#
+# 3. The Shriek: The `s_vocal` sequence uses the granular engine to chop a 
+#    vocal sample. By pitching it UP to `:e4` and using a long `size` (0.15), 
+#    the engine time-stretches the sample into an eerie, high-pitched cry 
+#    that perfectly mimics the signature "shriek" vocals of the genre.
+# ==========================================================

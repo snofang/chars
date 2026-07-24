@@ -1,0 +1,120 @@
+# ==========================================================
+# PLAYBOOK: 80s/90s FUNK ROCK / ALT-FUNK
+# (Pioneered by Red Hot Chili Peppers, Faith No More, and Incubus)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s/90s Funk Rock.
+# We have explored Synth-Funk and Punk Rock, but Funk Rock is the sound 
+# of a live power trio blending aggressive punk energy with deep funk grooves. 
+# It relies on a syncopated, driving rock drum beat, a relentless, percussive 
+# "slap" electric bass, clean, staccato rhythm guitar stabs, and a soaring, 
+# echoing distorted lead guitar solo.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a live, high-energy rock band. By using the `:play_sub` 
+# synth with a high `cutoff` to simulate a slapped bass, and the `:play_lead` 
+# synth routed through the global tape echo to create a soaring solo, the 
+# engine creates a raw, sweaty, and deeply funky rock atmosphere.
+# ==========================================================
+
+use_bpm 105
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Aggressive, Funky, & Driving)
+# ==========================================================
+
+# The "Funk Rock" Kick. 
+# Syncopated, driving rock march. (5 x's, 5 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}, :c4
+])
+
+# Heavy, echoing snare on beats 2 and 4, with a syncopated ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Fast, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Slap" Bass (E Minor).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive "thwack" that mimics a slapped electric bass. (8 x's, 8 elements)
+bass_notes = [:e2, :e2, :d2, :e2, :g2, :e2, :a2, :g2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Clean, "Rhythm Guitar" Stabs (E5 to G5 to A5).
+# Uses :play_pluck. Hits strictly on the off-beats. (4 x's, 4 elements)
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:e3, :b3, :e4], amp: 0.6, release: 0.1, coef: 0.5}, 
+  {note: [:e3, :b3, :e4], amp: 0.6, release: 0.1, coef: 0.5}, 
+  {note: [:g3, :d4, :g4], amp: 0.6, release: 0.1, coef: 0.5}, 
+  {note: [:a3, :e4, :a4], amp: 0.6, release: 0.1, coef: 0.5}
+])
+
+# Soaring, "Lead Guitar" Solo (E Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.3) 
+# and massive gaps (`nil`) create a soaring, echoing solo. (6 x's, 6 elements)
+lead_notes = [:e5, :g5, :a5, :b5, :a5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Shouted" Vocal (Granular Synth).
+# Long size (0.08) and low density (1) creates a raw, repetitive vocal hit. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :e3, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.08, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Jam - Just the driving drums, slap bass, and rhythm guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4] ],
+  
+  # Scene 2: The Vibe - Add the shouted vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The soaring lead guitar solo drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN LIVE ROCK ENERGY]
+# 
+# 1. The Slap Bass Illusion: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a melodic line. By using a high `cutoff` (100) 
+#    and a very short `release` (0.1), the engine turns the detuned sawtooth 
+#    into a punchy, aggressive "thwack" that perfectly mimics a slapped electric 
+#    bass guitar driving the rhythm, a hallmark of 80s/90s Funk Rock.
+#
+# 2. FM as a Clean Amp: Look at `s_guitar`. The `:play_pluck` synth hits 
+#    strictly on the off-beats. By using a short `release` (0.1) and a mid 
+#    `coef` (0.5), the engine turns the pluck into a sharp, staccato "chuka" 
+#    that perfectly mimics the clean, rhythmic guitar strums that define the 
+#    genre, locking perfectly with the slap bass.
+#
+# 3. The Soaring Solo: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (110) and a long `release` (0.3). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a soaring, 
+#    cascading guitar solo that perfectly anchors the track's high-energy, 
+#    live-band atmosphere.
+# ==========================================================

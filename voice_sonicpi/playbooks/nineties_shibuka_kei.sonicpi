@@ -1,0 +1,119 @@
+# ==========================================================
+# PLAYBOOK: 90s SHIBUYA-KEI / JAPANESE INDIE POP
+# (Pioneered by Cornelius, Pizzicato Five, and Flipper's Guitar)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Shibuya-Kei.
+# We have explored City Pop and 16-Bit JRPGs, but Shibuya-Kei is the sound 
+# of 90s Tokyo's trendiest district. It is a highly eclectic, stylish fusion 
+# of 60s pop, bossa nova, jazz, and electronic sampling. It relies on a 
+# driving, live 4/4 beat, a walking upright bass, lush, jazzy electric 
+# piano chords, and bright, plucky marimba/celesta counter-melodies that 
+# feel like browsing through a brightly lit vintage record store.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a stylish, live jazz-pop band. By using the `:play_fm` 
+# synth to simulate a bright marimba and the `:play_sub` synth to create 
+# a walking bass, the engine creates a sophisticated, deeply nostalgic, 
+# and undeniably catchy atmosphere.
+# ==========================================================
+
+use_bpm 118
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Major - Jazzy, Bright, & Eclectic)
+# ==========================================================
+
+# Driving, live 4/4 pop kick. (4 x's, 1 element - cycles 4 times)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Crisp, dry snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, bouncing 16th hats. (8 x's, 2 elements - cycles 4 times)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Walking Upright" Bass (F Major).
+# Plays continuous, driving 8th notes. Mid cutoff (80) and short release (0.15) 
+# mimic a fast, picked upright bass. (8 x's, 8 elements)
+bass_notes = [:f2, :a2, :c3, :f2, :bb2, :a2, :g2, :c3]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 80, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Lush, "Electric Piano" Stabs (Fmaj9 to Gm9).
+# Hit strictly on the off-beats. High cutoff (100) and short release (0.15) 
+# create a sharp, sophisticated wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:f3, :a3, :c4, :e4], cutoff: 100, release: 0.15, amp: 0.5},
+  {note: [:f3, :a3, :c4, :e4], cutoff: 100, release: 0.15, amp: 0.5},
+  {note: [:g2, :bb2, :d3, :f3], cutoff: 100, release: 0.15, amp: 0.5},
+  {note: [:g2, :bb2, :d3, :f3], cutoff: 100, release: 0.15, amp: 0.5}
+])
+
+# Bright, "Marimba/Celesta" Counter-Melody (F Major Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a pristine, 
+# glassy tone. Routed through the engine's tape echo. (6 x's, 6 elements)
+lead_notes = [:f5, :a5, :c6, :d6, :c6, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.1} }
+s_fm = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Vocal Sample (Granular Synth).
+# Long size (0.1) and low density (1) creates a lush, repetitive vocal hit 
+# that mimics a 60s pop sample. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :f4, buffer: :misc_lori, pos: 0.1, density: 1, size: 0.1, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Jam - Just the driving drums, walking bass, and EP stabs (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Vibe - Add the "Ahh" vocal sample (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The bright marimba counter-melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN JAZZ-POP SOPHISTICATION]
+# 
+# 1. FM as a Marimba: Look at `s_fm`. The `:play_fm` synth is given a high 
+#    `divisor` (3) and a low `depth` (2). This gentle harmonic ratio produces 
+#    a pristine, glassy, sine-like wave that perfectly mimics a marimba or 
+#    celesta. Routed through the global tape echo, the sparse notes cascade 
+#    across the empty space, creating a bright, eclectic hook that defined 
+#    the Shibuya-Kei sound.
+#
+# 2. The Walking Upright Bass: Look at `s_bass`. The `:play_sub` synth plays 
+#    on every 8th note, mapping out a fast, walking line. By using a mid-range 
+#    `cutoff` (80) and a short `release` (0.15), the engine turns the detuned 
+#    sawtooth into a warm, bouncy "thwack" that perfectly mimics a picked 
+#    upright bass driving the rhythm.
+#
+# 3. Lush Jazzy Harmony: Look at `s_chords`. The arrays form massive 4-note 
+#    major 9th and minor 9th chords. By hitting strictly on the off-beats 
+#    (steps 2, 6, 10, 14) with a high `cutoff` (100), the engine turns the 
+#    `:blade` synth into a sharp, sophisticated electric piano stab that 
+#    perfectly mimics the lush, wide-stereo arrangements of 90s Japanese indie pop.
+# ==========================================================
