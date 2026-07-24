@@ -1,0 +1,115 @@
+# ==========================================================
+# PLAYBOOK: 70s GLAM ROCK / GLITTER ROCK
+# (Pioneered by T. Rex, David Bowie, and Queen)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Glam Rock.
+# We have explored Punk and Stadium Rock, but Glam Rock is the sound 
+# of 1970s theatrical swagger. It fuses a driving, stomping 4/4 rock 
+# beat with a warm, walking bassline, massive, crunchy power chords, 
+# and soaring, echoing guitar riffs that feel like platform shoes 
+# stomping on a glittery stage.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a live 70s rock power trio. By using the `:play_fm` 
+# synth with extreme `depth` to simulate a distorted guitar, and the 
+# `:play_lead` synth routed through the global tape echo to create a 
+# soaring riff, the engine creates a high-energy, theatrical rock atmosphere.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Major - Swaggering, Crunchy, & Theatrical)
+# ==========================================================
+
+# The "Stomping" Kick. 
+# A driving, syncopated rock march.
+s_kick = gen_score("x.....x.x.....x.", [:c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}])
+
+# Heavy, echoing snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 8th hats.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Walking" Bass (E Major).
+# Plays driving 8th notes. High cutoff (90) and short release (0.15) 
+# create a warm, punchy "thwack" that mimics a picked electric bass.
+bass_notes = [:e1, :e1, :g1, :e1, :a1, :a1, :b1, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Crunchy" Power Chords (E5 to A5 to B5).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# sharp, buzzy square wave that mimics a heavily distorted electric guitar.
+s_chords = gen_score("x.......x.....x.", [
+  {note: [:e3, :b3], divisor: 2, depth: 5, release: 0.3, amp: 0.7},
+  {note: [:a3, :e4], divisor: 2, depth: 5, release: 0.3, amp: 0.7},
+  {note: [:b3, :fs4], divisor: 2, depth: 5, release: 0.3, amp: 0.7}
+])
+
+# Soaring, "Guitar" Riff (E Major Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release 
+# (0.3) and massive gaps (`nil`) create a cascading, stadium-sized riff.
+lead_notes = [:e5, :b4, :e5, :fs5, :e5, :d5, :b4, :a4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Group Vocals" shout (Granular Synth).
+# Long size (0.1) and low density (1) creates a raw, repetitive vocal hit 
+# that mimics a crowd shouting "Hey!".
+s_vocal = gen_score("........x.......", [
+  {note: :e3, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.1, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Stomp - Just the driving drums, walking bass, and power chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Vibe - Add the group vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Riff - The soaring guitar riff drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THEATRICAL ROCK]
+# 
+# 1. FM as a Crunchy Amp: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `5`. This harsh harmonic 
+#    ratio forces the FM modulator to shatter the carrier wave, creating a 
+#    piercing, buzzy square wave that perfectly mimics a heavily distorted 
+#    electric guitar playing power chords, a hallmark of 70s Glam Rock.
+#
+# 2. The Stomping March: Look at `s_kick`. Instead of a standard 4/4 pulse, 
+#    it hits on a syncopated, "stomping" rhythm (steps 0, 6, 8, 14). The 
+#    engine's strict master clock ensures this heavy, theatrical groove locks 
+#    perfectly with the driving 8th-note bassline, creating a massive, 
+#    stage-ready atmosphere.
+#
+# 3. The Soaring Riff: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (110) and a long `release` (0.3). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a soaring, 
+#    cascading guitar riff that perfectly anchors the track's high-energy, 
+#    glittery swagger.
+# ==========================================================

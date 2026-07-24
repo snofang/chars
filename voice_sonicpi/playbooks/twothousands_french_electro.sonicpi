@@ -1,0 +1,122 @@
+# ==========================================================
+# PLAYBOOK: 2000s FRENCH ELECTRO / BLOGHOUSE
+# (Pioneered by Justice, SebastiAn, and Uffie)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s French Electro.
+# We have explored French House (which is filtered and disco-based), but 
+# French Electro (or Bloghouse) is the sound of the late 2000s Parisian 
+# underground. It fuses the heavy, distorted 4/4 beats of heavy metal with 
+# club music. It relies on a massively distorted, continuous 16th-note 
+# bassline, heavily sidechained disco chops, and aggressive, piercing 
+# synth riffs that sound like a blown-out club soundsystem.
+#
+# This playbook perfectly demonstrates how to use the `gen_score` helper 
+# and Ruby's `.map.with_index` to algorithmically generate a massive, 
+# distorted "continuous" bassline with heavy sidechain pumping.
+# ==========================================================
+
+use_bpm 127
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Distorted, Heavy, & Club-Ready)
+# ==========================================================
+
+# Relentless, heavy 4/4 kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, compressed snare strictly on beats 2 and 4.
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 16th hats.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}])
+
+# The "Distorted Continuous" Bass (E Minor).
+# Algorithmically generate a 16-step sidechain pump!
+# The volume dips to 0.3 and filter closes to 70 on steps 0, 4, 8, 12 (where the kick hits).
+bass_cycle = [:e1, :e2, :e1, :e2, :e1, :e2, :e1, :e2, 
+              :g1, :g2, :g1, :g2, :b1, :b2, :b1, :b2]
+bass_data = bass_cycle.map.with_index do |n, i|
+  is_kick = (i % 4 == 0)
+  {
+    note: n,
+    amp: is_kick ? 0.3 : 1.2,
+    cutoff: is_kick ? 70 : 130,
+    release: 0.08
+  }
+end
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Heavily "Sidechained" Disco Chops (Em to G).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.15) 
+# create a sharp, staccato wall of sound that ducks perfectly with the bass.
+chord_notes = [
+  {note: [:e3, :g3, :b3]}, {note: [:e3, :g3, :b3]}, 
+  {note: [:g2, :b2, :d3]}, {note: [:g2, :b2, :d3]}
+]
+chord_data = chord_notes.map { |c| c.merge({cutoff: 110, release: 0.15, amp: 0.6}) }
+s_chords = gen_score("..x...x...x...x.", chord_data)
+
+# Piercing, "Aggressive" Synth Riff (E Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# harsh, buzzy square wave that cuts through the heavy bass.
+lead_notes = [:e5, :d5, :e5, :b4, :g4, :b4, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 2, depth: 5, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Choppy, "Diva" vocal stutter (Granular Synth).
+# High density, tiny size = a sharp, pristine vocal skip.
+s_vocal = gen_score("....x.......x...", [
+  {note: :e4, buffer: :misc_lori, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
+  {note: :b3, buffer: :misc_lori, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Club - Just the kick, distorted bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy snare and sidechained disco chops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The aggressive synth riff drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DISTORTED ENERGY]
+# 
+# 1. Algorithmic Sidechain: Look at `s_bass`. Instead of typing 16 
+#    repetitive Hashes, we use `16.times.map do |i|`. The engine checks 
+#    if `i % 4 == 0` (the kick steps). If true, it sets `amp: 0.3` and 
+#    `cutoff: 70`. If false, it sets `amp: 1.2` and `cutoff: 130`. This 
+#    perfectly simulates heavy sidechain compression and a filter sweep in 
+#    just a few lines of code.
+#
+# 2. The Continuous Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating octaves. By using an extreme `cutoff` 
+#    (130) and a microscopic `release` (0.08), the engine turns the detuned 
+#    sawtooth into a relentless, distorted wall of sound that perfectly mimics 
+#    the heavy, overdriven basslines of 2000s French Electro.
+#
+# 3. FM as a Weapon: The `s_lead` sequence uses `divisor: 2` and an extreme 
+#    `depth` of `5`. This harsh harmonic ratio produces a piercing, buzzy 
+#    square wave that cuts through the heavy bass and drums, perfectly 
+#    mimicking the aggressive, metallic synth riffs of acts like Justice.
+# ==========================================================

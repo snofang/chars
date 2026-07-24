@@ -1,0 +1,120 @@
+# ==========================================================
+# PLAYBOOK: 90s BRITPOP / UK INDIE ROCK
+# (Pioneered by Oasis, Blur, and Pulp)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Britpop.
+# We have explored Indie Rock and Post-Punk Revival, but Britpop is the 
+# sound of 90s UK cultural dominance. It fuses the swagger of 60s British 
+# Invasion pop with the loud, driving guitars of 90s alternative rock. 
+# It relies on a steady, driving 4/4 beat, a melodic, walking bassline, 
+# massive, crunching power chords, and jangly, fast-paced acoustic guitar 
+# strums that feel like a crowded, sweaty sold-out arena.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a live 90s rock band. By using the `:play_fm` synth 
+# to simulate a distorted electric guitar and the `:play_pluck` synth to 
+# simulate a jangly acoustic rhythm guitar, the engine creates a massive, 
+# singalong atmosphere.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Major - Jangly, Driving, & Swaggering)
+# ==========================================================
+
+# Driving rock kick. Hits on 1, 2, 3, and 4. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+
+# The "Driving" Bass (G Major).
+# Plays continuous 8th notes. (8 x's, 8 elements)
+bass_notes = [:g1, :g1, :g1, :g1, :d1, :d1, :d1, :d1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Crunchy" Power Chords (G5 to D5).
+# Hits on beats 1 and 3. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:g3, :d4], divisor: 2, depth: 5, release: 0.3, amp: 0.7},
+  {note: [:d3, :a3], divisor: 2, depth: 5, release: 0.3, amp: 0.7}
+])
+
+# Jangly, "Acoustic" Guitar Strums (G to D).
+# Uses :play_pluck. Hits strictly on the off-beats. (4 x's, 4 elements)
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:g3, :b3, :d4], amp: 0.6, release: 0.1, coef: 0.5}, 
+  {note: [:g3, :b3, :d4], amp: 0.6, release: 0.1, coef: 0.5}, 
+  {note: [:d3, :fs3, :a3], amp: 0.6, release: 0.1, coef: 0.5}, 
+  {note: [:d3, :fs3, :a3], amp: 0.6, release: 0.1, coef: 0.5}
+])
+
+# Soaring, "Lead Guitar/Vocal" Melody (G Major Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. (8 x's, 8 elements)
+lead_notes = [:g5, :d5, :e5, :g5, :a5, :g5, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Crowd Singalong" vocal drone (Granular Synth).
+# Long size (0.1) and low density (1) creates a raw, repetitive vocal hit. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :g3, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.1, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Verse - Just the driving drums, bass, and jangly guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4] ],
+  
+  # Scene 2: The Chorus - Add the crunchy power chords and crowd vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_fm, s_chords, 8], 
+    [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The soaring lead guitar melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_fm, s_chords, 8], 
+    [:play_grain, s_vocal, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ROCK MOMENTUM]
+# 
+# 1. FM as a Crunchy Amp: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `5`. This harsh harmonic 
+#    ratio forces the FM modulator to shatter the carrier wave, creating a 
+#    piercing, buzzy square wave that perfectly mimics a heavily distorted 
+#    electric guitar playing power chords, a hallmark of 90s Britpop.
+#
+# 2. The Jangly Acoustic: Look at `s_guitar`. The `:play_pluck` synth hits 
+#    strictly on the off-beats. By using a short `release` (0.1) and a mid 
+#    `coef` (0.5), the engine turns the pluck into a sharp, jangly "strum" 
+#    that perfectly mimics the acoustic rhythm guitars that defined the 
+#    "Madchester" and Britpop eras.
+#
+# 3. The 8th-Note Drive: 90s Britpop relies on a stark, driving rhythm 
+#    section. The `s_hats` play straight 8th notes, and the `s_bass` plays 
+#    continuous 8th notes. The engine's strict master clock ensures this 
+#    rigid, mechanical momentum locks perfectly with the jangly guitar, 
+#    creating a high-energy, forward-driving rock groove.
+# ==========================================================

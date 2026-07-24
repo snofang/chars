@@ -1,0 +1,112 @@
+# ==========================================================
+# PLAYBOOK: 70s DUB / KING TUBBY STYLE
+# (Pioneered by King Tubby, Lee "Scratch" Perry, and Augustus Pablo)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Dub.
+# We have explored Reggae andTrip-Hop, but Dub is the sound of 1970s 
+# Jamaica. It is the original "remix" genre. It takes a standard reggae 
+# track and uses immense space, deep sub-bass, and echoing delays to 
+# create a psychedelic, cavernous atmosphere. It relies on the "One-Drop" 
+# drum rhythm (kick and snare on beat 3), a heavy, round bassline, and 
+# stark, echoing stabs that bounce into infinity.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create immense negative space. By routing the `:play_lead` synth through 
+# the global tape echo bus, the engine creates massive, cascading delay 
+# tails that fill the void, perfectly mimicking the legendary mixing board 
+# experiments of King Tubby.
+# ==========================================================
+
+use_bpm 75
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Cavernous, Deep, & Psychedelic)
+# ==========================================================
+
+# The "One-Drop" Kick. 
+# Hits strictly on beat 3 (step 8).
+s_kick = gen_score(".......x.......", [:c4])
+
+# The "One-Drop" Snare. 
+# Hits strictly on beat 3 (step 8) in sync with the kick.
+s_snare = gen_score(".......x.......", [:c4])
+
+# Closed hats strictly on the off-beats (the "and" of each beat).
+s_hats = gen_score("..x...x...x...x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}])
+
+# Deep, massive "Round" Bass (G Minor).
+# Hits a slow, melodic line. Very low cutoff (50) and massive release (2.0) 
+# create a heavy, continuous rumble.
+s_bass = gen_score("x...............", [
+  {note: :g1, release: 2.0, cutoff: 50, amp: 1.2}, 
+  {note: :c2, release: 2.0, cutoff: 50, amp: 1.0}
+])
+
+# The "Off-Beat Skank" Guitar (Gm to Cm).
+# Uses :play_pluck. Hits strictly on the off-beats (steps 2, 6, 10, 14) 
+# to mimic a staccato rhythm guitar. Low coef (0.3) for a sharp "chuka".
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:g3, :d4], amp: 0.5, release: 0.08, coef: 0.3}, 
+  {note: [:c3, :g3], amp: 0.5, release: 0.08, coef: 0.3}
+])
+
+# Echoing "Dub Siren" / Clavinet Stabs (G Minor).
+# Uses :play_lead routed through the global tape echo bus. The long gaps (`nil`) 
+# allow the delay tails to bounce across the empty grid, creating massive space.
+lead_notes = [:g5, :d5, :c5, :g4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 90, release: 0.1} }
+s_lead = gen_score("x.......x.......", lead_data)
+
+# Pitched-down, "Haunted" vocal drone (Granular Synth).
+# Long size (0.2) and low density (1) creates a slow, evolving background 
+# texture that sounds like a distant, ghostly voice echoing in a cave.
+s_grain = gen_score("x...............", [
+  {note: :g3, buffer: :misc_lori, pos: 0.5, density: 1, size: 0.2, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Riddim - Just the heavy bass, off-beat guitar, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the One-Drop drums and echoing stabs (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DUB SPACE]
+# 
+# 1. The One-Drop Rhythm: Look at `s_kick` and `s_snare`. They both hit 
+#    strictly on step 8 (beat 3). By leaving beats 1, 2, and 4 completely 
+#    empty, the engine creates a massive, cavernous hole in the rhythm. This 
+#    is the absolute genetic code of Reggae and Dub, allowing the bass and 
+#    delays to fill the space.
+#
+# 2. Echo as an Instrument: Look at `s_lead`. The `:play_lead` synth is 
+#    routed through the engine's global tape echo bus. The notes hit on steps 
+#    0 and 8, but the massive gaps (`nil`) allow the delay tails to bounce 
+#    repeatedly across the empty grid. The engine's strict master clock 
+#    ensures these echoes ring out perfectly in time with the One-Drop beat.
+#
+# 3. Subterranean Weight: Look at `s_bass`. The `:play_sub` synth is given 
+#    a very low `cutoff` (50) and a massive `release` (2.0). This filters 
+#    out all the harsh high frequencies, leaving only a deep, round, warm 
+#    rumble that rings out for two whole beats, providing the immense, 
+#    suffocating weight required for 70s Dub.
+# ==========================================================

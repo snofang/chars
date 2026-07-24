@@ -1,0 +1,119 @@
+# ==========================================================
+# PLAYBOOK: 90s INDUSTRIAL ROCK / CYBER-METAL
+# (Pioneered by Nine Inch Nails, Ministry, and KMFDM)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Industrial Rock.
+# We have explored Heavy Metal and EBM, but Industrial Rock is the sound 
+# of 90s cyber-aggression. It fuses the heavy, distorted guitars of metal 
+# with the rigid, mechanical sequencing of industrial electronic music. 
+# It relies on a relentless, driving 4/4 drum machine beat, a massive, 
+# distorted 16th-note synth bass, dissonant, metallic FM chord stabs, 
+# and a screaming, echoing synth lead that feels like a machine breaking down.
+#
+# This playbook perfectly demonstrates how to use the `gen_score` helper 
+# to algorithmically generate a massive, distorted 16th-note bassline, 
+# and how to use the `:play_fm` synth with extreme `depth` to simulate 
+# dissonant, metallic guitar stabs.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Aggressive, Mechanical, & Dark)
+# ==========================================================
+
+# Relentless, heavy 4/4 drum machine kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, compressed snare strictly on beats 2 and 4, with a ghost note.
+s_snare = gen_score("....x.......x...", [{note: :c4, amp: 1.2}, {note: :c4, amp: 0.3}])
+
+# Rigid, mechanical 16th hats.
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}])
+
+# The "Distorted Synth" Bass (D Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# Extreme cutoff (120) and microscopic release (0.08) create a grinding, 
+# distorted, mechanical churn that drives the track.
+bass_notes = [:d1, :d2, :d1, :d2, :d1, :d2, :d1, :d2, 
+              :c1, :c2, :c1, :c2, :a0, :a1, :a0, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.08, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Dissonant, "Metallic" Synth Stabs (Dm to Bb).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, metallic, dissonant hit that mimics a distorted guitar.
+chord_notes = [
+  {note: [:d3, :f3, :c4]}, {note: [:d3, :f3, :c4]}, 
+  {note: [:bb2, :d3, :a3]}, {note: [:bb2, :d3, :a3]}
+]
+chord_data = chord_notes.map { |c| c.merge({divisor: 2, depth: 6, release: 0.15, amp: 0.6}) }
+s_chords = gen_score("..x.....x.....x.", chord_data)
+
+# Screaming, "Cyber" Lead (D Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo. The long release (0.3) 
+# and massive gaps (`nil`) create a piercing, screaming melody that mimics 
+# a detuned synthesizer solo.
+lead_notes = [:d5, :c5, :d5, :a4, :bb4, :a4, :g4, :d4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Pitched-down, "Demonic" vocal drone (Granular Synth).
+# Long size (0.15) and low density (1) creates a dark, repetitive, 
+# mechanical background texture.
+s_vocal = gen_score("........x.......", [
+  {note: :d2, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.15, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Machine - Just the relentless drums and distorted bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Factory - Add the dissonant stabs and vocal drone (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Breakdown - The screaming cyber lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MECHANICAL AGGRESSION]
+# 
+# 1. The Distorted Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:d1) and the 
+#    high octave (:d2). By using an extreme `cutoff` (120) and a microscopic 
+#    `release` (0.08), the engine turns the detuned sawtooth into a relentless, 
+#    grinding, distorted churn that perfectly mimics the heavy, sequenced synth 
+#    basslines of 90s Industrial Rock.
+#
+# 2. FM as a Metallic Guitar: Look at `s_chords`. The `:play_fm` synth is 
+#    given a `divisor` of `2` and an extreme `depth` of `6`. This harsh 
+#    harmonic ratio forces the FM modulator to shatter the carrier wave, 
+#    creating a dissonant, metallic, buzzing "hit" that perfectly mimics a 
+#    heavily distorted electric guitar playing dissonant power chords.
+#
+# 3. The Cyber Scream: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (110) and a long `release` (0.3). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a 
+#    piercing, screaming melody that feels like a machine breaking down, 
+#    perfectly anchoring the track's cyber-aggressive atmosphere.
+# ==========================================================
