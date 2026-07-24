@@ -1,0 +1,126 @@
+# ==========================================================
+# PLAYBOOK: 90s STONER ROCK / DESERT DOOM
+# (Pioneered by Kyuss, Sleep, and Electric Wizard)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Stoner Rock.
+# We have explored fast, aggressive genres like Black Metal and Hardcore Punk, 
+# but Stoner Rock is the sound of pure, heavy, slow-moving inertia. It fuses 
+# the crushing weight of doom metal with the fuzz-drenched, psychedelic groove 
+# of 70s acid rock. It relies on a slow, plodding tempo (75 BPM), a massive, 
+# continuous fuzz bassline, heavily distorted "pentatonic" guitar riffs, and 
+# cavernous, echoing drum beats that feel like trudging through a desert.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a massive, fuzz-drenched power trio. By using the 
+# `:play_sub` synth as a thick, continuous fuzz bass and the `:play_fm` 
+# synth with extreme `depth` to simulate a down-tuned, distorted guitar 
+# riff, the engine creates a crushing, hypnotic, and deeply heavy atmosphere.
+# ==========================================================
+
+use_bpm 75
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Minor - Heavy, Plodding, & Fuzz-Drenched)
+# ==========================================================
+
+# The "Plodding" Kick. 
+# A slow, heavy, Sabbathean march. (3 x's, 3 elements)
+s_kick = gen_score("x.....x.x.......", [
+  :c4, {note: :c4, amp: 0.8}, :c4
+])
+
+# Massive, cavernous snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Slow, sparse, ringing ride hats. (4 x's, 4 elements)
+s_hats = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# The "Fuzz" Bass (C Minor).
+# Plays a massive, continuous root note with a 5th movement. 
+# Extreme cutoff (120) and massive release (2.0) create a thick, buzzing, 
+# suffocating undercurrent. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :c1, cutoff: 120, release: 2.0, amp: 1.2}, 
+  {note: :g1, cutoff: 120, release: 2.0, amp: 1.0}
+])
+
+# The "Down-Tuned Riff" (C Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Plays a classic, bluesy pentatonic doom riff. (8 x's, 8 elements)
+guitar_notes = [
+  {note: [:c3, :g3]}, {note: [:c3, :g3]}, {note: [:eb3, :bb3]}, {note: [:c3, :g3]}, 
+  {note: [:g2, :d3]}, {note: [:g2, :d3]}, {note: [:ab2, :eb3]}, {note: [:g2, :d3]}
+]
+guitar_data = guitar_notes.map { |c| c.merge({divisor: 2, depth: 6, release: 0.2, amp: 0.7}) }
+s_guitar = gen_score("x.x.x.x.x.x.x.x.", guitar_data)
+
+# Wailing, "Psychedelic" Lead Solo (C Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The massive release (0.8) 
+# creates a soaring, wailing solo that floats over the crushing rhythm section. 
+# (6 x's, 6 elements)
+lead_notes = [:c5, :eb5, :g5, :ab5, :g5, :eb5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.8} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Distant, "Chant" Vocal (Granular Synth).
+# Pitched DOWN to :c3. Long size (0.2) creates a dark, evolving background drone. 
+# (1 x, 1 element)
+s_vocal = gen_score("x...............", [
+  {note: :c3, buffer: :misc_lori, pos: 0.4, density: 1, size: 0.2, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Desert - Just the crushing fuzz bass, riff, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_guitar, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Trudge - Add the slow, plodding drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The wailing psychedelic lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CRUSHING WEIGHT]
+# 
+# 1. The Fuzz Bass: Look at `s_bass`. The `:play_sub` synth is given an extreme 
+#    `cutoff` (120) and a massive `release` (2.0). By leaving the filter wide 
+#    open on a detuned sawtooth, the engine creates a thick, buzzing, 
+#    suffocating wall of low-end that perfectly mimics the massive fuzz bass 
+#    tones of 90s Stoner Rock. The engine's strict master clock ensures this 
+#    massive note rings out perfectly over two whole beats.
+#
+# 2. FM as a Down-Tuned Amp: Look at `s_guitar`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `6`. This harsh harmonic ratio 
+#    forces the FM modulator to grind the carrier wave, creating a harsh, 
+#    distorted square wave. By playing a slow, bluesy pentatonic riff, the 
+#    engine perfectly mimics the down-tuned, fuzz-drenched guitars of Kyuss 
+#    and Sleep.
+#
+# 3. The Plodding March: 90s Stoner Rock relies on extreme tempo and negative 
+#    space. At 75 BPM, the `s_kick` hits on a sparse, heavy march (steps 0, 6, 8). 
+#    The engine honors the massive gaps (`nil`) in the grid, letting the cavernous 
+#    reverb tails of the snare and the wailing lead ring out into the void, 
+#    creating a crushing, hypnotic atmosphere.
+# ==========================================================

@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 90s DUB TECHNO / BASIC CHANNEL STYLE
+# (Pioneered by Basic Channel, Maurizio, and Deepchord)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Dub Techno.
+# We have explored Minimal Techno and Peak-Time Techno, but Dub Techno 
+# is the sound of deep, hypnotic echoes. It fuses the relentless 4/4 grid 
+# of Detroit techno with the massive, echoing delays of Jamaican dub. 
+# It relies on a soft, driving kick, a deep, continuous sub-bass, and 
+# sparse, staccato minor chords that are routed through massive delay 
+# tails, creating a cavernous, underwater atmosphere.
+#
+# This playbook perfectly demonstrates how to use the global tape echo 
+# bus to create massive, cascading delay tails. By routing the `:play_lead` 
+# synth through the echo, the sparse chord stabs bounce across the empty 
+# 16-step grid, creating a hypnotic, deep-space groove.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Deep, Hypnotic, & Cavernous)
+# ==========================================================
+
+# Soft, driving 4/4 kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Crisp, organic snare/rimshot strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, off-beat open hats. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
+
+# Deep, continuous sub-bass (A Minor).
+# Massive release (3.0) and low cutoff (50) create a deep, continuous rumble. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :a1, release: 3.0, cutoff: 50, amp: 1.2}, 
+  {note: :g1, release: 3.0, cutoff: 50, amp: 1.0}
+])
+
+# The "Dub Stabs" (Am to Em).
+# Routed through the global tape echo bus. The sparse hits and massive gaps 
+# (`nil`) allow the delay tails to bounce across the empty grid. (3 x's, 3 elements)
+s_stabs = gen_score("x.....x...x.....", [
+  {note: [:a3, :c4, :e4], cutoff: 90, release: 0.1, amp: 0.6},
+  {note: [:a3, :c4, :e4], cutoff: 90, release: 0.1, amp: 0.6},
+  {note: [:e3, :g3, :b3], cutoff: 90, release: 0.1, amp: 0.6}
+])
+
+# Piercing, "Deep Space" FM Bleeps (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a pristine, 
+# glassy tone. (6 x's, 6 elements)
+s_fm = gen_score("..x..x..x..x..x.", [
+  {note: :a5, amp: 0.5, divisor: 4, depth: 2, release: 0.05}, 
+  {note: :e5, amp: 0.4, divisor: 4, depth: 2, release: 0.05},
+  {note: :a5, amp: 0.5, divisor: 4, depth: 2, release: 0.05}, 
+  {note: :g5, amp: 0.4, divisor: 4, depth: 2, release: 0.05},
+  {note: :e5, amp: 0.5, divisor: 4, depth: 2, release: 0.05},
+  {note: :a5, amp: 0.4, divisor: 4, depth: 2, release: 0.05}
+])
+
+# Ethereal, "Underwater" drone (Granular Synth).
+# Massive size (0.5s) and low density (1) time-stretches the sample into a 
+# slow, evolving background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.5, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Deep - Just the sub-bass, dub stabs, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_lead, s_stabs, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Pulse - Add the soft, driving 4/4 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_lead, s_stabs, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Echo - The deep space FM bleeps drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_lead, s_stabs, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DEEP SPACE]
+# 
+# 1. Echo as an Instrument: Look at `s_stabs`. The `:play_lead` synth is 
+#    routed through the engine's global tape echo bus. The notes hit on steps 
+#    0, 6, and 10, but the massive gaps (`nil`) allow the delay tails to bounce 
+#    repeatedly across the empty grid. The engine's strict master clock ensures 
+#    these echoes ring out perfectly in time with the 4/4 beat, creating the 
+#    signature Dub Techno atmosphere.
+#
+# 2. Subterranean Weight: Look at `s_bass`. The `:play_sub` synth is given a 
+#    massive `release` of `3.0` (three whole beats) and an extreme low `cutoff` 
+#    of `50`. This creates a deep, continuous rumble that anchors the erratic, 
+#    echoing chord stabs, perfectly mimicking the massive, warm sub-bass of 
+#    Basic Channel and Maurizio.
+#
+# 3. Extreme Negative Space: Dub Techno relies on what you *don't* play. 
+#    80% of the `s_stabs` and `s_fm` grids are `nil`. The engine honors these 
+#    rests perfectly, letting the massive delay tails and the deep sub-bass 
+#    fill the void, creating a slow, echoing, and deeply hypnotic atmosphere.
+# ==========================================================
