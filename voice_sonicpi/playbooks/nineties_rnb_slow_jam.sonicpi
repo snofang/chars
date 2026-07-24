@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 90s R&B SLOW JAM / NEW JACK BALLAD
+# (Pioneered by Boyz II Men, Jodeci, and Babyface)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s R&B Slow Jam.
+# We have explored high-energy rave genres and aggressive rock, but the 90s 
+# Slow Jam is the sound of pure, late-night romance. It fuses the heavy, 
+# slow 808 grooves of New Jack Swing with lush, cinematic electric piano 
+# chords, deep, melodic sub-bass, and soaring, emotional vocal stabs. 
+#
+# This playbook perfectly demonstrates how to use immense negative space 
+# and slow envelopes to create a deeply emotional, atmospheric groove. By 
+# using a very slow 70 BPM tempo, massive `release` times on the bass, and 
+# a high `cutoff` on the FM lead to simulate an electric piano, the engine 
+# creates a classic, silky-smooth 90s R&B atmosphere.
+# ==========================================================
+
+use_bpm 70
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Major - Silky, Deep, & Emotional)
+# ==========================================================
+
+# The "Slow Jam" Kick. 
+# A heavy, slow 808 bounce. (5 x's, 5 elements)
+s_kick = gen_score("x.....x.x.....x.", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.6}, :c4
+])
+
+# Crisp, dry snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Delicate, sparse 8th hats. (4 x's, 4 elements)
+s_hats = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# Deep, melodic 808 Sub-Bass (F Major).
+# Massive release (1.5) allows the bass to ring out and carry the melody. 
+# (5 x's, 5 elements)
+s_bass = gen_score("x.....x.x.....x.", [
+  {note: :f1, release: 1.5, cutoff: 50, amp: 1.2}, 
+  {note: :c2, release: 1.5, cutoff: 50, amp: 1.0}, 
+  {note: :f1, release: 1.5, cutoff: 50, amp: 1.0}, 
+  {note: :bb1, release: 1.5, cutoff: 50, amp: 1.0}, 
+  {note: :f1, release: 1.5, cutoff: 50, amp: 1.0}
+])
+
+# Lush, "Electric Piano" Chords (Fmaj9 to Bbmaj9).
+# Hit on the downbeats. The slow 0.5-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, silky wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:f3, :a3, :c4, :e4], cutoff: 80, attack: 0.5, release: 3.0, amp: 0.5},
+  {note: [:bb2, :d3, :f3, :a3], cutoff: 80, attack: 0.5, release: 3.0, amp: 0.5}
+])
+
+# Soaring, "Electric Piano" Lead (F Major Pentatonic).
+# Uses :play_fm with a low divisor (2) and low depth (2) to create a warm, 
+# bell-like tone. Routed through the engine's tape echo. (6 x's, 6 elements)
+lead_notes = [:f5, :a5, :c6, :a5, :g5, :f5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 2, release: 0.8} }
+s_fm = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ooh" Vocal Chops (Granular Synth).
+# High density, small size = a sharp, pristine vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :f4, buffer: :misc_lori, pos: 0.1, density: 2, size: 0.08, amp: 0.6},
+  {note: :a4, buffer: :misc_lori, pos: 0.3, density: 2, size: 0.08, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the lush chords, 808 bass, and vocal chops (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Groove - Add the slow, heavy 808 drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The soaring electric piano lead drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SLOW JAM ATMOSPHERE]
+# 
+# 1. The 808 Sub-Weight: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `release` of `1.5` (nearly two whole beats) and a very low `cutoff` of 
+#    `50`. Because the BPM is 70, that low F note rings out for over a second, 
+#    creating a massive, booming low-end that carries the melody and provides 
+#    immense, suffocating weight.
+#
+# 2. The Silky Swell: Look at `s_chords`. The Hashes specify an `attack` of 
+#    `0.5` and a `release` of `3.0`. Because the engine reads these Hashes, 
+#    the chords don't just hit; they slowly swell into the mix and fade away 
+#    over three whole beats, creating a continuous, blurred wave of warm 
+#    harmony that perfectly mimics a Fender Rhodes electric piano.
+#
+# 3. FM as an Electric Piano: The `s_fm` sequence uses `divisor: 2` and 
+#    `depth: 2`. This gentle harmonic ratio produces a warm, bell-like tone 
+#    that mimics an electric piano solo. Routed through the engine's tape 
+#    echo, the sparse notes cascade across the empty space, perfectly 
+#    anchoring the track's romantic, late-night atmosphere.
+# ==========================================================

@@ -1,0 +1,119 @@
+# ==========================================================
+# PLAYBOOK: 2000s POST-HARDCORE / SCREAMO
+# (Pioneered by Alexisonfire, Hawthorne Heights, and Silverstein)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Post-Hardcore.
+# We have explored Metalcore and Emo Rap, but Post-Hardcore is the sound 
+# of 2000s teenage angst. It fuses the aggressive, distorted energy of 
+# hardcore punk with the sweeping, emotional melodies of indie rock. 
+# It relies on a frantic, driving drum beat, massive, distorted power 
+# chords, a soaring, echoing clean guitar lead, and harsh, screamed vocals 
+# that contrast with the melodic instrumentation.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a live, emotional rock band. By using the `:play_fm` 
+# synth with extreme `depth` for distorted chords, and the `:play_lead` 
+# synth routed through the global tape echo for a soaring clean guitar, 
+# the engine creates a chaotic, emotional, and deeply nostalgic atmosphere.
+# ==========================================================
+
+use_bpm 150
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C# Minor - Aggressive, Emotional, & Driving)
+# ==========================================================
+
+# Frantic, driving 4/4 rock kick. (4 x's, 1 element - cycles 4 times)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 16th hats. (8 x's, 2 elements - cycles 4 times)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Driving" Bass (C# Minor).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive "thwack". (8 x's, 8 elements)
+bass_notes = [:cs2, :cs2, :cs2, :cs2, :a1, :a1, :b1, :b1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (C#5 to A5 to B5).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# harsh, buzzy square wave that mimics a heavily distorted electric guitar.
+# Hits only on beats 1 and 3 to let the bass drive the rhythm. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:cs3, :gs3], divisor: 2, depth: 5, release: 0.3, amp: 0.7},
+  {note: [:b2, :fs3], divisor: 2, depth: 5, release: 0.3, amp: 0.7}
+])
+
+# Soaring, "Clean" Guitar Lead (C# Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.4) 
+# and massive gaps (`nil`) create a soaring, echoing melody that floats over 
+# the heavy rhythm section. (6 x's, 6 elements)
+lead_notes = [:cs5, :e5, :gs5, :a5, :gs5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 110, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Scream" Vocal (Granular Synth).
+# Pitched DOWN to :cs2. Long size (0.15) creates a dark, distorted vocal hit. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :cs2, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.15, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Verse - Just the frantic drums, driving bass, and power chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Breakdown - Add the screamed vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Chorus - The soaring clean guitar lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EMOTIONAL CHAOS]
+# 
+# 1. FM as a Distorted Amp: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `5`. This harsh harmonic 
+#    ratio forces the FM modulator to shatter the carrier wave, creating a 
+#    piercing, buzzy square wave that perfectly mimics a heavily distorted 
+#    electric guitar playing power chords, a hallmark of 2000s Post-Hardcore.
+#
+# 2. The Driving Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a fast, driving line. By using a high 
+#    `cutoff` (100) and a very short `release` (0.1), the engine turns the 
+#    detuned sawtooth into a punchy, aggressive "thwack" that perfectly mimics 
+#    a picked electric bass guitar driving the rhythm, bridging the gap 
+#    between punk and metal.
+#
+# 3. The Clean Contrast: Post-Hardcore relies on the stark contrast between 
+#    aggressive, distorted rhythm sections and soaring, clean guitar melodies. 
+#    The `s_lead` sequence uses the Prophet synth with a high `cutoff` (110) 
+#    and a long `release` (0.4). Because it's routed through the global tape 
+#    echo bus, the sparse notes smear into a soaring, cascading melody that 
+#    perfectly anchors the track's emotional, chaotic atmosphere.
+# ==========================================================

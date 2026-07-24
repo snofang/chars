@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 90s FLORIDA BREAKS / FUNKY BREAKS
+# (Pioneered by DJ Icey, Huda Hudia, and Dynamix II)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Florida Breaks.
+# We have explored Miami Bass and Big Beat, but Florida Breaks is the sound 
+# of the 90s Orlando rave scene. It fuses the heavy, booming 808 bass of 
+# Miami Bass with the syncopated "Amen" breakbeats of UK rave, adding 
+# massive, filter-sweeping synth stabs and chopped, repetitive vocal hooks. 
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create a high-energy, bouncy groove. By locking a syncopated 808 kick 
+# to a chopped breakbeat and a continuous, rolling 16th-note bass, the 
+# engine creates a massive, sweaty, festival-ready atmosphere.
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Bouncy, Booming, & Rave-Ready)
+# ==========================================================
+
+# The "Florida" Kick. 
+# A heavy, syncopated 808 march. (5 x's, 5 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}, :c4
+])
+
+# The "Amen" Snare. 
+# Heavy hits on 2 and 4, with a frantic roll on the 'and' of 3. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.9}
+])
+
+# Fast, rolling 16th hats to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Booming" 808 Bass (E Minor).
+# Plays a continuous, rolling 16th-note pattern. 
+# Low cutoff (60) and short release (0.1) create a relentless, sub-rattling churn.
+# (16 x's, 16 elements)
+bass_cycle = [:e1, :e1, :e2, :e1, :e1, :e1, :e2, :e1, 
+              :g1, :g1, :g2, :g1, :b1, :b1, :b2, :b1]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 60, release: 0.1, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "Filter Sweep" Synth Stabs (Em to G).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.15) 
+# create a sharp, piercing wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:e3, :g3, :b3], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:e3, :g3, :b3], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:g2, :b2, :d3], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:g2, :b2, :d3], cutoff: 110, release: 0.15, amp: 0.6}
+])
+
+# Piercing, "Rave" FM Lead (E Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (4) to create a 
+# sharp, buzzy square wave. (8 x's, 8 elements)
+lead_notes = [:e5, :b4, :e5, :g5, :a5, :g5, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 4, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Choppy, "Diva" vocal stutter (Granular Synth).
+# High density, tiny size = a sharp, pristine vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :e4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
+  {note: :b3, buffer: :misc_lori, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the 808s, rolling bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Vibe - Add the snare, synth stabs, and vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The piercing rave FM lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN FLORIDA BASS]
+# 
+# 1. The Booming 808 Roll: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:e1) and the 
+#    high octave (:e2). By using a very low `cutoff` (60) and a short `release` 
+#    (0.1), the engine creates a relentless, sub-rattling churn that perfectly 
+#    mimics the massive, booming car-subwoofer basslines of 90s Florida Breaks.
+#
+# 2. The Syncopated 808 Kick: Look at `s_kick`. It completely avoids landing on 
+#    a standard 4/4 pulse. By hitting on syncopated, "bouncing" steps 
+#    (0, 3, 6, 8, 11), the engine creates a lopsided, physical groove that 
+#    feels like a live drummer playing a Miami Bass break, perfectly anchoring 
+#    the continuous 16th-note bass.
+#
+# 3. Pristine High-End: Florida Breaks relies on a stark contrast between the 
+#    massive, dark sub-bass and high-pitched, pristine elements. The `s_vocal` 
+#    sequence uses the granular engine to chop a vocal into a sharp, sugary 
+#    stutter, while the `s_lead` cuts through the mix like a knife.
+# ==========================================================

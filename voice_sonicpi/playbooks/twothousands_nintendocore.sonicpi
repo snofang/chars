@@ -1,0 +1,124 @@
+# ==========================================================
+# PLAYBOOK: 2000s NINTENDOCORE / 8-BIT METAL
+# (Pioneered by Horse the Band, I Fight Dragons, and Math the Band)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Nintendocore.
+# We have explored 8-Bit Chiptune and Metalcore, but Nintendocore is the 
+# sound of the mid-2000s internet underground. It fuses the aggressive, 
+# down-tuned breakdowns of metalcore and post-hardcore with the piercing, 
+# rapid-fire 8-bit arpeggios of the Nintendo Entertainment System (NES) 
+# sound chip. It relies on a frantic, driving blast beat, a distorted, 
+# continuous 16th-note bass, massive, dissonant power chords, and a 
+# piercing, high-pitched FM lead that sounds like a video game boss 
+# battle tearing through a hardcore punk show.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a chaotic, live 8-bit metal band. By using the 
+# `:play_fm` synth with an extreme `depth` for distorted chords, and a 
+# high `divisor` for the piercing 8-bit lead, the engine creates a 
+# massive, aggressive, and deeply nostalgic atmosphere.
+# ==========================================================
+
+use_bpm 160
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Fast, Aggressive, & 8-Bit)
+# ==========================================================
+
+# The "Blast Beat" Kick. 
+# Plays continuous, driving 8th notes. (8 x's, 8 elements)
+s_kick = gen_score("x.x.x.x.x.x.x.x.", [
+  :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4
+])
+
+# Heavy, dry snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 16th hats to add to the chaotic wall of sound. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Distorted" 8-Bit Bass (A Minor).
+# Plays continuous, driving 16th notes. Extreme cutoff (110) and microscopic release (0.06) 
+# create a relentless, aggressive churn. (16 x's, 16 elements)
+bass_notes = [:a1, :a1, :a2, :a1, :a1, :a1, :a2, :a1, 
+              :g1, :g1, :g2, :g1, :a1, :a1, :a2, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.06, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "Dissonant" Power Chords (A5 to G5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a harsh, 
+# metallic hit. Hits only on beats 1 and 3 to let the bass drive the rhythm. 
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :e4], divisor: 2, depth: 6, release: 0.3, amp: 0.7},
+  {note: [:g3, :d4], divisor: 2, depth: 6, release: 0.3, amp: 0.7}
+])
+
+# Piercing, "NES" 8-Bit Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a piercing, 
+# glassy, computer-like tone. Plays a rapid, continuous 16th-note melody. 
+# (16 x's, 16 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :a5, :e5, :c6, :e5, 
+              :g5, :d5, :bb5, :d5, :a5, :e5, :c6, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.08} }
+s_lead = gen_score("xxxxxxxxxxxxxxxx", lead_data)
+
+# "Scream" Vocal (Granular Synth).
+# Pitched DOWN to :a2. Long size (0.15) creates a dark, distorted vocal hit. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a2, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.15, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Boss Battle - Just the blast beat, 8-bit bass, and power chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Cutscene - Add the scream vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: Game Over - The piercing NES 8-bit lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 8-BIT CHAOS]
+# 
+# 1. FM as an NES Chip: Look at `s_lead`. The `:play_fm` synth is given a high 
+#    `divisor` (4) and a low `depth` (2). This harmonic ratio produces a piercing, 
+#    glassy, sine-like wave that perfectly mimics the legendary 2A03 sound chip 
+#    found in the Nintendo Entertainment System. By playing a rapid, continuous 
+#    16th-note melody, the engine creates a frantic, 8-bit boss battle atmosphere.
+#
+# 2. The 8-Bit Bass Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating octaves. By using an extreme `cutoff` 
+#    (110) and a microscopic `release` (0.06), the engine turns the detuned 
+#    sawtooth into a relentless, aggressive churn that perfectly mimics the 
+#    distorted, down-tuned basslines of 2000s Nintendocore.
+#
+# 3. The Blast Beat: Look at `s_kick` and `s_hats`. They play continuous 8th and 
+#    16th notes at 160 BPM. This creates a relentless, mechanical wall of 
+#    percussion that perfectly mimics the "blast beat" drumming of extreme metal. 
+#    The engine's strict master clock ensures this chaotic rhythm locks perfectly 
+#    with the continuous 16th-note bass and 8-bit lead.
+# ==========================================================

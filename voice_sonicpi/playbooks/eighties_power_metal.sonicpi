@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 80s POWER METAL / FANTASY METAL
+# (Pioneered by Helloween, Blind Guardian, and Stratovarius)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Power Metal.
+# We have explored Heavy Metal and Black Metal, but Power Metal is the 
+# sound of high-speed fantasy and virtuosic melody. It relies on a frantic, 
+# "galloping" double-kick drum beat, a driving, continuous 8th-note bass, 
+# massive, soaring minor power chords, and piercing, rapid-fire "hammer-on" 
+# guitar solos that feel like riding a dragon into battle.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a fast, melodic, and epic metal band. By using the 
+# `:play_fm` synth with extreme `depth` to simulate a distorted guitar, 
+# and the `:play_lead` synth routed through the global tape echo to create 
+# a soaring solo, the engine creates a massive, heroic, and deeply energetic 
+# atmosphere.
+# ==========================================================
+
+use_bpm 165
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Fast, Heroic, & Melodic)
+# ==========================================================
+
+# The "Double Kick" Drum. 
+# A blistering, continuous 8th-note gallop. (8 x's, 8 elements)
+s_kick = gen_score("x.x.x.x.x.x.x.x.", [
+  :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4
+])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Galloping" Bass (E Minor).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive "thwack" that mimics a picked electric bass. 
+# (8 x's, 8 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :d1, :d1, :c1, :b0]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Soaring" Power Chords (E5 to C5 to D5).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# sharp, buzzy square wave that mimics a heavily distorted electric guitar.
+# Hits only on beats 1 and 3 to let the bass drive the rhythm. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:e3, :b3], divisor: 2, depth: 5, release: 0.3, amp: 0.7},
+  {note: [:d3, :a3], divisor: 2, depth: 5, release: 0.3, amp: 0.7}
+])
+
+# Piercing, "Hammer-On" Guitar Solo (E Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
+# and rapid, 8th-note melody create a soaring, virtuosic solo. (8 x's, 8 elements)
+lead_notes = [:e5, :g5, :a5, :b5, :a5, :g5, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.2} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Battle Cry" Vocal Shout (Granular Synth).
+# Pitched UP to :e4. Long size (0.1) creates a raw, repetitive vocal hit 
+# that mimics a power metal singer hitting a high note. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :e4, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.1, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Charge - Just the double kick, galloping bass, and power chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Battle - Add the battle cry vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The piercing hammer-on guitar solo drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EPIC METAL]
+# 
+# 1. The Double Kick Gallop: Look at `s_kick`. It plays continuous, 
+#    driving 8th notes at 165 BPM. This creates a blistering, relentless 
+#    foundation that perfectly mimics the legendary "double kick" drumming 
+#    of 80s power metal. The engine's strict master clock ensures this 
+#    chaotic rhythm locks perfectly with the galloping bass.
+#
+# 2. FM as a Distorted Amp: Look at `s_chords`. The `:play_fm` synth is 
+#    given a `divisor` of `2` and an extreme `depth` of `5`. This harsh 
+#    harmonic ratio forces the FM modulator to shatter the carrier wave, 
+#    creating a piercing, buzzy square wave that perfectly mimics a heavily 
+#    distorted electric guitar playing soaring minor power chords.
+#
+# 3. The Hammer-On Solo: The `s_lead` sequence uses the Prophet synth with 
+#    a high `cutoff` (110) and a long `release` (0.2). Because it's routed 
+#    through the global tape echo bus, the rapid, 8th-note notes smear into 
+#    a soaring, cascading guitar solo that feels like a virtuosic "hammer-on" 
+#    run, perfectly anchoring the track's heroic, high-energy atmosphere.
+# ==========================================================

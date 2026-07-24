@@ -1,0 +1,118 @@
+# ==========================================================
+# PLAYBOOK: 2000s CLICKS & CUTS / MICROSOUND
+# (Pioneered by Ryoji Ikeda, Alva Noto, and Pole)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Clicks & Cuts.
+# We have explored heavy, maximalist genres (Metalcore, Hardcore Punk) and 
+# lush ambient genres. Microsound is the absolute extreme of digital 
+# minimalism. It strips away all traditional melody and rhythm, replacing 
+# them with pristine, microscopic audio "glitches," ultra-clean sine waves, 
+# and massive, suffocating sub-bass drones. 
+#
+# This playbook perfectly demonstrates the extreme power of the Parameter 
+# Hashes and negative space. By using microscopic `amp` and `release` values, 
+# the engine turns traditional instruments into clinical, digital clicks, 
+# creating a stark, mathematical, and deeply atmospheric soundscape.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Clinical, Sparse, & Microscopic)
+# ==========================================================
+
+# The "Accent" Kick. 
+# Ultra-sparse, low amplitude. Just a pulse in the digital void. (2 x's, 2 elements)
+s_kick = gen_score("x.......x.......", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}
+])
+
+# The "Micro-Clicks" (Hi-Hats).
+# Amplitudes are pushed down to 0.05 to simulate digital dust. (6 x's, 6 elements)
+s_hats = gen_score("x..x.x..x..x.x..", [
+  {note: :c4, amp: 0.05}, {note: :c4, amp: 0.08}, {note: :c4, amp: 0.04}, 
+  {note: :c4, amp: 0.06}, {note: :c4, amp: 0.05}, {note: :c4, amp: 0.07}
+])
+
+# The "Sub-Bass" Drone (A Minor).
+# Massive release (4.0) and extreme low cutoff (40) create a continuous, 
+# suffocating rumble. (1 x, 1 element)
+s_bass = gen_score("x...............", [
+  {note: :a1, release: 4.0, cutoff: 40, amp: 1.0}
+])
+
+# The "Sine Bleeps" (FM Lead).
+# Uses :play_fm with a low divisor (1) and zero depth (0) to create a pure, 
+# pristine sine wave. Microscopic release (0.05) makes them sound like radar pings. 
+# (3 x's, 3 elements)
+s_fm = gen_score("..x.....x.....x.", [
+  {note: :a6, amp: 0.4, divisor: 1, depth: 0, release: 0.05}, 
+  {note: :e6, amp: 0.3, divisor: 1, depth: 0, release: 0.05}, 
+  {note: :c6, amp: 0.4, divisor: 1, depth: 0, release: 0.05}
+])
+
+# The "Digital Stabs" (Chords).
+# Stark, dissonant 2-note clusters. Very low amplitude and microscopic release. 
+# (2 x's, 2 elements)
+s_chords = gen_score("....x.......x...", [
+  {note: [:a4, :bb4], cutoff: 100, release: 0.05, amp: 0.2},
+  {note: [:e4, :f4], cutoff: 100, release: 0.05, amp: 0.2}
+])
+
+# The "Glitch" Texture (Granular Synth).
+# High density (8) and microscopic size (0.01) shatter the sample into digital noise. 
+# (2 x's, 2 elements)
+s_grain = gen_score(".....x......x..", [
+  {note: :a4, buffer: :elec_piano, pos: 0.8, density: 8, size: 0.01, amp: 0.2},
+  {note: :e4, buffer: :elec_piano, pos: 0.9, density: 8, size: 0.01, amp: 0.2}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the sub-bass drone, sine bleeps, and digital stabs (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_fm, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Matrix - Add the sparse accent kick and micro-clicks (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Glitch - The granular digital noise drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_grain, s_grain, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MINIMALISM]
+# 
+# 1. Microscopic Dynamics: Look at `s_hats`. The amplitudes are incredibly 
+#    low (0.05 to 0.08). Because the engine's strict master clock fires these 
+#    tiny hits with absolute precision, they don't sound like a drum beat; 
+#    they sound like digital dust or static clicking in the background of a 
+#    hard drive.
+#
+# 2. Pure Sine Waves: Look at `s_fm`. The `:play_fm` synth is given a 
+#    `divisor` of `1` and a `depth` of `0`. This strips away all harmonic 
+#    overtones, leaving only a pristine, mathematical sine wave. By using a 
+#    microscopic `release` (0.05), the engine creates cold, clinical radar 
+#    pings that cut through the sub-bass.
+#
+# 3. Extreme Sub-Weight: Look at `s_bass`. The `:play_sub` synth is given a 
+#    massive `release` of `4.0` (four whole beats) and an extreme low `cutoff` 
+#    of `40`. This creates a continuous, suffocating rumble that anchors the 
+#    erratic, microscopic high-frequency clicks, perfectly mimicking the 
+#    Ryoji Ikeda / Alva Noto aesthetic.
+# ==========================================================

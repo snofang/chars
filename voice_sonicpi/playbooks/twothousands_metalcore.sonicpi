@@ -1,0 +1,122 @@
+# ==========================================================
+# PLAYBOOK: 2000s METALCORE / DJENT
+# (Pioneered by Meshuggah, Periphery, and Bring Me The Horizon)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Metalcore / Djent.
+# We have explored Heavy Metal and Black Metal, but Djent is the sound of 
+# modern, mathematical metal. It relies on heavily syncopated, "polyrhythmic" 
+# 16th-note guitar chugs, blistering double-kick drums, massive, dissonant 
+# power chords, and clean, echoing ambient guitar melodies that float over 
+# the crushing rhythm section.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a modern, 8-string metal band. By using the `:play_sub` 
+# synth as a continuous, distorted "chug" and the `:play_fm` synth to create 
+# dissonant, metallic chords, the engine creates a massive, aggressive, and 
+# deeply mathematical atmosphere.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Heavy, Syncopated, & Mathematical)
+# ==========================================================
+
+# The "Double Kick" Drum. 
+# A blistering, syncopated 16th-note pattern. (8 x's, 8 elements)
+s_kick = gen_score("x..x..x.x..x..x.", [
+  :c4, :c4, :c4, {note: :c4, amp: 0.7}, :c4, :c4, :c4, {note: :c4, amp: 0.6}
+])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "8-String Chug" Bass (F# Minor).
+# Plays a heavily syncopated, continuous 16th-note pattern. 
+# Extreme cutoff (120) and microscopic release (0.05) create a grinding, 
+# distorted churn that mimics a down-tuned, palm-muted electric guitar.
+# (8 x's, 8 elements)
+bass_notes = [:fs1, :fs1, :fs1, :fs1, :fs1, :fs1, :b1, :fs1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.05, amp: 1.2} }
+s_bass = gen_score("x..x..x.x..x..x.", bass_data)
+
+# Massive, "Dissonant" Power Chords (F#5 to B5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a harsh, 
+# metallic hit. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:fs3, :cs4], divisor: 2, depth: 6, release: 0.3, amp: 0.7},
+  {note: [:b2, :fs3], divisor: 2, depth: 6, release: 0.3, amp: 0.7}
+])
+
+# Clean, "Ambient" Guitar Lead (F# Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.8) 
+# and massive gaps (`nil`) create a soaring, echoing melody that floats over 
+# the heavy rhythm section. (5 x's, 5 elements)
+lead_notes = [:fs5, :a5, :b5, :a5, :fs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.8} }
+s_lead = gen_score("x..x..x...x..x..", lead_data)
+
+# "Scream" Vocal (Granular Synth).
+# Pitched DOWN to :fs2. Long size (0.15) creates a dark, distorted vocal hit. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :fs2, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.15, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Breakdown - Just the double kick, chugs, and dissonant chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Verse - Add the scream vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Chorus - The clean ambient guitar lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MATHEMATICAL METAL]
+# 
+# 1. The "Chug" Illusion: Look at `s_bass`. The `:play_sub` synth plays a 
+#    heavily syncopated, continuous 16th-note pattern. By using an extreme 
+#    `cutoff` (120) and a microscopic `release` (0.05), the engine turns the 
+#    detuned sawtooth into a grinding, distorted churn that perfectly mimics 
+#    the palm-muted, down-tuned 8-string guitar chugs that define the Djent 
+#    genre.
+#
+# 2. The Double Kick: Look at `s_kick`. It plays a blistering, syncopated 
+#    16th-note pattern that perfectly locks in with the guitar chugs. The 
+#    engine's strict master clock ensures this complex, polyrhythmic rhythm 
+#    lands with absolute mathematical precision, creating a massive, 
+#    mechanical wall of percussion.
+#
+# 3. The Ambient Contrast: Djent relies on the stark contrast between the 
+#    aggressive, mathematical rhythm section and clean, echoing ambient 
+#    guitar melodies. The `s_lead` sequence uses the Prophet synth with a 
+#    long `release` (0.8) and is routed through the global tape echo bus, 
+#    creating a soaring, floating melody that perfectly anchors the track's 
+#    crushing, heavy atmosphere.
+# ==========================================================

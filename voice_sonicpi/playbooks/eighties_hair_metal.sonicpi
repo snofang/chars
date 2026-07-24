@@ -1,0 +1,119 @@
+# ==========================================================
+# PLAYBOOK: 80s HAIR METAL / POP METAL
+# (Pioneered by Mötley Crüe, Def Leppard, and Poison)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Hair Metal.
+# We have explored Heavy Metal and Glam Rock, but Hair Metal is the sound 
+# of 80s Los Angeles stadium rock. It fuses the heavy, driving grooves of 
+# metal with the catchy, anthemic hooks of pop. It relies on a driving, 
+# "stomp" 4/4 rock beat with a massive, gated snare, an octave-jumping 
+# picked bass, huge, distorted power chords, and a piercing, screaming 
+# guitar solo that feels like a sold-out arena erupting.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a massive, live 80s rock band. By using the `:play_fm` 
+# synth with extreme `depth` for distorted chords, and the `:play_lead` 
+# synth routed through the global tape echo for a screaming solo, the 
+# engine creates a high-energy, theatrical, and deeply nostalgic atmosphere.
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Anthemic, Driving, & Massive)
+# ==========================================================
+
+# Driving, "Stomp" Rock Kick. Hits on 1, 2, 3, and 4. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [:c4, :c4, :c4, :c4])
+
+# Massive, gated stadium snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Octave-Jumping" Bass (E Minor).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive "thwack" that mimics a picked electric bass. (8 x's, 8 elements)
+bass_notes = [:e1, :e2, :e1, :e2, :d1, :d2, :a1, :a2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (E5 to D5 to A5).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# sharp, buzzy square wave that mimics a heavily distorted electric guitar.
+# Hits on beats 1, 2, and 3 to create a massive, stomp-along rhythm. (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:e3, :b3], divisor: 2, depth: 5, release: 0.3, amp: 0.7},
+  {note: [:d3, :a3], divisor: 2, depth: 5, release: 0.3, amp: 0.7},
+  {note: [:a2, :e3], divisor: 2, depth: 5, release: 0.3, amp: 0.7}
+])
+
+# Piercing, "Screaming" Guitar Solo (E Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
+# and rapid, 8th-note melody create a soaring, virtuosic solo. (8 x's, 8 elements)
+lead_notes = [:e5, :g5, :a5, :b5, :a5, :g5, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.2} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Arena Crowd" Vocal Shout (Granular Synth).
+# Long size (0.1) and low density (1) creates a raw, repetitive vocal hit 
+# that mimics a stadium crowd shouting "Hey!". (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :e3, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.1, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Anthem - Just the driving drums, octave bass, and power chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Chorus - Add the arena crowd vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The piercing screaming guitar solo drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN STADIUM ROCK]
+# 
+# 1. FM as a Distorted Amp: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `5`. This harsh harmonic 
+#    ratio forces the FM modulator to shatter the carrier wave, creating a 
+#    piercing, buzzy square wave that perfectly mimics a heavily distorted 
+#    electric guitar playing soaring minor power chords.
+#
+# 2. The Octave-Jumping Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, alternating between the low octave (:e1) and the high 
+#    octave (:e2). By using a high `cutoff` (100) and a short `release` (0.1), 
+#    the engine turns the detuned sawtooth into a punchy, aggressive "thwack" 
+#    that perfectly mimics a picked electric bass driving the rhythm, a hallmark 
+#    of 80s Hair Metal.
+#
+# 3. The Screaming Solo: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (110) and a long `release` (0.2). Because it's routed 
+#    through the global tape echo bus, the rapid, 8th-note notes smear into 
+#    a soaring, cascading guitar solo that feels like a virtuosic "hammer-on" 
+#    run, perfectly anchoring the track's high-energy, theatrical atmosphere.
+# ==========================================================
