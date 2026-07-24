@@ -1,0 +1,123 @@
+# ==========================================================
+# PLAYBOOK: 2000s ROOTS DUBSTEP / DUBWISE
+# (Pioneered by Mala, DMZ, Skream, and Benga)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Roots Dubstep.
+# We have explored heavy, aggressive Brostep and dark, ambient Post-Dubstep, 
+# but Roots Dubstep is the sound of 2000s South London (Croydon). It fuses 
+# the massive, echoing delays of Jamaican dub with the heavy, slow (140 BPM 
+# half-time) syncopation of UK garage. It relies on immense sub-bass weight, 
+# a sparse, echoing "One-Drop" drum rhythm, and stark, delayed chord stabs 
+# that bounce across the empty grid.
+#
+# This playbook perfectly demonstrates how to use the global tape echo bus 
+# to create massive, cavernous space. By routing the `:play_lead` synth 
+# through the echo, the sparse chord stabs bounce endlessly, creating a 
+# massive, dark, and deeply hypnotic soundscape.
+# ==========================================================
+
+use_bpm 138
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Massive, Dark, & Echoing)
+# ==========================================================
+
+# The "Half-Time" Kick. 
+# A heavy, syncopated bounce. (3 x's, 3 elements)
+s_kick = gen_score("x.....x.x.......", [
+  :c4, {note: :c4, amp: 0.8}, :c4
+])
+
+# Crisp, echoing snare strictly on beat 3 (step 8), with a ghost note. (2 x's, 2 elements)
+s_snare = gen_score("........x.....x.", [
+  :c4, {note: :c4, amp: 0.3}
+])
+
+# Sparse, off-beat hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
+
+# Deep, massive "Sub-Wobble" Bass (F Minor).
+# Massive release (3.0) and extreme low cutoff (40) create a heavy, 
+# continuous rumble that anchors the track. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :f1, release: 3.0, cutoff: 40, amp: 1.2}, 
+  {note: :bb0, release: 3.0, cutoff: 40, amp: 1.0}
+])
+
+# The "Dub Stabs" (Fm to Bbm).
+# Routed through the global tape echo bus. The sparse hits and massive gaps 
+# (`nil`) allow the delay tails to bounce across the empty grid. (2 x's, 2 elements)
+s_stabs = gen_score("....x.......x...", [
+  {note: [:f3, :ab3, :c4], cutoff: 80, release: 0.1, amp: 0.6},
+  {note: [:bb2, :db3, :f3], cutoff: 80, release: 0.1, amp: 0.6}
+])
+
+# Piercing, "Siren" FM Bleeps (F Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a pristine, 
+# glassy tone. (3 x's, 3 elements)
+s_fm = gen_score("..x.....x.....x.", [
+  {note: :f5, amp: 0.5, divisor: 4, depth: 2, release: 0.05}, 
+  {note: :c5, amp: 0.4, divisor: 4, depth: 2, release: 0.05},
+  {note: :ab5, amp: 0.5, divisor: 4, depth: 2, release: 0.05}
+])
+
+# Pitched-down, "Reggae Chant" vocal drone (Granular Synth).
+# Long size (0.2) and low density (1) creates a slow, evolving background texture. 
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :f3, buffer: :misc_lori, pos: 0.3, density: 1, size: 0.2, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Deep - Just the massive sub-bass, dub stabs, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_lead, s_stabs, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Pulse - Add the half-time drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_lead, s_stabs, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Echo - The piercing siren bleeps drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_lead, s_stabs, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_fm, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DUB WEIGHT]
+# 
+# 1. Echo as an Instrument: Look at `s_stabs`. The `:play_lead` synth is 
+#    routed through the engine's global tape echo bus. The notes hit on steps 
+#    4 and 12, but the massive gaps (`nil`) allow the delay tails to bounce 
+#    repeatedly across the empty grid. The engine's strict master clock ensures 
+#    these echoes ring out perfectly in time with the half-time beat, creating 
+#    the signature Roots Dubstep atmosphere.
+#
+# 2. Subterranean Weight: Look at `s_bass`. The `:play_sub` synth is given a 
+#    massive `release` of `3.0` (three whole beats) and an extreme low `cutoff` 
+#    of `40`. This creates a deep, continuous rumble that anchors the erratic, 
+#    echoing chord stabs, perfectly mimicking the massive, system-shaking 
+#    sub-bass of DMZ and Skream.
+#
+# 3. The Half-Time Bounce: Look at `s_kick`. It completely avoids landing on 
+#    a standard 4/4 pulse. By hitting on steps 0, 6, and 8, the engine creates 
+#    a lopsided, heavy groove that feels like a live drummer playing a reggae 
+#    "One-Drop" rhythm slowed down to 138 BPM.
+# ==========================================================

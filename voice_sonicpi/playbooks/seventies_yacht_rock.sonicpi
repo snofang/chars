@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 70s YACHT ROCK / WEST COAST SOFT ROCK
+# (Pioneered by Steely Dan, Michael McDonald, and Toto)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Yacht Rock.
+# We have explored Sophisti-Pop and Steely Dan, but Yacht Rock is the sound 
+# of pure, pristine 70s California luxury. It fuses jazz harmony with 
+# impeccable, smooth studio production. It relies on a laid-back, syncopated 
+# drum groove, a deep, melodic "bass guitar" line, lush, slow-attacking 
+# Fender Rhodes chords, and a soaring, clean guitar or saxophone melody.
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes to 
+# create a smooth, pristine atmosphere. By using a mid-range `cutoff` on the 
+# bass to simulate a picked electric bass, and a slow `attack` on the chords 
+# to simulate a Fender Rhodes, the engine creates a deeply relaxing, 
+# sophisticated, and undeniably smooth groove.
+# ==========================================================
+
+use_bpm 105
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Smooth, Lush, & Pristine)
+# ==========================================================
+
+# The "Laid-Back" Kick. 
+# A syncopated, smooth groove. (3 x's, 3 elements)
+s_kick = gen_score("x.....x.x.....x.", [
+  :c4, {note: :c4, amp: 0.8}, :c4
+])
+
+# Crisp, dry snare/rimshot strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Swung, laid-back 16th shaker. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}
+])
+
+# Deep, melodic "Bass Guitar" (D Major).
+# Plays a syncopated, walking line. Mid cutoff (70) and medium release (0.3) 
+# create a warm, round undercurrent. (5 x's, 5 elements)
+s_bass = gen_score("x.....x.x.x.....", [
+  {note: :d2, release: 0.3, cutoff: 70, amp: 1.0}, 
+  {note: :a2, release: 0.3, cutoff: 70, amp: 0.8}, 
+  {note: :c3, release: 0.3, cutoff: 70, amp: 0.8}, 
+  {note: :b2, release: 0.3, cutoff: 70, amp: 0.8}, 
+  {note: :a2, release: 0.3, cutoff: 70, amp: 0.8}
+])
+
+# Lush, "Fender Rhodes" Chords (Dmaj9 to Gmaj7).
+# Hit on the downbeats. The slow 0.2-beat attack and massive 2.0-beat release 
+# blur the chords together into a continuous, warm wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :fs3, :a3, :e4], cutoff: 80, attack: 0.2, release: 2.0, amp: 0.5},
+  {note: [:g2, :b2, :d3, :a3], cutoff: 80, attack: 0.2, release: 2.0, amp: 0.5}
+])
+
+# Soaring, "Clean Guitar/Sax" Lead (D Major Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.5) 
+# creates a smooth, soaring melody that floats over the rhythm section. (6 x's, 6 elements)
+lead_notes = [:d5, :fs5, :a5, :g5, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.5} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Soft, "Ahh" Vocal Drone (Granular Synth).
+# Long size (0.2) and low density (1) creates a lush, background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :d4, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.2, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Harbor - Just the walking bass, Rhodes chords, and vocal drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Cruise - Add the laid-back, syncopated drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The soaring clean guitar/sax melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SMOOTH SOPHISTICATION]
+# 
+# 1. The "Laid-Back" Groove: Look at `s_kick` and `s_bass`. The kick avoids 
+#    a standard 4/4 pulse, hitting on a syncopated, bouncy rhythm (steps 0, 6, 8). 
+#    The bass weaves a melodic, walking line around the kick. The engine's strict 
+#    master clock ensures this complex, jazz-influenced rhythm locks together 
+#    with absolute precision, creating the signature Yacht Rock "pocket".
+#
+# 2. The Fender Rhodes Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `0.2` and a `release` of `2.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of warm harmony that 
+#    perfectly mimics the lush, pristine electric pianos used by Steely Dan 
+#    and Michael McDonald.
+#
+# 3. The Soaring Melody: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (100) and a long `release` (0.5). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a smooth, 
+#    soaring melody that perfectly mimics a clean electric guitar or saxophone 
+#    solo, anchoring the track's relaxing, high-end studio atmosphere.
+# ==========================================================

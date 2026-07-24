@@ -1,0 +1,119 @@
+# ==========================================================
+# PLAYBOOK: 80s THRASH METAL / BAY AREA STYLE
+# (Pioneered by Metallica, Slayer, and Megadeth)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Thrash Metal.
+# We have explored Heavy Metal and Black Metal, but Thrash is the sound 
+# of extreme, high-speed aggression. It relies on a blistering, fast tempo 
+# (175 BPM), a relentless "galloping" bassline, massive, distorted power 
+# chords played with rapid downstrokes, and piercing, shredding guitar solos.
+#
+# This playbook perfectly demonstrates how to push the engine's master 
+# clock to a high tempo while maintaining a tight, live-band feel. By 
+# using the `:play_fm` synth with extreme `depth` to simulate a distorted 
+# guitar, and the `:play_sub` synth to play driving, continuous 8th notes, 
+# the engine creates a chaotic, frantic, and deeply aggressive atmosphere.
+# ==========================================================
+
+use_bpm 175
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Fast, Aggressive, & Galloping)
+# ==========================================================
+
+# The "Double Kick" Drum. 
+# A blistering, syncopated 16th-note gallop. (6 x's, 6 elements)
+s_kick = gen_score("x..x..x.x..x..x.", [
+  :c4, :c4, :c4, {note: :c4, amp: 0.7}, :c4, :c4
+])
+
+# Heavy, dry snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.9}
+])
+
+# Fast, driving 16th hats to add to the chaotic wall of sound. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Galloping" Bass (E Minor).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive "thwack" that mimics a picked electric bass. (8 x's, 8 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :d1, :d1, :c1, :b0]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (E5 to D5 to C5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Plays a classic, palm-muted thrash riff. (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:e3, :b3], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:d3, :a3], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:c3, :g3], divisor: 2, depth: 6, release: 0.15, amp: 0.7}
+])
+
+# Piercing, "Shredding" Guitar Solo (E Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
+# and rapid, 8th-note melody create a soaring, virtuosic solo. (6 x's, 6 elements)
+lead_notes = [:e5, :g5, :a5, :b5, :a5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Shouted" Vocal (Granular Synth).
+# Long size (0.08) and low density (1) creates a raw, repetitive vocal hit. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :e3, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.08, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Charge - Just the double kick, galloping bass, and power chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Verse - Add the shouted vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The piercing shredding guitar solo drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EXTREME VELOCITY]
+# 
+# 1. FM as a Distorted Amp: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `6`. This harsh harmonic 
+#    ratio forces the FM modulator to grind the carrier wave, creating a harsh, 
+#    grinding square wave. By playing a palm-muted, galloping riff, the engine 
+#    perfectly mimics the aggressive, down-picked rhythm guitars of 80s Thrash.
+#
+# 2. The Galloping Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a fast, driving line. By using a high 
+#    `cutoff` (100) and a very short `release` (0.1), the engine turns the 
+#    detuned sawtooth into a punchy, aggressive "thwack" that perfectly mimics 
+#    a picked electric bass guitar driving the rhythm at 175 BPM.
+#
+# 3. The Double Kick Gallop: Look at `s_kick`. It plays a blistering, 
+#    syncopated 16th-note pattern that perfectly mimics the legendary "double 
+#    kick" drumming of thrash metal. The engine's strict master clock ensures 
+#    this chaotic rhythm lands with absolute mathematical precision, creating 
+#    a massive, mechanical wall of percussion.
+# ==========================================================

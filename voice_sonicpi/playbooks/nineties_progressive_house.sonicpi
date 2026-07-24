@@ -1,0 +1,120 @@
+# ==========================================================
+# PLAYBOOK: 90s PROGRESSIVE HOUSE / RENAISSANCE MIX
+# (Pioneered by Sasha, John Digweed, and Leftfield)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Progressive House.
+# We have explored Peak-Time Techno and Mainstage EDM, but 90s Progressive 
+# House is the sound of the legendary "Renaissance" club nights. It fuses 
+# the deep, hypnotic grooves of progressive trance with the lush, organic 
+# percussion of house music. It relies on a relentless, rolling 16th-note 
+# analog bassline, massive, slow-attacking "string synth" chords that blur 
+# together, and sparse, echoing "piano/chime" melodies that cascade across 
+# the empty space.
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes to 
+# create immense, slow-building tension. By using massive `attack` and 
+# `release` times on the chords, and routing a sparse lead through the global 
+# tape echo bus, the engine creates a deep, cinematic, and deeply hypnotic 
+# atmosphere.
+# ==========================================================
+
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Deep, Hypnotic, & Cinematic)
+# ==========================================================
+
+# Relentless, driving 4/4 kick. (4 x's, 1 element - cycles 4 times)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic 909 clap strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Rigid, off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
+
+# The "Rolling" Analog Bass (F Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# Mid cutoff (90) and short release (0.1) create a relentless, hypnotic pump.
+# (16 x's, 16 elements)
+bass_cycle = [:f1, :f1, :c2, :f1, :f1, :f1, :c2, :f1, 
+              :ab1, :ab1, :eb2, :ab1, :c2, :c2, :g2, :c2]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "String Synth" Chords (Fm9 to Abm9).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:f3, :ab3, :c4, :eb4], cutoff: 80, attack: 2.0, release: 4.0, amp: 0.5},
+  {note: [:ab2, :c3, :eb3, :g3], cutoff: 80, attack: 2.0, release: 4.0, amp: 0.5}
+])
+
+# Echoing, "Piano/Chime" Lead (F Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.8) 
+# and massive gaps (`nil`) create a cascading, stadium-sized melody. (6 x's, 6 elements)
+lead_notes = [:f5, :ab5, :c6, :eb6, :c6, :ab5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.8} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Ethereal, "Cosmic" drone (Granular Synth).
+# Massive size (0.4s) and low density (1) time-stretches the sample into a 
+# slow, evolving background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :f4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Build - Just the rolling bass, sweeping chords, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the driving 4/4 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Peak - The echoing piano/chime melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HYPNOTIC TENSION]
+# 
+# 1. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `2.0` and a `release` of `4.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over six whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics the lush, wide-stereo string pads 
+#    of 90s Progressive House.
+#
+# 2. The Rolling Analog Pump: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, mapping out a deep, melodic line. By using a 
+#    mid-range `cutoff` (90) and a short `release` (0.1), the engine creates a 
+#    relentless, hypnotic pump that drives the track forward unstoppably.
+#
+# 3. Echoing Space: The `s_lead` sequence plays a simple F minor pentatonic 
+#    melody, but leaves massive gaps (`nil`) between the notes. Because the 
+#    engine routes the `:play_lead` synth through the global tape echo bus, 
+#    those empty spaces are filled by delay tails, creating a cascading, 
+#    stadium-sized soundscape that perfectly anchors the track's deep, 
+#    hypnotic atmosphere.
+# ==========================================================

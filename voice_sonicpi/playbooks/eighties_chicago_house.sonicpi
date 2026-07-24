@@ -1,0 +1,119 @@
+# ==========================================================
+# PLAYBOOK: 80s CHICAGO HOUSE / CLASSIC DEEP HOUSE
+# (Pioneered by Frankie Knuckles, Marshall Jefferson, and Mr. Fingers)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Chicago House.
+# We have explored French House and Tech House, but Chicago House is the 
+# absolute genesis of modern dance music. Born in the Warehouse club in 
+# the mid-80s, it relies on a relentless, driving 4/4 Roland TR-909 drum 
+# machine beat, a deep, round analog sub-bass, and lush, warm Fender Rhodes 
+# electric piano chords. It is the sound of pure, sweaty, late-night dancefloor euphoria.
+#
+# This playbook perfectly demonstrates how to use the `gen_score` helper 
+# and Ruby's `.map` function to create the classic "909 Swing" feel. By 
+# alternating the hi-hat amplitudes and leaving specific gaps, the engine 
+# creates a bouncy, humanized groove that defined the original house music sound.
+# ==========================================================
+
+use_bpm 122
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Deep, Warm, & Swinging)
+# ==========================================================
+
+# Relentless, driving 4/4 kick. (4 x's, 1 element - cycles 4 times)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic 909 clap strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# The "909 Swing" Hi-Hats.
+# Alternating amplitudes (0.3 vs 0.15) create the classic house music bounce. 
+# (8 x's, 2 elements - cycles 4 times)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# Deep, round analog sub-bass (F Minor).
+# Plays a bouncy, syncopated line. Low cutoff (60) and medium release (0.2) 
+# to create a warm, muffled undercurrent. (4 x's, 4 elements)
+s_bass = gen_score("x.....x.x.....x.", [
+  {note: :f1, release: 0.2, cutoff: 60, amp: 1.2}, 
+  {note: :c2, release: 0.2, cutoff: 60, amp: 1.0}, 
+  {note: :eb1, release: 0.2, cutoff: 60, amp: 1.0}, 
+  {note: :g1, release: 0.2, cutoff: 60, amp: 1.0}
+])
+
+# Lush, "Fender Rhodes" Chords (Fm9 to Bbm9).
+# Hit strictly on the off-beats. The slow 0.2-beat attack and massive 1.5-beat 
+# release blur the chords together into a continuous, warm wave. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:f3, :ab3, :c4, :eb4], cutoff: 80, attack: 0.2, release: 1.5, amp: 0.5},
+  {note: [:f3, :ab3, :c4, :eb4], cutoff: 80, attack: 0.2, release: 1.5, amp: 0.5},
+  {note: [:bb2, :db3, :f3, :ab3], cutoff: 80, attack: 0.2, release: 1.5, amp: 0.5},
+  {note: [:bb2, :db3, :f3, :ab3], cutoff: 80, attack: 0.2, release: 1.5, amp: 0.5}
+])
+
+# Bright, "M1" Piano Melody (F Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (1) to create a pristine, 
+# glassy tone. Routed through the engine's tape echo. (6 x's, 6 elements)
+lead_notes = [:f5, :ab5, :c6, :f5, :eb5, :c5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 1, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Diva" Vocal Chops (Granular Synth).
+# High density, tiny size = a sharp, pristine vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :f4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the swinging drums, deep bass, and Rhodes chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Groove - Add the diva vocal chops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The bright M1 piano melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE HOUSE GROOVE]
+# 
+# 1. The 909 Swing: Look at `s_hats`. The hats play continuous 16th notes, 
+#    but the amplitudes alternate wildly between 0.3 and 0.15. By emphasizing 
+#    the off-beats, the engine simulates the famous 909 16th-note shuffle 
+#    that gave early Chicago house its bouncy, human feel.
+#
+# 2. The Deep Sub-Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    low `cutoff` (60) and a short `release` (0.2). This creates a deep, round, 
+#    and warm low-end that weaves perfectly between the kicks, carrying the 
+#    melodic progression without muddying the pristine high-end of the Rhodes 
+#    chords.
+#
+# 3. Lush Rhodes Swells: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `0.2` and a `release` of `1.5`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of warm harmony that 
+#    perfectly mimics the Fender Rhodes electric pianos used by Mr. Fingers.
+# ==========================================================

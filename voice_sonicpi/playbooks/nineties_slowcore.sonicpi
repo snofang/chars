@@ -1,0 +1,118 @@
+# ==========================================================
+# PLAYBOOK: 90s SLOWCORE / SADCORE
+# (Pioneered by Codeine, Low, and Red House Painters)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Slowcore.
+# We have explored fast, aggressive genres (Thrash, Gabber) and dense, 
+# maximalist genres (Symphonic Metal). Slowcore is the exact opposite. 
+# It is the sound of pure, glacial melancholy. It strips away all momentum, 
+# slowing the tempo to a crawl (65 BPM) and relying on extreme negative space. 
+# It features sparse, echoing drums, a slow, melodic bass, and clean, 
+# chiming, arpeggiated guitar notes that ring out into the void.
+#
+# This playbook perfectly demonstrates the emotional power of the Parameter 
+# Hashes. By using a very slow BPM, long `release` times, and leaving massive 
+# gaps (`nil`) in the 16-step grid, the engine creates a spacious, haunting, 
+# and deeply intimate atmosphere.
+# ==========================================================
+
+use_bpm 65
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Major - Sparse, Melancholic, & Glacial)
+# ==========================================================
+
+# The "Slowcore" Kick. 
+# Ultra-sparse. Hits only on beat 1 and the 'and' of 3. (2 x's, 2 elements)
+s_kick = gen_score("x.......x.......", [
+  {note: :c4, amp: 0.6}, {note: :c4, amp: 0.5}
+])
+
+# Soft, echoing snare/brush strictly on beat 3 (step 8). (1 x, 1 element)
+s_snare = gen_score("........x.......", [:c4])
+
+# Very sparse, ringing ride hats. (4 x's, 4 elements)
+s_hats = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.15}, {note: :c4, amp: 0.1}, 
+  {note: :c4, amp: 0.15}, {note: :c4, amp: 0.1}
+])
+
+# Deep, melodic "Upright" Bass (C Major).
+# Plays a slow, melodic line. Mid cutoff (70) and long release (1.5) 
+# to create a warm, muffled undercurrent. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :c2, release: 1.5, cutoff: 70, amp: 0.9}, 
+  {note: :a1, release: 1.5, cutoff: 70, amp: 0.8}
+])
+
+# Clean, "Chiming" Guitar Arpeggio (C Major).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# glassy tone. The long release (1.0) lets the notes ring out and overlap. 
+# (4 x's, 4 elements)
+guitar_notes = [:c4, :g4, :e5, :g5]
+guitar_data = guitar_notes.map { |n| {note: n, amp: 0.5, divisor: 3, depth: 2, release: 1.0} }
+s_guitar = gen_score("x...x...x...x...", guitar_data)
+
+# Lush, "String Pad" Chords (Cmaj9 to Am9).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, warm, cinematic wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:c3, :e3, :g3, :d4], cutoff: 70, attack: 2.0, release: 4.0, amp: 0.4},
+  {note: [:a2, :c3, :e3, :b3], cutoff: 70, attack: 2.0, release: 4.0, amp: 0.4}
+])
+
+# Distant, "Whisper" Vocal (Granular Synth).
+# Long size (0.2) and low density (1) creates a slow, evolving background texture. 
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :c4, buffer: :misc_lori, pos: 0.3, density: 1, size: 0.2, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the bass, chiming guitar, and string pad (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_guitar, 4], [:play_chords, s_chords, 4], 
+    [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Pulse - Add the ultra-sparse, echoing drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_chords, s_chords, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN NEGATIVE SPACE]
+# 
+# 1. Extreme Sparsity: Look at `s_kick` and `s_snare`. The kick hits only 
+#    twice per bar, and the snare hits only once. 80% of the 16-step grid 
+#    is `nil`. The engine honors these massive rests perfectly, letting the 
+#    reverb tails of the snare and the delay tails of the guitar ring out 
+#    into the void, creating a spacious, glacial atmosphere.
+#
+# 2. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `2.0` and a `release` of `4.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over six whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics the lush, atmospheric string pads 
+#    of 90s Slowcore.
+#
+# 3. The Chiming Guitar: Look at `s_guitar`. The `:play_fm` synth is given 
+#    a high `divisor` (3) and a low `depth` (2). This harmonic ratio produces 
+#    a clean, glassy tone. By using a long `release` (1.0), the notes ring 
+#    out and overlap, perfectly mimicking the clean, arpeggiated guitars of 
+#    bands like Codeine and Low.
+# ==========================================================

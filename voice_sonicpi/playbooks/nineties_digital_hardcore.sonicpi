@@ -1,0 +1,129 @@
+# ==========================================================
+# PLAYBOOK: 90s DIGITAL HARDCORE / CYBER-PUNK
+# (Pioneered by Atari Teenage Riot, Alec Empire, and Shizuo)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Digital Hardcore.
+# We have explored Gabber and Industrial Rock, but Digital Hardcore is the 
+# sound of 90s Berlin underground cyber-punk. It fuses the distorted, 
+# high-speed energy of hardcore techno with the chaotic, anti-establishment 
+# aggression of punk rock. It relies on a blistering 160 BPM tempo, 
+# heavily distorted 909 kick drums, a continuous, grinding 16th-note bass, 
+# dissonant, metallic synth stabs, and a piercing, screaming FM lead that 
+# sounds like a system overload.
+#
+# This playbook perfectly demonstrates how to push the engine to its absolute 
+# rhythmic and textural limit. By using the `:play_sub` synth as a distorted, 
+# continuous churn and the `:play_fm` synth with extreme `depth` for dissonant, 
+# metallic stabs, the engine creates a chaotic, aggressive, and deeply 
+# futuristic atmosphere.
+# ==========================================================
+
+use_bpm 160
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Chaotic, Distorted, & Blistering)
+# ==========================================================
+
+# The "Distorted 909" Kick. 
+# A blistering, syncopated hardcore pattern. (5 x's, 5 elements)
+s_kick = gen_score("x...x...x...x.x.", [
+  :c4, :c4, :c4, {note: :c4, amp: 0.8}, :c4
+])
+
+# Heavy, dry snare on beats 2 and 4, with a frantic 16th roll at the end. 
+# (5 x's, 5 elements)
+s_snare = gen_score("....x.....x.x.xx", [
+  :c4, :c4, {note: :c4, amp: 0.5}, {note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}
+])
+
+# Relentless, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Grinding" Bass (A Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# Extreme cutoff (120) and microscopic release (0.06) create a relentless, 
+# distorted, grinding churn that drives the track. (16 x's, 16 elements)
+bass_cycle = [:a1, :a2, :a1, :a2, :a1, :a2, :a1, :a2, 
+              :g1, :g2, :g1, :g2, :a1, :a2, :a1, :a2]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 120, release: 0.06, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Dissonant, "Metallic" Synth Stabs (A to G).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, metallic, dissonant hit. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :eb4], divisor: 2, depth: 6, release: 0.1, amp: 0.6},
+  {note: [:a3, :c4, :eb4], divisor: 2, depth: 6, release: 0.1, amp: 0.6},
+  {note: [:g3, :bb3, :db4], divisor: 2, depth: 6, release: 0.1, amp: 0.6},
+  {note: [:g3, :bb3, :db4], divisor: 2, depth: 6, release: 0.1, amp: 0.6}
+])
+
+# Piercing, "Screaming" Synth Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (4) to create a 
+# harsh, piercing, screaming tone. Plays a rapid, 8th-note melody. 
+# (6 x's, 6 elements)
+lead_notes = [:a5, :e5, :c6, :a5, :g5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 4, depth: 4, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Shouted" Vocal (Granular Synth).
+# Pitched DOWN to :a2. Long size (0.15) creates a dark, distorted vocal hit. 
+# (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a2, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.15, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Overload - Just the distorted 909s and grinding bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Riot - Add the metallic stabs and shouted vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Meltdown - The piercing screaming synth lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CYBER-AGGRESSION]
+# 
+# 1. The Grinding Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating octaves. By using an extreme `cutoff` 
+#    (120) and a microscopic `release` (0.06), the engine turns the detuned 
+#    sawtooth into a relentless, distorted, grinding churn. At 160 BPM, this 
+#    creates a massive, high-speed wall of sound that perfectly mimics the 
+#    heavy, overdriven basslines of Digital Hardcore.
+#
+# 2. FM as a Weapon: Look at `s_chords` and `s_lead`. The `:play_fm` synth is 
+#    given an extreme `depth` (4 or 6). This harsh harmonic ratio forces the FM 
+#    modulator to shatter the carrier wave, creating dissonant, metallic, and 
+#    piercing tones that cut through the heavy mix, perfectly mimicking the 
+#    chaotic, cyber-punk synth sounds of Atari Teenage Riot.
+#
+# 3. The Distorted 909: Look at `s_kick` and `s_snare`. The kick plays a 
+#    blistering, syncopated pattern, while the snare adds a frantic 16th-note 
+#    roll at the end of the bar. The engine's strict master clock ensures this 
+#    chaotic rhythm lands with absolute mathematical precision, creating a 
+#    massive, mechanical wall of percussion that anchors the track's aggressive, 
+#    high-energy atmosphere.
+# ==========================================================

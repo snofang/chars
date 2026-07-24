@@ -1,0 +1,118 @@
+# ==========================================================
+# PLAYBOOK: 90s MELODIC DEATH METAL / GOTHENBURG STYLE
+# (Pioneered by At The Gates, In Flames, and Dark Tranquillity)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Melodic Death Metal.
+# We have explored Thrash, Black, and Power Metal, but Melodic Death Metal 
+# (the "Gothenburg sound") is the perfect fusion of extreme aggression and 
+# soaring, classical melody. It relies on a blistering, "galloping" double-kick 
+# drum beat, a driving, continuous 8th-note bass, massive, distorted power 
+# chords, and rapid, piercing, harmonized minor guitar solos that feel like 
+# a furious, high-speed battle.
+#
+# This playbook perfectly demonstrates how to push the engine's master clock 
+# to a high tempo while maintaining complex, melodic precision. By using the 
+# `:play_fm` synth with extreme `depth` for distorted chords, and the 
+# `:play_lead` synth routed through the global tape echo for a soaring solo, 
+# the engine creates a chaotic, virtuosic, and deeply epic atmosphere.
+# ==========================================================
+
+use_bpm 175
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Fast, Aggressive, & Melodic)
+# ==========================================================
+
+# The "Double Kick" Drum. 
+# A blistering, continuous 8th-note gallop. (8 x's, 8 elements)
+s_kick = gen_score("x.x.x.x.x.x.x.x.", [:c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 16th hats to add to the chaotic wall of sound. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Galloping" Bass (A Minor).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive "thwack" that mimics a picked electric bass. (8 x's, 8 elements)
+bass_notes = [:a1, :a1, :a1, :a1, :f1, :f1, :g1, :g1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (A5 to F5 to G5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a harsh, 
+# grinding hit. Plays a classic, palm-muted metal riff. (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:a3, :e4], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:f3, :c4], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:g3, :d4], divisor: 2, depth: 6, release: 0.15, amp: 0.7}
+])
+
+# Piercing, "Harmonized" Guitar Solo (A Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
+# and rapid, 8th-note melody create a soaring, virtuosic solo. (8 x's, 8 elements)
+lead_notes = [:a5, :c6, :e6, :a6, :g6, :e6, :c6, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.2} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Growl" Vocal (Granular Synth).
+# Pitched DOWN to :a2. Long size (0.15) creates a dark, distorted vocal hit. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a2, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.15, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Charge - Just the double kick, galloping bass, and power chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Verse - Add the growled vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The piercing harmonized guitar solo drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MELODIC AGGRESSION]
+# 
+# 1. The Double Kick Gallop: Look at `s_kick`. It plays a blistering, 
+#    continuous 8th-note pattern at 175 BPM. This creates a relentless, 
+#    mechanical foundation that perfectly mimics the legendary "double kick" 
+#    drumming of 90s Melodic Death Metal. The engine's strict master clock 
+#    ensures this chaotic rhythm locks perfectly with the galloping bass.
+#
+# 2. FM as a Distorted Amp: Look at `s_chords`. The `:play_fm` synth is 
+#    given a `divisor` of `2` and an extreme `depth` of `6`. This harsh 
+#    harmonic ratio forces the FM modulator to grind the carrier wave, 
+#    creating a harsh, distorted square wave. By playing palm-muted, 
+#    galloping riffs, the engine perfectly mimics the aggressive rhythm 
+#    guitars of the Gothenburg sound.
+#
+# 3. The Harmonized Solo: The `s_lead` sequence uses the Prophet synth with 
+#    a high `cutoff` (110) and a long `release` (0.2). Because it's routed 
+#    through the global tape echo bus, the rapid, 8th-note notes smear into 
+#    a soaring, cascading guitar solo that feels like a virtuosic, harmonized 
+#    lead run, perfectly anchoring the track's epic, high-energy atmosphere.
+# ==========================================================

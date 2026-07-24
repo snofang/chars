@@ -1,0 +1,119 @@
+# ==========================================================
+# PLAYBOOK: 80s COLLEGE ROCK / JANGLE POP
+# (Pioneered by R.E.M., The Smiths, and The Church)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s College Rock / Jangle Pop.
+# We have explored heavy metal and synthpop, but Jangle Pop is the sound 
+# of the 80s indie underground. It relies on clean, chiming, arpeggiated 
+# 12-string electric guitars (often a Rickenbacker), a driving, melodic 
+# bassline, and a steady, acoustic-sounding drum beat. It is melancholic 
+# yet bright, relying on continuous 16th-note arpeggios to create a 
+# shimmering, atmospheric wall of sound.
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth 
+# to simulate a clean, chorused electric guitar. By using a high `divisor` 
+# and low `depth`, and playing continuous, rapid 16th notes, the engine 
+# creates a bright, chiming texture that defined the 80s college rock sound.
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Bright, Melancholic, & Chiming)
+# ==========================================================
+
+# Steady, driving 4/4 rock kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Crisp, organic snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Steady, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Driving" Bass (D Major).
+# Plays continuous, melodic 8th notes. Mid cutoff (90) and short release (0.1) 
+# create a warm, driving "thwack" that locks with the kick. (8 x's, 8 elements)
+bass_notes = [:d2, :d2, :a2, :d2, :b2, :b2, :g2, :a2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# The "12-String Jangle" Arpeggio (D Major).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# glassy, chorused guitar tone. Plays a rapid, continuous 16th-note melody.
+# (16 x's, 16 elements)
+guitar_notes = [:d4, :a4, :d5, :fs5, :a4, :d5, :fs5, :a5, 
+                :b4, :fs4, :b4, :d5, :g4, :b4, :d5, :g5]
+guitar_data = guitar_notes.map { |n| {note: n, amp: 0.5, divisor: 3, depth: 2, release: 0.08} }
+s_guitar = gen_score("xxxxxxxxxxxxxxxx", guitar_data)
+
+# Lush, "Synth Pad" Chords (Dmaj7 to Bm7).
+# Hit on the downbeats. Slow attack (1.0) and massive release (3.0) 
+# blur the chords together into a continuous, warm background wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :fs3, :a3, :cs4], cutoff: 70, attack: 1.0, release: 3.0, amp: 0.4},
+  {note: [:b2, :d3, :fs3, :a3], cutoff: 70, attack: 1.0, release: 3.0, amp: 0.4}
+])
+
+# Soaring, "Vocal" Melody (D Major Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.4) 
+# and massive gaps (`nil`) create a soaring, melancholic melody. (6 x's, 6 elements)
+lead_notes = [:d5, :e5, :fs5, :a5, :g5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Jam - Just the driving drums, bass, and 12-string jangle (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_guitar, 4] ],
+  
+  # Scene 2: The Vibe - Add the lush synth pad (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Solo - The soaring vocal melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INDIE ATMOSPHERE]
+# 
+# 1. FM as a 12-String Guitar: Look at `s_guitar`. The `:play_fm` synth is 
+#    given a high `divisor` (3) and a low `depth` (2). This harmonic ratio 
+#    produces a clean, glassy, sine-like wave that perfectly mimics the chiming, 
+#    chorused tone of a Rickenbacker 12-string guitar. By playing a rapid, 
+#    continuous 16th-note arpeggio, the engine creates a shimmering, atmospheric 
+#    wall of sound that defined 80s College Rock.
+#
+# 2. The Driving Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a melodic line. By using a mid-range 
+#    `cutoff` (90) and a very short `release` (0.1), the engine turns the 
+#    detuned sawtooth into a warm, driving "thwack" that locks perfectly 
+#    with the kick drum, anchoring the chiming guitars.
+#
+# 3. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `1.0` and a `release` of `3.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over four whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly anchors the track's melancholic, 
+#    atmospheric vibe.
+# ==========================================================

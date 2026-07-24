@@ -1,0 +1,126 @@
+# ==========================================================
+# PLAYBOOK: 90s TURNTABLISM / INSTRUMENTAL HIP-HOP
+# (Pioneered by DJ Shadow, RJD2, and Cut Chemist)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Turntablism.
+# We have explored Lo-Fi Hip-Hop and Boom-Bap, but Turntablism is the sound 
+# of the 90s underground "crate digger." It relies heavily on sampling, 
+# chopping, and pitching. It takes a dusty, swung drum break, a deep, 
+# melodic sub-bass, stark, chopped piano or horn samples, and high-pitched, 
+# "scratched" vocal fragments that feel like listening to a worn-out vinyl 
+# record in a dimly lit studio.
+#
+# This playbook perfectly demonstrates how to use the Granular Synthesizer 
+# to simulate a "scratched" vocal sample. By using a high `density` and 
+# scattering the grains, the engine turns a vocal into a rhythmic, 
+# turntable-style skip, creating a cinematic, nostalgic, and deeply funky 
+# atmosphere.
+# ==========================================================
+
+use_bpm 85
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Dusty, Cinematic, & Swung)
+# ==========================================================
+
+# The "Boom-Bap" Kick. 
+# Heavily swung. Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
+# (4 x's, 4 elements)
+s_kick = gen_score("x.....x.x.....x.", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}
+])
+
+# Crisp, dusty snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Swung, lazy 16th hats. (8 x's, 8 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# Deep, melodic sub-bass (F# Minor).
+# Massive release (1.5) allows the bass to ring out and carry the dark melody.
+# (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :fs1, release: 1.5, cutoff: 60, amp: 1.2}, 
+  {note: :a1, release: 1.5, cutoff: 60, amp: 1.0}
+])
+
+# Stark, "Chopped Piano/Horn" Samples (F#m to Am).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a warm, 
+# slightly dissonant, staccato hit that mimics a dusty vinyl sample. 
+# (3 x's, 3 elements)
+s_chords = gen_score("..x.....x.....x.", [
+  {note: [:fs3, :a3, :cs4], divisor: 2, depth: 3, release: 0.3, amp: 0.5},
+  {note: [:a3, :cs4, :e4], divisor: 2, depth: 3, release: 0.3, amp: 0.5},
+  {note: [:e3, :g3, :b3], divisor: 2, depth: 3, release: 0.3, amp: 0.5}
+])
+
+# Cinematic, "Flute/Horn" Melody (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# piercing tone. Routed through the engine's tape echo. (6 x's, 6 elements)
+lead_notes = [:fs5, :a5, :cs5, :e5, :cs5, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.5} }
+s_fm = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Scratched" Vocal Chops (Granular Synth).
+# High density (3) and tiny size (0.04) shatter the vocal into a rhythmic, 
+# skipping stutter that mimics a DJ scratching a record. (2 x's, 2 elements)
+s_vocal = gen_score(".....x......x..", [
+  {note: :fs4, buffer: :misc_lori, pos: 0.4, density: 3, size: 0.04, amp: 0.6},
+  {note: :a4, buffer: :misc_lori, pos: 0.6, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Crate - Just the sub-bass, chopped samples, and flute (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_fm, s_fm, 4] ],
+  
+  # Scene 2: The Groove - Add the swung boom-bap drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_fm, s_fm, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Drop - The scratched vocal chops drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_fm, s_fm, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SAMPLING]
+# 
+# 1. FM as a Dusty Sample: Look at `s_chords`. The `:play_fm` synth is 
+#    given a `divisor` of `2` and a `depth` of `3`, playing only 3 notes 
+#    at a time. This creates a stark, slightly dissonant, staccato hit that 
+#    perfectly mimics the haunting, repetitive piano or horn loops sampled 
+#    from dusty vinyl records by 90s producers like DJ Shadow.
+#
+# 2. The Scratched Vocal: Look at `s_vocal`. The granular engine is given a 
+#    high `density` (3) and a tiny `size` (0.04). By scattering the grains 
+#    and placing them on syncopated off-beats, the engine turns the vocal 
+#    into a sharp, skipping stutter that sounds like a DJ rapidly cutting 
+#    a crossfader on a turntable.
+#
+# 3. The Boom-Bap Swing: Look at `s_kick`. Instead of hitting on step 4 
+#    (beat 2), it hits on step 6 (the 'and' of beat 2). This pushes the 
+#    groove late, creating that heavy, leaning, "boom-bap" swing. The 
+#    engine's strict master clock ensures this swung rhythm locks perfectly 
+#    with the lazy, heavily manipulated hi-hats.
+# ==========================================================
