@@ -60,10 +60,10 @@ s_fm    = (ring {:note => :e5, :amp => 0.6, :divisor => 4, :depth => 2}, nil, {:
 
 # Rapid, chopped vocal stutter (Granular Synth).
 # FIXED: Exactly 16 steps. High density, tiny size = a sharp, percussive vocal skip.
-s_vocal = (ring nil, nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.03, :amp => 0.5}, 
-           nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.03, :amp => 0.5}, 
-           nil, nil, nil, {:note => :b4, :buffer => :misc_lori, :pos => 0.6, :density => 3, :size => 0.03, :amp => 0.5}, 
-           nil, nil, nil, {:note => :e5, :buffer => :misc_lori, :pos => 0.8, :density => 3, :size => 0.03, :amp => 0.5})
+s_vocal = (ring nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.03, :amp => 0.5}, 
+           nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.03, :amp => 0.5}, 
+           nil, nil, nil, {:note => :b4, :buffer => :ambi_choir, :pos => 0.6, :density => 3, :size => 0.03, :amp => 0.5}, 
+           nil, nil, nil, {:note => :e5, :buffer => :ambi_choir, :pos => 0.8, :density => 3, :size => 0.03, :amp => 0.5})
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -34,9 +34,9 @@ s_cowbell = (ring {:note => :cs5, :amp => 0.7, :divisor => 4.0, :depth => 1}, ni
              {:note => :ds5, :amp => 0.6, :divisor => 4.0, :depth => 1}, nil, {:note => :cs5, :amp => 0.7, :divisor => 4.0, :depth => 1}, nil)
 
 # Sinister, chopped-and-screwed vocal whisper (Granular Synth)
-# Using :misc_lori, low pitch, long size for a demonic, drifting drone.
+# Using :ambi_choir, low pitch, long size for a demonic, drifting drone.
 s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :cs3, :buffer => :misc_lori, :pos => 0.8, :density => 2, :size => 0.15, :amp => 0.5}, nil, nil, nil, 
+           {:note => :cs3, :buffer => :ambi_choir, :pos => 0.8, :density => 2, :size => 0.15, :amp => 0.5}, nil, nil, nil, 
            nil, nil, nil, nil)
 
 # ==========================================================

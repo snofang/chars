@@ -60,7 +60,7 @@ s_fm    = (ring {:note => :a5, :divisor => 2, :depth => 3, :release => 0.05}, ni
 
 # Sliced, glitchy vocal "Skip" (Granular Synth).
 # High density, tiny size = a microscopic, rhythmic vocal glitch.
-s_vocal = (ring {:note => :a4, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.02, :amp => 0.6}, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.5}, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.02, :amp => 0.6}, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.02, :amp => 0.4}, {:note => :d5, :buffer => :misc_lori, :pos => 0.6, :density => 3, :size => 0.02, :amp => 0.6}, nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.5}, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.02, :amp => 0.7}, nil, nil)
+s_vocal = (ring {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.02, :amp => 0.6}, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.5}, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.02, :amp => 0.6}, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.02, :amp => 0.4}, {:note => :d5, :buffer => :ambi_choir, :pos => 0.6, :density => 3, :size => 0.02, :amp => 0.6}, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.5}, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.02, :amp => 0.7}, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -49,12 +49,12 @@ s_chords= (ring {:note => [:eb3, :g3, :bb3, :d4], :cutoff => 90, :attack => 0.5,
 # The "Chopped Vocal" Melody (Granular Synth).
 # Pitched UP to :eb4, :g4, :bb4. High density (3), tiny size (0.04) = a sharp, 
 # emotional vocal stutter that acts as the main hook of the track.
-s_vocal = (ring {:note => :eb4, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
-           {:note => :bb4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
-           {:note => :eb5, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04, :amp => 0.7}, nil, nil, nil, 
-           {:note => :g4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
-           {:note => :ab4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
-           {:note => :c5, :buffer => :misc_lori, :pos => 0.6, :density => 3, :size => 0.04, :amp => 0.7}, nil, nil, nil)
+s_vocal = (ring {:note => :eb4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
+           {:note => :bb4, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
+           {:note => :eb5, :buffer => :ambi_choir, :pos => 0.5, :density => 3, :size => 0.04, :amp => 0.7}, nil, nil, nil, 
+           {:note => :g4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
+           {:note => :ab4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.04, :amp => 0.7}, nil, 
+           {:note => :c5, :buffer => :ambi_choir, :pos => 0.6, :density => 3, :size => 0.04, :amp => 0.7}, nil, nil, nil)
 
 # Soft, echoing "Music Box" Counter-Melody (Eb Major Pentatonic).
 # FIXED: Exactly 16 steps. Uses :play_fm with a high divisor (3) and low depth (1) 

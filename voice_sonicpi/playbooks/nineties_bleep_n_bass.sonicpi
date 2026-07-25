@@ -54,7 +54,7 @@ s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, 
 
 # Pitched-down, robotic vocal "Chant" (Granular Synth).
 # Low density, tiny size = a dark, percussive vocal hit.
-s_vocal = (ring {:note => :e3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.04, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :e3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.04, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring {:note => :e3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.04, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :e3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.04, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

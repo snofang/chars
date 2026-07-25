@@ -75,7 +75,7 @@ s_lead = gen_score("xxxxxxxxxxxxxxxx", lead_data)
 # "Scream" Vocal (Granular Synth).
 # Pitched DOWN to :a2. Long size (0.15) creates a dark, distorted vocal hit. (1 x, 1 element)
 s_vocal = gen_score("........x.......", [
-  {note: :a2, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.15, amp: 0.7}
+  {note: :a2, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.15, amp: 0.7}
 ])
 
 # ==========================================================

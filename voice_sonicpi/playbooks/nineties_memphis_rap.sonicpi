@@ -57,7 +57,7 @@ s_fm    = (ring {:note => :fs5, :amp => 0.5, :divisor => 2, :depth => 3, :releas
 # Pitched-down, demonic "Horrorcore" vocal drone (Granular Synth).
 # Pitched DOWN to :fs3. Long size (0.2) and low density (1) creates a 
 # slow, haunting background texture that sounds like a demonic voice.
-s_vocal = (ring {:note => :fs3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring {:note => :fs3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

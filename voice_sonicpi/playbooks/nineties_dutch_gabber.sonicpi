@@ -71,8 +71,8 @@ s_lead = gen_score("xxxxxxxxxxxxxxxx", lead_data)
 
 # Pitched-up, demonic "MC" vocal stutter. (2 x's, 2 elements)
 s_vocal = gen_score("....x.......x...", [
-  {note: :a4, buffer: :misc_lori, pos: 0.2, density: 3, size: 0.02, amp: 0.6},
-  {note: :c5, buffer: :misc_lori, pos: 0.4, density: 3, size: 0.02, amp: 0.6}
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.02, amp: 0.6},
+  {note: :c5, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.02, amp: 0.6}
 ])
 
 # ==========================================================

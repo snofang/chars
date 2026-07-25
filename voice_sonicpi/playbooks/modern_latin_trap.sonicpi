@@ -55,7 +55,7 @@ s_fm    = (ring nil, {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 2, :re
 
 # Pitched-down, repetitive "Chant" vocal (Granular Synth).
 # Medium density, small size = a raw, rhythmic vocal hit.
-s_vocal = (ring nil, nil, nil, nil, {:note => :c4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.4, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

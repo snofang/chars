@@ -57,7 +57,7 @@ s_lead  = (ring {:note => :f6, :amp => 0.7, :cutoff => 130}, nil, {:note => :e6,
 # The "Chipmunk" Vocal Glitch (Granular Synth)
 # Pitched to :f5 and :c6. Extreme density (5) and tiny size (0.02) 
 # creates a sugary, robotic stutter.
-s_vocal = (ring nil, nil, {:note => :f5, :buffer => :misc_lori, :pos => 0.2, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, {:note => :a5, :buffer => :misc_lori, :pos => 0.4, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, nil, nil, {:note => :c6, :buffer => :misc_lori, :pos => 0.6, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, {:note => :a5, :buffer => :misc_lori, :pos => 0.4, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil)
+s_vocal = (ring nil, nil, {:note => :f5, :buffer => :ambi_choir, :pos => 0.2, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, {:note => :a5, :buffer => :ambi_choir, :pos => 0.4, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, nil, nil, {:note => :c6, :buffer => :ambi_choir, :pos => 0.6, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, {:note => :a5, :buffer => :ambi_choir, :pos => 0.4, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

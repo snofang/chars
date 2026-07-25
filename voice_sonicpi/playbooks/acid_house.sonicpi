@@ -30,9 +30,9 @@ s_chords= (ring nil, [:a3, :c4, :e4, :g4], nil, nil, nil, [:a3, :c4, :e4, :g4], 
            nil, [:g3, :bb3, :d4, :f4], nil, nil, nil, [:g3, :bb3, :d4, :f4], nil, nil)
 
 # Pitched-down, chopped club vocal ("Yeah!")
-# Granular synth chops :misc_lori to create a rhythmic vocal stab.
+# Granular synth chops :ambi_choir to create a rhythmic vocal stab.
 s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :a3, :buffer => :misc_lori, :pos => 0.2, :density => 4, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
+           {:note => :a3, :buffer => :ambi_choir, :pos => 0.2, :density => 4, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
            nil, nil, nil, nil)
 
 # ==========================================================

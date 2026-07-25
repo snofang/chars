@@ -64,8 +64,8 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Pitched-down, "Rap" vocal stutter (Granular Synth).
 # Low density, small size = a dark, percussive vocal skip.
 s_vocal = gen_score("....x.......x...", [
-  {note: :cs3, buffer: :misc_lori, pos: 0.1, density: 2, size: 0.04, amp: 0.7},
-  {note: :b2, buffer: :misc_lori, pos: 0.3, density: 2, size: 0.04, amp: 0.7}
+  {note: :cs3, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.04, amp: 0.7},
+  {note: :b2, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.04, amp: 0.7}
 ])
 
 # ==========================================================

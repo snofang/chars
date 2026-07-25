@@ -33,10 +33,10 @@ s_chords= (ring nil, nil, nil, nil, [:c3, :eb4, :g4, :bb4], nil, nil, nil,
            nil, nil, nil, nil, [:f3, :ab4, :c5, :eb5], nil, nil, nil)
 
 # Chopped, funky vocal hook (Granular Synth)
-# Using :misc_lori, short size, high density = funky stutter
+# Using :ambi_choir, short size, high density = funky stutter
 s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :c5, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04}, nil, nil, nil, 
-           nil, nil, {:note => :eb5, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04}, nil)
+           {:note => :c5, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04}, nil, nil, nil, 
+           nil, nil, {:note => :eb5, :buffer => :ambi_choir, :pos => 0.5, :density => 3, :size => 0.04}, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

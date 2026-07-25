@@ -70,8 +70,8 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 
 # Cosmic, pitched-up "Mothership" vocal chops (Granular Synth).
 s_vocal = gen_score("....x.......x...", [
-  {note: :d4, buffer: :misc_lori, pos: 0.2, density: 2, size: 0.05, amp: 0.6},
-  {note: :a4, buffer: :misc_lori, pos: 0.4, density: 2, size: 0.05, amp: 0.5}
+  {note: :d4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.05, amp: 0.6},
+  {note: :a4, buffer: :ambi_choir, pos: 0.4, density: 2, size: 0.05, amp: 0.5}
 ])
 
 # ==========================================================

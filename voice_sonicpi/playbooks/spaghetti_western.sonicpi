@@ -69,7 +69,7 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Pitched UP to :a4. Long size (0.3) and low density (1) creates a slow, 
 # evolving background texture that sounds like a distant cry in the desert.
 s_grain = gen_score("x...............", [
-  {note: :a4, buffer: :misc_lori, pos: 0.4, density: 1, size: 0.3, amp: 0.5}
+  {note: :a4, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.3, amp: 0.5}
 ])
 
 # ==========================================================

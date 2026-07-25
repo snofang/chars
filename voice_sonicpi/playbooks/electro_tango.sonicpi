@@ -61,7 +61,7 @@ s_fm    = (ring {:note => :a4, :amp => 0.6, :divisor => 2, :depth => 3, :release
 # Dramatic, ambient string/vocal "Sigh" (Granular Synth).
 # Long size (0.3) and low density (1) creates a slow, evolving background 
 # texture that sounds like a distant singer in a smoky Buenos Aires café.
-s_grain = (ring {:note => :a3, :buffer => :misc_lori, :pos => 0.1, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+s_grain = (ring {:note => :a3, :buffer => :ambi_choir, :pos => 0.1, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

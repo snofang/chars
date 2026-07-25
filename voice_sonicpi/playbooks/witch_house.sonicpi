@@ -55,7 +55,7 @@ s_fm    = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :gs5, :amp => 
 # The "Demonic" Vocal Drone (Granular Synth)
 # Pitched DOWN to :cs3. Massive grain size (0.5s) and low density (1).
 # This time-stretches the vocal into an unrecognizable, slurred monster.
-s_vocal = (ring {:note => :cs3, :buffer => :misc_lori, :pos => 0.1, :density => 1, :size => 0.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :fs3, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring {:note => :cs3, :buffer => :ambi_choir, :pos => 0.1, :density => 1, :size => 0.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :fs3, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -69,7 +69,7 @@ s_fm = gen_score("x..x..x..x..x..x", lead_data)
 # Long size (0.1) and low density (1) creates a lush, repetitive vocal hit 
 # that mimics a 60s pop sample. (1 x, 1 element)
 s_vocal = gen_score("........x.......", [
-  {note: :f4, buffer: :misc_lori, pos: 0.1, density: 1, size: 0.1, amp: 0.6}
+  {note: :f4, buffer: :ambi_choir, pos: 0.1, density: 1, size: 0.1, amp: 0.6}
 ])
 
 # ==========================================================

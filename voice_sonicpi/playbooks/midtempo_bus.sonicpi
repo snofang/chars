@@ -55,7 +55,7 @@ s_fm    = (ring nil, nil, nil, nil, {:note => :gs5, :amp => 0.6, :divisor => 4, 
 # Eerie, time-stretched vocal drone (Granular Synth).
 # Pitched DOWN to :gs3. Long size (0.15) and low density (1).
 # This creates a slow, ghostly undercurrent that drifts beneath the kick.
-s_grain = (ring {:note => :gs3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+s_grain = (ring {:note => :gs3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

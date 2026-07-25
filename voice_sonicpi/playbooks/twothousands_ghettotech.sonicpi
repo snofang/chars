@@ -71,8 +71,8 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Pitched-down, "Booty" vocal grunt (Granular Synth).
 # Low density, small size = a dark, percussive, repetitive vocal hit.
 s_vocal = gen_score("....x.......x...", [
-  {note: :g3, buffer: :misc_lori, pos: 0.1, density: 2, size: 0.04, amp: 0.7},
-  {note: :bb3, buffer: :misc_lori, pos: 0.3, density: 2, size: 0.04, amp: 0.7}
+  {note: :g3, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.04, amp: 0.7},
+  {note: :bb3, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.04, amp: 0.7}
 ])
 
 # ==========================================================

@@ -36,9 +36,9 @@ s_chords= (ring [:d3, :f4, :a4, :c5], nil, nil, nil, nil, nil, nil, nil,
 s_pluck = (ring nil, nil, nil, nil, nil, nil, {:note => :d5, :amp => 0.6}, nil, 
            nil, nil, nil, nil, nil, nil, {:note => :f5, :amp => 0.5}, nil)
 
-# Haunting granular vocal drone (using :misc_lori buffer, long size)
-s_grain = (ring {:note => :d4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.15}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :f4, :buffer => :misc_lori, :pos => 0.7, :density => 2, :size => 0.15}, nil, nil, nil, nil, nil, nil, nil)
+# Haunting granular vocal drone (using :ambi_choir buffer, long size)
+s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.15}, nil, nil, nil, nil, nil, nil, nil, 
+           {:note => :f4, :buffer => :ambi_choir, :pos => 0.7, :density => 2, :size => 0.15}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

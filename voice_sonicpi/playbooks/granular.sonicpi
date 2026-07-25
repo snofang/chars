@@ -10,13 +10,13 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # 1. SCRUBBING: Manually moving the playhead through a vocal sample.
-# We use :misc_lori (a built-in Sonic Pi vocal sample).
+# We use :ambi_choir (a built-in Sonic Pi vocal sample).
 # Notice how 'pos' slowly moves from 0.3 to 0.6, scanning through the audio file.
 s_scrub = (ring 
-  {note: :c4, buffer: :misc_lori, pos: 0.3, density: 8, size: 0.08}, nil, nil, nil,
-  {note: :c4, buffer: :misc_lori, pos: 0.4, density: 8, size: 0.08}, nil, nil, nil,
-  {note: :c4, buffer: :misc_lori, pos: 0.5, density: 8, size: 0.08}, nil, nil, nil,
-  {note: :eb4, buffer: :misc_lori, pos: 0.6, density: 8, size: 0.08}, nil, nil, nil
+  {note: :c4, buffer: :ambi_choir, pos: 0.3, density: 8, size: 0.08}, nil, nil, nil,
+  {note: :c4, buffer: :ambi_choir, pos: 0.4, density: 8, size: 0.08}, nil, nil, nil,
+  {note: :c4, buffer: :ambi_choir, pos: 0.5, density: 8, size: 0.08}, nil, nil, nil,
+  {note: :eb4, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.08}, nil, nil, nil
 )
 
 # 2. FREEZING & DENSITY: Holding a single position, but changing grain size.

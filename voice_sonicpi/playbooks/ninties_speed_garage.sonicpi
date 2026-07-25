@@ -68,8 +68,8 @@ s_fm = gen_score("x...x...x...x...", [
 # High-pitched, "Diva" vocal stutter (Granular Synth).
 # Pitched UP to :fs4 and :a4. High density, tiny size = a sharp, sugary R&B vocal skip.
 s_vocal = gen_score("....x.......x...", [
-  {note: :fs4, buffer: :misc_lori, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
-  {note: :a4, buffer: :misc_lori, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
+  {note: :fs4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
+  {note: :a4, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
 ])
 
 # ==========================================================

@@ -68,7 +68,7 @@ s_lead = gen_score("x.......x.......", lead_data)
 # Long size (0.2) and low density (1) creates a slow, evolving background 
 # texture that sounds like a distant, ghostly voice echoing in a cave.
 s_grain = gen_score("x...............", [
-  {note: :g3, buffer: :misc_lori, pos: 0.5, density: 1, size: 0.2, amp: 0.5}
+  {note: :g3, buffer: :ambi_choir, pos: 0.5, density: 1, size: 0.2, amp: 0.5}
 ])
 
 # ==========================================================

@@ -53,9 +53,9 @@ s_chords= (ring {:note => [:e3, :g3, :b3, :e4], :cutoff => 120, :release => 1.5,
 # organic guitar-like pluck. Routed through the engine's tape echo.
 s_fm    = (ring {:note => :e5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.8}, nil, nil, nil, nil, {:note => :b4, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.8}, nil, nil, {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.8}, nil, nil, nil, nil, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.8}, nil, nil)
 
-# Ethereal, granular vocal pad (using :misc_lori).
+# Ethereal, granular vocal pad (using :ambi_choir).
 # Long size (0.15) and low density (2) creates a slow, evolving celestial texture.
-s_grain = (ring {:note => :e4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :buffer => :misc_lori, :pos => 0.4, :density => 2, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_grain = (ring {:note => :e4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

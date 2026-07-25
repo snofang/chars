@@ -61,7 +61,7 @@ s_fm    = (ring {:note => :f4, :amp => 0.6, :divisor => 2, :depth => 4, :release
 # Pitched-down, "Hip-Hop" vocal grunt (Granular Synth).
 # Low density, small size = a dark, percussive vocal hit.
 s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :f3, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, 
+           {:note => :f3, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, 
            nil, nil, nil, nil)
 
 # ==========================================================

@@ -56,7 +56,7 @@ s_fm    = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 3, :
 # Pitched-down, time-stretched "Subway" vocal drone (Granular Synth).
 # Long size (0.4) and low density (1) creates a slow, evolving background 
 # texture that sounds like a distant voice echoing in a tunnel.
-s_grain = (ring {:note => :e3, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.4, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :c3, :buffer => :misc_lori, :pos => 0.6, :density => 1, :size => 0.4, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_grain = (ring {:note => :e3, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.4, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :c3, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.4, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -26,8 +26,8 @@ s_lead  = (ring :d4, nil, nil, {:note => :eb4, :amp => 0.6}, nil, nil, {:note =>
 # Sustained drone pad to anchor the scale
 s_pad   = (ring :d3, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
-# Distant granular vocal chant (using :misc_lori buffer)
-s_chant = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :d4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.1}, nil, nil, nil, nil, nil, nil, nil)
+# Distant granular vocal chant (using :ambi_choir buffer)
+s_chant = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :d4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.1}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -67,7 +67,7 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Long size (0.08) and low density (1) creates a raw, repetitive vocal hit 
 # that mimics a crowd shouting along.
 s_vocal = gen_score("........x.......", [
-  {note: :e3, buffer: :misc_lori, pos: 0.3, density: 1, size: 0.08, amp: 0.7}
+  {note: :e3, buffer: :ambi_choir, pos: 0.3, density: 1, size: 0.08, amp: 0.7}
 ])
 
 # ==========================================================

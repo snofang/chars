@@ -53,7 +53,7 @@ s_lead  = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.7}, nil, {:note => 
 
 # Funky, chopped vocal stutters (Granular Synth)
 # High density, small size = percussive, rhythmic vocal chops.
-s_vocal = (ring nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, {:note => :b4, :buffer => :misc_lori, :pos => 0.7, :density => 2, :size => 0.05, :amp => 0.6}, nil)
+s_vocal = (ring nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, {:note => :b4, :buffer => :ambi_choir, :pos => 0.7, :density => 2, :size => 0.05, :amp => 0.6}, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

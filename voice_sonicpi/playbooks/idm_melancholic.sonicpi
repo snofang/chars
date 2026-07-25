@@ -19,8 +19,8 @@ s_bass  = (ring :fs2, nil, nil, nil, nil, nil, :fs2, nil, nil, nil, :a2, nil, ni
 # Angular, nostalgic FM melody
 s_fm    = (ring :fs4, nil, nil, :c5, nil, nil, :a4, nil, nil, nil, :e4, nil, :fs4, nil, :c5, nil)
 
-# Granular vocal drone (Using :misc_lori buffer, low density for ambient feel)
-s_grain = (ring {:note => :fs3, :buffer => :misc_lori, :pos => 0.4, :density => 2, :size => 0.15}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Granular vocal drone (Using :ambi_choir buffer, low density for ambient feel)
+s_grain = (ring {:note => :fs3, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.15}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

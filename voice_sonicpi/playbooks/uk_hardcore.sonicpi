@@ -50,8 +50,8 @@ s_chords= (ring nil, nil, [:c3, :e3, :g3, :b3], nil, nil, nil, [:c3, :e3, :g3, :
 
 # High-pitched, euphoric vocal chops (Granular Synth)
 # High density, tiny size = pitched-up rave vocal stutter.
-s_vocal = (ring nil, nil, nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.2, :density => 4, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
-           nil, nil, {:note => :e5, :buffer => :misc_lori, :pos => 0.4, :density => 4, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.2, :density => 4, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
+           nil, nil, {:note => :e5, :buffer => :ambi_choir, :pos => 0.4, :density => 4, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil)
 
 # Bright, echoing arpeggio lead (C Major Pentatonic)
 s_lead  = (ring :c5, nil, :d5, nil, :e5, nil, :g5, nil, :e5, nil, :d5, nil, :c5, nil, :g4, nil)

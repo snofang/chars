@@ -76,7 +76,7 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # "Soundclash" Siren FX (Granular Synth).
 # High density, tiny size = a sharp, repetitive vocal skip. (1 x, 1 element)
 s_vocal = gen_score("........x.......", [
-  {note: :c4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
+  {note: :c4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
 ])
 
 # ==========================================================

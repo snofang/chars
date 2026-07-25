@@ -61,7 +61,7 @@ s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 3, :
 # Ethereal, sweeping vocal "Ahh" (Granular Synth).
 # Long size (0.2) and low density (1) creates a slow, evolving celestial 
 # texture that drifts in the background.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.3, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.3, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -66,7 +66,7 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Distant, "Siren" vocal wail (Granular Synth).
 # Pitched UP to :f4. Long size (0.15) creates a mournful, echoing cry.
 s_vocal = gen_score("x...............", [
-  {note: :f4, buffer: :misc_lori, pos: 0.6, density: 1, size: 0.15, amp: 0.5}
+  {note: :f4, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.15, amp: 0.5}
 ])
 
 # ==========================================================

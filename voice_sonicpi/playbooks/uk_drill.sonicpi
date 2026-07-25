@@ -33,7 +33,7 @@ s_chords= (ring nil, nil, [:f3, :ab3, :eb4, :g4], nil, nil, nil, nil, nil,
 
 # High-pitched, dark granular vocal whisper (Granular Synth)
 s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :f4, :buffer => :misc_lori, :pos => 0.6, :density => 2, :size => 0.1, :amp => 0.4}, nil, nil, nil, 
+           {:note => :f4, :buffer => :ambi_choir, :pos => 0.6, :density => 2, :size => 0.1, :amp => 0.4}, nil, nil, nil, 
            nil, nil, nil, nil)
 
 # ==========================================================

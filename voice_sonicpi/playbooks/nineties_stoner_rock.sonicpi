@@ -76,7 +76,7 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Pitched DOWN to :c3. Long size (0.2) creates a dark, evolving background drone. 
 # (1 x, 1 element)
 s_vocal = gen_score("x...............", [
-  {note: :c3, buffer: :misc_lori, pos: 0.4, density: 1, size: 0.2, amp: 0.6}
+  {note: :c3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.2, amp: 0.6}
 ])
 
 # ==========================================================

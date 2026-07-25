@@ -38,7 +38,7 @@ s_lead  = (ring :a5, nil, :e5, :c5, :a5, nil, :e5, :c5,
 
 # Pitched-down, robotic vocoder vocal stab (Granular Synth)
 s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :a3, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
+           {:note => :a3, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
            nil, nil, nil, nil)
 
 # ==========================================================

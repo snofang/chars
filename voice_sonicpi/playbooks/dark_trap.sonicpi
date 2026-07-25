@@ -31,7 +31,7 @@ s_bass  = (ring {:note => :fs2, :release => 1.5}, nil, nil, nil, nil, nil, nil, 
 s_lead  = (ring :fs4, nil, nil, nil, nil, nil, nil, nil, :a4, nil, nil, nil, :c5, nil, nil, nil)
 
 # Atmospheric granular vocal drone to fill the empty space
-s_grain = (ring {:note => :fs3, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.15}, nil, nil, nil, 
+s_grain = (ring {:note => :fs3, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.15}, nil, nil, nil, 
            nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================

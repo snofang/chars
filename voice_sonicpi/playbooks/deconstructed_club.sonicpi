@@ -62,7 +62,7 @@ s_chords= (ring nil, nil, nil, nil, {:note => [:a3, :c4, :eb4, :fs4], :cutoff =>
 # Hyper-glitched, "Sugary" Vocal FX (Granular Synth).
 # Pitched UP and scattered. Extreme density (5) and microscopic size (0.02) 
 # turn the vocal into a sharp, digital, plastic stutter.
-s_vocal = (ring nil, nil, {:note => :a5, :buffer => :misc_lori, :pos => 0.1, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, nil, {:note => :c4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.5}, nil, nil, {:note => :e5, :buffer => :misc_lori, :pos => 0.3, :density => 4, :size => 0.02, :amp => 0.6}, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.4, :density => 5, :size => 0.02, :amp => 0.5}, nil, nil)
+s_vocal = (ring nil, nil, {:note => :a5, :buffer => :ambi_choir, :pos => 0.1, :density => 5, :size => 0.02, :amp => 0.6}, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.5}, nil, nil, {:note => :e5, :buffer => :ambi_choir, :pos => 0.3, :density => 4, :size => 0.02, :amp => 0.6}, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.4, :density => 5, :size => 0.02, :amp => 0.5}, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

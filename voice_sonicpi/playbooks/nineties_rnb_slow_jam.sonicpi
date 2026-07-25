@@ -72,8 +72,8 @@ s_fm = gen_score("x..x..x..x..x..x", lead_data)
 # "Ooh" Vocal Chops (Granular Synth).
 # High density, small size = a sharp, pristine vocal skip. (2 x's, 2 elements)
 s_vocal = gen_score("....x.......x...", [
-  {note: :f4, buffer: :misc_lori, pos: 0.1, density: 2, size: 0.08, amp: 0.6},
-  {note: :a4, buffer: :misc_lori, pos: 0.3, density: 2, size: 0.08, amp: 0.6}
+  {note: :f4, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.08, amp: 0.6},
+  {note: :a4, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.08, amp: 0.6}
 ])
 
 # ==========================================================

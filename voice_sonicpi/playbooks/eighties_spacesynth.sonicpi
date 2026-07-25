@@ -62,8 +62,8 @@ s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
 # Pitched-up, "Computer" vocal stutter (Granular Synth).
 # High density, tiny size = a sharp, robotic vocal skip.
 s_vocal = gen_score("....x.......x...", [
-  {note: :a4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
-  {note: :c5, buffer: :misc_lori, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
+  {note: :c5, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
 ])
 
 # Ethereal, "Cosmos" drone (Granular Synth).

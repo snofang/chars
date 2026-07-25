@@ -52,7 +52,7 @@ s_bass  = (ring {:note => :a1, :cutoff => 70}, {:note => :a1, :cutoff => 120}, {
 
 # Syncopated "Ay" vocal chants (Granular Synth).
 # Pitched and scattered across the off-beats.
-s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -64,7 +64,7 @@ s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
 # High-pitched, soaring "Diva" Vocal Chops (Granular Synth).
 # Pitched UP to :a4 and :c5. High density, tiny size = a sharp, sugary vocal skip.
 vocal_notes = [:a4, :c5]
-vocal_data = vocal_notes.map { |n| {note: n, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6} }
+vocal_data = vocal_notes.map { |n| {note: n, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6} }
 s_vocal = gen_score("....x.....x.....", vocal_data)
 
 # ==========================================================

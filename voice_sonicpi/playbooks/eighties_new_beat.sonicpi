@@ -72,7 +72,7 @@ s_fm    = (ring nil, nil, nil, nil, {:note => :a4, :amp => 0.6, :divisor => 2, :
 # Ethereal, dark vocal drone (Granular Synth).
 # Long size (0.2) and low density (1) creates a slow, evolving background 
 # texture that sounds like a distant voice in a cavernous club.
-s_grain = (ring {:note => :a3, :buffer => :misc_lori, :pos => 0.3, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e3, :buffer => :misc_lori, :pos => 0.5, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_grain = (ring {:note => :a3, :buffer => :ambi_choir, :pos => 0.3, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e3, :buffer => :ambi_choir, :pos => 0.5, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

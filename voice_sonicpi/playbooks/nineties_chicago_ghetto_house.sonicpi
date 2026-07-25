@@ -58,7 +58,7 @@ s_fm    = (ring {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 3, :release
 # Pitched-down, percussive "Ghetto" vocal chant (Granular Synth).
 # Pitched DOWN to :f3. High density, small size = a sharp, repetitive vocal hit 
 # that acts as a secondary percussion instrument.
-s_vocal = (ring {:note => :f3, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil, {:note => :f3, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil, {:note => :ab3, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil, {:note => :c4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil)
+s_vocal = (ring {:note => :f3, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil, {:note => :f3, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil, {:note => :ab3, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.04, :amp => 0.7}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

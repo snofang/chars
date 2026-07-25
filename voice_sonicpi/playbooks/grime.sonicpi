@@ -36,8 +36,8 @@ s_chords= (ring nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:fs3, :a3, :c4], nil
 # Chopped, rhythmic alien vocal hook (Granular Synth)
 # High density, small size = glitchy, rhythmic stutter
 s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :fs4, :buffer => :misc_lori, :pos => 0.2, :density => 4, :size => 0.03}, nil, nil, nil, 
-           nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.4, :density => 4, :size => 0.03}, nil)
+           {:note => :fs4, :buffer => :ambi_choir, :pos => 0.2, :density => 4, :size => 0.03}, nil, nil, nil, 
+           nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.4, :density => 4, :size => 0.03}, nil)
 
 # Distant, eerie FM bell melody (F# Minor)
 s_fm    = (ring nil, nil, nil, {:note => :fs5, :amp => 0.6}, nil, nil, nil, nil, 

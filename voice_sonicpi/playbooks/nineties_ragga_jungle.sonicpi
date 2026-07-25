@@ -73,7 +73,7 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Chopped, "Ragga" Vocal Stutter (Granular Synth).
 # High density (3) and tiny size (0.04) shatter the vocal into a rhythmic skip. (1 x, 1 element)
 s_vocal = gen_score("........x.......", [
-  {note: :a4, buffer: :misc_lori, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
+  {note: :a4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
 ])
 
 # ==========================================================

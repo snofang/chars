@@ -57,7 +57,7 @@ s_fm    = (ring {:note => :fs6, :amp => 0.6, :divisor => 2, :depth => 5, :releas
 # Pitched-down, hypnotic "Thizz" vocal drone (Granular Synth).
 # Long size (0.15) and low density (1) creates a slow, evolving background 
 # texture that sounds like a distant crowd chanting in a parking lot.
-s_vocal = (ring {:note => :fs3, :buffer => :misc_lori, :pos => 0.3, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :misc_lori, :pos => 0.5, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring {:note => :fs3, :buffer => :ambi_choir, :pos => 0.3, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :ambi_choir, :pos => 0.5, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -53,7 +53,7 @@ s_fm    = (ring nil, nil, nil, nil, {:note => :g5, :amp => 0.6, :divisor => 3, :
 
 # Pitched-down "Gangster" Rap Vocal Chops (Granular Synth).
 # Pitched DOWN to :g3. High density, small size = a dark, percussive rap skip.
-s_vocal = (ring nil, nil, nil, {:note => :g3, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil, {:note => :d3, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil, nil, {:note => :g3, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, {:note => :g3, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil, {:note => :d3, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil, nil, {:note => :g3, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

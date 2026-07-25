@@ -32,10 +32,10 @@ s_chords= (ring nil, [:g3, :bb3, :d4], nil, nil, nil, nil, [:g3, :bb3, :d4], nil
            nil, [:bb3, :db4, :f4], nil, nil, nil, nil, [:d3, :f3, :a3], nil)
 
 # The signature Jersey Club Vocal Chop!
-# Granular synth chops :misc_lori into a rapid, rhythmic stutter.
-s_vocal = (ring nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04}, nil, 
-           nil, nil, nil, {:note => :bb4, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04}, nil, 
-           nil, nil, {:note => :d5, :buffer => :misc_lori, :pos => 0.7, :density => 3, :size => 0.04}, nil, 
+# Granular synth chops :ambi_choir into a rapid, rhythmic stutter.
+s_vocal = (ring nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04}, nil, 
+           nil, nil, nil, {:note => :bb4, :buffer => :ambi_choir, :pos => 0.5, :density => 3, :size => 0.04}, nil, 
+           nil, nil, {:note => :d5, :buffer => :ambi_choir, :pos => 0.7, :density => 3, :size => 0.04}, nil, 
            nil, nil, nil)
 
 # ==========================================================

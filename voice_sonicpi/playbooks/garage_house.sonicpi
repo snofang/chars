@@ -49,14 +49,14 @@ s_chords= (ring nil, nil, [:g3, :bb3, :d4, :f4], nil, nil, nil, [:g3, :bb3, :d4,
 # The "Todd Edwards" Vocal Collage (Granular Synth).
 # FIXED: Exactly 16 steps. Pitched and scattered across the grid. 
 # High density, tiny size = a rhythmic, collaged R&B stutter.
-s_vocal = (ring {:note => :g4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
-           {:note => :d4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.5}, nil, 
-           {:note => :g4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, {:note => :bb4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.04, :amp => 0.5}, 
-           nil, {:note => :d4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
-           {:note => :eb4, :buffer => :misc_lori, :pos => 0.7, :density => 2, :size => 0.04, :amp => 0.5}, nil, 
-           {:note => :d4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
-           {:note => :g4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.5}, nil, 
-           {:note => :bb4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.04, :amp => 0.6})
+s_vocal = (ring {:note => :g4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
+           {:note => :d4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.5}, nil, 
+           {:note => :g4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, {:note => :bb4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.04, :amp => 0.5}, 
+           nil, {:note => :d4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
+           {:note => :eb4, :buffer => :ambi_choir, :pos => 0.7, :density => 2, :size => 0.04, :amp => 0.5}, nil, 
+           {:note => :d4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
+           {:note => :g4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.5}, nil, 
+           {:note => :bb4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.04, :amp => 0.6})
 
 # Bright, echoing organ/marimba melody (G Minor Pentatonic).
 # Uses :play_fm with a high divisor (3) to create a sharp, organic pluck.

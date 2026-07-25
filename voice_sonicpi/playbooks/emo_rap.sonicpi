@@ -66,9 +66,9 @@ s_chords = gen_score("x.......x.......", [
 # Pitched-up, "Angelic" vocal stutter (Granular Synth).
 # Pitched UP to :e5 and :g5. Long size (0.08) creates a mournful, crying vocal skip.
 s_vocal = gen_score("....x...x...x...", [
-  {note: :e5, buffer: :misc_lori, pos: 0.1, density: 2, size: 0.08, amp: 0.6},
-  {note: :g5, buffer: :misc_lori, pos: 0.3, density: 2, size: 0.08, amp: 0.5},
-  {note: :b4, buffer: :misc_lori, pos: 0.5, density: 2, size: 0.08, amp: 0.6}
+  {note: :e5, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.08, amp: 0.6},
+  {note: :g5, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.08, amp: 0.5},
+  {note: :b4, buffer: :ambi_choir, pos: 0.5, density: 2, size: 0.08, amp: 0.6}
 ])
 
 # ==========================================================

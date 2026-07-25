@@ -51,7 +51,7 @@ s_fm    = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.7, :depth => 4, :di
 
 # Pitched-down, repetitive vocal chant (Granular Synth)
 # Low density, medium size = a raw, rhythmic vocal hit.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c3, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.08, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c3, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.08, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
 
 # Massive, dark drone pad to anchor the tension.
 s_pad   = (ring {:note => :c2, :release => 4.0, :attack => 2.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :g2, :release => 4.0, :attack => 2.0}, nil, nil, nil, nil, nil, nil, nil)

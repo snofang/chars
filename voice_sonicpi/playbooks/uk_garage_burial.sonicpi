@@ -27,11 +27,11 @@ s_chords= (ring nil, nil, nil, nil, [:f3, :ab3, :c4], nil, nil, nil,
            nil, nil, nil, nil, [:ab3, :c4, :eb4], nil, nil, nil)
 
 # Rhythmic Vocal Chops using the Granular Synth!
-# We use :misc_lori (vocal sample), small grain size, and pitch it to F minor.
-s_vocal = (ring nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.05}, nil, 
+# We use :ambi_choir (vocal sample), small grain size, and pitch it to F minor.
+s_vocal = (ring nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.05}, nil, 
            nil, nil, nil, nil, 
-           {:note => :ab4, :buffer => :misc_lori, :pos => 0.4, :density => 2, :size => 0.05}, nil, nil, nil, 
-           {:note => :c5, :buffer => :misc_lori, :pos => 0.6, :density => 2, :size => 0.05}, nil, nil, nil)
+           {:note => :ab4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.05}, nil, nil, nil, 
+           {:note => :c5, :buffer => :ambi_choir, :pos => 0.6, :density => 2, :size => 0.05}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

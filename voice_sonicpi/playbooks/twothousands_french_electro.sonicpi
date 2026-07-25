@@ -73,8 +73,8 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Choppy, "Diva" vocal stutter (Granular Synth).
 # High density, tiny size = a sharp, pristine vocal skip.
 s_vocal = gen_score("....x.......x...", [
-  {note: :e4, buffer: :misc_lori, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
-  {note: :b3, buffer: :misc_lori, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
+  {note: :e4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
+  {note: :b3, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
 ])
 
 # ==========================================================

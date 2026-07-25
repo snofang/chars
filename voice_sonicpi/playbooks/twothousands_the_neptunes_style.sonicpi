@@ -72,8 +72,8 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Pitched-down, rhythmic "Grunts" (Granular Synth).
 # Pitched DOWN to :fs2. High density, tiny size = a dark, percussive vocal hit.
 s_vocal = gen_score("....x.......x...", [
-  {note: :fs2, buffer: :misc_lori, pos: 0.1, density: 2, size: 0.04, amp: 0.7},
-  {note: :c2, buffer: :misc_lori, pos: 0.2, density: 2, size: 0.04, amp: 0.7}
+  {note: :fs2, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.04, amp: 0.7},
+  {note: :c2, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.04, amp: 0.7}
 ])
 
 # ==========================================================

@@ -63,9 +63,9 @@ s_fm    = (ring {:note => :c5, :amp => 0.6, :divisor => 3, :depth => 5, :release
 # Aggressive, pitched-down "Shout" vocal (Granular Synth).
 # Pitched DOWN to :c3. High density, small size = a dark, percussive vocal hit.
 s_vocal = (ring nil, nil, nil, nil, 
-           {:note => :c3, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.8}, nil, nil, nil, 
+           {:note => :c3, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.8}, nil, nil, nil, 
            nil, nil, nil, nil, 
-           {:note => :c3, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.8}, nil, nil, nil)
+           {:note => :c3, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.8}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

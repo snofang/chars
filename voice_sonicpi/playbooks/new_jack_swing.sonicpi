@@ -54,7 +54,7 @@ s_chords= (ring nil, [:f3, :a3, :c4, :e4], nil, nil, nil, nil, [:f3, :a3, :c4, :
 s_fm    = (ring nil, nil, nil, nil, {:note => :a4, :amp => 0.7, :depth => 3, :divisor => 2, :release => 0.2}, nil, {:note => :c5, :amp => 0.6, :depth => 3, :divisor => 2, :release => 0.2}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :amp => 0.7, :depth => 3, :divisor => 2, :release => 0.2}, nil)
 
 # Rhythmic, pitching vocal chop (Granular Synth)
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

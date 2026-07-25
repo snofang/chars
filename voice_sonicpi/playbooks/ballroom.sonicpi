@@ -55,11 +55,11 @@ s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :release
 # The "Ha" Vocal Chops (Granular Synth).
 # FIXED: Exactly 16 steps. Pitched and scattered across the off-beats. 
 # High density, tiny size = a sharp, percussive vocal stab.
-s_vocal = (ring {:note => :a4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.03, :amp => 0.7}, nil, nil, 
-           {:note => :a4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.03, :amp => 0.5}, nil, nil, nil, 
-           {:note => :c5, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.03, :amp => 0.7}, nil, nil, 
-           {:note => :a4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.03, :amp => 0.5}, nil, nil, 
-           {:note => :e4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.03, :amp => 0.7}, nil, nil)
+s_vocal = (ring {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.03, :amp => 0.7}, nil, nil, 
+           {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.03, :amp => 0.5}, nil, nil, nil, 
+           {:note => :c5, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.03, :amp => 0.7}, nil, nil, 
+           {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.03, :amp => 0.5}, nil, nil, 
+           {:note => :e4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.03, :amp => 0.7}, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

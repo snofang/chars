@@ -74,7 +74,7 @@ s_fm    = (ring {:note => :e5, :amp => 0.6, :divisor => 2, :depth => 3, :release
 
 # Bright, Brass "Stab" hit (Granular Synth).
 # High density, tiny size = a sharp, jazzy brass section stab.
-s_vocal = (ring {:note => :e4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.04, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring {:note => :e4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.04, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

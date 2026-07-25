@@ -51,9 +51,9 @@ s_chords= (ring {:note => [:g3, :bb3, :d4, :f4], :cutoff => 110, :release => 0.8
 # Routed through the engine's tape echo for a cascading, stadium smear.
 s_fm    = (ring nil, nil, nil, {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, nil, nil, {:note => :eb5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :d5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil)
 
-# Ethereal, granular vocal pad (using :misc_lori).
+# Ethereal, granular vocal pad (using :ambi_choir).
 # Long size (0.2) and low density (1) creates a slow, evolving celestial texture.
-s_grain = (ring {:note => :g4, :buffer => :misc_lori, :pos => 0.3, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :eb4, :buffer => :misc_lori, :pos => 0.6, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_grain = (ring {:note => :g4, :buffer => :ambi_choir, :pos => 0.3, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :eb4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

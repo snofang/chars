@@ -57,8 +57,8 @@ s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.5, :divisor => 2, :
 
 # Dusty, chopped "tape" vocal stutter (Granular Synth).
 # High density, small size = a warm, degraded vocal skip.
-s_vocal = (ring nil, nil, nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.5}, nil, nil, 
-           nil, nil, nil, nil, {:note => :bb4, :buffer => :misc_lori, :pos => 0.6, :density => 3, :size => 0.04, :amp => 0.5}, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.5}, nil, nil, 
+           nil, nil, nil, nil, {:note => :bb4, :buffer => :ambi_choir, :pos => 0.6, :density => 3, :size => 0.04, :amp => 0.5}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

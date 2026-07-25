@@ -55,7 +55,7 @@ s_fm    = (ring {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 3, :release
 # High-pitched, soaring "Diva" Vocal Chops (Granular Synth).
 # Pitched UP to :g4, :bb4, and :d5. High density, tiny size = a sharp, 
 # sugary, euphoric vocal skip that dances over the piano.
-s_vocal = (ring nil, nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :bb4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, {:note => :d5, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04, :amp => 0.6}, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :bb4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, {:note => :d5, :buffer => :ambi_choir, :pos => 0.5, :density => 3, :size => 0.04, :amp => 0.6}, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

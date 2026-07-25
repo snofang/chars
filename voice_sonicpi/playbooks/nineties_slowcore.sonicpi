@@ -72,7 +72,7 @@ s_chords = gen_score("x.......x.......", [
 # Long size (0.2) and low density (1) creates a slow, evolving background texture. 
 # (1 x, 1 element)
 s_grain = gen_score("x...............", [
-  {note: :c4, buffer: :misc_lori, pos: 0.3, density: 1, size: 0.2, amp: 0.4}
+  {note: :c4, buffer: :ambi_choir, pos: 0.3, density: 1, size: 0.2, amp: 0.4}
 ])
 
 # ==========================================================

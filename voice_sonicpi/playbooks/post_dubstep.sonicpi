@@ -69,7 +69,7 @@ s_fm = gen_score("..x.....x.....x.", [
 # Massive size (0.5s) and low density (1) time-stretches the sample into a 
 # slow, evolving background texture that sounds like a distant, pitched-down voice.
 s_grain = gen_score("x...............", [
-  {note: :f3, buffer: :misc_lori, pos: 0.4, density: 1, size: 0.5, amp: 0.6}
+  {note: :f3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.5, amp: 0.6}
 ])
 
 # ==========================================================

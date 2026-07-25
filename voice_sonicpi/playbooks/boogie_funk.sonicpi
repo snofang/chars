@@ -37,10 +37,10 @@ s_lead  = (ring nil, nil, :c5, nil, :eb5, nil, nil, :g5,
            nil, nil, :f5, nil, :eb5, nil, :c5, nil)
 
 # Rhythmic, funky vocal chop (Granular Synth)
-# Using :misc_lori, short size, high density = funky stutter
+# Using :ambi_choir, short size, high density = funky stutter
 s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :c4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.04}, nil, nil, nil, 
-           nil, nil, {:note => :eb4, :buffer => :misc_lori, :pos => 0.5, :density => 3, :size => 0.04}, nil)
+           {:note => :c4, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04}, nil, nil, nil, 
+           nil, nil, {:note => :eb4, :buffer => :ambi_choir, :pos => 0.5, :density => 3, :size => 0.04}, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

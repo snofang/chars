@@ -59,7 +59,7 @@ s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, 
 
 # Call-and-response "Go-Go" vocal chant (Granular Synth).
 # Medium density, small size = a raw, repetitive vocal hit.
-s_vocal = (ring nil, nil, nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -50,10 +50,10 @@ s_chords= (ring {:note => [:e3, :g3, :b3, :d4], :cutoff => 75, :attack => 0.5, :
 # sine-like wave. Routed through the engine's tape echo for a cascading smear.
 s_fm    = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 1, :release => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :g5, :amp => 0.4, :divisor => 2, :depth => 1, :release => 0.8}, nil, nil, nil)
 
-# Warped, granular vocal "Ahh" (using :misc_lori).
+# Warped, granular vocal "Ahh" (using :ambi_choir).
 # Long size (0.3) and low density (1) creates a slow, evolving background 
 # texture that sounds like a distant memory.
-s_grain = (ring {:note => :e4, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.6, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_grain = (ring {:note => :e4, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -29,7 +29,7 @@ s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, 
 
 # Rhythmic, chopped vocal shout (Granular Synth)
 # High density, small size = percussive vocal hit
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.1, :density => 4, :size => 0.04}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.1, :density => 4, :size => 0.04}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

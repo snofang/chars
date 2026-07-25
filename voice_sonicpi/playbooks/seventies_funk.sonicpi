@@ -76,7 +76,7 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Pitched DOWN to :d3. High density, tiny size = a sharp, percussive vocal hit. 
 # (1 x, 1 element)
 s_vocal = gen_score("........x.......", [
-  {note: :d3, buffer: :misc_lori, pos: 0.2, density: 2, size: 0.04, amp: 0.7}
+  {note: :d3, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.04, amp: 0.7}
 ])
 
 # ==========================================================

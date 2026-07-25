@@ -53,8 +53,8 @@ s_fm = gen_score("x.x.x.x.x.x.x.x.", fm_data)
 
 # Chopped, rhythmic vocal stutter.
 s_vocal = gen_score("....x.......x...", [
-  {note: :a4, buffer: :misc_lori, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
-  {note: :c5, buffer: :misc_lori, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
+  {note: :c5, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
 ])
 
 # ==========================================================

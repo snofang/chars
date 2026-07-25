@@ -56,7 +56,7 @@ s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 4, :release
 
 # Pitched-up, demonic "MC" vocal stutter (Granular Synth).
 # High density, tiny size = a sharp, frantic rave vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.02, :amp => 0.6}, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.02, :amp => 0.6}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

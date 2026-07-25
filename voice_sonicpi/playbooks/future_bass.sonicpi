@@ -32,8 +32,8 @@ s_chords= (ring [:eb3, :g3, :bb3, :d4], nil, nil, nil, nil, nil, nil, nil,
 
 # High-pitched, chopped angelic vocal (Granular Synth)
 # High density, small size = euphoric stutter
-s_vocal = (ring nil, nil, nil, nil, {:note => :eb4, :buffer => :misc_lori, :pos => 0.2, :density => 3, :size => 0.04}, nil, nil, nil, 
-           nil, nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.04}, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :eb4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.04}, nil, nil, nil, 
+           nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.04}, nil, nil, nil)
 
 # Bright, echoing arpeggio (Eb Major Pentatonic)
 s_lead  = (ring nil, nil, {:note => :eb5, :amp => 0.6}, nil, nil, {:note => :g5, :amp => 0.5}, nil, {:note => :bb5, :amp => 0.7}, 

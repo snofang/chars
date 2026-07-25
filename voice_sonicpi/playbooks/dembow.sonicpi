@@ -30,8 +30,8 @@ s_chords= (ring nil, [:a3, :c4, :e4], nil, nil, nil, nil, nil, [:a3, :c4, :e4],
            nil, [:g3, :bb3, :d4], nil, nil, nil, nil, nil, [:g3, :bb3, :d4])
 
 # Chopped, rhythmic vocal chant (Granular Synth)
-s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :misc_lori, :pos => 0.4, :density => 3, :size => 0.05}, nil, nil, nil, 
-           nil, nil, nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.6, :density => 3, :size => 0.05}, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.05}, nil, nil, nil, 
+           nil, nil, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.6, :density => 3, :size => 0.05}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

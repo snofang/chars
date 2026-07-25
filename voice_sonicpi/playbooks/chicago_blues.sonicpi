@@ -31,10 +31,10 @@ s_lead  = (ring :c4, nil, nil, nil, {note: :eb4, amp: 0.8}, nil, :g4, nil,
            nil, nil, :f4, nil, {note: :eb4, amp: 0.6}, nil, :c4, nil)
 
 # Turnaround Harmonica Wail (Using Granular synth on a vocal sample)
-s_harp   = (ring {note: :c4, buffer: :misc_lori, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
-            {note: :eb4, buffer: :misc_lori, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
-            {note: :g4, buffer: :misc_lori, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
-            {note: :c5, buffer: :misc_lori, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil)
+s_harp   = (ring {note: :c4, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
+            {note: :eb4, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
+            {note: :g4, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
+            {note: :c5, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK (12-Bar Blues Form)

@@ -59,7 +59,7 @@ s_fm    = (ring nil, {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :re
 
 # Repetitive, pitched-down "Street" vocal chant (Granular Synth).
 # Low density, medium size = a raw, repetitive vocal hit.
-s_vocal = (ring {:note => :a3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring {:note => :a3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

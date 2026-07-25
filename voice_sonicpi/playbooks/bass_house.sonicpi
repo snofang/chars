@@ -58,8 +58,8 @@ s_fm    = (ring {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 2, :release
 # Choppy, repetitive "Pop" vocal stutter (Granular Synth).
 # FIXED: Exactly 16 steps. High density, tiny size = a sharp, sugary vocal skip.
 s_vocal = (ring nil, nil, nil, nil, 
-           {:note => :g4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
-           nil, nil, {:note => :bb4, :buffer => :misc_lori, :pos => 0.4, :density => 2, :size => 0.03, :amp => 0.6}, nil, 
+           {:note => :g4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
+           nil, nil, {:note => :bb4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.03, :amp => 0.6}, nil, 
            nil, nil, nil, nil)
 
 # ==========================================================

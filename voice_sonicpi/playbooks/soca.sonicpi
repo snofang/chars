@@ -58,8 +58,8 @@ s_chords= (ring nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, 
 # Rhythmic, pitched-up "Carnival" vocal chant (Granular Synth).
 # FIXED: Exactly 16 steps. High density, small size = a sharp, sugary vocal skip.
 s_vocal = (ring nil, nil, nil, nil, 
-           {:note => :a4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
-           nil, nil, {:note => :c5, :buffer => :misc_lori, :pos => 0.4, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
+           {:note => :a4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
+           nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
            nil, nil, nil, nil)
 
 # ==========================================================

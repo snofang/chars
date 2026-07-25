@@ -58,7 +58,7 @@ s_chords= (ring nil, [:c3, :eb3, :g3], nil, nil, [:c3, :eb3, :g3], nil, nil, nil
 
 # The "Soneos" (Vocal Improvisation).
 # Uses granular synth to simulate the lead singer's improvised phrasing.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :buffer => :misc_lori, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :eb4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.6}, nil)
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :eb4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.6}, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

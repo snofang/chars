@@ -81,8 +81,8 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # "Diva" Vocal Chops (Granular Synth).
 # High density, tiny size = a sharp, sugary vocal skip. (2 x's, 2 elements)
 s_vocal = gen_score("....x.......x...", [
-  {note: :fs4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
-  {note: :cs4, buffer: :misc_lori, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
+  {note: :fs4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
+  {note: :cs4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
 ])
 
 # ==========================================================

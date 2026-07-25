@@ -65,8 +65,8 @@ s_fm = gen_score("x.x.x.x.x.x.x.x.", fm_data)
 
 # Choppy, "Diva" vocal stutter (Granular Synth).
 s_vocal = gen_score("....x.......x...", [
-  {note: :g4, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
-  {note: :bb4, buffer: :misc_lori, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
+  {note: :g4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
+  {note: :bb4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
 ])
 
 # ==========================================================

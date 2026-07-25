@@ -56,7 +56,7 @@ s_chords= (ring {:note => [:a3, :c4, :e4], :cutoff => 90, :release => 0.2, :amp 
 # Cavernous, pitched-down "Chant" vocal (Granular Synth).
 # Long size (0.1) and low density (1) creates a slow, haunting background 
 # texture that sounds like a voice echoing in a massive cave.
-s_vocal = (ring {:note => :a3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :e3, :buffer => :misc_lori, :pos => 0.4, :density => 1, :size => 0.1, :amp => 0.5}, nil, nil, nil)
+s_vocal = (ring {:note => :a3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :e3, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.1, :amp => 0.5}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

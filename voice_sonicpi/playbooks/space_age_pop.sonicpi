@@ -69,7 +69,7 @@ s_lead = gen_score("x..x..x..x..x..x", lead_data)
 # Long size (0.2) and low density (1) creates a slow, evolving background 
 # texture that sounds like a distant, exotic bird in a tropical lounge.
 s_grain = gen_score("x...............", [
-  {note: :d4, buffer: :misc_lori, pos: 0.3, density: 1, size: 0.2, amp: 0.4}
+  {note: :d4, buffer: :ambi_choir, pos: 0.3, density: 1, size: 0.2, amp: 0.4}
 ])
 
 # ==========================================================

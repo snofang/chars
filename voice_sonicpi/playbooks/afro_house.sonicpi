@@ -52,7 +52,7 @@ s_fm    = (ring {:note => :f5, :amp => 0.6, :depth => 2, :divisor => 3, :release
 
 # Distant, echoing vocal chop (Granular Synth)
 # Low density, long size = a smooth, ambient vocal smear.
-s_vocal = (ring nil, nil, nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

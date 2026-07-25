@@ -52,7 +52,7 @@ s_fm    = (ring nil, nil, nil, nil, {:note => :f5, :amp => 0.6, :divisor => 3, :
 
 # Repetitive, percussive "Festival" vocal chop (Granular Synth).
 # Hits in sync with the bassline. High density, small size = a sharp vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :misc_lori, :pos => 0.2, :density => 2, :size => 0.03, :amp => 0.6}, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.03, :amp => 0.6}, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -32,7 +32,7 @@ s_lead  = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :g5, :amp => 0
 
 # Dubbed-out, echoing vocal fragment (Granular Synth)
 # Low density, long size = a ghostly, drifting echo.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

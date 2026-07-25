@@ -58,7 +58,7 @@ s_fm    = (ring nil, nil, nil, {:note => :f5, :amp => 0.6, :divisor => 2, :depth
 # Pitched-down, demonic vocal grunt (Granular Synth).
 # Pitched DOWN to :f3. Long size (0.1) and low density (1) creates a 
 # slow, menacing grunt that anchors the heavy groove.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f3, :buffer => :misc_lori, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

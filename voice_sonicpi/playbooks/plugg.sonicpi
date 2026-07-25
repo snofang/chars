@@ -54,7 +54,7 @@ s_pad   = (ring {:note => :cs5, :amp => 0.5, :attack => 1.0, :release => 3.0}, n
 
 # Pitched-down, ambient vocal drone (Granular Synth).
 # Long size (0.1) and low density (1) creates a slow, haunting texture.
-s_vocal = (ring nil, nil, nil, nil, {:note => :cs4, :buffer => :misc_lori, :pos => 0.3, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.5, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :cs4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -52,7 +52,7 @@ s_fm    = (ring {:note => :e5, :amp => 0.6, :divisor => 4, :depth => 2, :release
 
 # Repetitive, chopped "bloghouse" vocal stutter (Granular Synth).
 # High density, tiny size = a sharp, percussive vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :e4, :buffer => :misc_lori, :pos => 0.1, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :g4, :buffer => :misc_lori, :pos => 0.3, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil)
+s_vocal = (ring nil, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil)
 
 # ==========================================================
 # 3. THE PLAYBOOK
