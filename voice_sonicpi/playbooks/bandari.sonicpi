@@ -1,0 +1,122 @@
+# ==========================================================
+# PLAYBOOK: SOUTHERN IRANIAN / BANDARI (KHALEEJI)
+# (Pioneered by traditional Bandari musicians and modern fusion artists)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose Southern Iranian Bandari.
+# We have explored Afrobeat and Bhangra, but Bandari is the sound of the 
+# Persian Gulf coast. It fuses traditional African and Arabic polyrhythms 
+# with Persian melodies. It relies on a driving, syncopated 6/8 rhythm 
+# mapped to a 16-step grid, a deep, walking acoustic bass, staccato 
+# horn/accordion stabs, and a piercing, swirling Ney (flute) or trumpet 
+# melody that feels like a hot, festive night on the coast.
+#
+# This playbook perfectly demonstrates how to map a 6/8 polyrhythm to a 
+# rigid 16-step grid. By using heavily syncopated, interlocking kick and 
+# snare patterns, and the D Hijaz scale (featuring an augmented 2nd), the 
+# engine creates a massive, highly energetic, and distinctly coastal atmosphere.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Hijaz - Festive, Syncopated, & Coastal)
+# ==========================================================
+
+# The "Bandari" Kick. 
+# A highly syncopated, 6/8-style gallop mapped to 16 steps. (4 x's, 4 elements)
+s_kick = gen_score("x..x...x.x..x...", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Crisp, organic snare/rimshot with heavy ghost notes. (5 x's, 5 elements)
+s_snare = gen_score("..x.x.....x.x.x.", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}
+])
+
+# Fast, rolling 16th shaker to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Walking" Bass (D Hijaz).
+# Plays a syncopated, melodic line. Mid cutoff (80) and short release (0.15) 
+# mimic a picked acoustic bass. (8 x's, 8 elements)
+bass_notes = [:d1, :a1, :d2, :c2, :bb1, :f2, :g1, :d1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 80, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Stark, "Horn/Accordion" Stabs (D Hijaz).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a warm, 
+# brassy staccato hit. (3 x's, 3 elements)
+s_chords = gen_score("..x.....x.x.....", [
+  {note: [:d3, :a3, :eb4], divisor: 2, depth: 3, release: 0.1, amp: 0.6},
+  {note: [:c3, :g3, :d4], divisor: 2, depth: 3, release: 0.1, amp: 0.6},
+  {note: [:d3, :a3, :eb4], divisor: 2, depth: 3, release: 0.1, amp: 0.6}
+])
+
+# Piercing, "Ney/Trumpet" Lead (D Hijaz).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
+# creates a soaring, swirling melody. (8 x's, 8 elements)
+lead_notes = [:d5, :eb5, :fs5, :g5, :a5, :g5, :fs5, :eb5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Zaar" / Ambient Chant Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched down.
+# Long size (0.2) and low density (1) creates a slow, evolving background texture. 
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :d3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.2, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Coast - Just the walking bass, horn stabs, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Gathering - Add the syncopated 6/8 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Celebration - The piercing Ney melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN POLYRHYTHMIC FUSION]
+# 
+# 1. The 6/8 Syncopation: Look at `s_kick` and `s_snare`. They completely 
+#    avoid landing on a standard 4/4 pulse. By hitting on syncopated, galloping 
+#    steps (0, 3, 7, 9, 12), the engine creates a lopsided, 6/8-style groove 
+#    that feels like a live percussionist playing a traditional Bandari drum. 
+#    The engine's strict master clock ensures this complex rhythm lands with 
+#    absolute precision.
+#
+# 2. The Hijaz Scale: Look at `s_bass`, `s_chords`, and `s_lead`. The harmony 
+#    uses D, Eb, F#, G, A, Bb, C. The augmented 2nd interval between Eb and F# 
+#    creates the exotic, "Middle Eastern" sound that defines the music of the 
+#    Persian Gulf. The engine's strict 16-step grid ensures this rapid, melodic 
+#    lead fires flawlessly over the complex rhythm section.
+#
+# 3. FM as a Horn Section: Look at `s_chords`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `3`, with a microscopic `release` (0.1). 
+#    This forces the FM synth to produce a warm, brassy, staccato "hit" that 
+#    perfectly mimics a live horn section or accordion locking in with the 
+#    syncopated bass.
+# ==========================================================

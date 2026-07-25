@@ -1,0 +1,113 @@
+# ==========================================================
+# PLAYBOOK: 80s CITY POP / JAPANESE BOOGIE
+# (Pioneered by Tatsuro Yamashita, Mariya Takeuchi, and Toshiki Kadomatsu)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s City Pop.
+# We have explored Synth-Funk and Sophisti-Pop, but City Pop is the sound 
+# of 80s Tokyo. It is famous for its pristine, high-end studio production, 
+# highly syncopated slap bass, warm, jazzy major 7th chords played on FM 
+# electric pianos (like the Yamaha DX7), and soaring, nostalgic melodies.
+#
+# This playbook perfectly demonstrates how to use the `:play_sub` synth 
+# to simulate a syncopated slap bass, and how to use the `:play_fm` synth 
+# with a high `divisor` to create the glassy, electric piano tone that 
+# defined the genre.
+# ==========================================================
+
+use_bpm 105
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Warm, Bouncy, & Pristine)
+# ==========================================================
+
+# Pristine, driving 4/4 LinnDrum kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Crisp, organic snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# "LinnDrum Swing" Hi-Hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Slap Bass" (D Major).
+# Plays continuous, syncopated 16th notes. High cutoff (110) and very short 
+# release (0.1) mimic an aggressive, picked/slapped electric bass. (16 x's, 16 elements)
+bass_notes = [:d2, :d2, :d3, :d2, :a2, :a2, :a3, :a2, 
+              :g2, :g2, :g3, :g2, :a2, :a2, :a3, :a2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Warm, "Electric Piano" Chords (Dmaj9 to Am9).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a bright, 
+# glassy, FM piano tone. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:d3, :f3, :a3, :e4], divisor: 3, depth: 2, release: 0.4, amp: 0.5},
+  {note: [:d3, :f3, :a3, :e4], divisor: 3, depth: 2, release: 0.4, amp: 0.5},
+  {note: [:a2, :c3, :e3, :b3], divisor: 3, depth: 2, release: 0.4, amp: 0.5},
+  {note: [:a2, :c3, :e3, :b3], divisor: 3, depth: 2, release: 0.4, amp: 0.5}
+])
+
+# Soaring, "Synth Sax" Lead (D Major Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.4) 
+# creates a smooth, soaring melody. (6 x's, 6 elements)
+lead_notes = [:d5, :f5, :a5, :g5, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Vocal Chops (Granular Synth).
+# High density, tiny size = a sharp, pristine vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :d4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Drive - Just the slap bass, electric piano, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Groove - Add the pristine LinnDrum beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The soaring synth sax melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S JAPANESE POP]
+# 
+# 1. FM as a DX7: Look at `s_chords`. The `:play_fm` synth is given a high 
+#    `divisor` (3) and a low `depth` (2). This harmonic ratio produces a 
+#    pristine, glassy, bell-like tone that perfectly mimics the legendary 
+#    Yamaha DX7 electric piano presets that defined 80s City Pop.
+#
+# 2. The Slap Bass Illusion: Look at `s_bass`. The `:play_sub` synth plays 
+#    continuous, syncopated 16th notes, alternating between the low octave 
+#    (:d2) and the high octave (:d3). By using a high `cutoff` (110) and a 
+#    very short `release` (0.1), the engine turns the detuned sawtooth into 
+#    a punchy, aggressive "thwack" that perfectly mimics a slapped electric 
+#    bass guitar driving the rhythm.
+#
+# 3. The Polished Swing: Look at `s_hats`. The hats play continuous 16th 
+#    notes, but the amplitudes alternate perfectly between 0.3 and 0.15. By 
+#    emphasizing the off-beats, the engine simulates the famous LinnDrum 
+#    swing quantize that gave 80s Japanese pop its bouncy, human feel.
+# ==========================================================
