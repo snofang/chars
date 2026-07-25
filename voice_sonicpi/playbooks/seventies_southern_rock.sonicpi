@@ -1,0 +1,130 @@
+# ==========================================================
+# PLAYBOOK: 70s SOUTHERN ROCK / COUNTRY ROCK
+# (Pioneered by Lynyrd Skynyrd, The Allman Brothers Band, and The Marshall Tucker Band)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Southern Rock.
+# We have explored Blues Rock and Outlaw Country, but Southern Rock is the 
+# sound of the American South’s wide-open highways. It fuses the heavy, 
+# driving energy of British blues-rock with the rootsy, storytelling feel 
+# of country music. It relies on a steady, driving 4/4 drum beat, a melodic, 
+# walking bass, clean, chiming guitar arpeggios, and soaring, dual lead 
+# guitar solos that feel like cruising down a dusty road with the windows down.
+#
+# This playbook perfectly demonstrates how to use the `:play_pluck` synth 
+# to simulate a clean, chiming country-rock guitar, and how to use the 
+# `:play_fm` synth to simulate a warm, Hammond B3 organ.
+# ==========================================================
+
+use_bpm 110
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Major - Bluesy, Driving, & Rootsy)
+# ==========================================================
+
+# The "Highway" Kick. 
+# A steady, driving rock beat with a syncopated extra hit. (5 x's, 5 elements)
+s_kick = gen_score("x...x...x.x.x...", [
+  :c4, :c4, :c4, {note: :c4, amp: 0.6}, :c4
+])
+
+# Heavy, dry snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Steady, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Walking" Bass (G Major).
+# Plays a melodic, root-fifth line. High cutoff (90) and short release (0.15) 
+# create a warm, punchy "thwack" that mimics a picked electric bass. (8 x's, 8 elements)
+bass_notes = [:g1, :d2, :g1, :d2, :c2, :g2, :c2, :g2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Clean, "Chiming" Guitar Arpeggio (G Major).
+# Uses :play_pluck. Plays continuous, rhythmic 16th notes to build the groove. 
+# (16 x's, 16 elements)
+guitar_notes = [:g3, :b3, :d4, :g4, :b3, :d4, :g4, :b3, 
+                :c4, :e4, :g4, :c5, :e4, :g4, :c5, :e4]
+guitar_data = guitar_notes.map { |n| {note: n, amp: 0.6, release: 0.2, coef: 0.6} }
+s_guitar = gen_score("x.x.x.x.x.x.x.x.", guitar_data)
+
+# Warm, "Hammond B3" Organ Stabs (Gmaj to Cmaj).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a warm, 
+# buzzy staccato hit that mimics a Hammond organ. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:g3, :b3, :d4], divisor: 2, depth: 3, release: 0.15, amp: 0.5},
+  {note: [:g3, :b3, :d4], divisor: 2, depth: 3, release: 0.15, amp: 0.5},
+  {note: [:c3, :e3, :g3], divisor: 2, depth: 3, release: 0.15, amp: 0.5},
+  {note: [:c3, :e3, :g3], divisor: 2, depth: 3, release: 0.15, amp: 0.5}
+])
+
+# Piercing, "Dual Lead Guitar" Solo (G Major Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.3) 
+# creates a soaring, echoing solo that mimics the legendary Allman Brothers 
+# dual guitar harmonies. (8 x's, 8 elements)
+lead_notes = [:g5, :a5, :b5, :d6, :c6, :b5, :a5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Whistle / Crowd" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.3) and low density (1) creates a warm, evolving background texture. 
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :g3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Highway - Just the driving bass, chiming guitar, and organ (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4], [:play_fm, s_chords, 4], 
+    [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Cruise - Add the steady, driving drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_fm, s_chords, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The piercing dual lead guitar solo drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_fm, s_chords, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ROOTS-ROCK GROOVE]
+# 
+# 1. The Walking Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a melodic, root-fifth line. By using a 
+#    high `cutoff` (90) and a short `release` (0.15), the engine turns the 
+#    detuned sawtooth into a warm, punchy "thwack" that perfectly mimics a 
+#    picked electric bass guitar locking in with the kick drum.
+#
+# 2. FM as a Hammond B3: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and a `depth` of `3`, with a short `release` (0.15). 
+#    This forces the FM synth to produce a warm, buzzy, staccato "hit" that 
+#    perfectly mimics a Hammond B3 organ locking in with the rhythm section.
+#
+# 3. The Dual Lead Solo: The `s_lead` sequence uses the Prophet synth with 
+#    a high `cutoff` (110) and a long `release` (0.3). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a soaring, 
+#    cascading guitar solo that feels like the legendary Allman Brothers 
+#    dual guitar harmonies, perfectly anchoring the track's driving, 
+#    bluesy atmosphere.
+# ==========================================================

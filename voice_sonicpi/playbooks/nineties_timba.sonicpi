@@ -1,0 +1,116 @@
+# ==========================================================
+# PLAYBOOK: 90s TIMBA / CUBAN FUNK
+# (Pioneered by Los Van Van, Irakere, and NG La Banda)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Timba.
+# We have explored Salsa and Merengue, but Timba is the sound of modern Cuba. 
+# It is a highly aggressive, virtuosic fusion of traditional Afro-Cuban rhythms, 
+# jazz harmony, funk bass, and synthesizers. It relies on a blistering 100 BPM 
+# groove, a deep, round bassline, syncopated piano "montunos," and a complex, 
+# interlocking drum pattern (combining the kick, snare, and hats into a 
+# polyrhythmic web).
+#
+# This playbook perfectly demonstrates how to map a highly syncopated, 
+# polyrhythmic drum grid. By using the `:play_fm` synth for both the brass 
+# stabs and the piercing synth flute, the engine creates a massive, chaotic, 
+# and deeply infectious Cuban dance atmosphere.
+# ==========================================================
+
+use_bpm 100
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Syncopated, Aggressive, & Funky)
+# ==========================================================
+
+# The "Timba" Kick. 
+# A highly syncopated, bouncy march. (5 x's, 5 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}, :c4
+])
+
+# Crisp, organic snare/rimshot with heavy ghost notes. (5 x's, 5 elements)
+s_snare = gen_score("..x.x.....x.x.x.", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}
+])
+
+# Fast, rolling 16th shaker to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# Deep, round sub-bass (D Minor).
+# Plays a syncopated, melodic line. Low cutoff (60) and medium release (0.2) 
+# to create a warm, bouncy undercurrent. (8 x's, 8 elements)
+bass_notes = [:d1, :d1, :a1, :d1, :c2, :c2, :bb1, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 60, release: 0.2, amp: 1.2} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Stark, "Horn Section" Stabs (Dm to Gm).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a warm, 
+# brassy staccato hit that mimics a live horn section. (4 x's, 4 elements)
+s_chords = gen_score("..x.....x.x.....", [
+  {note: [:d3, :f3, :a3], divisor: 2, depth: 3, release: 0.1, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.1, amp: 0.6},
+  {note: [:d3, :f3, :a3], divisor: 2, depth: 3, release: 0.1, amp: 0.6},
+  {note: [:a2, :c3, :e3], divisor: 2, depth: 3, release: 0.1, amp: 0.6}
+])
+
+# Piercing, "Synth Flute" Lead (D Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
+# creates a soaring, echoing melody that cuts through the heavy mix. (8 x's, 8 elements)
+lead_notes = [:d5, :f5, :a5, :d6, :c6, :a5, :g5, :f5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Coro" Vocal Chant (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# High density, tiny size = a sharp, pristine vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :d4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Descarga - Just the bass, horn stabs, and flute (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_lead, s_lead, 4] ],
+  
+  # Scene 2: The Groove - Add the syncopated drums and vocal chant (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_lead, s_lead, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN AFRO-CUBAN FUNK]
+# 
+# 1. The Polyrhythmic Grid: Look at `s_kick`, `s_snare`, and `s_hats`. They are 
+#    densely packed and completely avoid landing on a standard 4/4 pulse. By 
+#    hitting on syncopated, interlocking steps, the engine creates a lopsided, 
+#    "drunken" groove that feels like a live percussion ensemble playing a 
+#    traditional Cuban rhythm. The engine's strict master clock ensures this 
+#    complex rhythm lands with absolute precision.
+#
+# 2. The Timba Bass: Look at `s_bass`. The `:play_sub` synth plays a syncopated, 
+#    melodic line. By using a very low `cutoff` (60) and a short `release` (0.2), 
+#    the engine creates a deep, round, and warm low-end that weaves perfectly 
+#    between the kicks, carrying the melodic progression.
+#
+# 3. FM as a Horn Section: Look at `s_chords`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `3`, with a microscopic `release` (0.1). 
+#    This forces the FM synth to produce a warm, brassy, staccato "hit" that 
+#    perfectly mimics a live horn section locking in with the rhythm section.
+# ==========================================================

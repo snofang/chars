@@ -1,0 +1,132 @@
+# ==========================================================
+# PLAYBOOK: 80s LOVERS ROCK / ROMANTIC REGGAE
+# (Pioneered by Janet Kay, Louisa Mark, and Dennis Brown)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Lovers Rock.
+# We have explored 70s Roots Dub and 80s Digital Dancehall, but Lovers Rock 
+# is the sound of romantic, smooth UK reggae. It fuses the heavy, deep basslines 
+# of roots reggae with lush, soulful R&B melodies and a slower, more relaxed 
+# groove. It relies on the classic "One-Drop" rhythm (kick and snare on beat 3), 
+# a deep, round melodic bass, a clean, off-beat "skank" guitar, and a soaring, 
+# echoing vocal or guitar melody that feels like a warm, romantic summer night.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to create 
+# immense space and a relaxed groove. By routing the `:play_lead` synth through 
+# the global tape echo bus, the sparse notes cascade across the empty grid, 
+# creating a deeply soulful, nostalgic atmosphere.
+# ==========================================================
+
+use_bpm 78
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Smooth, Deep, & Romantic)
+# ==========================================================
+
+# The "One-Drop" Kick. 
+# Hits strictly on beat 3 (step 8) to create the classic reggae groove. (1 x, 1 element)
+s_kick = gen_score("........x.......", [:c4])
+
+# The "One-Drop" Snare. 
+# Hits strictly on beat 3 (step 8) in sync with the kick. (1 x, 1 element)
+s_snare = gen_score("........x.......", [:c4])
+
+# Closed hats strictly on the off-beats (the "and" of each beat). (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
+
+# Deep, massive "Round" Bass (A Minor).
+# Plays a slow, melodic line. Very low cutoff (50) and massive release (2.0) 
+# create a heavy, continuous, warm rumble. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :a1, release: 2.0, cutoff: 50, amp: 1.2}, 
+  {note: :e1, release: 2.0, cutoff: 50, amp: 1.0}
+])
+
+# The "Off-Beat Skank" Guitar (Am to Dm).
+# Uses :play_pluck. Hits strictly on the off-beats (steps 2, 6, 10, 14) 
+# to mimic a staccato rhythm guitar. Low coef (0.3) for a sharp "chuka". 
+# (4 x's, 4 elements)
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:a3, :e4], amp: 0.5, release: 0.08, coef: 0.3}, 
+  {note: [:a3, :e4], amp: 0.5, release: 0.08, coef: 0.3}, 
+  {note: [:d3, :a3], amp: 0.5, release: 0.08, coef: 0.3}, 
+  {note: [:d3, :a3], amp: 0.5, release: 0.08, coef: 0.3}
+])
+
+# Lush, "String Synth" Chords (Am9 to Dm9).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4, :g4], cutoff: 70, attack: 1.0, release: 3.0, amp: 0.4},
+  {note: [:d3, :f3, :a3, :c4], cutoff: 70, attack: 1.0, release: 3.0, amp: 0.4}
+])
+
+# Soaring, "Soulful Guitar" Lead (A Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.8) 
+# and massive gaps (`nil`) create a soaring, echoing melody. (6 x's, 6 elements)
+lead_notes = [:a5, :c6, :e6, :d6, :c6, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 90, release: 0.8} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.3) and low density (1) creates a lush, background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the heavy bass, skank guitar, and strings (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4], [:play_chords, s_chords, 4], 
+    [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the One-Drop drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_chords, s_chords, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The soaring soulful guitar lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_chords, s_chords, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ROMANTIC REGGAE]
+# 
+# 1. The One-Drop Rhythm: Look at `s_kick` and `s_snare`. They both hit 
+#    strictly on step 8 (beat 3). By leaving beats 1, 2, and 4 completely 
+#    empty, the engine creates a massive, cavernous hole in the rhythm. This 
+#    is the absolute genetic code of Reggae, allowing the deep bass and the 
+#    off-beat guitar to fill the space.
+#
+# 2. Subterranean Weight: Look at `s_bass`. The `:play_sub` synth is given 
+#    a very low `cutoff` (50) and a massive `release` (2.0). This filters 
+#    out all the harsh high frequencies, leaving only a deep, round, warm 
+#    rumble that rings out for two whole beats, providing the immense, 
+#    suffocating weight required for Lovers Rock.
+#
+# 3. Echoing Space: The `s_lead` sequence plays a simple A minor pentatonic 
+#    melody, but leaves massive gaps (`nil`) between the notes. Because the 
+#    engine routes the `:play_lead` synth through the global tape echo bus, 
+#    those empty spaces are filled by delay tails, creating a cascading, 
+#    soulful soundscape that perfectly anchors the track's romantic, late-night 
+#    atmosphere.
+# ==========================================================

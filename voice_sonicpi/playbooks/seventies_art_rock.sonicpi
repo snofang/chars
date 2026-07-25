@@ -1,0 +1,136 @@
+# ==========================================================
+# PLAYBOOK: 70s ART ROCK / NEW WAVE FUNK
+# (Pioneered by Talking Heads, David Byrne, and Brian Eno)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Art Rock.
+# We have explored No Wave and Post-Punk, but Art Rock (specifically the 
+# Talking Heads "Remain in Light" era) is the sound of pure, anxious funk. 
+# It fuses the complex, interlocking polyrhythms of Afrobeat with the quirky, 
+# jittery energy of New York punk. It relies on a driving, syncopated drum 
+# groove, a deep, melodic "funky" bass, clean, staccato "chuka" guitar stabs, 
+# and a piercing, repetitive, chanting synth or vocal melody.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to create 
+# a highly complex, interlocking, "polyrhythmic" groove. By using the `:play_fm` 
+# synth for clean, staccato guitar stabs and routing a quirky, repetitive lead 
+# through the global tape echo, the engine creates a massive, intellectual, and 
+# deeply danceable atmosphere.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Jittery, Funky, & Interlocking)
+# ==========================================================
+
+# The "Art Rock" Kick. 
+# A syncopated, driving march. (4 x's, 4 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Crisp, organic snare on beats 2 and 4, with a syncopated ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Fast, driving 16th shaker to add to the polyrhythmic web. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Funky" Bass (A Minor).
+# Plays a syncopated, melodic line. Low cutoff (70) and medium release (0.2) 
+# to create a warm, round undercurrent. (4 x's, 4 elements)
+s_bass = gen_score("x.....x.x.....x.", [
+  {note: :a1, release: 0.2, cutoff: 70, amp: 1.2}, 
+  {note: :e1, release: 0.2, cutoff: 70, amp: 1.0}, 
+  {note: :c2, release: 0.2, cutoff: 70, amp: 1.0}, 
+  {note: :d2, release: 0.2, cutoff: 70, amp: 1.0}
+])
+
+# Clean, "Staccato" Guitar Stabs (Am to Dm).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# plucky, staccato hit. (3 x's, 3 elements)
+s_chords = gen_score("..x.....x.x.....", [
+  {note: [:a3, :e4], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:a3, :e4], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:d3, :a3], divisor: 3, depth: 2, release: 0.08, amp: 0.6}
+])
+
+# Lush, "String Synth" Pad (Am to G).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (2 x's, 2 elements)
+s_pad = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4], cutoff: 70, attack: 1.0, release: 3.0, amp: 0.4},
+  {note: [:g3, :bb3, :d4], cutoff: 70, attack: 1.0, release: 3.0, amp: 0.4}
+])
+
+# Quirky, "Repetitive" Synth Lead (A Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The short release (0.1) 
+# and rapid, 8th-note melody create a quirky, chanting, "talking" hook. 
+# (6 x's, 6 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :a5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Chant" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.3) and low density (1) creates a slow, evolving background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the funky bass, guitar stabs, and pad (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_chords, s_pad, 4], 
+    [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Vibe - Add the syncopated, polyrhythmic drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_chords, s_pad, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Hook - The quirky, repetitive synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_chords, s_pad, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ART-ROCK FUNK]
+# 
+# 1. The Interlocking Polyrhythm: Look at `s_kick`, `s_snare`, and `s_hats`. 
+#    They are densely packed and completely avoid landing on a standard 4/4 
+#    pulse. By hitting on syncopated, interlocking steps, the engine creates a 
+#    lopsided, "drunken" groove that feels like a live band playing a complex 
+#    Afrobeat rhythm. The engine's strict master clock ensures this complex 
+#    rhythm lands with absolute precision.
+#
+# 2. FM as a Clean Guitar: Look at `s_chords`. The `:play_fm` synth is given 
+#    a high `divisor` (3) and a low `depth` (2), with a microscopic `release` 
+#    (0.08). This forces the FM synth to produce a clean, plucky, staccato "hit" 
+#    that perfectly mimics the clean, rhythmic guitar stabs used by bands like 
+#    Talking Heads.
+#
+# 3. The Quirky Chant: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (100) and a short `release` (0.1). Because it's routed 
+#    through the global tape echo bus, the rapid, 8th-note notes smear into a 
+#    quirky, repetitive, "talking" hook that perfectly anchors the track's 
+#    intellectual, danceable atmosphere.
+# ==========================================================

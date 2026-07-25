@@ -1,0 +1,122 @@
+# ==========================================================
+# PLAYBOOK: 70s PHILLY DISCO / SOUL ORCHESTRAL
+# (Pioneered by MFSB, The Trammps, and Salsoul Orchestra)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Philly Disco.
+# We have explored French House and Eurodance, but Philly Disco is the 
+# absolute genesis of the 70s club sound. It fuses the lush, cinematic 
+# arrangements of Philadelphia soul with a relentless, driving 4/4 dance 
+# beat. It relies on a syncopated, walking "disco bassline", massive, 
+# sweeping string section chords, and a shimmering, echoing electric piano 
+# that feels like stepping onto a neon-lit dancefloor in 1975.
+#
+# This playbook perfectly demonstrates how to use the `:play_sub` synth 
+# to simulate a melodic, syncopated disco bass, and how to use massive 
+# `attack`/`release` Hashes on the `:play_chords` synth to simulate a 
+# lush, orchestral string section.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Lush, Driving, & Orchestral)
+# ==========================================================
+
+# Relentless, driving 4/4 kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic "Clave" clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Swung, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Walking Disco" Bass (F Minor).
+# Plays a syncopated, melodic line. High cutoff (90) and short release (0.15) 
+# create a punchy, bouncy "thwack" that locks with the kick. (6 x's, 6 elements)
+s_bass = gen_score("x..x..x..x..x..x.", [
+  {note: :f1, release: 0.15, cutoff: 90, amp: 1.0}, 
+  {note: :f1, release: 0.15, cutoff: 90, amp: 0.8}, 
+  {note: :c2, release: 0.15, cutoff: 90, amp: 1.0}, 
+  {note: :f1, release: 0.15, cutoff: 90, amp: 0.8}, 
+  {note: :ab1, release: 0.15, cutoff: 90, amp: 1.0}, 
+  {note: :f1, release: 0.15, cutoff: 90, amp: 0.8}
+])
+
+# Lush, "String Section" Chords (Fm9 to Abm9).
+# Hit strictly on the off-beats. The slow 0.2-beat attack and massive 1.0-beat 
+# release blur the chords together into a continuous, cinematic wave. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:f3, :ab3, :c4, :eb4], cutoff: 80, attack: 0.2, release: 1.0, amp: 0.5},
+  {note: [:f3, :ab3, :c4, :eb4], cutoff: 80, attack: 0.2, release: 1.0, amp: 0.5},
+  {note: [:ab2, :cb3, :eb3, :gb3], cutoff: 80, attack: 0.2, release: 1.0, amp: 0.5},
+  {note: [:ab2, :cb3, :eb3, :gb3], cutoff: 80, attack: 0.2, release: 1.0, amp: 0.5}
+])
+
+# Shimmering, "Electric Piano" Lead (F Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.4) 
+# creates a soaring, echoing melody. (6 x's, 6 elements)
+lead_notes = [:f5, :ab5, :c6, :eb6, :c6, :ab5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Crowd Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.3) and low density (1) creates a lush, background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :f3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Ballroom - Just the walking bass, sweeping strings, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the driving 4/4 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The shimmering electric piano melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ORCHESTRAL DISCO]
+# 
+# 1. The Walking Disco Bass: Look at `s_bass`. The `:play_sub` synth plays 
+#    a syncopated, melodic line, weaving between the kicks. By using a high 
+#    `cutoff` (90) and a short `release` (0.15), the engine turns the detuned 
+#    sawtooth into a punchy, bouncy "thwack" that perfectly mimics the legendary 
+#    disco basslines of players like Bernard Edwards.
+#
+# 2. The String Section Swell: Look at `s_chords`. The Hashes specify an 
+#    `attack` of `0.2` and a `release` of `1.0`. Because the engine reads 
+#    these Hashes, the chords don't just hit; they slowly swell into the mix 
+#    and fade away, creating a continuous, blurred wave of warm harmony that 
+#    perfectly mimics the lush, cinematic string arrangements of MFSB and the 
+#    Salsoul Orchestra.
+#
+# 3. The 16th-Note Drive: 70s Disco relies on a stark, driving rhythm section. 
+#    The `s_hats` play continuous 16th notes with alternating amplitudes. The 
+#    engine's strict master clock ensures this rigid, mechanical momentum locks 
+#    perfectly with the syncopated bassline, creating a massive, forward-driving 
+#    dancefloor groove.
+# ==========================================================
