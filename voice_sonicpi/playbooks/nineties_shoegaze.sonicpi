@@ -1,0 +1,123 @@
+# ==========================================================
+# PLAYBOOK: 90s SHOEGAZE / DREAM POP
+# (Pioneered by My Bloody Valentine, Slowdive, and Ride)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Shoegaze.
+# We have explored Post-Punk and Psychedelic Rock, but Shoegaze is the 
+# sound of pure, distorted euphoria. It fuses the loud, driving drums 
+# of 90s alt-rock with massive, sustained "wall of sound" guitars, 
+# and ethereal, echoing vocals that feel like floating in a warm, 
+# distorted haze.
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth 
+# with an extreme `depth` and `release` to simulate a massive, sustained 
+# "wall of sound" guitar, and how to use massive `attack`/`release` 
+# Hashes on the `:play_chords` synth to create an ethereal, cinematic 
+# atmosphere.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C# Minor - Loud, Ethereal, & Driving)
+# ==========================================================
+
+# The "Shoegaze" Kick. 
+# A driving, syncopated rock march. (5 x's, 5 elements)
+s_kick = gen_score("x...x...x.x.x...", [
+  :c4, :c4, :c4, {note: :c4, amp: 0.6}, :c4
+])
+
+# Heavy, echoing snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 1.0}
+])
+
+# Rigid, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Wall of Sound" Guitars (C#m to A to E to B).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, distorted, sustained wave. Hit on the downbeats. (4 x's, 4 elements)
+s_chords = gen_score("x.......x.x.x.x.", [
+  {note: [:cs3, :e3, :gs3], divisor: 2, depth: 6, attack: 0.5, release: 3.0, amp: 0.7},
+  {note: [:a2, :cs3, :e3], divisor: 2, depth: 6, attack: 0.5, release: 3.0, amp: 0.7},
+  {note: [:e3, :gs3, :b3], divisor: 2, depth: 6, attack: 0.5, release: 3.0, amp: 0.7},
+  {note: [:b2, :ds3, :fs3], divisor: 2, depth: 6, attack: 0.5, release: 3.0, amp: 0.7}
+])
+
+# Deep, driving bass (C# Minor).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive "thwack" that mimics a picked electric bass. (8 x's, 8 elements)
+bass_notes = [:cs1, :cs1, :cs1, :cs1, :a1, :a1, :b1, :b1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Piercing, "Harmonics" Lead (C# Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.8) 
+# creates a soaring, echoing melody that floats over the wall of sound. (6 x's, 6 elements)
+lead_notes = [:cs5, :e5, :gs5, :fs5, :e5, :cs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 90, release: 0.8} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.5s) and low density (1) creates a slow, evolving, ethereal texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :cs4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.5, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Haze - Just the wall of sound guitars, bass, and drone (4 bars)
+  [ [:play_fm, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drive - Add the driving, syncopated drums (8 bars)
+  [ [:play_fm, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Peak - The piercing harmonics lead drops (8 bars)
+  [ [:play_fm, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DISTORTED EUPHORIA]
+# 
+# 1. The "Wall of Sound" Guitars: Look at `s_chords`. The `:play_fm` synth 
+#    is given a `divisor` of `2`, an extreme `depth` of `6`, a slow `attack` 
+#    (0.5), and a massive `release` (3.0). This forces the FM synth to produce 
+#    a harsh, distorted, sustained wave that blurs the chords together into a 
+#    massive, continuous "wall of sound" that perfectly mimics the legendary 
+#    guitar tones of My Bloody Valentine.
+#
+# 2. The Ethereal Drone: Look at `s_grain`. The granular engine is given a 
+#    massive `size` of `0.5` (500 milliseconds) and a `density` of `1`. By 
+#    using sparse, long grains, the engine time-stretches the `:ambi_choir` 
+#    sample into a slow, formless, ethereal drone that floats perfectly over 
+#    the heavy, distorted guitars.
+#
+# 3. The Echoing Lead: The `s_lead` sequence uses the Prophet synth with a 
+#    low `cutoff` (90) and a long `release` (0.8). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a soaring, 
+#    echoing melody that mimics the high-pitched, chiming guitar harmonics 
+#    used by bands like Slowdive and Ride, perfectly anchoring the track's 
+#    ethereal, dream-pop atmosphere.
+# ==========================================================

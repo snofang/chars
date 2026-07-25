@@ -1,0 +1,142 @@
+# ==========================================================
+# PLAYBOOK: 90s AXÉ / SAMBA-REGGAE (BRAZILIAN CARNIVAL)
+# (Pioneered by Olodum, Daniela Mercury, and Carlinhos Brown)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Axé / Samba-Reggae.
+# We have explored Samba Rock and Soca, but Samba-Reggae is the sound of 
+# 90s Bahia (Salvador, Brazil). It fuses the massive, polyrhythmic drumming 
+# of Afro-Brazilian blocos with the driving, off-beat "telecoteco" guitar 
+# and bright, brassy synth stabs. It relies on a heavy, syncopated 3-3-2 
+# rhythm, a deep, round bass, and a piercing, high-pitched "brass" melody 
+# that feels like a massive, sweaty street carnival.
+#
+# This playbook perfectly demonstrates how to map a 3-3-2 polyrhythm to 
+# the 16-step grid. By using the `:play_fm` synth for bright brass stabs 
+# and routing a piercing lead through the global tape echo, the engine 
+# creates a massive, joyful, and deeply infectious Carnival atmosphere.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Festive, Syncopated, & Massive)
+# ==========================================================
+
+# The "Bloco" Kick. 
+# A heavy, 3-3-2 syncopated march. (4 x's, 4 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Crisp, organic snare/rimshot on beats 2 and 4, with heavy ghost notes. 
+# (5 x's, 5 elements)
+s_snare = gen_score("..x.x.....x.x.x.", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}
+])
+
+# Fast, rolling 16th shaker to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# Deep, round sub-bass (D Minor).
+# Plays a driving, syncopated line. Low cutoff (60) and short release (0.2) 
+# to create a warm, percussive undercurrent. (6 x's, 6 elements)
+s_bass = gen_score("x..x.x..x..x.x..", [
+  {note: :d1, release: 0.2, cutoff: 60, amp: 1.2}, 
+  {note: :d1, release: 0.2, cutoff: 60, amp: 1.0}, 
+  {note: :a1, release: 0.2, cutoff: 60, amp: 1.0}, 
+  {note: :d1, release: 0.2, cutoff: 60, amp: 1.2}, 
+  {note: :c2, release: 0.2, cutoff: 60, amp: 1.0}, 
+  {note: :d1, release: 0.2, cutoff: 60, amp: 1.0}
+])
+
+# The "Telecoteco" Guitar (D Minor).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# plucky, staccato hit. Plays continuous, off-beat 16th notes. (8 x's, 8 elements)
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:d3, :a3], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:d3, :a3], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:d3, :a3], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:d3, :a3], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:c3, :g3], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:c3, :g3], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:c3, :g3], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:c3, :g3], divisor: 3, depth: 2, release: 0.08, amp: 0.6}
+])
+
+# Stark, "Brass Section" Stabs (Dm to C).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a warm, 
+# brassy staccato hit. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :f3, :a3], divisor: 2, depth: 3, release: 0.3, amp: 0.5},
+  {note: [:c3, :e3, :g3], divisor: 2, depth: 3, release: 0.3, amp: 0.5}
+])
+
+# Piercing, "Trumpet" Lead (D Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.3) 
+# creates a soaring, echoing melody that cuts through the heavy mix. (6 x's, 6 elements)
+lead_notes = [:d5, :f5, :a5, :g5, :f5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Crowd Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.3) and low density (1) creates a lush, background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :d3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Streets - Just the sub-bass, telecoteco guitar, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_guitar, 4], [:play_grain, s_grain, 4], 
+    [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Parade - Add the syncopated 3-3-2 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_fm, s_chords, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Celebration - The piercing trumpet melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_fm, s_chords, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CARNIVAL ENERGY]
+# 
+# 1. The 3-3-2 Polyrhythm: Look at `s_kick` and `s_snare`. They are densely 
+#    packed and completely avoid landing on a standard 4/4 pulse. By hitting 
+#    on syncopated, interlocking steps (0, 3, 6, 8, 11), the engine creates a 
+#    lopsided, "drunken" groove that feels like a massive, live Afro-Brazilian 
+#    drum line (Bloco Afros). The engine's strict master clock ensures this 
+#    complex rhythm lands with absolute precision.
+#
+# 2. The "Telecoteco" Guitar: Look at `s_guitar`. The `:play_fm` synth is 
+#    given a high `divisor` (3) and a low `depth` (2), with a microscopic 
+#    `release` (0.08). This forces the FM synth to produce a clean, plucky, 
+#    staccato "hit" that plays continuous, off-beat 16th notes, perfectly 
+#    mimicking the legendary "telecoteco" guitar style of Axé music.
+#
+# 3. FM as a Brass Section: Look at `s_chords` and `s_lead`. The `:play_fm` 
+#    and `:play_lead` synths are given a mid `depth` (3) and a high `cutoff` 
+#    (110). This harmonic ratio produces a warm, brassy, saw-like wave that 
+#    cuts through the heavy mix, perfectly mimicking the massive, soaring 
+#    trumpet and brass sections of Brazilian Carnival.
+# ==========================================================

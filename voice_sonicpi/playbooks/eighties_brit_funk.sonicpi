@@ -1,0 +1,130 @@
+# ==========================================================
+# PLAYBOOK: 80s BRIT FUNK / UK BOOGIE
+# (Pioneered by Freeez, Imagination, and Shakatak)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Brit Funk.
+# We have explored Minneapolis Funk and City Pop, but Brit Funk is the sound 
+# of the 80s UK club scene. It fuses the heavy, swinging grooves of American 
+# funk with crisp, robotic LinnDrum programming, deep, driving "synth bass," 
+# and lush, jazzy electric piano chords. It relies on a highly syncopated, 
+# "punk-funk" drum groove, a relentless 16th-note slap bass, and a piercing, 
+# echoing brass or synth melody that feels like a neon-lit London dancefloor.
+#
+# This playbook perfectly demonstrates how to simulate the famous "LinnDrum 
+# Swing" on a rigid 16-step sequencer. By leaving specific gaps in the hi-hats 
+# and pushing the kick late, the engine creates a bouncy, staccato, and deeply 
+# funky atmosphere that defined the Brit Funk era.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Bouncy, Jazzy, & Driving)
+# ==========================================================
+
+# The "Brit Funk" Kick. 
+# Highly syncopated and "laid back". Hits on step 0, the 'a' of 1 (step 3), 
+# the 'and' of 2 (step 6), and beat 3 (step 8).
+# (4 x's, 4 elements)
+s_kick = gen_score("x..x..x.x.......", [
+  :c4, {note: :c4, amp: 0.8}, :c4, :c4
+])
+
+# Crisp, LinnDrum snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# The "LinnDrum Swing" Hi-Hats.
+# Notice the gaps (nil) and alternating amplitudes to simulate the 54% swing.
+# (8 x's, 8 elements)
+s_hats = gen_score("x..x.x.x.x.x.x.x", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# The "Slap" Synth Bass (F# Minor).
+# Plays continuous 16th notes, alternating octaves. High cutoff (100) and 
+# very short release (0.1) create a punchy, aggressive "thwack". 
+# (16 x's, 16 elements)
+bass_notes = [:fs1, :fs1, :fs2, :fs1, :fs1, :fs1, :fs2, :fs1, 
+              :a1, :a1, :a2, :a1, :a1, :a1, :a2, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Lush, "Electric Piano" Stabs (F#m9 to Am9).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a bright, 
+# glassy, FM piano tone. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:fs3, :a3, :c4, :e4], divisor: 3, depth: 2, release: 0.15, amp: 0.5},
+  {note: [:fs3, :a3, :c4, :e4], divisor: 3, depth: 2, release: 0.15, amp: 0.5},
+  {note: [:a2, :c3, :e3, :g3], divisor: 3, depth: 2, release: 0.15, amp: 0.5},
+  {note: [:a2, :c3, :e3, :g3], divisor: 3, depth: 2, release: 0.15, amp: 0.5}
+])
+
+# Piercing, "Synth Brass / Sax" Lead (F# Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.3) 
+# creates a soaring, echoing melody that cuts through the heavy mix. (6 x's, 6 elements)
+lead_notes = [:fs5, :a5, :c6, :eb6, :c6, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Vocal Chops (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# High density, tiny size = a sharp, pristine vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :fs4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the LinnDrum beat, slap bass, and EP stabs (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Vibe - Add the vocal chops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The piercing synth brass melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN UK BOOGIE]
+# 
+# 1. The LinnDrum Swing: Look at `s_hats` and `s_kick`. The kick avoids a 
+#    standard 4/4 pulse, hitting on a syncopated, bouncy rhythm (steps 0, 3, 6, 8). 
+#    The hats leave gaps (`nil`) on the downbeats and have alternating amplitudes. 
+#    By emphasizing the off-beats, the engine simulates the famous LinnDrum 
+#    swing quantize that gave 80s Brit Funk its staccato, "punk-funk" feel.
+#
+# 2. The Slap Synth Bass: Look at `s_bass`. The `:play_sub` synth plays 
+#    continuous 16th notes, alternating between the low octave (:fs1) and the 
+#    high octave (:fs2). By using a high `cutoff` (100) and a very short 
+#    `release` (0.1), the engine turns the detuned sawtooth into a punchy, 
+#    aggressive "thwack" that perfectly mimics the legendary slap basslines of 
+#    Freeez and Imagination.
+#
+# 3. FM as an Electric Piano: Look at `s_chords`. The `:play_fm` synth is 
+#    given a high `divisor` (3) and a low `depth` (2), with a short `release` 
+#    (0.15). This forces the FM synth to produce a bright, glassy, staccato 
+#    "hit" that perfectly mimics the Fender Rhodes and Yamaha DX7 electric 
+#    piano stabs that defined the Brit Funk sound.
+# ==========================================================

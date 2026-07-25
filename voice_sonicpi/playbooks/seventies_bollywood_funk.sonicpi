@@ -1,0 +1,132 @@
+# ==========================================================
+# PLAYBOOK: 70s BOLLYWOOD FUNK / HINDI DISCO
+# (Pioneered by R.D. Burman, Bappi Lahiri, and Kishore Kumar)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Bollywood Funk.
+# We have explored City Pop and Afrobeat, but Bollywood Funk is the sound 
+# of 70s Indian cinema. It fuses the heavy, driving grooves of American 
+# funk and disco with traditional Indian melodies, lush string sections, 
+# and fiery, echoing "sitar" or "flute" solos. It relies on a driving, 
+# syncopated drum beat, a deep, round "dholak" style bass, stark brass 
+# stabs, and a high-pitched, exotic synth lead that feels like a high-speed 
+# chase through the streets of Mumbai.
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth 
+# to simulate a piercing, echoing sitar, and how to use the `:play_sub` 
+# synth to create a deep, driving, world-funk bassline.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Phrygian Dominant - Exotic, Funky, & Cinematic)
+# ==========================================================
+
+# The "Bollywood" Kick. 
+# A driving, syncopated funk march. (4 x's, 4 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Crisp, organic snare on beats 2 and 4, with a syncopated ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Fast, rolling 16th shaker to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Dholak" Bass (A Phrygian Dominant).
+# Plays a driving, syncopated line. Mid cutoff (70) and short release (0.15) 
+# create a warm, round, percussive undercurrent. (8 x's, 8 elements)
+bass_notes = [:a1, :a1, :c2, :a1, :g1, :g1, :f1, :g1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 70, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Stark, "Brass Section" Stabs (Am to G).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a warm, 
+# brassy staccato hit that mimics a live Bollywood horn section. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 3, release: 0.1, amp: 0.6},
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 3, release: 0.1, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.1, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.1, amp: 0.6}
+])
+
+# Clean, "Chiming" Guitar Arpeggio (A Phrygian Dominant).
+# Uses :play_pluck. Plays continuous, rhythmic 16th notes to build the groove. 
+# (16 x's, 16 elements)
+guitar_notes = [:a3, :e4, :a4, :c5, :e4, :a4, :c5, :e5, 
+                :g3, :d4, :g4, :bb4, :d4, :g4, :bb4, :d5]
+guitar_data = guitar_notes.map { |n| {note: n, amp: 0.6, release: 0.15, coef: 0.5} }
+s_guitar = gen_score("x.x.x.x.x.x.x.x.", guitar_data)
+
+# Piercing, "Sitar" Lead (A Phrygian Dominant).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a sharp, 
+# buzzy, exotic tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:a5, :c6, :e6, :d6, :c6, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 2, depth: 4, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Aha!" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.3) and low density (1) creates a lush, background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Streets - Just the dholak bass, brass stabs, and guitar (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_pluck, s_guitar, 4], 
+    [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Chase - Add the driving, syncopated drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_pluck, s_guitar, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Climax - The piercing sitar melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_pluck, s_guitar, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC FUNK]
+# 
+# 1. The Phrygian Dominant Scale: Look at `s_bass`, `s_chords`, and `s_lead`. 
+#    The harmony uses A, Bb, C, D, E, F, G. The augmented 2nd interval 
+#    between Bb and C creates the exotic, "Indian" sound that defines the 
+#    genre. The engine's strict 16-step grid ensures this rapid, melodic lead 
+#    fires flawlessly over the driving rhythm section.
+#
+# 2. FM as a Sitar: The `s_lead` sequence uses `divisor: 2` and `depth: 4`. 
+#    This harmonic ratio produces a sharp, buzzy, saw-like wave that perfectly 
+#    mimics the piercing, echoing tones of an electric sitar. Because it's 
+#    routed through the global tape echo bus, the sparse notes smear into a 
+#    cascading, cinematic melody that perfectly anchors the track's high-energy, 
+#    Bollywood atmosphere.
+#
+# 3. The Dholak Bass: Look at `s_bass`. The `:play_sub` synth plays a driving, 
+#    syncopated line. By using a mid-range `cutoff` (70) and a short `release` 
+#    (0.15), the engine turns the detuned sawtooth into a warm, round, percussive 
+#    "thwack" that perfectly mimics the deep, rhythmic pulse of a traditional 
+#    dholak drum fused with a 70s funk bass guitar.
+# ==========================================================

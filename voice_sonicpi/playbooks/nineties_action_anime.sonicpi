@@ -1,0 +1,126 @@
+# ==========================================================
+# PLAYBOOK: 90s ACTION ANIME / J-POP (SHONEN OPENING STYLE)
+# (Pioneered by Hironobu Kageyama, Yoko Kanno, and Taku Iwasaki)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Action Anime J-Pop.
+# We have explored Mascot Platformers and JRPGs, but the 90s Action Anime 
+# opening is the sound of pure, high-octane adrenaline. It fuses the fast, 
+# driving tempo of Eurobeat with the massive, emotional chords of symphonic 
+# rock and the piercing, rapid-fire synthesizers of 16-bit video games. 
+# It relies on a blistering 155 BPM tempo, a relentless, octave-jumping 
+# 16th-note bass, massive "supersaw" chord stabs, and a frantic, continuous 
+# 16th-note FM arpeggio that feels like powering up for a final attack.
+#
+# This playbook perfectly demonstrates how to push the engine to its absolute 
+# melodic and rhythmic limits. By locking a continuous 16th-note bassline and 
+# lead to a driving rock beat, the engine creates a massive, heroic, and deeply 
+# nostalgic atmosphere.
+# ==========================================================
+
+use_bpm 155
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Fast, Heroic, & Driving)
+# ==========================================================
+
+# Driving rock kick. Hits on 1, 2, 3, and 4. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [:c4, :c4, :c4, :c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4, with a 16th roll at the end. 
+# (4 x's, 4 elements)
+s_snare = gen_score("....x.......x.xx", [
+  :c4, :c4, {note: :c4, amp: 0.5}, {note: :c4, amp: 0.7}
+])
+
+# Fast, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Octave-Jumping" Bass (A Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# High cutoff (110) and microscopic release (0.06) create a relentless, 
+# driving, bouncy churn. (16 x's, 16 elements)
+bass_notes = [:a1, :a1, :a2, :a1, :a1, :a1, :a2, :a1, 
+              :f1, :f1, :f2, :f1, :e1, :e1, :e2, :e1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.06, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "Supersaw" Chords (Am to F to G to E).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.15) 
+# create a sharp, piercing wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:f3, :a3, :c4], cutoff: 110, release: 0.15, amp: 0.6},
+  {note: [:e3, :g3, :b3], cutoff: 110, release: 0.15, amp: 0.6}
+])
+
+# Frantic, "16-Bit" FM Lead (A Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (4) to create a 
+# sharp, buzzy square wave. Plays a rapid, continuous 16th-note melody.
+# (16 x's, 16 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :a5, :e5, :c6, :e5, 
+              :f5, :c5, :a5, :c5, :e5, :b4, :g5, :b4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 4, release: 0.05} }
+s_lead = gen_score("xxxxxxxxxxxxxxxx", lead_data)
+
+# "Power Up" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# High density, tiny size = a sharp, pristine vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the octave bass, supersaw chords, and vocal (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the driving rock drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The frantic 16-bit FM lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HIGH-OCTANE ENERGY]
+# 
+# 1. Algorithmic Octave Bass: Look at `s_bass`. Instead of typing 16 
+#    repetitive Hashes, we define an array `bass_notes` that alternates 
+#    between the low octave (:a1) and the high octave (:a2). We then use 
+#    `.map` to inject the default parameters into every step. This creates 
+#    the relentless, driving 16th-note "gallop" that defines high-energy 
+#    anime openings, with zero repetitive code.
+#
+# 2. FM as a 16-Bit Chip: The `s_lead` sequence uses `divisor: 2` and `depth: 4`. 
+#    This harmonic ratio produces a bright, buzzy square wave that cuts through 
+#    the heavy mix. By playing a rapid, continuous 16th-note melody, the engine 
+#    creates a frantic, high-energy hook that perfectly mimics the legendary 
+#    Yamaha YM2612 sound chip of the Sega Genesis, often used in 90s anime 
+#    soundtracks for "action" cues.
+#
+# 3. The Snare Roll: Look at `s_snare`. It hits on beats 2 and 4, but adds 
+#    a 16th-note roll at the very end of the bar (steps 14 and 15). The 
+#    engine's strict master clock ensures this rapid roll fires with absolute 
+#    mathematical precision, building immense tension and momentum into the 
+#    next downbeat.
+# ==========================================================

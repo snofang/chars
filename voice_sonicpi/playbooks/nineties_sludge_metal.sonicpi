@@ -1,0 +1,125 @@
+# ==========================================================
+# PLAYBOOK: 90s SLUDGE METAL / SOUTHERN DOOM
+# (Pioneered by Eyehategod, Crowbar, and Down)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Sludge Metal.
+# We have explored Doom Metal and Stoner Rock, but Sludge Metal is the sound 
+# of the deep South's swamps and misery. It fuses the crushing, slow weight 
+# of doom metal with the abrasive, raw aggression of hardcore punk. It relies 
+# on an agonizingly slow tempo (70 BPM), a massive, continuous "fuzz" bass, 
+# heavily distorted, dissonant power chords, and a weeping, bluesy guitar 
+# solo that feels like trudging through thick mud.
+#
+# This playbook perfectly demonstrates how to use extreme `release` times 
+# and a very slow tempo to create immense, suffocating weight. By using the 
+# `:play_sub` synth as a massive fuzz bass and the `:play_fm` synth with an 
+# extreme `depth` for dissonant chords, the engine creates a dark, heavy, 
+# and deeply oppressive atmosphere.
+# ==========================================================
+
+use_bpm 70
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C# Minor - Heavy, Slow, & Oppressive)
+# ==========================================================
+
+# The "Sludge" Kick. 
+# A slow, heavy, dragging march. (4 x's, 4 elements)
+s_kick = gen_score("x.....x.x.....x.", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}
+])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Very sparse, ringing ride hats. (4 x's, 4 elements)
+s_hats = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# The "Fuzz" Bass (C# Minor).
+# Plays a massive, continuous root note. 
+# Extreme cutoff (120) and massive release (1.5) create a thick, buzzing, 
+# suffocating wall of low-end. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :cs1, cutoff: 120, release: 1.5, amp: 1.2}, 
+  {note: :b0, cutoff: 120, release: 1.5, amp: 1.0}
+])
+
+# Massive, "Dissonant" Power Chords (C#5 to B5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Plays a slow, heavy, bluesy riff. (4 x's, 4 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:cs3, :g3], divisor: 2, depth: 6, release: 0.5, amp: 0.7},
+  {note: [:b2, :f3], divisor: 2, depth: 6, release: 0.5, amp: 0.7},
+  {note: [:cs3, :g3], divisor: 2, depth: 6, release: 0.5, amp: 0.7},
+  {note: [:e3, :bb3], divisor: 2, depth: 6, release: 0.5, amp: 0.7}
+])
+
+# Weeping, "Bluesy" Guitar Solo (C# Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The massive release (1.0) 
+# creates a soaring, weeping, agonizingly slow solo. (6 x's, 6 elements)
+lead_notes = [:cs5, :e5, :fs5, :g5, :fs5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 100, release: 1.0} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Amp Feedback" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Massive size (0.5s) and low density (1) creates a slow, evolving, terrifying 
+# background texture that mimics amplifier feedback. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :cs3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.5, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Swamp - Just the fuzz bass, power chords, and feedback (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Trudge - Add the slow, heavy drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Agony - The weeping bluesy guitar solo drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CRUSHING MISERY]
+# 
+# 1. The Fuzz Bass: Look at `s_bass`. The `:play_sub` synth is given an extreme 
+#    `cutoff` (120) and a massive `release` (1.5). By leaving the filter wide 
+#    open on a detuned sawtooth at 70 BPM, the engine creates a thick, buzzing, 
+#    suffocating wall of low-end that rings out for over a beat, perfectly 
+#    mimicking the massive fuzz bass tones of 90s Sludge Metal.
+#
+# 2. FM as a Distorted Amp: Look at `s_chords`. The `:play_fm` synth is 
+#    given a `divisor` of `2` and an extreme `depth` of `6`. This harsh 
+#    harmonic ratio forces the FM modulator to grind the carrier wave, 
+#    creating a harsh, distorted square wave. By playing dissonant, tritone 
+#    chords (C#5 to G3), the engine perfectly mimics the evil, sludgy guitar 
+#    tone of bands like Eyehategod and Crowbar.
+#
+# 3. The Weeping Solo: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (100) and a massive `release` (1.0). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a soaring, 
+#    weeping, agonizingly slow guitar solo that perfectly anchors the track's 
+#    oppressive, miserable atmosphere.
+# ==========================================================

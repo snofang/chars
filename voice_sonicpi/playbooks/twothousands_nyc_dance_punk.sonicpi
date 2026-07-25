@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 2000s NYC DANCE-PUNK / INDIE SLEAZE
+# (Pioneered by The Rapture, LCD Soundsystem, and !!!)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s NYC Dance-Punk.
+# We have explored Brit Funk and Post-Punk, but 2000s Dance-Punk is the sound 
+# of the early 2000s Brooklyn warehouse party. It fuses the jagged, aggressive 
+# guitars of 70s post-punk with the relentless, driving 4/4 beats of house 
+# music and disco. It relies on a driving "four-on-the-floor" live drum beat, 
+# a relentless, continuous 16th-note "slap" synth bass, stark, dissonant 
+# guitar/synth stabs, and a piercing, yelping vocal stutter that feels like 
+# a sweaty, late-night dance party.
+#
+# This playbook perfectly demonstrates how to combine a continuous, driving 
+# 16th-note bassline with jagged, staccato chords. By using the `:play_sub` 
+# synth for a relentless, high-cutoff bass, and the `:play_fm` synth for 
+# dissonant, staccato stabs, the engine creates a massive, hip-shaking, and 
+# deeply nostalgic atmosphere.
+# ==========================================================
+
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Jagged, Driving, & Sweaty)
+# ==========================================================
+
+# Driving 4/4 rock kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic snare/clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Slap" Synth Bass (E Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# High cutoff (110) and very short release (0.08) create a relentless, 
+# bouncy, aggressive "thwack". (16 x's, 16 elements)
+bass_notes = [:e1, :e1, :e2, :e1, :e1, :e1, :e2, :e1, 
+              :d1, :d1, :d2, :d1, :e1, :e1, :e2, :e1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.08, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, "Dissonant" Guitar/Synth Stabs (Em to D).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# jagged, staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:e3, :g3, :d4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:e3, :g3, :d4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:d3, :fs3, :c4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:d3, :fs3, :c4], divisor: 2, depth: 4, release: 0.1, amp: 0.6}
+])
+
+# Piercing, "Cowbell/Synth" Lead (E Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The short release (0.1) 
+# and rapid, 8th-note melody create a jagged, echoing hook. (6 x's, 6 elements)
+lead_notes = [:e5, :d5, :e5, :g5, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 110, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Yelp" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, percussive vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :e4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the driving kick, slap bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps, dissonant stabs, and vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The piercing cowbell/synth lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INDIE SLEAZE]
+# 
+# 1. The Slap Synth Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:e1) and the 
+#    high octave (:e2). By using a high `cutoff` (110) and a very short 
+#    `release` (0.08), the engine turns the detuned sawtooth into a relentless, 
+#    bouncy, aggressive "thwack" that perfectly mimics the driving, synth-bass 
+#    sound of 2000s Dance-Punk (think The Rapture's "House of Jealous Lovers").
+#
+# 2. FM as a Jagged Guitar: Look at `s_chords`. The `:play_fm` synth is 
+#    given a `divisor` of `2` and a mid `depth` of `4`, with a microscopic 
+#    `release` (0.1). This forces the FM synth to produce a harsh, dissonant, 
+#    staccato "hit" that perfectly mimics the jagged, post-punk guitar stabs 
+#    that defined the genre.
+#
+# 3. The 4/4 Rock Drive: 2000s Dance-Punk relies on a stark, driving rhythm 
+#    section. The `s_kick` hits strictly on every beat (steps 0, 4, 8, 12), 
+#    while the `s_hats` play continuous 16th notes. The engine's strict master 
+#    clock ensures this rigid, mechanical momentum locks perfectly with the 
+#    continuous 16th-note bassline, creating a massive, hip-shaking groove.
+# ==========================================================

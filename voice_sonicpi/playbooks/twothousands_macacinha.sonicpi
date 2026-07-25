@@ -1,0 +1,88 @@
+# ==========================================================
+# PLAYBOOK: 2000s MACACINHA / LISBON BASS
+# (Pioneered by DJ Marlon Silva, DJ Nilo, and DJ Mv Claud)
+# ========================================================== 
+
+use_bpm 140
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Fast, Bouncy, & Aggressive)
+# ==========================================================
+
+# The "Lisbon" Kick. 
+# A heavy, syncopated 3-3-2 bounce. (4 x's, 4 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}
+])
+
+# Crisp, 808 snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Fast, rolling 16th hats to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Bump" Bass (A Minor).
+# Plays a fast, syncopated, staccato line. 
+# Low cutoff (60) and microscopic release (0.08) create a relentless, 
+# sub-rattling bounce. (8 x's, 8 elements)
+# FIXED: Using Ruby's `nil` object instead of the symbol `:nil`.
+bass_notes = [:a1, :a1, nil, :a1, :c2, nil, :a1, :a1]
+bass_data = bass_notes.map { |n| n.nil? ? nil : {note: n, cutoff: 60, release: 0.08, amp: 1.2} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Stark, "Plastic" Synth Stabs (Am to G).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.1) 
+# create a sharp, piercing wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.1, amp: 0.5},
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.1, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.1, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.1, amp: 0.5}
+])
+
+# Piercing, "Plastic" FM Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a piercing, 
+# glassy, computer-like tone. Plays a rapid, continuous 16th-note melody.
+# (16 x's, 16 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :a5, :e5, :c6, :e5, 
+              :g5, :d5, :bb5, :d5, :a5, :e5, :c6, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.05} }
+s_lead = gen_score("xxxxxxxxxxxxxxxx", lead_data)
+
+# "Grito" (Shout) Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, percussive vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Club - Just the kick, bump bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps, synth stabs, and vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The piercing plastic FM lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

@@ -1,0 +1,122 @@
+# ==========================================================
+# PLAYBOOK: 70s LIBRARY MUSIC / BBC RADIOPHONIC
+# (Pioneered by Delia Derbyshire, John Baker, and Brian Hodgson)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Library Music.
+# We have explored Giallo and Space Disco, but Library Music (and the BBC 
+# Radiophonic Workshop) is the sound of 70s British television and film. 
+# It is the ancestor of ambient and electronic music, built entirely on 
+# early analog synthesizers, tape loops, and primitive sequencers. It relies 
+# on stark, repetitive "musique concrète" textures, deep, round sub-bass, 
+# and eerie, echoing melodies that feel like wandering through a low-budget, 
+# 1970s sci-fi television show.
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth 
+# to simulate a primitive, 1970s analog sequencer, and how to use massive 
+# `release` times and the global tape echo to create a eerie, mechanical, 
+# and deeply nostalgic atmosphere.
+# ==========================================================
+
+use_bpm 90
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Stark, Eerie, & Mechanical)
+# ==========================================================
+
+# The "Primitive" Kick. 
+# A slow, heavy march. Hits on 1 and 3. (2 x's, 2 elements)
+s_kick = gen_score("x.......x.......", [:c4, :c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Very sparse, ticking 8th hats. (4 x's, 4 elements)
+s_hats = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# The "Analog Sequencer" Bass (D Minor).
+# Plays a continuous, repetitive 16th-note sequence. 
+# Mid cutoff (90) and microscopic release (0.06) create a stark, mechanical churn.
+# (16 x's, 16 elements)
+bass_notes = [:d1, :d1, :a1, :d1, :d1, :d1, :c2, :d1, 
+              :d1, :d1, :a1, :d1, :bb1, :d1, :a1, :d1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.06, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Lush, "String Synth" Pad (Dm to Bb).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :f3, :a3, :c4], cutoff: 70, attack: 2.0, release: 4.0, amp: 0.5},
+  {note: [:bb2, :d3, :f3, :a3], cutoff: 70, attack: 2.0, release: 4.0, amp: 0.5}
+])
+
+# Piercing, "Tape Echo" Lead (D Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.6) 
+# creates a soaring, echoing melody that bounces across the empty grid. (6 x's, 6 elements)
+lead_notes = [:d5, :f5, :a5, :g5, :f5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 90, release: 0.6} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Alien" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Massive size (0.5s) and low density (1) time-stretches the sample into a 
+# slow, evolving, terrifying background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :d3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.5, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Workshop - Just the analog sequencer, strings, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Broadcast - Add the sparse, primitive drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Signal - The echoing tape echo lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ANALOG MINIMALISM]
+# 
+# 1. The Analog Sequencer: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, mapping out a repetitive, melodic sequence. By 
+#    using a mid-range `cutoff` (90) and a microscopic `release` (0.06), the 
+#    engine turns the detuned sawtooth into a stark, mechanical churn that 
+#    perfectly mimics the early analog sequencers used by the BBC Radiophonic 
+#    Workshop.
+#
+# 2. The Tape Echo: The `s_lead` sequence uses the Prophet synth with a 
+#    low `cutoff` (90) and a long `release` (0.6). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a soaring, 
+#    echoing melody that bounces across the empty grid, perfectly mimicking the 
+#    primitive tape delay units used to create 70s electronic music.
+#
+# 3. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `2.0` and a `release` of `4.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over six whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics the lush, analog string machines 
+#    of the 1970s.
+# ==========================================================
