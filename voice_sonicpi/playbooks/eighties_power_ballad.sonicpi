@@ -1,0 +1,135 @@
+# ==========================================================
+# PLAYBOOK: 80s POWER BALLAD / STADIUM ROCK BALLAD
+# (Pioneered by Whitesnake, Def Leppard, and Scorpions)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose the 80s Power Ballad.
+# We have explored fast, aggressive metal and high-energy dance genres, but 
+# the Power Ballad is the sound of pure, emotional stadium rock. It relies 
+# on extreme dynamic contrast: a slow, heavy, cavernous drum beat, a deep, 
+# melodic bass, clean, chiming guitar arpeggios that build tension, and a 
+# massive, soaring distorted guitar solo that feels like an arena erupting.
+#
+# This playbook perfectly demonstrates how to use the Parameter Hashes to 
+# create immense space and slow-building drama. By using massive `release` 
+# times on the snare and bass, and a slow `attack` on the string pad, the 
+# engine creates a cinematic, emotional, and deeply nostalgic rock atmosphere.
+# ==========================================================
+
+use_bpm 72
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Emotional, Massive, & Dramatic)
+# ==========================================================
+
+# Heavy, cavernous kick. Hits on 1 and 3. (2 x's, 2 elements)
+s_kick = gen_score("x.......x.......", [
+  :c4, :c4
+])
+
+# Massive, gated stadium snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [
+  {note: :c4, amp: 1.2}, {note: :c4, amp: 1.0}
+])
+
+# Very sparse, ticking 8th hats to maintain time. (4 x's, 2 elements)
+s_hats = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# Deep, melodic bass (A Minor).
+# Plays a slow, driving root line. Mid cutoff (80) and long release (1.0) 
+# create a warm, continuous undercurrent. (4 x's, 4 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :a1, release: 1.0, cutoff: 80, amp: 1.0}, 
+  {note: :g1, release: 1.0, cutoff: 80, amp: 0.9}, 
+  {note: :f1, release: 1.0, cutoff: 80, amp: 0.9}, 
+  {note: :e1, release: 1.0, cutoff: 80, amp: 1.0}
+])
+
+# Clean, "Chiming" Guitar Arpeggio (A Minor).
+# Uses :play_pluck. Plays continuous, rhythmic 16th notes to build tension. 
+# (16 x's, 16 elements)
+guitar_notes = [:a3, :e4, :a4, :c5, :e4, :a4, :c5, :e5, 
+                :g3, :d4, :g4, :b4, :d4, :g4, :b4, :d5]
+guitar_data = guitar_notes.map { |n| {note: n, amp: 0.6, release: 0.2, coef: 0.7} }
+s_guitar = gen_score("x.x.x.x.x.x.x.x.", guitar_data)
+
+# Lush, "String Section" Pad (Am to G to F to E).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic orchestral wave. 
+# (4 x's, 4 elements)
+s_strings = gen_score("x.......x.x.x.x.", [
+  {note: [:a3, :c4, :e4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.5},
+  {note: [:f3, :a3, :c4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.5},
+  {note: [:e3, :g3, :b3], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.5}
+])
+
+# Soaring, "Distorted" Guitar Solo (A Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.4) 
+# and massive gaps (`nil`) create a soaring, emotional, stadium-sized solo. 
+# (8 x's, 8 elements)
+lead_notes = [:a5, :c6, :e6, :a6, :g6, :e6, :c6, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Arena Crowd" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.4) and low density (1) creates a slow, evolving background texture 
+# that mimics a massive crowd singing along. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Verse - Just the clean arpeggio, strings, and crowd drone (4 bars)
+  [ [:play_pluck, s_guitar, 4], [:play_chords, s_strings, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Chorus - Add the heavy, cavernous drums and bass (8 bars)
+  [ [:play_pluck, s_guitar, 8], [:play_chords, s_strings, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: The Climax - The soaring distorted guitar solo drops (8 bars)
+  [ [:play_pluck, s_guitar, 8], [:play_chords, s_strings, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN STADIUM DRAMA]
+# 
+# 1. The Clean Arpeggio Build: Look at `s_guitar`. The `:play_pluck` synth plays 
+#    continuous, rhythmic 16th notes. By using a mid `coef` (0.7) and a short 
+#    `release` (0.2), the engine turns the pluck into a sharp, chiming, clean 
+#    electric guitar arpeggio that builds immense tension under the slow, heavy 
+#    rhythm section.
+#
+# 2. The Orchestral Swell: Look at `s_strings`. The Hashes specify an `attack` 
+#    of `1.0` and a `release` of `3.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over four whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics a lush, cinematic string section 
+#    soaring over a rock band.
+#
+# 3. The Soaring Solo: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (110) and a long `release` (0.4). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a soaring, 
+#    cascading guitar solo that feels like a virtuosic, emotional climax, 
+#    perfectly anchoring the track's massive, theatrical atmosphere.
+# ==========================================================

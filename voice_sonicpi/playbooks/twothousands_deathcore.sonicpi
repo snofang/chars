@@ -1,0 +1,123 @@
+# ==========================================================
+# PLAYBOOK: 2000s DEATHCORE / DEATH METAL
+# (Pioneered by Suicide Silence, Whitechapel, and Job for a Cowboy)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Deathcore.
+# We have explored Metalcore and Black Metal, but Deathcore is the sound 
+# of extreme, modern, technical brutality. It pushes the tempo to a blistering 
+# 180 BPM and relies on a relentless "blast beat" (continuous 16th notes on 
+# kick and snare), a deep, down-tuned "chug" bass, massive, dissonant power 
+# chords, and a piercing, chaotic "sweeping" guitar solo that feels like a 
+# high-speed technical breakdown.
+#
+# This playbook perfectly demonstrates how to push the engine's master clock 
+# to its absolute rhythmic and textural limit. By using an extreme `cutoff` 
+# and a microscopic `release` on the `:play_sub` synth, the engine creates a 
+# grinding, distorted wall of sound that perfectly mimics a down-tuned 8-string 
+# guitar.
+# ==========================================================
+
+use_bpm 180
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor / Dissonant - Fast, Heavy, & Technical)
+# ==========================================================
+
+# The "Blast Beat" Kick. 
+# Plays continuous, driving 8th notes. (8 x's, 8 elements)
+s_kick = gen_score("x.x.x.x.x.x.x.x.", [:c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4])
+
+# The "Blast Beat" Snare. 
+# Plays continuous 8th notes in sync with the kick. (8 x's, 8 elements)
+s_snare = gen_score("x.x.x.x.x.x.x.x.", [:c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4])
+
+# Fast, driving 16th hats to add to the chaotic wall of sound. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "8-String Chug" Bass (A Minor).
+# Plays a continuous, driving 8th-note pattern. 
+# Extreme cutoff (120) and microscopic release (0.05) create a grinding, 
+# distorted churn that mimics a down-tuned, palm-muted electric guitar. 
+# (8 x's, 8 elements)
+bass_notes = [:a1, :a1, :a1, :a1, :g1, :g1, :f1, :f1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.05, amp: 1.2} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Dissonant" Power Chords (A5 to G5 to F5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a harsh, 
+# metallic hit. Hits only on beats 1 and 3 to let the bass drive the rhythm. 
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :eb4], divisor: 2, depth: 6, release: 0.3, amp: 0.7},
+  {note: [:f3, :c4], divisor: 2, depth: 6, release: 0.3, amp: 0.7}
+])
+
+# Piercing, "Sweeping" Guitar Solo (A Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The rapid, 16th-note 
+# melody creates a chaotic, virtuosic solo that cuts through the heavy mix. 
+# (8 x's, 8 elements)
+lead_notes = [:a5, :c6, :eb6, :g6, :eb6, :c6, :a5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.1} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Growl" Vocal (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Long size (0.15) creates a dark, distorted vocal hit. (1 x, 1 element)
+s_grain = gen_score("........x.......", [
+  {note: :a2, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.15, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Onset - Just the blast beat, chug bass, and dissonant chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Breakdown - Add the guttural growl vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8] ],
+    
+  # Scene 3: The Climax - The piercing sweeping guitar solo drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EXTREME BRUTALITY]
+# 
+# 1. The Blast Beat: Look at `s_kick` and `s_snare`. They both play 
+#    continuous 8th notes at 180 BPM, hitting simultaneously on every beat. 
+#    This creates a relentless, mechanical wall of percussion that perfectly 
+#    mimics the legendary "blast beat" drumming of Deathcore. The engine's 
+#    strict master clock ensures this chaotic rhythm locks together with 
+#    absolute mathematical precision.
+#
+# 2. The 8-String Chug Illusion: Look at `s_bass`. The `:play_sub` synth 
+#    plays a continuous, driving 8th-note pattern. By using an extreme `cutoff` 
+#    (120) and a microscopic `release` (0.05), the engine turns the detuned 
+#    sawtooth into a grinding, distorted churn that perfectly mimics the 
+#    palm-muted, down-tuned 8-string guitar chugs that define the genre.
+#
+# 3. Dissonant Harmony: Look at `s_chords`. The arrays use a diminished 5th 
+#    (tritone) interval (e.g., :a3 and :eb4). This creates a harsh, dissonant, 
+#    and evil sound that perfectly anchors the track's chaotic, extreme 
+#    atmosphere. The `:play_fm` synth with an extreme `depth` (6) forces the 
+#    modulator to grind the carrier wave, creating a metallic, distorted hit.
+# ==========================================================

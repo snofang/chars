@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 80s NEW JACK SWING (Uptempo)
+# (Pioneered by Janet Jackson, Bobby Brown, and Bell Biv DeVoe)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s New Jack Swing.
+# We have explored 90s Neo-Soul and 80s Boogie, but New Jack Swing (NJS) is 
+# the sound of late 80s/early 90s urban radio. It fuses the rhythms of hip-hop 
+# with the vocals and chords of R&B. It relies on a heavily swung, "MPC-style" 
+# drum grid, a deep, round "Moog-style" bass, and bright, staccato major chords.
+#
+# This playbook perfectly demonstrates how to simulate the famous "MPC Swing" 
+# on a rigid 16-step sequencer. By pushing the kick and snare slightly late, 
+# and using heavily alternating hi-hat amplitudes, the engine creates a lopsided, 
+# "drunken" groove that defined the New Jack Swing era.
+# ==========================================================
+
+use_bpm 112
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Major - Swung, Bouncy, & Urban)
+# ==========================================================
+
+# The "NJS" Kick. 
+# Highly syncopated and "laid back". Hits on step 0, the 'a' of 2 (step 7), and beat 3 (step 8).
+# (4 x's, 4 elements)
+s_kick = gen_score("x......xx.....x.", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}
+])
+
+# Crisp, dry snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.......x.x.", [
+  :c4, :c4, {note: :c4, amp: 0.3}
+])
+
+# The "MPC Swing" Hi-Hats.
+# Alternating amplitudes (0.4 vs 0.15) simulate the 54% swing quantize.
+# (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}
+])
+
+# Deep, round "Moog" Bass (F Major).
+# Plays a syncopated, melodic line. Low cutoff (70) and medium release (0.2) 
+# create a warm, round undercurrent. (8 x's, 8 elements)
+bass_notes = [:f1, :f1, :c2, :f1, :bb1, :bb1, :c2, :f1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 70, release: 0.2, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Bright, "DX7" Horn/EP Stabs (Fmaj9 to Bbmaj9).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.15) 
+# create a sharp, staccato wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:f3, :a3, :c4, :e4], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:f3, :a3, :c4, :e4], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:bb2, :d3, :f3, :a3], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:bb2, :d3, :f3, :a3], cutoff: 110, release: 0.15, amp: 0.5}
+])
+
+# Soaring, "Guitar/Synth" Lead (F Major Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.3) 
+# creates a smooth, urban melody. (6 x's, 6 elements)
+lead_notes = [:f5, :a5, :c6, :bb5, :g5, :f5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Pre-Chorus" Vocal Chops (Granular Synth).
+# High density, tiny size = a sharp, pristine vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :f4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the MPC drums, Moog bass, and horn stabs (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Groove - Add the vocal chops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The soaring guitar/synth melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SWING]
+# 
+# 1. The "MPC Swing" Illusion: Look at `s_kick` and `s_hats`. The kick hits on 
+#    step 0, but then waits until step 7 (the very last 16th note of beat 2) 
+#    before hitting again, immediately followed by step 8. In New Jack Swing, 
+#    drummers physically play slightly behind the beat. Because the engine's grid 
+#    is mathematically perfect, pushing the kick just one 16th note late creates 
+#    that heavy, leaning, "drunken" bounce.
+#
+# 2. The Moog Bass: Look at `s_bass`. The `:play_sub` synth is given a low 
+#    `cutoff` (70) and a `release` of `0.2`. This creates a deep, round, and 
+#    warm low-end that weaves perfectly between the kicks, carrying the melodic 
+#    progression without muddying the pristine high-end of the horn stabs.
+#
+# 3. The Off-Beat Stabs: Look at `s_chords`. The arrays form massive 4-note 
+#    major 9th chords. By hitting strictly on steps 2, 6, 10, and 14 with a high 
+#    `cutoff` (110), the engine turns the `:blade` synth into a sharp, staccato 
+#    piano/horn stab that perfectly mimics the late 80s urban R&B sound.
+# ==========================================================

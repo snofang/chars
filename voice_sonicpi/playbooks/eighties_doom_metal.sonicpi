@@ -1,0 +1,124 @@
+# ==========================================================
+# PLAYBOOK: 80s DOOM METAL / CLASSIC HEAVY DOOM
+# (Pioneered by Black Sabbath, Candlemass, and Saint Vitus)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Doom Metal.
+# We have explored fast, aggressive genres like Thrash and Deathcore, but 
+# Doom Metal is the sound of pure, glacial heaviness. It strips away all 
+# speed, relying on a massive, suffocating "sub-bass" guitar tone, slow 
+# and cavernous drums, and clean, echoing guitar arpeggios that feel like 
+# a funeral procession in a ruined cathedral.
+#
+# This playbook perfectly demonstrates how to use extreme `release` times 
+# and a very slow tempo (60 BPM) to create immense, crushing weight. By 
+# using the `:play_sub` synth as a massive fuzz bass and routing a clean 
+# `:play_lead` through the tape echo, the engine creates a dark, epic, and 
+# deeply heavy atmosphere.
+# ==========================================================
+
+use_bpm 60
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Heavy, Plodding, & Cavernous)
+# ==========================================================
+
+# The "Plodding" Kick. 
+# A slow, heavy march. Hits on 1 and 3. (2 x's, 2 elements)
+s_kick = gen_score("x.......x.......", [:c4, :c4])
+
+# Massive, echoing snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [
+  {note: :c4, amp: 1.1}, {note: :c4, amp: 1.0}
+])
+
+# Very sparse, ringing ride hats. (4 x's, 4 elements)
+s_hats = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# The "Fuzz" Bass (D Minor).
+# Plays a massive, continuous root note. 
+# Extreme cutoff (120) and massive release (2.0) create a thick, buzzing, 
+# suffocating wall of low-end. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :d1, cutoff: 120, release: 2.0, amp: 1.2}, 
+  {note: :c1, cutoff: 120, release: 2.0, amp: 1.0}
+])
+
+# Massive, "Distorted" Power Chords (D5 to C5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Hits only on beats 1 and 3. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :a3], divisor: 2, depth: 6, release: 1.5, amp: 0.7},
+  {note: [:c3, :g3], divisor: 2, depth: 6, release: 1.5, amp: 0.7}
+])
+
+# Clean, "Chiming" Guitar Arpeggio (D Minor).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.8) 
+# creates a clean, echoing melody that floats over the crushing rhythm section. 
+# (6 x's, 6 elements)
+lead_notes = [:d5, :f5, :a5, :g5, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 90, release: 0.8} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Occult" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.4) and low density (1) creates a dark, evolving background texture. 
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :d3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Crypt - Just the fuzz bass, power chords, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The March - Add the slow, cavernous drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The clean, chiming guitar arpeggio drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CRUSHING WEIGHT]
+# 
+# 1. The Fuzz Bass: Look at `s_bass`. The `:play_sub` synth is given an extreme 
+#    `cutoff` (120) and a massive `release` (2.0). By leaving the filter wide 
+#    open on a detuned sawtooth at 60 BPM, the engine creates a thick, buzzing, 
+#    suffocating wall of low-end that rings out for two whole beats, perfectly 
+#    mimicking the massive fuzz bass tones of 80s Doom Metal.
+#
+# 2. FM as a Distorted Amp: Look at `s_chords`. The `:play_fm` synth is 
+#    given a `divisor` of `2` and an extreme `depth` of `6`. This harsh 
+#    harmonic ratio forces the FM modulator to grind the carrier wave, 
+#    creating a harsh, distorted square wave. By playing slow, heavy power 
+#    chords on beats 1 and 3, the engine perfectly mimics the aggressive 
+#    rhythm guitars of Doom Metal.
+#
+# 3. Extreme Dynamic Contrast: Doom Metal relies on the stark contrast 
+#    between the crushing, distorted rhythm section and clean, echoing 
+#    guitar arpeggios. The `s_lead` sequence uses the Prophet synth with a 
+#    low `cutoff` (90) and a long `release` (0.8). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a 
+#    clean, haunting melody that floats perfectly over the heavy groove.
+# ==========================================================

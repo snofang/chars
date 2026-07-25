@@ -1,0 +1,125 @@
+# ==========================================================
+# PLAYBOOK: 90s IRANIAN 6/8 POP / KURDISH DANCE (HALPARKE)
+# (Pioneered by Morteza, Leila Forouhar, and Andy)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# We have explored Bandari, but Persian 6/8 Pop is the absolute backbone 
+# of Iranian dance music. It maps a relentless, galloping 6/8 meter to a 
+# rigid 16-step grid. It relies on a driving, continuous 16th-note synth 
+# bass, heavy synth-brass stabs on the off-beats, and a fast, ecstatic 
+# 16th-note synthesizer lead (simulating a saz or tar) that feels like a 
+# massive, joyous wedding dance.
+#
+# This playbook perfectly demonstrates how to map a 6/8 polyrhythm to a 
+# 16-step grid using the `gen_score` helper. By using a 3-3-2 pattern for 
+# the kick and a continuous 16th-note lead, the engine creates a rigid, 
+# high-energy, and distinctly Persian atmosphere.
+# ==========================================================
+
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Minor / Kurdit - Ecstatic, Driving, & Rigid)
+# ==========================================================
+
+# The "6/8 Gallop" Kick. 
+# A 3-3-2-3-3-2 pattern mapped to 16 steps. (4 x's, 4 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Crisp, 90s snare strictly on the heavy 6/8 backbeats. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.9}
+])
+
+# Rigid, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "90s Synth" Bass (C Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# High cutoff (100) and short release (0.08) create a relentless, 
+# driving, bouncy churn. (16 x's, 16 elements)
+bass_cycle = [:c2, :c2, :g2, :c2, :eb2, :eb2, :bb2, :eb2, 
+              :f2, :f2, :c3, :f2, :g2, :g2, :d3, :g2]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 100, release: 0.08, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Heavy, "Synth Brass" Stabs (Cm to Fm).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a warm, 
+# heavy, brassy hit. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:c3, :eb3, :g3], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:c3, :eb3, :g3], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:f2, :ab2, :c3], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:f2, :ab2, :c3], divisor: 2, depth: 4, release: 0.1, amp: 0.6}
+])
+
+# Fast, "Saz/Synth" Lead (C Kurdit Scale).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# buzzy, ecstatic tone. Plays a rapid, continuous 16th-note melody. 
+# (16 x's, 16 elements)
+lead_notes = [:c5, :db5, :eb5, :f5, :g5, :ab5, :g5, :f5, 
+              :eb5, :db5, :c5, :db5, :eb5, :f5, :g5, :ab5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 3, release: 0.05} }
+s_lead = gen_score("xxxxxxxxxxxxxxxx", lead_data)
+
+# "Aah" Ambient Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.2) and low density (1) creates a slow, evolving background texture. 
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :c4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.2, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Gathering - Just the synth bass, brass stabs, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Rhythm - Add the galloping 6/8 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Dance - The fast, ecstatic saz melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN POLYRHYTHMIC POP]
+# 
+# 1. The 6/8 Gallop: Look at `s_kick`. It hits on steps 0, 3, 6, and 9. 
+#    This creates a 3-3-3-3-4 pulse (or 3-3-2 feel) that mimics the 
+#    relentless, galloping 6/8 meter of Persian pop. The engine's strict 
+#    16-step master clock ensures this complex polyrhythm lands with 
+#    absolute mathematical precision, creating a rigid, danceable groove.
+#
+# 2. The 90s Synth Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating octaves. By using a high `cutoff` 
+#    (100) and a microscopic `release` (0.08), the engine turns the detuned 
+#    sawtooth into a relentless, driving, buzzing churn that perfectly mimics 
+#    the cheap, iconic synth bass of 90s Iranian pop.
+#
+# 3. The Kurdit Scale: Look at `s_lead`. The melody uses C, Db, Eb, F, G, 
+#    Ab, Bb. The minor 2nd interval between C and Db creates the distinctly 
+#    "Kurdish" or "Persian" sound. By playing a rapid, continuous 16th-note 
+#    melody, the engine creates an ecstatic, high-energy hook that perfectly 
+#    mimics the fast, intricate playing of a saz or synthesizer.
+# ==========================================================

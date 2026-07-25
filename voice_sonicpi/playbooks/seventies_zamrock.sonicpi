@@ -1,0 +1,127 @@
+# ==========================================================
+# PLAYBOOK: 70s ZAMROCK / AFRO-ROCK
+# (Pioneered by WITCH, Amanaz, and Paul Ngozi)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Zamrock.
+# We have explored Psychedelic Rock and Afrobeat, but Zamrock is the sound 
+# of 1970s Zambia. It is a heavy, fuzz-drenched fusion of Jimi Hendrix-style 
+# psychedelic rock and traditional African rhythms. It relies on a driving, 
+# continuous 16th-note fuzz bass, massive, distorted "wah-wah" guitar riffs, 
+# and a steady, tribal drum beat that feels like a relentless, dusty drive 
+# across the African plains.
+#
+# This playbook perfectly demonstrates how to push the `:play_sub` synth 
+# into extreme overdrive to simulate a fuzz bass, and how to use the 
+# `:play_fm` synth with an extreme `depth` to simulate a distorted, 
+# echoing electric guitar.
+# ==========================================================
+
+use_bpm 110
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor Pentatonic - Heavy, Fuzz, & Driving)
+# ==========================================================
+
+# The "Tribal" Kick. 
+# A driving, syncopated rock march. (4 x's, 4 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Heavy, dry snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Fuzz" Bass (A Minor).
+# Plays continuous, driving 8th notes. 
+# Extreme cutoff (120) and short release (0.1) create a massive, 
+# distorted, grinding churn that drives the track. (8 x's, 8 elements)
+bass_notes = [:a1, :a1, :a1, :a1, :g1, :g1, :d1, :d1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.1, amp: 1.2} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# The "Wah-Wah" Guitar Riff (A Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a harsh, 
+# grinding, distorted hit. Plays a continuous, 16th-note riff. (16 x's, 16 elements)
+guitar_notes = [:a3, :c4, :d4, :c4, :a3, :g3, :a3, :c4, 
+                :a3, :c4, :d4, :e4, :d4, :c4, :a3, :g3]
+guitar_data = guitar_notes.map { |n| {note: n, divisor: 2, depth: 6, release: 0.05, amp: 0.7} }
+s_guitar = gen_score("xxxxxxxxxxxxxxxx", guitar_data)
+
+# Lush, "String Synth" Pad (Am to G).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.4},
+  {note: [:g3, :bb3, :d4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.4}
+])
+
+# Piercing, "Psychedelic" Lead (A Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.3) 
+# creates a soaring, echoing solo. (6 x's, 6 elements)
+lead_notes = [:a5, :c6, :d6, :e6, :d6, :c6]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Chant" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.3) and low density (1) creates a slow, evolving background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Plains - Just the fuzz bass, guitar riff, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_guitar, 4], [:play_grain, s_grain, 4], 
+    [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Drive - Add the tribal drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_chords, s_chords, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The piercing psychedelic lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_chords, s_chords, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN AFRO-ROCK FUZZ]
+# 
+# 1. The Fuzz Bass: Look at `s_bass`. The `:play_sub` synth plays continuous, 
+#    driving 8th notes. By using an extreme `cutoff` (120) and a short `release` 
+#    (0.1), the engine turns the detuned sawtooth into a massive, grinding, 
+#    distorted churn that perfectly mimics the heavy fuzz basslines of 70s Zamrock.
+#
+# 2. FM as a Wah-Wah Guitar: Look at `s_guitar`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `6`. This harsh harmonic ratio 
+#    forces the FM modulator to grind the carrier wave, creating a harsh, distorted 
+#    square wave. By playing a continuous, rapid 16th-note riff, the engine 
+#    perfectly mimics the aggressive, wah-wah guitar style of Zambian rock bands 
+#    like WITCH and Amanaz.
+#
+# 3. The Pentatonic Riff: Look at `s_guitar` and `s_lead`. The melody uses A, C, D, 
+#    E, G. The minor pentatonic scale creates the bluesy, "African" sound that 
+#    defines the genre. The engine's strict 16-step grid ensures this rapid, 
+#    melodic riff fires flawlessly over the driving rhythm section.
+# ==========================================================
