@@ -1,5 +1,5 @@
 # ==========================================================
-# VOICE SONIC PI ENGINE - OPTIMIZED (Final)
+# VOICE SONIC PI ENGINE - OPTIMIZED (Final Working)
 # ==========================================================
 
 # ----------------------------------------------------------
@@ -26,21 +26,11 @@ define :gen_score do |pattern, data|
 end
 
 # ----------------------------------------------------------
-# 2. PARAMETER PARSER (Bulletproof + Cached)
+# 2. PARAMETER PARSER (Bulletproof)
 # ----------------------------------------------------------
-@parse_cache = {}
-
 define :parse_step do |step, defaults|
   return nil, nil unless step
   
-  # Simple cache key
-  key = [step, defaults]
-  if @parse_cache.key?(key)
-    note, opts = @parse_cache[key]
-    return note, opts.dup  # ← CRITICAL: Return a copy to prevent mutation
-  end
-  
-  # Original logic unchanged
   if step.is_a?(Hash)
     note = step[:note]
     opts = defaults.merge(step)
@@ -55,23 +45,11 @@ define :parse_step do |step, defaults|
     return nil, opts if note.empty?
   end
   
-  result = [note, opts]
-  @parse_cache[key] = result
-  result
+  return note, opts
 end
 
 # ----------------------------------------------------------
-# 3. NOTE CACHE (For simple notes only)
-# ----------------------------------------------------------
-@note_cache = {}
-
-define :note_cached do |pitch|
-  return nil unless pitch
-  @note_cache[pitch] ||= note(pitch)
-end
-
-# ----------------------------------------------------------
-# 4. GLOBAL FX BUSES & QUEUES
+# 3. GLOBAL FX BUSES & QUEUES
 # ----------------------------------------------------------
 
 # Queues for FX-wrapped instruments
@@ -96,13 +74,13 @@ live_loop :snare_fx do
   if @snare_notes.any?
     note, opts = @snare_notes.shift
     with_fx :reverb, room: 0.9, mix: 0.5 do
-      sample :sn_dolf, pitch: (note_cached(note) - note_cached(:c4)), **opts
+      sample :sn_dolf, pitch: (note(note) - note(:c4)), **opts
     end
   end
 end
 
 # ----------------------------------------------------------
-# 5. THE SYNTHESIZERS
+# 4. THE SYNTHESIZERS
 # ----------------------------------------------------------
 
 # 1. SUBTRACTIVE BASS
@@ -125,7 +103,7 @@ define :play_chords do |n|
   play note, **opts if note
 end
 
-# 4. GRANULAR CLOUD
+# 4. GRANULAR CLOUD (EXACTLY MATCHES engine_plain)
 define :play_grain do |n|
   return unless n
   note, opts = parse_step(n, {amp: 0.5})
@@ -135,10 +113,9 @@ define :play_grain do |n|
   size    = opts[:size] || 0.05
   buffer  = opts[:buffer] || :ambi_choir
   
-  # Remove grain params from opts (mutating a COPY now)
   opts.delete(:density); opts.delete(:pos); opts.delete(:size); opts.delete(:buffer)
   
-  pitch_shift = note(note) - note(:c4)  # Direct call, no cache for reliability
+  pitch_shift = note(note) - note(:c4)
   interval = 0.25 / density
   
   at density.times.map { |i| i * interval } do
@@ -177,13 +154,13 @@ define :play_pad do |n|
   play note, **opts if note
 end
 
-# 8. PITCHED KICK (with note cache)
+# 8. PITCHED KICK
 define :play_kick do |n|
   note, opts = parse_step(n, {amp: 1.5})
-  sample :bd_haus, pitch: (note_cached(note) - note_cached(:c4)), **opts if note
+  sample :bd_haus, pitch: (note(note) - note(:c4)), **opts if note
 end
 
-# 9. PITCHED SNARE (FX moved to global bus + note cache)
+# 9. PITCHED SNARE (FX moved to global bus)
 define :play_snare do |n|
   note, opts = parse_step(n, {amp: 0.8})
   @snare_notes << [note, opts] if note
@@ -200,7 +177,7 @@ define :play_hats do |n|
 end
 
 # ----------------------------------------------------------
-# 6. VALIDATION & ENGINE BOOT (The Single Master Clock)
+# 5. VALIDATION & ENGINE BOOT (The Single Master Clock)
 # ----------------------------------------------------------
 define :start_engine do |playbook|
   # 1. Strict schema validation

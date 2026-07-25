@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 80s ETHEREAL WAVE / DREAM POP
+# (Pioneered by Cocteau Twins, Dead Can Dance, and This Mortal Coil)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Ethereal Wave.
+# We have explored Shoegaze and Darkwave, but Ethereal Wave is the sound 
+# of pure, gothic romance. It fuses the sparse, cavernous drum machines of 
+# post-punk with massive, slow-attacking "guitar" pads, deep, melodic bass, 
+# and soaring, echoing, angelic vocal drones that feel like floating through 
+# a cathedral in the clouds.
+#
+# This playbook perfectly demonstrates the ambient power of the Parameter 
+# Hashes. By using massive `attack` and `release` times on the chords, and 
+# routing a piercing lead through the global tape echo, the engine creates a 
+# massive, cinematic, and deeply relaxing atmosphere.
+# ==========================================================
+
+use_bpm 85
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Sparse, Cinematic, & Angelic)
+# ==========================================================
+
+# The "Ethereal" Kick. 
+# A slow, heavy pulse. Hits on 1 and 3. (2 x's, 2 elements)
+s_kick = gen_score("x.......x.......", [
+  {note: :c4, amp: 0.6}, {note: :c4, amp: 0.5}
+])
+
+# Soft, echoing snare strictly on beat 3 (step 8). (1 x, 1 element)
+s_snare = gen_score("........x.......", [:c4])
+
+# Very sparse, ringing ride hats. (4 x's, 4 elements)
+s_hats = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.15}, {note: :c4, amp: 0.1}, 
+  {note: :c4, amp: 0.15}, {note: :c4, amp: 0.1}
+])
+
+# Deep, melodic bass (A Minor).
+# Plays a slow, driving line. Mid cutoff (80) and long release (1.5) 
+# to create a warm, continuous undercurrent. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :a1, release: 1.5, cutoff: 80, amp: 0.9}, 
+  {note: :g1, release: 1.5, cutoff: 80, amp: 0.8}
+])
+
+# Massive, "Guitar/Strings" Pad (Am9 to Gmaj9).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4, :g4], cutoff: 70, attack: 2.0, release: 4.0, amp: 0.5},
+  {note: [:g3, :b3, :d4, :fs4], cutoff: 70, attack: 2.0, release: 4.0, amp: 0.5}
+])
+
+# Piercing, "Echoing" Lead (A Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The massive release (1.0) 
+# creates a soaring, echoing, angelic melody. (6 x's, 6 elements)
+lead_notes = [:a5, :c6, :e6, :d6, :c6, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 90, release: 1.0} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Angel" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Massive size (0.5s) and low density (1) time-stretches the sample into a 
+# slow, evolving, celestial background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.5, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Clouds - Just the bass, sweeping pad, and vocal drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Pulse - Add the sparse, cavernous drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Flight - The echoing, angelic lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ATMOSPHERIC SPACE]
+# 
+# 1. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `2.0` and a `release` of `4.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over six whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics the lush, wide-stereo guitar 
+#    effects of 80s Ethereal Wave.
+#
+# 2. Ambient Granular Time-Stretching: Look at `s_grain`. The granular engine 
+#    is given a massive `size` of `0.5` (500 milliseconds) and a `density` of `1`. 
+#    By using sparse, long grains, the engine time-stretches the `:ambi_choir` 
+#    sample into a slow, formless, celestial drone that drifts perfectly behind 
+#    the beat.
+#
+# 3. Echoing Space: The `s_lead` sequence plays a simple A minor pentatonic 
+#    melody, but leaves massive gaps (`nil`) between the notes. Because the 
+#    engine routes the `:play_lead` synth through the global tape echo bus, 
+#    those empty spaces are filled by delay tails, creating a cascading, 
+#    stadium-sized soundscape that perfectly anchors the track's angelic, 
+#    dream-pop atmosphere.
+# ==========================================================

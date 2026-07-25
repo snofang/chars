@@ -1,0 +1,125 @@
+# ==========================================================
+# PLAYBOOK: 70s KRAUTROCK / BERLIN SCHOOL (MOTORIK)
+# (Pioneered by Neu!, Kraftwerk, and Tangerine Dream)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Krautrock.
+# We have explored Psychedelic Rock and Library Music, but Krautrock 
+# (specifically the "Berlin School" Motorik beat) is the sound of pure, 
+# hypnotic momentum. It fuses a relentless, driving 4/4 drum pattern with 
+# massive, evolving analog synth pads, and rapid, continuous 16th-note 
+# "sequencer" basslines. It feels like a high-speed train moving through 
+# a neon-lit, futuristic landscape.
+#
+# This playbook perfectly demonstrates how to use the `:play_sub` synth 
+# as a relentless, continuous 16th-note sequencer, and how to use massive 
+# `attack`/`release` Hashes on the `:play_chords` synth to create a lush, 
+# cinematic analog string section.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Hypnotic, Driving, & Cinematic)
+# ==========================================================
+
+# The "Motorik" Kick. 
+# A relentless, driving 4/4 pulse. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.8}, {note: :c4, amp: 0.7}, 
+  {note: :c4, amp: 0.8}, {note: :c4, amp: 0.7}
+])
+
+# Crisp, organic snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Rigid, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}
+])
+
+# The "Sequencer" Bass (A Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# High cutoff (100) and microscopic release (0.06) create a relentless, 
+# hypnotic, buzzing churn that drives the track. (16 x's, 16 elements)
+bass_notes = [:a1, :a2, :a1, :e2, :a1, :a2, :a1, :e2, 
+              :g1, :g2, :g1, :d2, :a1, :a2, :a1, :e2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.06, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Lush, "String Synth" Pad (Am to G).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4, :g4], cutoff: 70, attack: 2.0, release: 4.0, amp: 0.5},
+  {note: [:g3, :bb3, :d4, :f4], cutoff: 70, attack: 2.0, release: 4.0, amp: 0.5}
+])
+
+# Echoing, "Cosmic" Lead (A Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.6) 
+# creates a soaring, echoing melody that floats over the relentless groove. 
+# (6 x's, 6 elements)
+lead_notes = [:a5, :c6, :e6, :d6, :c6, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 90, release: 0.6} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Nebula" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Massive size (0.5s) and low density (1) time-stretches the sample into a 
+# slow, evolving background texture that drifts behind the beat. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.5, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Launch - Just the sequencer bass, sweeping strings, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drive - Add the relentless Motorik drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Journey - The echoing cosmic lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HYPNOTIC MOMENTUM]
+# 
+# 1. The Sequencer Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:a1) and the 
+#    high octave (:a2). By using a high `cutoff` (100) and a microscopic 
+#    `release` (0.06), the engine turns the detuned sawtooth into a relentless, 
+#    hypnotic, buzzing churn that perfectly mimics the early analog sequencer 
+#    basslines of Tangerine Dream and Kraftwerk.
+#
+# 2. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `2.0` and a `release` of `4.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over six whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics the lush, analog string machines 
+#    of 70s Berlin School music.
+#
+# 3. Echoing Space: The `s_lead` sequence plays a simple A minor pentatonic 
+#    melody, but leaves massive gaps (`nil`) between the notes. Because the 
+#    engine routes the `:play_lead` synth through the global tape echo bus, 
+#    those empty spaces are filled by delay tails, creating a cascading, 
+#    cosmic soundscape that perfectly anchors the track's relentless, 
+#    forward-driving atmosphere.
+# ==========================================================
