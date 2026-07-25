@@ -1,0 +1,130 @@
+# ==========================================================
+# PLAYBOOK: 70s CLASSIC HARD ROCK / BLUES ROCK
+# (Pioneered by Deep Purple, Led Zeppelin, and Free)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Classic Hard Rock.
+# We have explored Heavy Metal and Stadium Rock, but 70s Hard Rock is the 
+# sound of pure, bluesy swagger. It fuses the heavy, driving grooves of 
+# British blues with loud, distorted amplifiers. It relies on a heavy, 
+# syncopated "John Bonham" style drum beat, a driving, melodic bassline, 
+# massive, distorted power chords, and a piercing, bluesy guitar solo.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create a heavy, live-band rock groove. By using the `:play_fm` synth 
+# to simulate a distorted Hammond B3 organ and the `:play_lead` synth 
+# routed through the global tape echo for a bluesy guitar solo, the engine 
+# creates a massive, analog, and deeply nostalgic 70s rock atmosphere.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Mixolydian - Bluesy, Heavy, & Driving)
+# ==========================================================
+
+# The "Bonham" Kick. 
+# A heavy, syncopated rock march. (5 x's, 5 elements)
+s_kick = gen_score("x...x...x.x.x...", [
+  :c4, :c4, :c4, {note: :c4, amp: 0.6}, :c4
+])
+
+# Heavy, echoing snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 1.0}
+])
+
+# Rigid, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Driving" Bass (E Mixolydian).
+# Plays continuous, driving 8th notes. High cutoff (90) and short release (0.15) 
+# create a warm, punchy "thwack" that mimics a picked electric bass. (8 x's, 8 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :g1, :g1, :a1, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (E5 to G5 to A5).
+# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
+# harsh, grinding hit. Plays a classic, palm-muted blues-rock riff. (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:e3, :b3], divisor: 2, depth: 5, release: 0.2, amp: 0.7},
+  {note: [:g3, :d4], divisor: 2, depth: 5, release: 0.2, amp: 0.7},
+  {note: [:a3, :e4], divisor: 2, depth: 5, release: 0.2, amp: 0.7}
+])
+
+# Warm, "Hammond B3" Organ Pad (Em to A).
+# Hit on the downbeats. The slow 0.5-beat attack and massive 2.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (2 x's, 2 elements)
+s_organ = gen_score("x.......x.......", [
+  {note: [:e3, :g3, :b3], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4},
+  {note: [:a2, :c3, :e3], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4}
+])
+
+# Piercing, "Bluesy" Guitar Solo (E Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.3) 
+# creates a soaring, bluesy solo that cuts through the heavy mix. (6 x's, 6 elements)
+lead_notes = [:e5, :g5, :a5, :bb5, :a5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Crowd" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.3) and low density (1) creates a warm, evolving background texture. 
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Riff - Just the driving bass, power chords, and organ (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_chords, s_organ, 4], 
+    [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the heavy, syncopated drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_chords, s_organ, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The piercing bluesy guitar solo drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_chords, s_organ, 8], 
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 70S ROCK SWAGGER]
+# 
+# 1. The Driving Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a fast, driving line. By using a mid-range 
+#    `cutoff` (90) and a short `release` (0.15), the engine turns the detuned 
+#    sawtooth into a warm, punchy "thwack" that perfectly mimics the picked 
+#    electric basslines of 70s Classic Rock, locking perfectly with the kick drum.
+#
+# 2. FM as a Distorted Amp: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `5`. This harsh harmonic 
+#    ratio forces the FM modulator to grind the carrier wave, creating a harsh, 
+#    distorted square wave. By playing palm-muted, bluesy riffs, the engine 
+#    perfectly mimics the aggressive rhythm guitars of 70s Hard Rock.
+#
+# 3. The Blues Scale: Look at `s_lead`. The melody uses E, G, A, Bb, B, D. 
+#    The diminished 5th (Bb) creates the bluesy, "rock and roll" sound that 
+#    defines the genre. The engine's strict 16-step grid ensures this melodic 
+#    lead fires flawlessly over the driving rhythm section.
+# ==========================================================

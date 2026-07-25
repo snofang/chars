@@ -36,9 +36,9 @@ s_kick = gen_score("x..x..x.x..x....", [
 ])
 
 # Heavy, echoing snare strictly on beats 2 and 4, with a frantic roll on the 'e' and 'and' of 4.
-# (4 x's, 4 elements)
+# (5 x's, 5 elements)
 s_snare = gen_score("....x.....x.x.xx", [
-  :c4, {note: :c4, amp: 0.4}, :c4, {note: :c4, amp: 0.6}
+  :c4, {note: :c4, amp: 0.4}, :c4, {note: :c4, amp: 0.6}, {note: :c4, amp: 0.8}
 ])
 
 # Swung, rolling 16th hats to drive the momentum.

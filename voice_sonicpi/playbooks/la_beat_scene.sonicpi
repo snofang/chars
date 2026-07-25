@@ -1,0 +1,122 @@
+# ==========================================================
+# PLAYBOOK: 2010s LA BEAT SCENE / FUTURE BEATS
+# (Pioneered by Flying Lotus, Thundercat, and Teebs)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2010s LA Beat Scene.
+# We have explored Lo-Fi Hip-Hop and IDM, but the LA Beat Scene is the sound 
+# of the modern underground avant-garde. It fuses the heavy, syncopated swing 
+# of J Dilla with the lush, cosmic harmony of jazz and the glitchy, granular 
+# sound design of electronic music. It relies on deeply swung drum patterns, 
+# massive, warm sub-bass, jazzy 9th/11th chords, and chopped, pitched-up 
+# vocal fragments that feel like flipping through a crate of dusty, psychedelic 
+# records.
+#
+# This playbook perfectly demonstrates how to create a deeply swung, "Dilla" 
+# groove on a rigid 16-step sequencer. By pushing the kick and snare slightly 
+# late, and using the `:play_fm` synth to simulate a echoing vibraphone, the 
+# engine creates a warm, head-nodding, and deeply cosmic atmosphere.
+# ==========================================================
+
+use_bpm 92
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Swung, Jazzy, & Cosmic)
+# ==========================================================
+
+# The "Dilla" Kick. 
+# Highly syncopated and "laid back". Hits on step 0, the 'a' of 2 (step 7), and beat 3 (step 8).
+# (3 x's, 3 elements)
+s_kick = gen_score("x......xx.......", [
+  :c4, {note: :c4, amp: 0.8}, :c4
+])
+
+# Crisp, organic snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Swung, lazy 16th hats. Notice the heavy velocity manipulation. (8 x's, 8 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}
+])
+
+# Deep, warm "Moog" Sub-Bass (F Minor).
+# Plays a syncopated, melodic line. Very low cutoff (50) and medium release (0.3) 
+# to create a deep, warm undercurrent. (4 x's, 4 elements)
+s_bass = gen_score("x.....x.x.....x.", [
+  {note: :f1, release: 0.3, cutoff: 50, amp: 1.2}, 
+  {note: :ab1, release: 0.3, cutoff: 50, amp: 1.0}, 
+  {note: :c2, release: 0.3, cutoff: 50, amp: 1.0}, 
+  {note: :eb1, release: 0.3, cutoff: 50, amp: 1.0}
+])
+
+# Lush, "Electric Piano" Chords (Fm11 to Bbm11).
+# Hit on the downbeats. The slow 0.3-beat attack and massive 2.0-beat release 
+# blur the chords together into a continuous, warm, jazzy wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:f3, :ab3, :c4, :eb4], cutoff: 70, attack: 0.3, release: 2.0, amp: 0.5},
+  {note: [:bb2, :db3, :f3, :ab3], cutoff: 70, attack: 0.3, release: 2.0, amp: 0.5}
+])
+
+# Piercing, "Vibraphone" Lead (F Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a pristine, 
+# glassy, echoing tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:f5, :ab5, :c6, :eb6, :c6, :ab5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.4} }
+s_fm = gen_score("x..x..x..x..x..x", lead_data)
+
+# Chopped, "Psychedelic" Vocal Sample (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density (4) and tiny size (0.04) shatter the vocal into a rhythmic skip. 
+# (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :f4, buffer: :ambi_choir, pos: 0.1, density: 4, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the sub-bass, lush chords, and vocal chop (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4], 
+    [:play_fm, s_fm, 4] ],
+  
+  # Scene 2: The Groove - Add the heavily swung, "Dilla" drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_fm, s_fm, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MODERN SWING]
+# 
+# 1. The "Dilla" Swing: Look at `s_kick`. Instead of hitting on step 4 
+#    (beat 2), it hits on step 7 (the 'a' of beat 2). In the LA Beat Scene, 
+#    drummers physically play slightly behind the beat. Because the engine's 
+#    grid is mathematically perfect, pushing the kick just one 16th note late 
+#    creates that heavy, leaning, "drunken" bounce.
+#
+# 2. The Jazzy Harmony: Look at `s_chords`. The arrays form massive 4-note 
+#    minor 11th chords. By using a low `cutoff` (70) and a slow `attack` (0.3), 
+#    the engine turns the `:blade` synth into a soft, muffled electric piano 
+#    that perfectly mimics the lush, cosmic chords of Flying Lotus and Thundercat.
+#
+# 3. The Cosmic Vibraphone: The `s_fm` sequence uses `divisor: 3` and `depth: 2`. 
+#    This gentle harmonic ratio produces a pristine, glassy tone. Because it's 
+#    routed through the global tape echo bus, the sparse notes smear into a 
+#    cascading, echoing vibraphone melody that perfectly anchors the track's 
+#    head-nodding, psychedelic atmosphere.
+# ==========================================================

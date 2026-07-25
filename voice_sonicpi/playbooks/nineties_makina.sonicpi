@@ -1,0 +1,120 @@
+# ==========================================================
+# PLAYBOOK: 90s MAKINA / SPANISH HARDCORE
+# (Pioneered by DJ Pastis, Boy/Boy, and DJ Piña)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Makina.
+# We have explored UK Hardcore and Gabber, but Makina is the sound of the 
+# 90s Spanish rave scene (specifically Valencia and Barcelona). It pushes 
+# the tempo to 165 BPM and relies on a relentless, driving 4/4 "pumpy" kick, 
+# a massive, off-beat "Donk" bass, dark, "Hoover" style FM riffs, and epic, 
+# minor chord stabs that feel like a sweaty, high-speed rave on the Mediterranean coast.
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth 
+# to create the iconic "Hoover" synth sound. By using an extreme `depth` 
+# (8) and playing rapid, alternating 16th notes, the engine creates a 
+# buzzing, aggressive riff that defined the Makina genre.
+# ==========================================================
+
+use_bpm 165
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Fast, Aggressive, & Epic)
+# ==========================================================
+
+# Relentless, driving 4/4 kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry rave clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}
+])
+
+# The "Pumpy" Bass (A Minor).
+# Hits strictly on the off-beats. Very short release (0.1) creates a 
+# relentless, bouncing "pump" that drives the track forward. (4 x's, 4 elements)
+s_bass = gen_score("..x...x...x...x.", [
+  {note: :a1, release: 0.1, cutoff: 90, amp: 1.2}, 
+  {note: :a1, release: 0.1, cutoff: 90, amp: 1.2}, 
+  {note: :g1, release: 0.1, cutoff: 90, amp: 1.2}, 
+  {note: :a1, release: 0.1, cutoff: 90, amp: 1.2}
+])
+
+# Stark, "Epic" Minor Chords (Am to G).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.2) 
+# create a sharp, festival-sized wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.2, amp: 0.6}
+])
+
+# The "Hoover" FM Riff (A Minor).
+# Uses :play_fm with a low divisor (2) and extreme depth (8) to create a 
+# buzzing, aggressive "Hoover" sound. Plays a rapid, continuous 16th-note melody.
+# (16 x's, 16 elements)
+lead_notes = [:a4, :a5, :a4, :e5, :a4, :a5, :a4, :e5, 
+              :g4, :g5, :g4, :d5, :a4, :a5, :a4, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 2, depth: 8, release: 0.08} }
+s_lead = gen_score("xxxxxxxxxxxxxxxx", lead_data)
+
+# Pitched-up, "Rave" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, pristine vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Pump - Just the kick, pumpy bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Rave - Add the heavy claps and epic chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Drop - The buzzing Hoover FM riff drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], [:play_lead, s_lead, 8], 
+    [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SPANISH RAVE]
+# 
+# 1. The "Hoover" Illusion: Look at `s_lead`. The `:play_fm` synth is 
+#    given a `divisor` of `2` and an extreme `depth` of `8`. This forces 
+#    the FM modulator to radically reshape the carrier wave, creating a 
+#    buzzing, aggressive, "talking" sound that perfectly mimics the legendary 
+#    Roland Alpha Juno 2 "Hoover" patch used in 90s Makina.
+#
+# 2. The Off-Beat Pump: Look at `s_bass`, `s_hats`, and `s_chords`. They 
+#    ALL hit strictly on steps 2, 6, 10, and 14. The engine's strict master 
+#    clock locks these together perfectly at 165 BPM, creating a massive, 
+#    skipping "boom-cha" momentum that forces you to dance.
+#
+# 3. Extreme Octave Alternation: Look at `s_lead`. The melody alternates 
+#    rapidly between the low octave (:a4) and the high octave (:a5). By 
+#    using a microscopic `release` (0.08), the engine creates a frantic, 
+#    high-speed riff that perfectly anchors the track's aggressive, high-energy 
+#    atmosphere.
+# ==========================================================

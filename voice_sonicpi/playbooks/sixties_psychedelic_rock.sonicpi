@@ -1,0 +1,119 @@
+# ==========================================================
+# PLAYBOOK: 60s PSYCHEDELIC ROCK / GARAGE ROCK
+# (Pioneered by The Doors, 13th Floor Elevators, and Jefferson Airplane)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 60s Psychedelic Rock.
+# We have explored 70s Hard Rock and 90s Stoner Rock, but 60s Psychedelic 
+# Rock is the sound of the Summer of Love. It fuses the raw, driving energy 
+# of 60s garage rock with hypnotic, swirling organ chords and piercing, 
+# echoing guitar solos. It relies on a driving, "tribal" drum beat, a 
+# hypnotic, continuous 8th-note bassline, and a lush, echoing Farfisa/Vox 
+# organ that feels like a liquid light show.
+#
+# This playbook perfectly demonstrates how to use the `:play_fm` synth 
+# to simulate a swirling, vintage organ, and how to use the `:play_lead` 
+# synth routed through the global tape echo to create a piercing, 
+# psychedelic guitar solo.
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Mixolydian - Hypnotic, Swirling, & Raw)
+# ==========================================================
+
+# The "Tribal" Kick. 
+# A driving, syncopated rock march. (5 x's, 5 elements)
+s_kick = gen_score("x...x...x.x.x...", [
+  :c4, :c4, :c4, {note: :c4, amp: 0.6}, :c4
+])
+
+# Heavy, dry snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 1.0}
+])
+
+# Rigid, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Hypnotic" Bass (A Mixolydian).
+# Plays continuous, driving 8th notes. High cutoff (90) and short release (0.15) 
+# create a warm, punchy "thwack" that mimics a picked electric bass. (8 x's, 8 elements)
+bass_notes = [:a1, :a1, :a1, :a1, :g1, :g1, :a1, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# The "Swirling" Organ Chords (A7 to G7).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a warm, 
+# buzzy, vintage organ tone. Hit on the downbeats with a slow attack. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4, :g4], divisor: 2, depth: 3, attack: 0.5, release: 2.0, amp: 0.5},
+  {note: [:g3, :b3, :d4, :f4], divisor: 2, depth: 3, attack: 0.5, release: 2.0, amp: 0.5}
+])
+
+# Piercing, "Psychedelic" Guitar Solo (A Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.4) 
+# and massive gaps (`nil`) create a soaring, echoing, liquid solo. (6 x's, 6 elements)
+lead_notes = [:a5, :c6, :d6, :e6, :d6, :c6]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 100, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ommm" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.4) and low density (1) creates a slow, evolving background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Trip - Just the hypnotic bass, swirling organ, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the driving, tribal drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Peak - The piercing psychedelic guitar solo drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN PSYCHEDELIC SWIRL]
+# 
+# 1. The Swirling Organ: Look at `s_chords`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `3`, with a slow `attack` (0.5) and a 
+#    massive `release` (2.0). This forces the FM synth to produce a warm, 
+#    buzzy, sustained wave that perfectly mimics the swirling, vintage Farfisa 
+#    and Vox organs used by 60s psychedelic bands like The Doors.
+#
+# 2. The Hypnotic Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, mapping out a repetitive, driving line. By using a 
+#    mid-range `cutoff` (90) and a short `release` (0.15), the engine turns 
+#    the detuned sawtooth into a warm, punchy "thwack" that perfectly mimics 
+#    the hypnotic, continuous basslines of 60s garage rock.
+#
+# 3. The Liquid Solo: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (100) and a long `release` (0.4). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a soaring, 
+#    cascading guitar solo that feels like a liquid light show, perfectly 
+#    anchoring the track's hypnotic, psychedelic atmosphere.
+# ==========================================================

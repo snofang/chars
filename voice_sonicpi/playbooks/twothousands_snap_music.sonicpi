@@ -1,15 +1,14 @@
 # ==========================================================
-# PLAYBOOK: 2000s SNAP MUSIC / ATLANTA HIP-HOP
+# PLAYBOOK: 2000s SNAP MUSIC / ATLANTA SNAP
 # (Pioneered by Dem Franchize Boys, D4L, and Soulja Boy)
 # ========================================================== 
 # 
 # [WHY THIS GENRE?]
 # If I were to select the next playbook, I would choose 2000s Snap Music.
-# We have explored dense genres (Complextro, Breakcore) and heavy genres 
-# (Industrial, Brostep). Snap Music is the absolute masterclass in minimalism. 
-# Originating in Atlanta, it strips the hip-hop grid down to almost nothing: 
-# a finger snap on beats 2 and 4, a deep 808 bass, and a cheap, repetitive 
-# FM synth melody. 
+# We have explored heavy bass music and complex polyrhythms, but Snap Music 
+# is the absolute masterclass in minimalism. Originating in Atlanta, it strips 
+# the hip-hop grid down to almost nothing: a finger snap on beats 2 and 4, 
+# a deep 808 bass, and a cheap, repetitive FM synth melody. 
 #
 # This playbook perfectly demonstrates the power of negative space. By leaving 
 # 90% of the 16-step grid empty (`nil`), the engine creates a slow, bouncy, 
@@ -25,32 +24,54 @@ use_bpm 100
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
-# 2. THE SCORES (F Minor - Minimal, Bouncy, & Repetitive)
+# 2. THE SCORES (F# Minor - Minimal, Bouncy, & Repetitive)
 # ==========================================================
 
 # Ultra-sparse, syncopated kick. 
 # Hits on step 0, the 'and' of 2 (step 6), beat 3 (step 8), and beat 4 (step 12).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, :c4, nil, nil, nil)
+# (4 x's, 4 elements)
+s_kick = gen_score("x.....x.x...x...", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 1.0}
+])
 
 # The "Finger Snap". 
 # Uses play_snare pitched UP to :c5 to simulate a tight, high-pitched finger snap.
-s_snap  = (ring nil, nil, nil, nil, {:note => :c5, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :amp => 0.9}, nil, nil, nil)
+# (2 x's, 2 elements)
+s_snap = gen_score("....x.......x...", [:c5, :c5])
 
 # Rigid, bouncing 8th-note hats.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.2}, nil, nil, nil, {:note => :c4, :amp => 0.2}, nil, nil, nil, {:note => :c4, :amp => 0.2}, nil, nil, nil, {:note => :c4, :amp => 0.2}, nil)
+# (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.2}
+])
 
-# Deep, sliding 808 Bass (F Minor).
-# Massive release (0.5) allows the bass to ring out and carry the melody.
-s_bass  = (ring {:note => :f1, :release => 0.5, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :f1, :release => 0.5, :cutoff => 70}, nil, nil, nil, {:note => :ab1, :release => 0.5, :cutoff => 70}, nil, {:note => :c2, :release => 0.5, :cutoff => 70}, nil, {:note => :f1, :release => 0.5, :cutoff => 70}, nil)
+# Deep, sliding 808 Bass (F# Minor).
+# Massive release (0.5) allows the bass to ring out and carry the dark melody.
+# (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :fs1, release: 0.5, cutoff: 70, amp: 1.2}, 
+  {note: :c2, release: 0.5, cutoff: 70, amp: 1.0}
+])
 
-# Cheap, repetitive "Casio" FM Melody (F Minor Pentatonic).
+# Cheap, repetitive "Casio" FM Melody (F# Minor Pentatonic).
 # Uses :play_fm with a low divisor (2) and high depth (4) to create a buzzy, 
 # cheap keyboard sound that loops hypnotically.
-s_fm    = (ring {:note => :f4, :divisor => 2, :depth => 4, :release => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :ab4, :divisor => 2, :depth => 4, :release => 0.1, :amp => 0.6}, nil, {:note => :c5, :divisor => 2, :depth => 4, :release => 0.1, :amp => 0.7}, nil, nil, nil, {:note => :ab4, :divisor => 2, :depth => 4, :release => 0.1, :amp => 0.6}, nil, nil, nil)
+# (4 x's, 4 elements)
+s_fm = gen_score("x.......x.......x", [
+  {note: :fs4, divisor: 2, depth: 4, release: 0.1, amp: 0.6}, 
+  {note: :ab4, divisor: 2, depth: 4, release: 0.1, amp: 0.6}, 
+  {note: :c5, divisor: 2, depth: 4, release: 0.1, amp: 0.7}, 
+  {note: :ab4, divisor: 2, depth: 4, release: 0.1, amp: 0.6}
+])
 
 # Pitched-down, repetitive "Chant" vocal (Granular Synth).
+# Using the built-in :ambi_choir sample.
 # Low density, medium size = a raw, rhythmic vocal hit.
-s_vocal = (ring {:note => :f4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# (1 x, 1 element)
+s_vocal = gen_score("x...............", [
+  {note: :fs4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.05, amp: 0.6}
+])
 
 # ==========================================================
 # 3. THE PLAYBOOK
@@ -59,14 +80,13 @@ playbook = (ring
   # Scene 1: The Rink - Just the minimal kick, snaps, and 808 (4 bars)
   [ [:play_kick, s_kick, 4], [:play_snare, s_snap, 4], [:play_sub, s_bass, 4] ],
   
-  # Scene 2: The Groove - Add the bouncing hats and vocal chants (8 bars)
+  # Scene 2: The Groove - Add the bouncing hats and vocal chant (8 bars)
   [ [:play_kick, s_kick, 8], [:play_snare, s_snap, 8], [:play_sub, s_bass, 8], 
     [:play_hats, s_hats, 8], [:play_grain, s_vocal, 8] ],
     
   # Scene 3: The Drop - The cheap FM melody drops (8 bars)
   [ [:play_kick, s_kick, 8], [:play_snare, s_snap, 8], [:play_sub, s_bass, 8], 
-    [:play_hats, s_hats, 8], [:play_grain, s_vocal, 8], 
-    [:play_fm, s_fm, 8] ]
+    [:play_hats, s_hats, 8], [:play_grain, s_vocal, 8], [:play_fm, s_fm, 8] ]
 )
 
 # ==========================================================

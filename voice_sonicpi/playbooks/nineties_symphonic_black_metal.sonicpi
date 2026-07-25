@@ -1,0 +1,131 @@
+# ==========================================================
+# PLAYBOOK: 90s SYMPHONIC BLACK METAL
+# (Pioneered by Emperor, Dimmu Borgir, and Cradle of Filth)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Symphonic Black Metal.
+# We have explored Black Metal and Symphonic Metal, but Symphonic Black Metal 
+# is the sound of pure, freezing Scandinavian aggression fused with high-fantasy 
+# classical grandeur. It relies on a blistering "blast beat" (continuous, rapid 
+# 8th notes on kick and snare), a massively distorted, continuous 16th-note 
+# "tremolo picked" guitar riff, lush, sweeping orchestral string pads, and a 
+# piercing, chaotic "shredding" guitar solo that feels like a blizzard tearing 
+# through a medieval castle.
+#
+# This playbook perfectly demonstrates how to combine extreme rhythmic 
+# aggression with lush, cinematic atmosphere. By using the `:play_fm` synth 
+# with an extreme `depth` for the distorted guitars, and pairing it with 
+# massive `attack`/`release` Hashes on the `:play_chords` synth to simulate 
+# a string section, the engine creates a massive, theatrical, and deeply epic 
+# atmosphere.
+# ==========================================================
+
+use_bpm 160
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Fast, Dark, & Orchestral)
+# ==========================================================
+
+# The "Blast Beat" Kick. 
+# Plays continuous, driving 8th notes. (8 x's, 8 elements)
+s_kick = gen_score("x.x.x.x.x.x.x.x.", [:c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4])
+
+# The "Blast Beat" Snare. 
+# Plays continuous 8th notes in sync with the kick. (8 x's, 8 elements)
+s_snare = gen_score("x.x.x.x.x.x.x.x.", [:c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4])
+
+# Fast, driving 16th hats to add to the chaotic wall of sound. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Tremolo Picked" Distorted Guitar (E Minor).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, buzzy square wave. Plays continuous, rapid 16th notes. (16 x's, 16 elements)
+guitar_notes = [:e3, :b3, :e3, :b3, :e3, :b3, :e3, :b3, 
+                :c3, :g3, :c3, :g3, :d3, :a3, :d3, :a3]
+guitar_data = guitar_notes.map { |n| {note: n, divisor: 2, depth: 6, release: 0.05, amp: 0.7} }
+s_guitar = gen_score("xxxxxxxxxxxxxxxx", guitar_data)
+
+# Deep, distorted bass (E Minor).
+# Plays continuous 8th notes. High cutoff (110) and short release (0.1). (8 x's, 8 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :c1, :c1, :d1, :d1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.1, amp: 1.2} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Lush, "String Section" Chords (Em to Cmaj to Dmaj).
+# Hit on the downbeats. The slow 1.5-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic orchestral wave. 
+# (2 x's, 2 elements)
+s_strings = gen_score("x.......x.......", [
+  {note: [:e3, :g3, :b3, :e4], cutoff: 70, attack: 1.5, release: 4.0, amp: 0.5},
+  {note: [:d3, :fs3, :a3, :d4], cutoff: 70, attack: 1.5, release: 4.0, amp: 0.5}
+])
+
+# Piercing, "Shredding" Guitar Solo (E Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
+# and rapid, 8th-note melody create a soaring, chaotic solo. (8 x's, 8 elements)
+lead_notes = [:e5, :g5, :a5, :b5, :a5, :g5, :e5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.2} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Choir" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.4) and low density (1) creates a slow, evolving background texture 
+# that mimics a massive, haunting choir. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Overture - Just the tremolo guitar, strings, and choir (4 bars)
+  [ [:play_fm, s_guitar, 4], [:play_chords, s_strings, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Blizzard - Add the blast beat drums and bass (8 bars)
+  [ [:play_fm, s_guitar, 8], [:play_chords, s_strings, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8] ],
+    
+  # Scene 3: The Climax - The piercing shredding guitar solo drops (8 bars)
+  [ [:play_fm, s_guitar, 8], [:play_chords, s_strings, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ORCHESTRAL EXTREMITY]
+# 
+# 1. The Blast Beat: Look at `s_kick` and `s_snare`. They both play 
+#    continuous 8th notes at 160 BPM, hitting simultaneously on every beat. 
+#    This creates a relentless, mechanical wall of percussion that perfectly 
+#    mimics the legendary "blast beat" drumming of Symphonic Black Metal. 
+#    The engine's strict master clock ensures this chaotic rhythm locks 
+#    together with absolute mathematical precision.
+#
+# 2. The Orchestral Swell: Look at `s_strings`. The Hashes specify an `attack` 
+#    of `1.5` and a `release` of `4.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over five whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics a lush, cinematic string section 
+#    soaring over a freezing metal band.
+#
+# 3. FM as a Distorted Amp: Look at `s_guitar` and `s_lead`. The `:play_fm` 
+#    synth is given an extreme `depth` (6). This harsh harmonic ratio forces 
+#    the FM modulator to grind the carrier wave, creating a piercing, buzzy 
+#    square wave. By playing continuous, rapid 16th notes, the engine perfectly 
+#    mimics the "tremolo picking" technique used by black metal guitarists.
+# ==========================================================
