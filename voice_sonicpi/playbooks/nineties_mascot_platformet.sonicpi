@@ -1,0 +1,123 @@
+# ==========================================================
+# PLAYBOOK: 90s MASCOT PLATFORMER / "BLUE BLUR" STYLE
+# (Pioneered by Masato Nakamura, Jun Senoue, and Yuzo Koshiro)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Mascot Platformer.
+# We have explored 16-Bit JRPGs and Arcade Fighters, but the 90s Mascot 
+# Platformer (think Sonic the Hedgehog) is the sound of pure, high-speed 
+# momentum. It fuses the lush, bright chords of 90s house music with the 
+# driving, continuous 16th-note basslines of disco and the pristine, 
+# glassy FM synthesis of the Sega Genesis (YM2612). It relies on a fast, 
+# bouncy drum beat, a relentless "galloping" bass, and rapid, piercing 
+# FM arpeggios that feel like racing through a neon-lit, loop-de-loop 
+# casino zone.
+#
+# This playbook perfectly demonstrates how to use the `gen_score` helper 
+# to create a high-energy, driving groove. By using the `:play_sub` synth 
+# for a continuous 16th-note bassline, and the `:play_fm` synth with a 
+# high `divisor` for a piercing, 16-bit lead, the engine creates a massive, 
+# nostalgic, and deeply kinetic atmosphere.
+# ==========================================================
+
+use_bpm 145
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C Major - Fast, Bouncy, & Nostalgic)
+# =========================================================
+
+# The "Bouncy" Kick. 
+# A syncopated, high-energy dance march. (5 x's, 5 elements)
+s_kick = gen_score("x..x.x...x.x.x..", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.8}, :c4
+])
+
+# Heavy, dry snare on beats 2 and 4, with a 16th roll at the end. (4 x's, 4 elements)
+s_snare = gen_score("....x.......x.xx", [
+  :c4, :c4, {note: :c4, amp: 0.5}, {note: :c4, amp: 0.7}
+])
+
+# Fast, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Galloping" Bass (C Major).
+# Plays continuous 16th notes. High cutoff (110) and microscopic release (0.06) 
+# create a relentless, bouncy, driving churn. (16 x's, 16 elements)
+bass_notes = [:c2, :c2, :g2, :c2, :a2, :a2, :g2, :c2, 
+              :f2, :f2, :c3, :f2, :g2, :g2, :d3, :g2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.06, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Lush, "House" Chords (Cmaj9 to Am9).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.15) 
+# create a sharp, staccato wall of sound. (3 x's, 3 elements)
+s_chords = gen_score("..x.....x.x.....", [
+  {note: [:c3, :e3, :g3, :d4], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:a2, :c3, :e3, :b3], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:f2, :a2, :c3, :g3], cutoff: 110, release: 0.15, amp: 0.5}
+])
+
+# Piercing, "16-Bit" FM Lead (C Major Pentatonic).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a bright, 
+# buzzy square wave. Plays a rapid, 8th-note melody. (8 x's, 8 elements)
+lead_notes = [:c5, :e5, :g5, :c6, :d6, :c6, :g5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 3, release: 0.08} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Ring Collect" FX (Granular Synth).
+# High density, tiny size = a sharp, pristine, video game blip. (1 x, 1 element)
+s_ring = gen_score("......x.........", [
+  {note: :c6, buffer: :elec_piano, pos: 0.8, density: 4, size: 0.02, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: Act 1 - Just the galloping bass, house chords, and ring FX (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_ring, 4] ],
+  
+  # Scene 2: The Zone - Add the bouncy, high-energy drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_ring, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: Boss Battle - The rapid 16-bit FM lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_ring, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 16-BIT MOMENTUM]
+# 
+# 1. Algorithmic Gallop Bass: Look at `s_bass`. Instead of typing 16 
+#    repetitive Hashes, we define an array `bass_notes` and use `.map` to 
+#    inject the default parameters into every step. This creates the relentless, 
+#    driving 16th-note "gallop" that defines high-speed platformer music, 
+#    with zero repetitive code.
+#
+# 2. FM as a 16-Bit Chip: The `s_lead` sequence uses `divisor: 2` and `depth: 3`. 
+#    This harmonic ratio produces a bright, buzzy square wave that cuts through 
+#    the heavy mix. By playing a rapid, 8th-note melody, the engine creates a 
+#    frantic, high-energy hook that perfectly mimics the legendary Yamaha 
+#    YM2612 sound chip of the Sega Genesis.
+#
+# 3. The House Chords: Look at `s_chords`. The arrays form lush 4-note major 9th 
+#    and minor 9th chords. By hitting strictly on the off-beats with a high 
+#    `cutoff` (110), the engine turns the `:blade` synth into a sharp, 
+#    sophisticated piano stab that perfectly mimics the 90s house music 
+#    influence that defined the Mascot Platformer genre.
+# ==========================================================

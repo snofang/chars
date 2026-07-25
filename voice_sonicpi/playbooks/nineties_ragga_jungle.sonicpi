@@ -1,0 +1,121 @@
+# ==========================================================
+# PLAYBOOK: 90s RAGGA JUNGLE / HARDCORE JUNGLE
+# (Pioneered by Shy FX, Congo Natty, and Rebel MC)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Ragga Jungle.
+# We have explored Atmospheric Jungle and Liquid DnB, but Ragga Jungle is 
+# the raw, high-energy origin of the genre. It fuses the massive, bouncing 
+# sub-bass of Jamaican sound system culture with the frantic, chopped "Amen" 
+# breakbeat of UK rave. It relies on blistering 165 BPM drums, deep, round 
+# sub-bass stabs, and pitched-up, chopped "ragga" vocal chants that feel 
+# like a massive, sweaty warehouse party.
+#
+# This playbook perfectly demonstrates how to use the `gen_score` helper 
+# to create a highly complex, chopped breakbeat. By mapping out intricate, 
+# overlapping kick and snare hits, the engine creates a frantic, kinetic, 
+# and deeply rhythmic atmosphere.
+# ==========================================================
+
+use_bpm 165
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Frantic, Bouncy, & Raw)
+# ==========================================================
+
+# The "Amen" Kick. 
+# A highly syncopated, chopped breakbeat pattern. (5 x's, 5 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.8}, {note: :c4, amp: 0.6}
+])
+
+# The "Amen" Snare. 
+# Heavy hits on 2 and 4, with frantic ghost notes and rolls. (5 x's, 5 elements)
+s_snare = gen_score("....x.....x.x.xx", [
+  :c4, {note: :c4, amp: 0.4}, :c4, {note: :c4, amp: 0.5}, {note: :c4, amp: 0.9}
+])
+
+# Fast, rolling 16th hats to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# Deep, massive "Sound System" Sub-Bass (A Minor).
+# Massive release (2.0) and low cutoff (50) create a deep, continuous rumble. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :a1, release: 2.0, cutoff: 50, amp: 1.2}, 
+  {note: :e1, release: 2.0, cutoff: 50, amp: 1.0}
+])
+
+# Stark, "Synth String" Stabs (Am to G).
+# Hit strictly on the off-beats. High cutoff (100) and short release (0.15) 
+# create a sharp, staccato wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 100, release: 0.15, amp: 0.5},
+  {note: [:a3, :c4, :e4], cutoff: 100, release: 0.15, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 100, release: 0.15, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 100, release: 0.15, amp: 0.5}
+])
+
+# Piercing, "Rave" FM Bleeps (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a piercing, 
+# glassy tone. (8 x's, 8 elements)
+lead_notes = [:a5, :e5, :c6, :a5, :g5, :e5, :c6, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.08} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Chopped, "Ragga" Vocal Stutter (Granular Synth).
+# High density (3) and tiny size (0.04) shatter the vocal into a rhythmic skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a4, buffer: :misc_lori, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Skip - Just the frantic Amen drums and sub-bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the synth stabs and vocal chops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The piercing rave FM bleeps drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN JUNGLE CHAOS]
+# 
+# 1. The Chopped Amen: Look at `s_kick` and `s_snare`. They are densely 
+#    packed and completely avoid landing on the same beats. The engine's strict 
+#    master clock ensures these complex, overlapping hits fire with absolute 
+#    mathematical precision at 165 BPM, perfectly mimicking the chopped "Amen" 
+#    breakbeats of 90s Ragga Jungle.
+#
+# 2. Subterranean Weight: Look at `s_bass`. The `:play_sub` synth is given a 
+#    massive `release` of `2.0` (two whole beats) and an extreme low `cutoff` 
+#    of `50`. This creates a deep, continuous rumble that anchors the erratic, 
+#    skittering drums, perfectly mimicking the massive 808 bass of Jamaican 
+#    sound systems.
+#
+# 3. Micro-Glitched Vocals: Look at `s_vocal`. The granular engine is given a 
+#    high `density` (3) and a tiny `size` (0.04). By scattering the grains, 
+#    the engine turns the vocal into a sharp, skipping stutter that sounds 
+#    like a DJ rapidly chopping a reggae acapella on a sampler.
+# ==========================================================

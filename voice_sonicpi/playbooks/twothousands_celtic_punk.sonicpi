@@ -1,0 +1,123 @@
+# ==========================================================
+# PLAYBOOK: 2000s CELTIC PUNK / IRISH FOLK ROCK
+# (Pioneered by Dropkick Murphys, Flogging Molly, and The Pogues)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2000s Celtic Punk.
+# We have explored Folktronica and Ska Punk, but Celtic Punk is the sound 
+# of a rowdy, sweaty Irish pub. It fuses the fast, aggressive energy of 
+# 70s punk rock with traditional Irish folk melodies and instruments. 
+# It relies on a frantic, driving 4/4 punk beat, a loud, root-only bass, 
+# fast "chugging" acoustic guitar strums, and rapid, continuous 16th-note 
+# fiddle or accordion melodies that make you want to dance and spill your pint.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a fast, live folk-punk band. By using the `:play_fm` 
+# synth to simulate a fast fiddle/accordion lead, and the `:play_pluck` 
+# synth to simulate a chugging acoustic guitar, the engine creates a 
+# massive, high-energy, and deeply festive atmosphere.
+# ==========================================================
+
+use_bpm 165
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Dorian - Fast, Aggressive, & Festive)
+# ==========================================================
+
+# Frantic, driving 4/4 punk kick. (4 x's, 1 element - cycles 4 times)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 8th hats. (8 x's, 2 elements - cycles 4 times)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Root-Only" Bass (A Dorian).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive picked bass. (8 x's, 8 elements)
+bass_notes = [:a1, :a1, :a1, :a1, :c2, :c2, :d2, :d2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# The "Chugging" Acoustic Guitar (Am to C).
+# Uses :play_pluck. Hits strictly on the off-beats to mimic fast strumming. 
+# (8 x's, 8 elements)
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:a3, :e4], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:a3, :e4], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:a3, :e4], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:a3, :e4], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:c3, :g3], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:c3, :g3], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:c3, :g3], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:c3, :g3], amp: 0.6, release: 0.08, coef: 0.4}
+])
+
+# The "Fiddle / Accordion" Lead (A Dorian).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a warm, 
+# buzzy, saw-like tone. Plays a rapid, continuous 16th-note melody. (16 x's, 16 elements)
+lead_notes = [:a5, :b5, :a5, :g5, :a5, :b5, :d6, :b5, 
+              :a5, :b5, :a5, :g5, :e5, :g5, :a5, :b5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 3, release: 0.05} }
+s_lead = gen_score("xxxxxxxxxxxxxxxx", lead_data)
+
+# "Oi!" Gang Shout (Granular Synth).
+# Long size (0.08) and low density (1) creates a raw, repetitive vocal hit. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a3, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.08, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Jam - Just the fast drums, driving bass, and acoustic guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4] ],
+  
+  # Scene 2: The Vibe - Add the "Oi!" gang shouts (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Solo - The rapid fiddle/accordion melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN FOLK-PUNK ENERGY]
+# 
+# 1. FM as a Fiddle: Look at `s_lead`. The `:play_fm` synth is given a low 
+#    `divisor` (2) and a mid `depth` (3). This harmonic ratio produces a warm, 
+#    buzzy, saw-like wave that perfectly mimics a violin or accordion. By 
+#    playing a rapid, continuous 16th-note melody at 165 BPM, the engine 
+#    creates a frantic, high-energy hook that perfectly anchors the track's 
+#    festive, Irish pub atmosphere.
+#
+# 2. The "Chugging" Acoustic: Look at `s_guitar`. The `:play_pluck` synth 
+#    hits strictly on the off-beats (steps 2, 6, 10, 14). By using a 
+#    microscopic `release` (0.08) and a low `coef` (0.4), the engine turns 
+#    the pluck into a sharp, staccato "chuka" that perfectly mimics the 
+#    fast, aggressive strumming of an acoustic guitar driving the punk rhythm.
+#
+# 3. The Dorian Mode: Look at `s_bass` and `s_lead`. The melody uses A, B, C, 
+#    D, E, F#, G. The major 6th (F#) creates the bright, "Celtic" sound that 
+#    defines traditional Irish folk music. The engine's strict 16-step grid 
+#    ensures this rapid, melodic lead fires flawlessly over the driving 
+#    8th-note rhythm section.
+# ==========================================================

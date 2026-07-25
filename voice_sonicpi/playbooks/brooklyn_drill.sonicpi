@@ -1,0 +1,120 @@
+# ==========================================================
+# PLAYBOOK: 2010s BROOKLYN DRILL / NEW YORK DRILL
+# (Pioneered by Pop Smoke, Fivio Foreign, and Sheff G)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 2010s Brooklyn Drill.
+# We have explored UK Drill and Dark Trap, but Brooklyn Drill is the sound 
+# of modern New York street rap. It takes the sliding 808s and frantic hi-hat 
+# rolls of UK Drill but slows the tempo down to a heavy, menacing 140 BPM 
+# (feeling like 70). It relies on massive, booming 808 bass, a sparse, 
+# syncopated kick, dark, repetitive minor piano loops, and a piercing, 
+# high-pitched synth flute that cuts through the heavy low-end.
+#
+# This playbook perfectly demonstrates how to use the 16-step grid to 
+# create a slow, suffocating, and highly syncopated groove. By using a 
+# massive `release` on the 808 bass and routing a sparse, high-pitched 
+# flute through the global tape echo, the engine creates a massive, 
+# dark, and undeniably catchy atmosphere.
+# ==========================================================
+
+use_bpm 140
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Dark, Booming, & Menacing)
+# ==========================================================
+
+# The "Brooklyn" Kick. 
+# A heavy, syncopated 808 bounce. (3 x's, 3 elements)
+s_kick = gen_score("x.....x.x.....x.", [
+  :c4, {note: :c4, amp: 0.8}, {note: :c4, amp: 0.9}
+])
+
+# Crisp, dry snare strictly on beat 3 (step 8). (1 x, 1 element)
+s_snare = gen_score("........x.......", [:c4])
+
+# Frantic, rolling Trap hats with rising amplitudes. (8 x's, 8 elements)
+s_hats = gen_score("x..x..x..x.x.x.x", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.6}, {note: :c4, amp: 0.7}
+])
+
+# Massive, sliding 808 Bass (F# Minor).
+# Massive release (2.0) allows the bass to ring out and carry the dark melody. 
+# (3 x's, 3 elements)
+s_bass = gen_score("x.......x.....x.", [
+  {note: :fs1, release: 2.0, cutoff: 60, amp: 1.2}, 
+  {note: :a1, release: 1.5, cutoff: 60, amp: 1.0}, 
+  {note: :fs1, release: 1.5, cutoff: 60, amp: 1.0}
+])
+
+# Stark, "Piano Loop" Stabs (F#m to Am).
+# Hit strictly on the off-beats. Low cutoff (80) and short release (0.2) 
+# create a dark, repetitive, cinematic loop. (4 x's, 4 elements)
+s_chords = gen_score("..x.....x.x.....", [
+  {note: [:fs3, :a3, :c4], cutoff: 80, release: 0.2, amp: 0.5},
+  {note: [:fs3, :a3, :c4], cutoff: 80, release: 0.2, amp: 0.5},
+  {note: [:a3, :c4, :e4], cutoff: 80, release: 0.2, amp: 0.5},
+  {note: [:a3, :c4, :e4], cutoff: 80, release: 0.2, amp: 0.5}
+])
+
+# Piercing, "Synth Flute" Lead (F# Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.5) 
+# and massive gaps (`nil`) create a haunting, echoing melody. (6 x's, 6 elements)
+lead_notes = [:fs5, :a5, :c6, :a5, :g5, :fs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.5} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Pitched-down, "Grrt" Vocal Stutter (Granular Synth).
+# High density, tiny size = a sharp, percussive vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :fs3, buffer: :misc_lori, pos: 0.1, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the massive 808, piano loop, and flute (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_lead, s_lead, 4], 
+    [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Groove - Add the syncopated 808 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_lead, s_lead, 8], 
+    [:play_grain, s_vocal, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN STREET WEIGHT]
+# 
+# 1. The 808 Slide: Look at `s_bass`. The `:play_sub` synth is given a 
+#    `release` of `2.0` (nearly two whole beats) and a low `cutoff` of `60`. 
+#    Because the BPM is 140, that low F# note rings out for almost a second, 
+#    creating a massive, booming low-end that carries the dark melody and 
+#    provides immense, suffocating weight.
+#
+# 2. The Piano Loop: Look at `s_chords`. The arrays form dark, minor chords. 
+#    By hitting strictly on the off-beats with a low `cutoff` (80), the engine 
+#    turns the `:blade` synth into a stark, repetitive piano stab that perfectly 
+#    mimics the haunting, looped samples used by Brooklyn Drill producers 
+#    like 808Melo.
+#
+# 3. The Synth Flute: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (100) and a long `release` (0.5). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a haunting, 
+#    echoing flute melody that perfectly anchors the track's dark, late-night 
+#    atmosphere.
+# ==========================================================

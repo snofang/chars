@@ -1,5 +1,5 @@
 # ==========================================================
-# VOICE SONIC PI ENGINE - FULLY OPTIMIZED (with Data Helpers)
+# VOICE SONIC PI ENGINE - FULLY OPTIMIZED (Final)
 # ==========================================================
 
 # ----------------------------------------------------------
@@ -122,12 +122,22 @@ define :play_chords do |n|
   play note, **opts if note
 end
 
-# 4. GRANULAR CLOUD (Runtime optimized - just pushes to queue)
-@grain_events = {}
-
+# 4. GRANULAR CLOUD (Original working version with note cache)
 define :play_grain do |n|
-  # Does nothing at runtime - all grains pre-expanded at boot
-  # This function exists only for API compatibility
+  note, opts = parse_step(n, {amp: 0.5})
+  if note
+    pitch_shift = note_cached(note) - note_cached(:c4)
+    at [0, 0.0625, 0.125, 0.1875] do
+      sample :ambi_choir, 
+        pitch: pitch_shift, 
+        start: rrand(0.3, 0.5), 
+        finish: rrand(0.55, 0.6), 
+        pan: rrand(-0.8, 0.8), 
+        attack: 0.01, 
+        release: 0.04, 
+        **opts
+    end
+  end
 end
 
 # 5. FM BELL
@@ -174,44 +184,7 @@ define :play_hats do |n|
 end
 
 # ----------------------------------------------------------
-# 6. GRAIN PRE-EXPANSION HELPER (Preserves Randomness)
-# ----------------------------------------------------------
-define :expand_grain_events do |raw|
-  events = []
-  
-  note, opts = parse_step(raw, {amp: 0.5})
-  return events unless note
-  
-  density = opts[:density] || 4
-  pitch_shift = note_cached(note) - note_cached(:c4)
-  interval = 0.25 / density
-  size = opts[:size] || 0.05
-  buffer = opts[:buffer] || :ambi_choir
-  amp = opts[:amp] || 0.5
-  pos = opts[:pos] || rrand(0.3, 0.5)  # ← Random once per step
-  
-  density.times do |i|
-    # Organic randomness preserved - each grain gets its own rrand
-    grain_start = pos + rrand(-0.01, 0.01)
-    
-    events << {
-      time_offset: i * interval,
-      buffer: buffer,
-      pitch: pitch_shift,
-      start: grain_start,
-      finish: grain_start + size,
-      pan: rrand(-0.8, 0.8),  # ← Random per grain
-      attack: size / 2,
-      release: size / 2,
-      amp: amp
-    }
-  end
-  
-  events
-end
-
-# ----------------------------------------------------------
-# 7. VALIDATION & ENGINE BOOT
+# 6. VALIDATION & ENGINE BOOT
 # ----------------------------------------------------------
 define :start_engine do |playbook|
   # 1. Strict schema validation
@@ -222,61 +195,18 @@ define :start_engine do |playbook|
     end
   end
   
-  # 2. Pre-expand all grain events (with randomness captured at boot)
-  @grain_schedule = {}
-  
-  playbook.each do |inst, score, bars|
-    next unless inst == :play_grain
-    
-    bars.times do |bar|
-      16.times do |step|
-        idx = bar * 16 + step
-        raw = score[step]
-        next unless raw
-        
-        events = expand_grain_events(raw)
-        @grain_schedule[idx] = events if events.any?
-      end
-    end
-  end
-  
-  # 3. The Conductor
+  # 2. The Conductor
   live_loop :conductor do
     scene = playbook.tick(:conductor)
     max_bars = scene.map { |task| task[2] }.max || 1
     total_steps = max_bars * 16
     
-    # 4. Step-by-step sequencing
+    # 3. Step-by-step sequencing
     total_steps.times do |step|
-      # Play grains for this step (ONE 'at' call per step with grains)
-      if @grain_schedule.key?(step)
-        at 0 do
-          events = @grain_schedule[step]
-          events.each_with_index do |grain, i|
-            # Sleep to the correct offset
-            if i > 0
-              sleep grain[:time_offset] - events[i-1][:time_offset]
-            else
-              sleep grain[:time_offset]
-            end
-            
-            sample grain[:buffer],
-              pitch: grain[:pitch],
-              start: grain[:start],
-              finish: grain[:finish],
-              pan: grain[:pan],
-              attack: grain[:attack],
-              release: grain[:release],
-              amp: grain[:amp]
-          end
-        end
-      end
-      
-      # Play normal instruments
       scene.each do |task|
         inst, score, bars = task
-        next if inst == :play_grain  # Already handled above
         
+        # Only trigger if the instrument's duration hasn't expired
         if step < (bars * 16)
           send(inst, score[step % 16])
         end

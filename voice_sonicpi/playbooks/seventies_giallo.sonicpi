@@ -1,0 +1,126 @@
+# ==========================================================
+# PLAYBOOK: 70s GIALLO / ITALIAN HORROR SOUNDTRACK
+# (Pioneered by Goblin, Bruno Nicolai, and Ennio Morricone)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 70s Giallo.
+# We have explored Spaghetti Westerns and Cinematic Funk, but Giallo is 
+# the sound of 1970s Italian horror/thriller cinema (think Dario Argento's 
+# "Suspiria" or "Deep Red"). It fuses progressive rock with avant-garde jazz 
+# and terrifying, dissonant synthesizers. It relies on a tense, syncopated 
+# drum groove, a deep, driving "fuzz" bass, stark, dissonant "cluster" 
+# piano/synth stabs, and a piercing, echoing "music box" or "celesta" 
+# melody that feels like being stalked through a neon-lit Venetian palace.
+#
+# This playbook perfectly demonstrates how to use a purely electronic 
+# engine to simulate a terrifying, live prog-rock band. By using the 
+# `:play_fm` synth to create dissonant, cluster chords and a piercing 
+# music box lead, the engine creates a tense, cinematic, and deeply 
+# unsettling atmosphere.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor / Dissonant - Tense, Creepy, & Driving)
+# ==========================================================
+
+# The "Prog Rock" Kick. 
+# A syncopated, tense march. (4 x's, 4 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Crisp, dry snare on beats 2 and 4, with a syncopated ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Fast, driving 16th hats to add tension. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}
+])
+
+# The "Fuzz" Bass (D Minor).
+# Plays a driving, melodic line. High cutoff (100) and short release (0.15) 
+# create a punchy, aggressive "thwack" that mimics a distorted electric bass. 
+# (8 x's, 8 elements)
+bass_notes = [:d1, :d1, :d1, :d1, :f1, :f1, :a1, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Stark, "Cluster" Piano/Synth Stabs (Dissonant).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# dissonant hit. Uses cluster chords (adjacent semitones) for maximum tension. 
+# (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:d3, :eb3], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:d3, :eb3], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:a2, :bb2], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:a2, :bb2], divisor: 2, depth: 4, release: 0.1, amp: 0.6}
+])
+
+# Piercing, "Music Box" Lead (D Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (1) to create a pristine, 
+# glassy, child-like tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:d6, :a5, :f5, :a5, :g5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 1, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Whisper" / "Scream" Texture (Granular Synth).
+# Pitched UP to :d5. Long size (0.2) and low density (1) creates a slow, 
+# evolving, terrifying background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :d5, buffer: :misc_lori, pos: 0.4, density: 1, size: 0.2, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Stalker - Just the fuzz bass, cluster stabs, and whisper (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Chase - Add the syncopated prog rock drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Reveal - The piercing music box melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC DREAD]
+# 
+# 1. FM as a Cluster Chord: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and a `depth` of `4`, playing only 2 notes at a time. 
+#    By using cluster chords (adjacent semitones like :d3 and :eb3), the engine 
+#    creates a harsh, dissonant, staccato hit that perfectly mimics the avant-garde, 
+#    terrifying piano stabs used by Goblin in 70s Italian horror soundtracks.
+#
+# 2. The Fuzz Bass: Look at `s_bass`. The `:play_sub` synth plays continuous, 
+#    driving 8th notes. By using a high `cutoff` (100) and a short `release` 
+#    (0.15), the engine turns the detuned sawtooth into a punchy, aggressive 
+#    "thwack" that perfectly mimics the distorted, fuzz bass that drove the 
+#    progressive rock rhythm sections of 70s Giallo films.
+#
+# 3. The Music Box: The `s_lead` sequence uses `divisor: 3` and `depth: 1`. 
+#    This gentle harmonic ratio produces a pristine, glassy, sine-like wave 
+#    that mimics a child's music box or celesta. By routing it through the 
+#    global tape echo bus, the sparse notes cascade across the empty space, 
+#    creating a deeply unsettling, lullaby-like atmosphere that contrasts 
+#    perfectly with the aggressive rhythm section.
+# ==========================================================

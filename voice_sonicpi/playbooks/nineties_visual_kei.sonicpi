@@ -1,0 +1,128 @@
+# ==========================================================
+# PLAYBOOK: 90s VISUAL KEI / JAPANESE METAL
+# (Pioneered by X Japan, Malice Mizer, and L'Arc~en~Ciel)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Visual Kei.
+# We have explored Symphonic Metal and Melodic Death Metal, but Visual Kei 
+# is the sound of 90s Japanese theatrical metal. It fuses the blistering 
+# speed and aggression of thrash metal with lush, sweeping classical string 
+# sections, dramatic harmonic minor progressions, and operatic, high-pitched 
+# vocals. It relies on a blistering "double-kick" drum beat, a driving, 
+# continuous 8th-note bass, massive, distorted power chords, and rapid, 
+# shredding guitar solos that feel like a high-speed samurai duel.
+#
+# This playbook perfectly demonstrates how to combine extreme rhythmic 
+# aggression with lush, classical atmosphere. By using the `:play_fm` synth 
+# with extreme `depth` for distorted chords, and pairing it with massive 
+# `attack`/`release` Hashes on the `:play_chords` synth to simulate a string 
+# section, the engine creates a massive, theatrical, and deeply dramatic 
+# atmosphere.
+# ==========================================================
+
+use_bpm 78
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Harmonic Minor - Fast, Dramatic, & Theatrical)
+# ==========================================================
+
+# The "Double Kick" Drum. 
+# A blistering, continuous 8th-note gallop. (8 x's, 8 elements)
+s_kick = gen_score("x.x.x.x.x.x.x.x.", [:c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 16th hats to add to the chaotic wall of sound. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Galloping" Bass (E Harmonic Minor).
+# Plays continuous, driving 8th notes. High cutoff (100) and short release (0.1) 
+# create a punchy, aggressive "thwack" that mimics a picked electric bass. (8 x's, 8 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :c1, :c1, :d1, :d1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (E5 to D5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a harsh, 
+# grinding hit. Plays a classic, palm-muted metal riff. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:e3, :b3], divisor: 2, depth: 6, release: 0.3, amp: 0.7},
+  {note: [:d3, :a3], divisor: 2, depth: 6, release: 0.3, amp: 0.7}
+])
+
+# Lush, "String Section" Chords (Em to Dmaj).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic orchestral wave. (2 x's, 2 elements)
+s_strings = gen_score("x.......x.......", [
+  {note: [:e3, :g3, :b3, :e4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.5},
+  {note: [:d3, :fs3, :a3, :d4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.5}
+])
+
+# Piercing, "Shredding" Guitar Solo (E Harmonic Minor).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
+# and rapid, 8th-note melody create a soaring, virtuosic solo. (8 x's, 8 elements)
+lead_notes = [:e5, :g5, :a5, :b5, :d6, :b5, :g5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.2} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# Operatic, "Battle Cry" Vocal (Granular Synth).
+# Pitched UP to :e4. Long size (0.15) creates a soaring, echoing vocal hit. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :e4, buffer: :misc_lori, pos: 0.2, density: 1, size: 0.15, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Overture - Just the galloping bass, strings, and power chords (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_strings, 4], [:play_fm, s_chords, 4] ],
+  
+  # Scene 2: The Battle - Add the double kick drums and operatic vocals (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_strings, 8], [:play_fm, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Climax - The piercing shredding guitar solo drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_strings, 8], [:play_fm, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_grain, s_vocal, 8], [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THEATRICAL METAL]
+# 
+# 1. The Harmonic Minor Scale: Look at `s_lead` and `s_strings`. The melody 
+#    uses E, F#, G, A, B, C, D#. The augmented 2nd interval between D and D# 
+#    creates the exotic, dramatic, "classical" sound that defines Visual Kei 
+#    and Japanese metal. The engine's strict 16-step grid ensures this rapid, 
+#    complex melody fires flawlessly over the driving rhythm section.
+#
+# 2. The Orchestral Swell: Look at `s_strings`. The Hashes specify an `attack` 
+#    of `1.0` and a `release` of `3.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over four whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics a lush, cinematic string section 
+#    soaring over a heavy metal band.
+#
+# 3. FM as a Distorted Amp: Look at `s_chords` and `s_lead`. The `:play_fm` 
+#    synth is given a `divisor` of `2` and an extreme `depth` of `6`. This 
+#    harsh harmonic ratio forces the FM modulator to grind the carrier wave, 
+#    creating a harsh, distorted square wave. By playing palm-muted, galloping 
+#    riffs and rapid, shredding solos, the engine perfectly mimics the 
+#    aggressive, high-speed guitars of 90s Visual Kei.
+# ==========================================================
