@@ -1,0 +1,135 @@
+# ==========================================================
+# PLAYBOOK: 90s JAZZCORE / JAZZ PUNK
+# (Pioneered by Naked City, Ruins, and Painkiller)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Mathcore (which is heavy and dissonant) and Jazz Fusion 
+# (which is smooth and syncopated). Jazzcore fuses the two, taking the 
+# blistering tempos of hardcore punk and injecting them with complex, 
+# dissonant jazz chords, erratic time signatures, and a piercing, chaotic 
+# FM lead that feels like a saxophone player having a panic attack.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 170 BPM. Frantic, technical, and aggressive.
+# 2. Harmonic Center: G Dorian / Dissonant. Jazzy but atonal.
+# 3. Rhythmic Skeleton: A relentless "blast beat" fused with odd-time 
+#    stops and starts. The grid is used to create stuttering, unpredictable 
+#    bursts of noise.
+# 4. Timbral Palette:
+#    - Bass: "Slap" synth bass, fast, staccato, and aggressive.
+#    - Chords: Dissonant, complex jazz chords (minor 11ths, altered chords).
+#    - Lead: Piercing, chaotic, atonal FM "saxophone" screeches.
+#    - Texture: Granular "white noise" or "cymbal wash" blasts.
+# 5. Arrangement: Intro (Dissonance) -> Blast (Chaos) -> Solo (Panic).
+# ==========================================================
+
+use_bpm 170
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Dorian / Dissonant - Chaotic, Jazzy, & Fast)
+# ==========================================================
+
+# The "Blast / Stop" Kick. 
+# A frantic pattern with sudden gaps for dramatic stops. (5 x's, 5 elements)
+s_kick = gen_score("x..x.x..x.x..x..", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}, {note: :c4, amp: 0.8}
+])
+
+# Frantic, machine-gun snare bursts. (6 x's, 6 elements)
+s_snare = gen_score("..x.x.....x.x.xx", [
+  :c4, {note: :c4, amp: 0.4}, :c4, {note: :c4, amp: 0.9}, 
+  {note: :c4, amp: 0.5}, :c4, {note: :c4, amp: 0.8}, {note: :c4, amp: 1.0}
+])
+
+# Fast, rigid 16th hats to maintain the grid. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Slap" Bass (Dissonant).
+# Plays a fast, staccato, syncopated line using flat 5ths and minor 2nds.
+# High cutoff (110) and microscopic release (0.05) create an aggressive "thwack".
+# (6 x's, 6 elements)
+s_bass = gen_score("x.x.x..x.x.x.x..", [
+  {note: :g1, cutoff: 110, release: 0.05, amp: 1.0}, 
+  {note: :db2, cutoff: 110, release: 0.05, amp: 1.0}, 
+  {note: :g1, cutoff: 110, release: 0.05, amp: 1.0}, 
+  {note: :ab1, cutoff: 110, release: 0.05, amp: 1.0}, 
+  {note: :d2, cutoff: 110, release: 0.05, amp: 1.0}, 
+  {note: :g1, cutoff: 110, release: 0.05, amp: 1.0}
+])
+
+# Dissonant, "Jazz" Power Chords (G7#9 to Db7).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Uses complex, altered chords. (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:g3, :b3, :f4, :ab4], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:db3, :f3, :bb3, :cb4], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:g3, :b3, :f4, :ab4], divisor: 2, depth: 6, release: 0.15, amp: 0.7}
+])
+
+# Piercing, "Saxophone" Lead (Atonal / Chromatic).
+# Uses :play_fm with a high divisor (4) and extreme depth (6) to create a 
+# harsh, piercing, digital squeal. Plays an erratic, chromatic melody. 
+# (8 x's, 8 elements)
+lead_notes = [:g5, :ab5, :f5, :g5, :b5, :c6, :bb5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 4, depth: 6, release: 0.05} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Cymbal Wash / White Noise" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Extreme density (6) and microscopic size (0.02) shatter the sample into 
+# high-frequency, metallic static. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :g4, buffer: :ambi_choir, pos: 0.9, density: 6, size: 0.02, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Dissonance - Just the complex chords, slap bass, and static (4 bars)
+  [ [:play_fm, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Blast - Add the frantic, stop-start drums (8 bars)
+  [ [:play_fm, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Panic - The piercing, atonal saxophone lead drops (8 bars)
+  [ [:play_fm, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN JAZZ AGGRESSION]
+# 
+# 1. Dissonant Jazz Harmony: Look at `s_chords`. The arrays use complex, 
+#    altered chords (G7#9, Db7) featuring flat 5ths, sharp 9ths, and minor 
+#    2nds. Combined with the extreme FM `depth` (6), the engine produces a 
+#    harsh, grinding, and chaotic sound that perfectly mimics the "jazz-punk" 
+#    aesthetic of bands like Naked City.
+#
+# 2. The Slap Bass Churn: Look at `s_bass`. The `:play_sub` synth plays a 
+#    fast, staccato line using flat 5ths (G to Db). By using a high `cutoff` 
+#    (110) and a microscopic `release` (0.05), the engine turns the detuned 
+#    sawtooth into an aggressive, percussive "thwack" that perfectly mimics a 
+#    slapped upright bass played at hyper-speed.
+#
+# 3. Chromatic Panic: Look at `s_lead`. The melody uses rapid, chromatic 
+#    steps (G, Ab, F, G, B, C, Bb, G) that jump erratically across the scale. 
+#    Because it's routed through the global tape echo bus, the rapid notes smear 
+#    into a chaotic, screaming solo that perfectly mimics a free-jazz saxophone 
+#    player having a panic attack.
+# ==========================================================

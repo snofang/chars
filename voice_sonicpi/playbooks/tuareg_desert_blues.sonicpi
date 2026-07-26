@@ -1,0 +1,126 @@
+# ==========================================================
+# PLAYBOOK: TUAREG DESERT BLUES / ASSOUF
+# (Pioneered by Tinariwen, Bombino, and Abdallah Oumbadougou)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored standard Blues Rock and Afrobeat. Tuareg Desert Blues 
+# (often called "Assouf," meaning loneliness or nostalgia) is the sound of 
+# the Saharan Tuareg people. It fuses traditional hand-clap rhythms and 
+# call-and-response vocals with electric guitars played in open tunings, 
+# creating a hypnotic, swirling, and deeply rhythmic desert blues. The engine 
+# captures that exact, driving, sand-swept groove.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 95 BPM. Driving, hypnotic, and rhythmic.
+# 2. Harmonic Center: E Minor Pentatonic. Open, bluesy, and desert-tinged.
+# 3. Rhythmic Skeleton: A 12/8 triplet feel approximated on a 16-step grid. 
+#    Syncopated kicks, off-beat handclaps (snares), and continuous shakers.
+# 4. Timbral Palette:
+#    - Bass: Deep, driving, melodic sub-bass (mid cutoff, short release).
+#    - Chords: Clean, echoing "desert" rhythm guitar stabs (`:play_pluck`).
+#    - Lead: Piercing, swirling electric guitar solo (FM, high cutoff, long release).
+#    - Texture: Vocal chant (granular, rhythmic, pitched down).
+# 5. Arrangement: Intro (Guitar/Bass) -> Verse (Claps/Shaker) -> Solo (Lead).
+# ==========================================================
+
+use_bpm 95
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor Pentatonic - Hypnotic, Swirling, & Rhythmic)
+# ==========================================================
+
+# The "Desert" Kick. 
+# A syncopated, driving march. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x.x.x...", [:c4, :c4, :c4, {note: :c4, amp: 0.7}])
+
+# Crisp, organic handclaps (snare) strictly on the off-beats. (4 x's, 4 elements)
+s_snare = gen_score("..x...x...x...x.", [:c4, :c4, :c4, :c4])
+
+# Continuous, driving 16th shaker to simulate the 12/8 feel. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# The "Driving" Bass (E Minor).
+# Plays a syncopated, root-fifth line. 
+# Mid cutoff (80) and short release (0.15) create a warm, percussive "thwack".
+# (8 x's, 8 elements)
+bass_notes = [:e1, :e1, :g1, :e1, :d1, :d1, :e1, :d1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 80, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Clean, "Rhythm Guitar" Stabs (Em).
+# Uses :play_pluck. Hits strictly on the off-beats to mimic funky, clean strumming. 
+# (4 x's, 4 elements)
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:e3, :g3, :b3], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:e3, :g3, :b3], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:e3, :g3, :b3], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:e3, :g3, :b3], amp: 0.6, release: 0.08, coef: 0.4}
+])
+
+# Piercing, "Swirling" Lead Guitar (E Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a sharp, 
+# brassy, electric tone. Routed through the global tape echo for a swirling smear.
+# (6 x's, 6 elements)
+lead_notes = [:e5, :g5, :b5, :e6, :d6, :b5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 2, depth: 4, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Call-and-Response" Vocal Chant (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# High density (2) and medium size (0.08) creates a raw, rhythmic vocal hit.
+# (2 x's, 2 elements)
+s_grain = gen_score("....x.......x...", [
+  {note: :e3, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.08, amp: 0.6},
+  {note: :e3, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.08, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Dunes - Just the driving bass, rhythm guitar, and chant (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Caravan - Add the syncopated handclaps and shakers (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The piercing, swirling lead guitar drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DESERT GROOVE]
+# 
+# 1. The 12/8 Illusion: Look at `s_hats` and `s_snare`. The hats play 
+#    continuous 16th notes, but the handclaps hit strictly on the off-beats 
+#    (steps 2, 6, 10, 14). This creates a polyrhythmic, triplet-based "swing" 
+#    that perfectly mimics the 12/8 time signature traditional to Tuareg music.
+#
+# 2. The Swirling Lead: The `s_lead` sequence uses `divisor: 2` and `depth: 4`. 
+#    This harmonic ratio produces a sharp, brassy, electric tone. Because it's 
+#    routed through the global tape echo bus, the sparse notes smear into a 
+#    soaring, cascading solo that perfectly mimics the echoing, delay-soaked 
+#    electric guitars of Tinariwen and Bombino.
+#
+# 3. The Driving Bass: Look at `s_bass`. The `:play_sub` synth plays a 
+#    syncopated, root-fifth line. By using a mid-range `cutoff` (80) and a 
+#    short `release` (0.15), the engine turns the detuned sawtooth into a 
+#    warm, percussive "thwack" that perfectly anchors the track's hypnotic, 
+#    forward-driving momentum.
+# ==========================================================

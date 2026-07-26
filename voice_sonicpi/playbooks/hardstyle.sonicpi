@@ -1,52 +1,134 @@
+# ==========================================================
+# PLAYBOOK: HARDSTYLE / EUPHORIC HARDSTYLE
+# (Pioneered by Headhunterz, Showtek, and Brennan Heart)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Hard Trance (which is fast and melodic) and Gabber (which 
+# is distorted and chaotic). Hardstyle is the exact fusion of the two. It sits 
+# at 150 BPM and relies on two iconic synthesis challenges: the "Reverse Bass" 
+# (a hard, off-beat bass that seems to suck backward into the kick) and the 
+# "Screech" (a heavily distorted, FM-modulated lead that sounds like a robot 
+# screaming). The engine simulates the reverse bass via an off-beat, 
+# high-cutoff `:play_sub` synth, and the screech via the `:play_fm` synth 
+# pushed to an extreme depth of 8.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 150 BPM. A relentless, heavy bounce.
+# 2. Harmonic Center: E Phrygian Dominant. Aggressive, epic, and Middle Eastern.
+# 3. Rhythmic Skeleton: A massive 4/4 kick. The bass and chords hit strictly 
+#    on the off-beats (the "boom-cha" rhythm) to create the signature bounce.
+# 4. Timbral Palette:
+#    - Bass: "Reverse Bass" (off-beat, extreme cutoff, short release).
+#    - Chords: Massive, euphoric supersaw stabs (high cutoff, off-beat).
+#    - Lead: Piercing, distorted "Screech" (extreme FM depth, rapid 16th notes).
+#    - Texture: Epic, sweeping granular string drone.
+# 5. Arrangement: Intro (Drone/Chords) -> Bounce (Kick/Reverse Bass) -> Drop (Screech).
+# ==========================================================
+
 use_bpm 150
 
 # ==========================================================
 # 1. REQUIRE ENGINE
 # ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
-# 2. THE SCORES (E Phrygian - Aggressive & Epic)
+# 2. THE SCORES (E Phrygian Dominant - Heavy, Epic, & Aggressive)
 # ==========================================================
 
-# Relentless, distorted 4-on-the-floor Hardstyle kick.
-s_kick  = (ring {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil)
+# Relentless, heavily distorted 4/4 Hardstyle kick. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [:c4, :c4, :c4, :c4])
 
-# The "Reverse Bass". 
-# Hits strictly on the off-beats (steps 2, 6, 10, 14) to create the "boom-cha" bounce.
-s_bass  = (ring nil, nil, {:note => :e2, :amp => 1.2, :release => 0.25}, nil, nil, nil, {:note => :e2, :amp => 1.2, :release => 0.25}, nil, nil, nil, {:note => :f2, :amp => 1.2, :release => 0.25}, nil, nil, nil, {:note => :f2, :amp => 1.2, :release => 0.25}, nil)
+# Heavy, dry rave snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
 
-# Aggressive, distorted off-beat synth stabs (E Minor).
-# Hits exactly in sync with the reverse bass.
-s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:f3, :a3, :c4], nil, nil, nil, [:f3, :a3, :c4], nil)
+# Rigid, driving 16th off-beat hats. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}
+])
 
-# Fast, driving 16th hats
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2})
+# The "Reverse" Bass.
+# Hits strictly on the off-beats. Extreme cutoff (120) and short release (0.1) 
+# create a relentless, bouncing "pump" that drives the track forward.
+# (4 x's, 4 elements)
+s_bass = gen_score("..x...x...x...x.", [
+  {note: :e2, release: 0.1, cutoff: 120, amp: 1.2}, 
+  {note: :e2, release: 0.1, cutoff: 120, amp: 1.0}, 
+  {note: :f2, release: 0.1, cutoff: 120, amp: 1.2}, 
+  {note: :f2, release: 0.1, cutoff: 120, amp: 1.0}
+])
 
-# The Hardstyle "Screech" Lead (E Phrygian).
-# Uses extreme FM depth (8) and high divisor to create a metallic, screaming robot sound.
-s_fm    = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.8, :depth => 8, :divisor => 3}, nil, {:note => :e5, :amp => 0.6, :depth => 8, :divisor => 3}, nil, {:note => :f5, :amp => 0.8, :depth => 8, :divisor => 3}, nil, {:note => :g5, :amp => 0.7, :depth => 8, :divisor => 3}, nil, {:note => :f5, :amp => 0.6, :depth => 8, :divisor => 3}, nil, nil, nil)
+# Massive, euphoric off-beat chord stabs (E5 to F5).
+# Hit strictly on the off-beats in sync with the bass. 
+# High cutoff (110) and short release (0.2) create a sharp, stadium-sized wall of sound. 
+# (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:e3, :g3, :b3], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:e3, :g3, :b3], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:f3, :a3, :c4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:f3, :a3, :c4], cutoff: 110, release: 0.2, amp: 0.6}
+])
 
-# Massive, dark granular drone to fill the epic space (using :ambi_choir)
-s_grain = (ring {:note => :e3, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Piercing, "Screech" Lead (E Phrygian Dominant).
+# Uses :play_fm with a low divisor (2) and extreme depth (8) to create a 
+# buzzing, aggressive, "screeching" robot sound. Plays a rapid, 16th-note melody.
+# (16 x's, 16 elements)
+lead_notes = [:e5, :b4, :e5, :f5, :e5, :b4, :e5, :f5, 
+              :g5, :d5, :g5, :a5, :g5, :d5, :g5, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 2, depth: 8, release: 0.08} }
+s_lead = gen_score("xxxxxxxxxxxxxxxx", lead_data)
+
+# Epic, "Cosmic" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Massive size (0.5s) and low density (1) creates a slow, evolving, 
+# celestial background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.5, amp: 0.5}
+])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: Just the relentless kick and dark drone (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_grain, s_grain, 4] ],
+  # Scene 1: The Build - Just the sweeping drone and euphoric chords (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: Add the "Reverse Bass" and off-beat stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_grain, s_grain, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+  # Scene 2: The Bounce - Add the relentless 4/4 kick and reverse bass (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The FM Screech lead drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_grain, s_grain, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_fm, s_fm, 8] ]
+  # Scene 3: The Drop - The piercing, screeching FM lead drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
 )
 
 # ==========================================================
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EXTREME ENERGY]
+# 
+# 1. The "Reverse" Bass: Look at `s_bass`. The `:play_sub` synth hits strictly 
+#    on the off-beats (steps 2, 6, 10, 14). By using an extreme `cutoff` (120) 
+#    and a short `release` (0.1), the engine creates a hard, "sucking" bass 
+#    bounce that perfectly mimics the legendary Hardstyle reverse bass, driving 
+#    the track forward unstoppably.
+#
+# 2. FM as a Screech: Look at `s_lead`. The `:play_fm` synth is given a low 
+#    `divisor` (2) and an extreme `depth` (8). This forces the FM modulator 
+#    to radically reshape the carrier wave, creating a harsh, buzzing, 
+#    "screeching" sound that perfectly mimics the distorted lead synths of 
+#    Headhunterz and Showtek.
+#
+# 3. The Off-Beat Wall: Look at `s_bass`, `s_hats`, and `s_chords`. They ALL 
+#    hit strictly on steps 2, 6, 10, and 14. The engine's strict master clock 
+#    locks these together perfectly at 150 BPM, creating a massive, bouncing 
+#    "boom-cha" momentum that forces you to dance.
+# ==========================================================

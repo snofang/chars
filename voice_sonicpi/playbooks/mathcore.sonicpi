@@ -1,0 +1,137 @@
+# ==========================================================
+# PLAYBOOK: MATHCORE / MATH METAL
+# (Pioneered by The Dillinger Escape Plan, Botch, and Car Bomb)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Djent (which is heavy and polyrhythmic) and Grindcore 
+# (which is fast and chaotic). Mathcore fuses the two, pushing the 16-step 
+# grid to its limits with odd-time signatures, extreme syncopation, and 
+# dissonant, atonal chords. It relies on stuttering, unpredictable drum 
+# patterns, heavy distorted chugs, and a piercing, chaotic lead that feels 
+# like a musical calculator malfunctioning.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 140 BPM. A rigid grid used for erratic, stuttering patterns.
+# 2. Harmonic Center: E Minor / Tritone (Dissonant). Atonal and evil.
+# 3. Rhythmic Skeleton: Odd-grouped kick patterns (simulated 7/8 or 5/8 
+#    time over 4/4). Frantic, machine-gun snare bursts.
+# 4. Timbral Palette:
+#    - Bass: "Chug" bass, extreme cutoff, staccato, syncopated bursts.
+#    - Chords: Dissonant, high-pitched, piercing power chords (tritones).
+#    - Lead: Chaotic, erratic, atonal FM squeals.
+#    - Texture: Granular "white noise" or "static" blast.
+# 5. Arrangement: Intro (Dissonance/Stutter) -> Verse (Chaos) -> Breakdown (Chug).
+# ==========================================================
+
+use_bpm 140
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor / Dissonant - Erratic, Technical, & Piercing)
+# ==========================================================
+
+# The "Odd-Time" Kick. 
+# A stuttering, unpredictable pattern simulating odd-time signatures. (4 x's, 4 elements)
+s_kick = gen_score("x..x.x..x.x..x..", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.6}
+])
+
+# Frantic, machine-gun snare bursts. (5 x's, 5 elements)
+s_snare = gen_score("....x...x.x.x.x.", [
+  :c4, :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}
+])
+
+# Fast, rigid 16th hats to maintain the grid. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Chug" Bass (Dissonant).
+# Plays a staccato, syncopated line using a minor 2nd (E to F) for tension.
+# Extreme cutoff (120) and microscopic release (0.04) create a grinding churn. 
+# (6 x's, 6 elements)
+s_bass = gen_score("x.x.x..x.x.x.x..", [
+  {note: :e1, cutoff: 120, release: 0.04, amp: 1.2}, 
+  {note: :e1, cutoff: 120, release: 0.04, amp: 1.0}, 
+  {note: :f1, cutoff: 120, release: 0.04, amp: 1.2}, 
+  {note: :e1, cutoff: 120, release: 0.04, amp: 1.0}, 
+  {note: :e1, cutoff: 120, release: 0.04, amp: 1.2}, 
+  {note: :f1, cutoff: 120, release: 0.04, amp: 1.0}
+])
+
+# Massive, "Dissonant" Power Chords (Tritones).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Uses E5 and Bb5 (the "Devil's Interval"). (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:e3, :bb3], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:f3, :b3], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:e3, :bb3], divisor: 2, depth: 6, release: 0.15, amp: 0.7}
+])
+
+# Piercing, "Chaotic" Lead (Atonal).
+# Uses :play_fm with a high divisor (4) and extreme depth (6) to create a 
+# harsh, piercing, digital squeal. Routed through the global tape echo. 
+# (6 x's, 6 elements)
+s_lead = gen_score("x.x.x..x.x..x.x.", [
+  {note: :e6, amp: 0.7, divisor: 4, depth: 6, release: 0.05}, 
+  {note: :f6, amp: 0.6, divisor: 4, depth: 6, release: 0.05}, 
+  {note: :bb5, amp: 0.7, divisor: 4, depth: 6, release: 0.05}, 
+  {note: :e6, amp: 0.7, divisor: 4, depth: 6, release: 0.05}, 
+  {note: :d6, amp: 0.6, divisor: 4, depth: 6, release: 0.05}, 
+  {note: :bb5, amp: 0.7, divisor: 4, depth: 6, release: 0.05}
+])
+
+# "Static / Malfunction" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Extreme density (6) and microscopic size (0.02) shatter the sample into 
+# high-frequency, digital static. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e2, buffer: :ambi_choir, pos: 0.9, density: 6, size: 0.02, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Stutter - Just the dissonant chords, chug bass, and static (4 bars)
+  [ [:play_fm, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Chaos - Add the erratic, odd-time drums (8 bars)
+  [ [:play_fm, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Breakdown - The piercing, atonal lead drops (8 bars)
+  [ [:play_fm, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN TECHNICAL CHAOS]
+# 
+# 1. Simulated Odd-Time: Look at `s_kick` and `s_bass`. The patterns 
+#    (`x..x.x..x.x..x..`) group the 16 steps into uneven clusters (3-3-2-3-2), 
+#    creating the illusion of a 7/8 or 5/8 time signature over a 4/4 grid. The 
+#    engine's strict master clock ensures these complex, stuttering rhythms lock 
+#    together with absolute mathematical precision.
+#
+# 2. Dissonant Harmony: Look at `s_chords`. The arrays use tritones (E to Bb, 
+#    F to B), also known as the "Devil's Interval." Combined with the extreme 
+#    FM `depth` (6), the engine produces a harsh, grinding, and evil sound that 
+#    perfectly anchors the track's chaotic, mathematical atmosphere.
+#
+# 3. Machine-Gun Bursts: Look at `s_snare`. The pattern includes rapid, 
+#    machine-gun bursts (`x.x.x.x.`) at the end of the bar. By using varying 
+#    amplitudes, the engine simulates a drummer executing frantic, technical 
+#    fills without losing sync with the rigid 16-step grid.
+# ==========================================================

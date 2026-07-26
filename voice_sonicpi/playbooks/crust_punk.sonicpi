@@ -1,0 +1,128 @@
+# ==========================================================
+# PLAYBOOK: CRUST PUNK / D-BEAT
+# (Pioneered by Discharge, Doom, and Anti-Cimex)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Grindcore (which is faster and more chaotic) and Hardcore 
+# Punk (which is cleaner). Crust Punk is the sound of raw, angry, DIY analog 
+# destruction. It relies on a specific, relentless "D-Beat" drum pattern 
+# (pioneered by Discharge), a massive, distorted "fuzz" bass that acts as the 
+# rhythm guitar, and a piercing, chaotic lead. The engine captures the 
+# relentless, galloping momentum of the genre.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 180 BPM. Blistering and relentless.
+# 2. Harmonic Center: E Minor. Raw, angry, and dissonant.
+# 3. Rhythmic Skeleton: The "D-Beat". A specific galloping kick/snare pattern. 
+#    Kick on 1, 2, and the 'and' of 3. Snare on 2 and 4.
+# 4. Timbral Palette:
+#    - Bass: "Fuzz" bass, extreme cutoff, continuous 16th-note churn.
+#    - Chords: Massive, dissonant, distorted power chords (extreme FM depth).
+#    - Lead: Piercing, chaotic, atonal FM solo.
+#    - Texture: Pitched-down granular "shout" drone.
+# 5. Arrangement: Intro (Feedback/Bass) -> D-Beat (Drums/Chords) -> Solo.
+# ==========================================================
+
+use_bpm 180
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Raw, Angry, & Relentless)
+# ==========================================================
+
+# The "D-Beat" Kick. 
+# A galloping, relentless march. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x.x.....", [
+  :c4, :c4, :c4, {note: :c4, amp: 0.7}
+])
+
+# Heavy, dry snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Fast, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Fuzz" Bass (E Minor).
+# Plays a continuous, driving 16th-note line. 
+# Extreme cutoff (120) and microscopic release (0.04) create a relentless, 
+# grinding, distorted churn that mimics a fuzz bass/guitar. (16 x's, 16 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :e1, :e1, :e1, :e1, 
+              :g1, :g1, :g1, :g1, :d1, :d1, :d1, :d1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.04, amp: 1.2} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (E5 to G5 to D5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Hits in sync with the D-Beat. (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:e3, :b3], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:g3, :d4], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:d3, :a3], divisor: 2, depth: 6, release: 0.15, amp: 0.7}
+])
+
+# Piercing, "Chaotic" Lead Solo (E Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (5) to create a 
+# harsh, piercing, atonal tone. Routed through the global tape echo. 
+# (8 x's, 8 elements)
+lead_notes = [:e5, :d5, :b4, :a4, :g4, :a4, :b4, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 4, depth: 5, release: 0.05} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Shout" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# High density (4) and long size (0.1) creates a raw, repetitive, 
+# angry background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e2, buffer: :ambi_choir, pos: 0.2, density: 4, size: 0.1, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the fuzz bass, power chords, and shouts (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The D-Beat - Add the relentless, galloping drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The piercing, chaotic lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RAW AGGRESSION]
+# 
+# 1. The D-Beat Gallop: Look at `s_kick`. It hits on steps 0, 4, and 8, with 
+#    a syncopated hit on step 10. This specific "galloping" pattern is the 
+#    absolute genetic code of Crust Punk, pioneered by the band Discharge. The 
+#    engine's strict master clock ensures this relentless rhythm locks perfectly 
+#    with the continuous 16th-note bass.
+#
+# 2. The Fuzz Bass Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step. By using an extreme `cutoff` (120) and a 
+#    microscopic `release` (0.04), the engine turns the detuned sawtooth into 
+#    a relentless, grinding, distorted wall of sound that perfectly mimics the 
+#    heavily distorted bass/guitar tones of Crust Punk.
+#
+# 3. Granular as a Shout: Look at `s_grain`. The granular engine is given a 
+#    high `density` (4) and a long `size` (0.1). By pitching the `:ambi_choir` 
+#    sample down to `:e2`, the engine time-stretches the sample into a raw, 
+#    repetitive, angry drone that perfectly mimics the guttural, shouted vocals 
+#    of the genre.
+# ==========================================================

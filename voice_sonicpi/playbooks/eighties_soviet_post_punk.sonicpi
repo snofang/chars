@@ -1,0 +1,125 @@
+# ==========================================================
+# PLAYBOOK: 80s SOVIET POST-PUNK / RUSSIAN DOOMER MUSIC
+# (Pioneered by Kino, Grazhdanskaya Oborona, and Molchat Doma)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Western Post-Punk and Coldwave. Soviet Post-Punk is a 
+# distinct, cold, and lo-fi sound born behind the Iron Curtain. It relies on 
+# a cheap, drum machine beat, a deep, chorus-soaked bassline, stark, 
+# dissonant guitar stabs, and a gritty, echoing vocal drone that feels like 
+# wandering through a snow-covered, decaying apartment complex in 1980s 
+# Leningrad.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 120 BPM. A rigid, mechanical march.
+# 2. Harmonic Center: A Minor / Dissonant. Cold and melancholic.
+# 3. Rhythmic Skeleton: A cheap, 4/4 LinnDrum beat. Kick on 1 and 3. 
+#    Snare on 2 and 4. Very sparse, ticking hats.
+# 4. Timbral Palette:
+#    - Bass: Deep, chorus-soaked "moth" bass (mid cutoff, short release).
+#    - Chords: Stark, dissonant, echoing guitar stabs (FM, staccato).
+#    - Lead: Piercing, cold, echoing synth melody (high divisor, mid depth).
+#    - Texture: Gritty, echoing vocal drone (granular, pitched down).
+# 5. Arrangement: Intro (Bass/Guitar) -> Verse (Drums) -> Chorus (Lead).
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor / Dissonant - Cold, Lo-Fi, & Stark)
+# ==========================================================
+
+# Relentless, rigid 4/4 drum machine kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Very sparse, ticking 8th hats. (4 x's, 4 elements)
+s_hats = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# The "Moth" Bass (A Minor).
+# Plays a deep, driving, root-fifth line. 
+# Mid cutoff (90) and short release (0.15) create a warm, chorus-soaked "thwack".
+# (8 x's, 8 elements)
+bass_notes = [:a1, :a1, :a1, :a1, :g1, :g1, :g1, :g1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Stark, "Guitar" Stabs (Am to G).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 4, release: 0.1, amp: 0.6}
+])
+
+# Piercing, "Cold" Synth Lead (A Minor).
+# Uses :play_fm with a high divisor (3) and mid depth (4) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:a5, :g5, :e5, :d5, :c5, :a4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.2, divisor: 3, depth: 4, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Gritty, "Vocal" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Long size (0.2) and low density (1) creates a slow, evolving, 
+# melancholic background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.5, density: 1, size: 0.2, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Winter - Just the chorus bass, guitar stabs, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Apartment - Add the rigid, cheap drum machine (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Lament - The piercing, cold synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SOVIET MELANCHOLY]
+# 
+# 1. The "Moth" Bass: Look at `s_bass`. The `:play_sub` synth plays a deep, 
+#    driving, root-fifth line. By using a mid-range `cutoff` (90) and a short 
+#    `release` (0.15), the engine turns the detuned sawtooth into a warm, 
+#    chorus-soaked "thwack" that perfectly mimics the legendary, driving bass 
+#    tones of Soviet post-punk bands like Kino.
+#
+# 2. Stark Dissonance: Look at `s_chords`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `4`, with a microscopic `release` 
+#    (0.1). This forces the FM synth to produce a harsh, staccato "hit" that 
+#    perfectly mimics the stark, echoing guitar stabs that define the genre's 
+#    cold, industrial atmosphere.
+#
+# 3. The Cold Lead: The `s_lead` sequence uses `divisor: 3` and `depth: 4`. 
+#    This harmonic ratio produces a sharp, glassy, digital tone that cuts 
+#    through the heavy mix. Because it's routed through the global tape echo 
+#    bus, the sparse notes smear into a soaring, echoing melody that perfectly 
+#    mimics the melancholic, frozen atmosphere of 1980s Leningrad.
+# ==========================================================
