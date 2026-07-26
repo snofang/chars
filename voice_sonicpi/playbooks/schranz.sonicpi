@@ -1,0 +1,120 @@
+# ==========================================================
+# PLAYBOOK: SCHRANZ / HARD LOOPING TECHNO
+# (Pioneered by DJ Rush, The Advent, and Chris Liebing)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Peak-Time Techno (which is melodic and dark) and Minimal 
+# Techno (which is sparse and clinical). Schranz is the absolute extreme of 
+# the 16-step grid used for pure, relentless, distorted looping. It strips 
+# away all melody and harmony, leaving only a pounding 150+ BPM kick, a 
+# heavily distorted, continuous 16th-note "churn," and piercing industrial 
+# stabs. The engine tests its ability to make relentless repetition feel 
+# massive and hypnotic rather than boring.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 155 BPM. Fast, relentless, and pounding.
+# 2. Harmonic Center: A Minor / Atonal. Purely percussive and textural.
+# 3. Rhythmic Skeleton: A relentless 4/4 distorted kick. Continuous 16th-note 
+#    off-beat open hats. A heavily distorted, looping 16th-note bass/chord sequence.
+# 4. Timbral Palette:
+#    - Bass/Chords: Merged into one massive, distorted, rolling 16th-note 
+#      "churn" (extreme cutoff, microscopic release).
+#    - Lead: Piercing, industrial FM stabs that cut through the noise.
+#    - Texture: Granular metallic noise.
+# 5. Arrangement: Intro (Churn) -> Build (Drums) -> Drop (Stabs).
+# ==========================================================
+
+use_bpm 155
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor / Atonal - Relentless, Distorted, & Hypnotic)
+# ==========================================================
+
+# Relentless, heavily distorted 4/4 kick. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [:c4, :c4, :c4, :c4])
+
+# Heavy, dry industrial snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Rigid, driving 16th off-beat hats. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
+
+# The "Distorted Churn" Bass/Loop (A Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# Extreme cutoff (130) and microscopic release (0.04) create a relentless, 
+# grinding, distorted wall of sound that drives the track. (16 x's, 16 elements)
+bass_notes = [:a2, :a3, :a2, :a3, :a2, :a3, :g2, :g3, 
+              :a2, :a3, :a2, :a3, :c3, :c4, :a2, :a3]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 130, release: 0.04, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Piercing, "Industrial" Stabs (Atonal).
+# Uses :play_fm with a low divisor (2) and extreme depth (8) to create a 
+# harsh, metallic, piercing hit. Hits sparingly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 8, release: 0.08, amp: 0.6},
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 8, release: 0.08, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 8, release: 0.08, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 8, release: 0.08, amp: 0.6}
+])
+
+# "Metallic Noise" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Extreme density (6) and microscopic size (0.02) shatter the sample into 
+# high-frequency, industrial static. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.8, density: 6, size: 0.02, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Loop - Just the distorted churn and metallic noise (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drive - Add the relentless 4/4 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Stab - The piercing, industrial FM stabs drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_chords, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HYPNOTIC REPETITION]
+# 
+# 1. The Distorted Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating octaves. By using an extreme `cutoff` 
+#    (130) and a microscopic `release` (0.04), the engine turns the detuned 
+#    sawtooth into a relentless, grinding, distorted wall of sound. This 
+#    perfectly mimics the heavily distorted, looped synth lines that define 
+#    the Schranz genre.
+#
+# 2. The 16th-Note Roll: Schranz relies on continuous motion. The `s_bass` and 
+#    `s_hats` play continuous 16th notes. The engine's strict master clock 
+#    ensures this relentless, mechanical momentum locks perfectly with the 
+#    pounding 4/4 kick, creating a massive, forward-driving, hypnotic groove.
+#
+# 3. FM as an Industrial Stab: Look at `s_chords`. The `:play_fm` synth is 
+#    given a `divisor` of `2` and an extreme `depth` of `8`, with a microscopic 
+#    `release` (0.08). This forces the FM synth to produce a harsh, metallic, 
+#    piercing "hit" that cuts through the distorted churn, perfectly mimicking 
+#    the industrial stabs used by DJ Rush and Chris Liebing.
+# ==========================================================

@@ -1,0 +1,140 @@
+# ==========================================================
+# PLAYBOOK: PLUNDERPHONICS / MASHCORE
+# (Pioneered by DJ Donna Summer, goreshit, and Lapfox Trax)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored IDM (which is mathematical and clean) and Breakcore (which 
+# is dark and industrial). Plunderphonics/Mashcore takes recognizable pop 
+# culture audio samples (often pitched up to extreme, sugary registers) and 
+# aggressively slices them into complex, hyper-kinetic 16-step grids. It relies 
+# on a blistering 190 BPM "Amen" break, a distorted Reese bass, and granular 
+# vocal chops that sound like a pop song being eaten by a paper shredder.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 190 BPM. Frantic, chaotic, and hyper-kinetic.
+# 2. Harmonic Center: A Minor / Pop Inflections. Sugary but aggressive.
+# 3. Rhythmic Skeleton: The "Amen" break shattered into 16th-note fragments. 
+#    Machine-gun kick/snare rolls. Relentless 16th hats.
+# 4. Timbral Palette:
+#    - Bass: Detuned, rolling "Reese" synth bass.
+#    - Chords: Harsh, staccato, noise-based stabs.
+#    - Lead: Pitched-up, granular "pop vocal" chops (extreme density, high pitch).
+#    - Texture: Granular "glitch" or "skip" static.
+# 5. Arrangement: Intro (Pop Chop) -> Drop (Breakbeat) -> Climax (Mashup).
+# ==========================================================
+
+use_bpm 190
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Chaotic, Sugary, & Hyper-Kinetic)
+# ==========================================================
+
+# The "Shattered" Kick. 
+# A hyper-quantized, chopped breakbeat pattern. (7 x's, 7 elements)
+s_kick = gen_score("x..x.x.x..x.x..x", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}, 
+  :c4, {note: :c4, amp: 0.8}, :c4
+])
+
+# The "Shattered" Snare. 
+# Heavy hits on 2 and 4, with frantic, machine-gun rolls. (7 x's, 7 elements)
+s_snare = gen_score("..x.x.....x.x.xx", [
+  :c4, {note: :c4, amp: 0.5}, :c4, {note: :c4, amp: 0.9}, 
+  {note: :c4, amp: 0.4}, :c4, {note: :c4, amp: 0.7}, {note: :c4, amp: 0.8}
+])
+
+# Relentless, erratic 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Reese" Bass (A Minor).
+# Plays a continuous, rolling 16th-note line. 
+# Mid cutoff (90) and short release (0.1) create a relentless, hypnotic churn.
+# (16 x's, 16 elements)
+bass_notes = [:a1, :a1, :a1, :a1, :a1, :a1, :a1, :a1, 
+              :g1, :g1, :g1, :g1, :e1, :e1, :e1, :e1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Harsh, "Noise" Stabs (Am to G).
+# Hit strictly on the off-beats. High cutoff (120) and short release (0.05) 
+# create a sharp, piercing wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 120, release: 0.05, amp: 0.5},
+  {note: [:a3, :c4, :e4], cutoff: 120, release: 0.05, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 120, release: 0.05, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 120, release: 0.05, amp: 0.5}
+])
+
+# Pitched-up, "Pop Vocal" Chops (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP to the extreme `:c6` range.
+# High density (4) and tiny size (0.03) creates a sharp, sugary, 
+# high-speed vocal stutter. (8 x's, 8 elements)
+s_vocal = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c6, buffer: :ambi_choir, pos: 0.1, density: 4, size: 0.03, amp: 0.7},
+  {note: :e6, buffer: :ambi_choir, pos: 0.2, density: 4, size: 0.03, amp: 0.6},
+  {note: :g6, buffer: :ambi_choir, pos: 0.3, density: 4, size: 0.03, amp: 0.7},
+  {note: :a6, buffer: :ambi_choir, pos: 0.4, density: 4, size: 0.03, amp: 0.6},
+  {note: :c6, buffer: :ambi_choir, pos: 0.1, density: 4, size: 0.03, amp: 0.7},
+  {note: :e6, buffer: :ambi_choir, pos: 0.2, density: 4, size: 0.03, amp: 0.6},
+  {note: :g6, buffer: :ambi_choir, pos: 0.3, density: 4, size: 0.03, amp: 0.7},
+  {note: :a6, buffer: :ambi_choir, pos: 0.4, density: 4, size: 0.03, amp: 0.6}
+])
+
+# "Glitch / Skip" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Extreme density (6) and microscopic size (0.02) shatter the sample into 
+# high-frequency, digital static. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.8, density: 6, size: 0.02, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Sample - Just the Reese bass, noise stabs, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Shred - Add the frantic, shattered breakbeat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Melt - The pitched-up, granular vocal lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HYPER-KINETIC SAMPLING]
+# 
+# 1. Granular as a Shredder: Look at `s_vocal`. The granular engine is given 
+#    a high `density` (4) and a tiny `size` (0.03). By pitching the 
+#    `:ambi_choir` sample up to the extreme `:c6` range, the engine shatters 
+#    the vocal into sharp, sugary, high-pitched stutters that perfectly mimic 
+#    the aggressive, pitched-up pop samples of Mashcore.
+#
+# 2. The Shattered Breakbeat: Look at `s_kick` and `s_snare`. They are densely 
+#    packed and completely avoid landing on a standard 4/4 pulse. The engine's 
+#    strict master clock ensures these complex, overlapping hits fire with 
+#    absolute mathematical precision at 190 BPM, perfectly mimicking the chopped, 
+#    hyper-quantized "Amen" breakbeats of the genre.
+#
+# 3. The Reese Anchor: Look at `s_bass`. The `:play_sub` synth plays a 
+#    continuous, rolling line. By using a mid-range `cutoff` (90) and a short 
+#    `release` (0.1), the engine creates a relentless, hypnotic churn that 
+#    anchors the erratic, skittering drums and high-pitched vocal glitches.
+# ==========================================================

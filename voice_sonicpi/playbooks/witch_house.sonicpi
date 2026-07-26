@@ -1,21 +1,26 @@
 # ==========================================================
 # PLAYBOOK: WITCH HOUSE / DRAG
-# (Pioneered by Salem, Crystal Castles, and oOoOO)
+# (Pioneered by Salem, oOoOO, and Crystal Castles)
 # ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Witch House.
-# We have explored fast, rigid genres (Hyperpop, Hardcore) and organic
-# genres (Afro House, Dub). Witch House is the sound of the dark web.
-# It takes hip-hop aesthetics, slows them down to a glacial, chopped-and-
-# screwed tempo (60 BPM), and drowns them in menacing, minor chords,
-# eerie textures, and pitched-down, demonic vocal drones.
+# We have explored dark Trap and Synth-Pop. Witch House is the sound of the 
+# 2010s internet underground. It takes hip-hop aesthetics, slows them down to 
+# a glacial 60 BPM, and drowns them in menacing, minor chords, eerie textures, 
+# and pitched-down, demonic vocal drones. The engine captures that exact, 
+# suffocating, horror-movie atmosphere.
 #
-# This playbook perfectly demonstrates how to use extreme time-stretching
-# via the Parameter Hashes. The granular engine uses a massive grain 
-# `size` (0.5s) to turn a vocal into a monstrous, slurred drone, while 
-# the synths use massive attack and release times to create a suffocating,
-# horror-movie atmosphere.
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 60 BPM. Glacial, chopped-and-screwed, and dragging.
+# 2. Harmonic Center: C# Minor. Demonic, ethereal, and cold.
+# 3. Rhythmic Skeleton: A slow, heavy 808 bounce. Sparse, echoing snares. 
+#    Very sparse, dragging hi-hats.
+# 4. Timbral Palette:
+#    - Bass: Massive, distorted "Reese" sub-bass (extreme low cutoff, massive release).
+#    - Chords: Lush, slow-attacking, sweeping minor pads (extreme attack/release).
+#    - Lead: Piercing, high-pitched, echoing synth melody (high FM divisor, low depth).
+#    - Texture: Pitched-down, granular "demonic" vocal drone (long grain size, low density).
+# 5. Arrangement: Intro (Pad/Bass) -> Verse (Slow Drums) -> Chorus (Lead).
 # ==========================================================
 
 use_bpm 60
@@ -26,53 +31,71 @@ use_bpm 60
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
-# 2. THE SCORES (C# Minor - Demonic & Ethereal)
+# 2. THE SCORES (C# Minor - Demonic, Ethereal, & Glacial)
 # ==========================================================
 
-# "Chopped and Screwed" Kick. 
-# Slow, heavy, hits on step 0 and a dragged hit on step 10.
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil)
+# The "Chopped" Kick. 
+# A slow, heavy, dragging pulse. Hits on 1 and the 'and' of 3. (2 x's, 2 elements)
+s_kick = gen_score("x.......x.......", [
+  {note: :c4, amp: 1.0}, {note: :c4, amp: 0.8}
+])
 
-# Massive, echoing snare strictly on beat 3 (step 8).
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil)
+# Massive, echoing snare strictly on beat 3 (step 8). (1 x, 1 element)
+s_snare = gen_score("........x.......", [:c4])
 
-# Very sparse, dragging hi-hats.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil)
+# Very sparse, dragging hi-hats. (4 x's, 4 elements)
+s_hats = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.15}, {note: :c4, amp: 0.1}, 
+  {note: :c4, amp: 0.15}, {note: :c4, amp: 0.1}
+])
 
-# Deep, suffocating Reese Bass. 
-# Massive release (3.0) and low cutoff (60) to create a dark drone.
-s_bass  = (ring {:note => :cs1, :release => 3.0, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil, {:note => :fs1, :release => 3.0, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil)
+# Deep, massive "Reese" Sub-Bass (C# Minor).
+# Massive release (3.0) and low cutoff (40) create a deep, distorted, 
+# continuous rumble. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :cs1, release: 3.0, cutoff: 40, amp: 1.2}, 
+  {note: :a0, release: 3.0, cutoff: 40, amp: 1.0}
+])
 
-# Lush, haunting minor chords (C# Minor to F# Minor).
-# Hit on the downbeats, but use a massive 2-beat attack so they slowly
-# swell into the mix like a ghost.
-s_chords= (ring {:note => [:cs3, :e3, :gs3, :b3], :attack => 2.0, :release => 4.0, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => [:fs3, :a3, :cs4, :e4], :attack => 2.0, :release => 4.0, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+# Lush, "Sweeping" Synth Pad (C#m to F#m).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, haunting, ethereal wave. 
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:cs3, :e3, :gs3, :b3], cutoff: 60, attack: 2.0, release: 4.0, amp: 0.5},
+  {note: [:fs3, :a3, :cs4, :e4], cutoff: 60, attack: 2.0, release: 4.0, amp: 0.5}
+])
 
-# Eerie, high-pitched FM ring (C# Harmonic Minor).
-# Uses a high divisor (5) and long release to sound like a distant siren.
-s_fm    = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :gs5, :amp => 0.4, :depth => 6, :divisor => 5, :release => 4.0}, nil, nil, nil, nil, nil, nil, nil)
+# Piercing, "Echoing" Lead (C# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a pristine, 
+# glassy, sine-like wave. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:cs5, :e5, :gs5, :fs5, :e5, :cs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 1.5} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
 
-# The "Demonic" Vocal Drone (Granular Synth)
-# Pitched DOWN to :cs3. Massive grain size (0.5s) and low density (1).
-# This time-stretches the vocal into an unrecognizable, slurred monster.
-s_vocal = (ring {:note => :cs3, :buffer => :ambi_choir, :pos => 0.1, :density => 1, :size => 0.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :fs3, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# "Demonic" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN to :cs3.
+# Massive size (0.5s) and low density (1) time-stretches the sample into 
+# a slow, evolving, terrifying background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :cs3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.5, amp: 0.7}
+])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: The Ritual - Just the haunting chords and demonic vocal (4 bars)
-  [ [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  # Scene 1: The Ritual - Just the sweeping pad, Reese bass, and demonic drone (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: The Summoning - Add the dragging drums and deep Reese (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8] ],
+  # Scene 2: The Summoning - Add the slow, dragging 808 drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Apparition - The eerie FM siren drops (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+  # Scene 3: The Apparition - The piercing, echoing lead drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
     [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8] ]
+    [:play_lead, s_lead, 8] ]
 )
 
 # ==========================================================
@@ -83,22 +106,20 @@ start_engine(playbook)
 # ==========================================================
 # [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DARKNESS]
 # 
-# 1. Granular Time-Stretching: Look at `s_vocal`. The granular engine 
-#    is given a `size` of `0.5` (500 milliseconds) and a `density` of `1`.
-#    This is 10x longer than the glitchy stutters we used in Hyperpop.
-#    By pitching the vocal down to `:cs3` and using massive grains, the 
-#    engine time-stretches the sample into a terrifying, demonic slur 
+# 1. The Reese Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    massive `release` of `3.0` (three whole beats) and an extreme low `cutoff` 
+#    of `40`. This creates a deep, distorted, continuous rumble that anchors 
+#    the track's slow, suffocating tempo.
+#
+# 2. Ambient Granular Time-Stretching: Look at `s_grain`. The granular engine 
+#    is given a massive `size` of `0.5` (500 milliseconds) and a `density` of `1`. 
+#    By pitching the `:ambi_choir` sample down to `:cs3` and using sparse, long 
+#    grains, the engine time-stretches the sample into a terrifying, demonic slur 
 #    that defines the Witch House aesthetic.
 #
-# 2. Data-Driven Swells: Look at `s_chords`. The Hashes specify an 
-#    `attack` of `2.0` and a `release` of `4.0`. Because the BPM is 60, 
-#    it takes two whole beats for the chord to fade in, and four beats 
-#    to fade out. The engine reads these Hashes and turns the normally 
-#    sharp `:blade` synth into a slow, suffocating ghost.
-#
-# 3. The Power of the Void: 90% of this grid is `nil`. By leaving the 
-#    16-step grid almost entirely empty, the track moves at a glacial 
-#    pace. The engine's strict master clock ensures the massive gaps 
-#    between the kicks and snares are perfectly timed, letting the reverb 
-#    tails and Reese bass ring out into infinity.
+# 3. Data-Driven Swells: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `2.0` and a `release` of `4.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of dark harmony that 
+#    perfectly mimics the haunting, ethereal atmosphere of the genre.
 # ==========================================================

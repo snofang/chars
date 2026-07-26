@@ -1,18 +1,27 @@
 # ==========================================================
-# PLAYBOOK: DUNGEON SYNTH / DARK AMBIENT
-# (Pioneered by Mortiis, Fief, and Erang)
-# ========================================================== 
+# PLAYBOOK: DUNGEON SYNTH / MEDIEVAL AMBIENT
+# (Pioneered by Mortiis, Fief, and Burzum's synth albums)
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# We have explored high-energy rave genres and dark techno. Dungeon Synth 
-# is the sound of 90s black metal side-projects. It is deeply atmospheric, 
-# nostalgic, and slow. It relies on continuous 16th-note harpsichord 
-# arpeggios, massive sustained choir pads, and sparse, heavy drums.
+# We have explored fast, chaotic extremes (Grindcore, Nintendocore, Shangaan 
+# Electro) and slow, heavy extremes (Drone Metal, Doom Metal). Dungeon Synth 
+# is the sound of a solitary, lo-fi medieval fantasy. It abandons percussion 
+# entirely, relying on slow, sustained string pads, deep sub-bass drones, and 
+# piercing, echoing "flute" or "harp" melodies. The engine captures that 
+# exact, frozen, cavernous atmosphere.
 #
-# This playbook perfectly demonstrates how to create a medieval fantasy 
-# atmosphere purely via data. By using a high `cutoff` on the FM synth for 
-# a buzzy harpsichord, and massive `release` times on the chords, the 
-# engine creates a cavernous, haunting soundscape.
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 80 BPM. Slow, majestic, and frozen.
+# 2. Harmonic Center: C Minor. Melancholic and medieval.
+# 3. Rhythmic Skeleton: None. The 16-step grid is used purely to trigger 
+#    massive, sustained events, not rhythmic hits.
+# 4. Timbral Palette:
+#    - Bass: Deep, continuous, sustained sub-bass drone.
+#    - Chords: Slow-attacking string/harpsichord pads (extreme attack/release).
+#    - Lead: Piercing, echoing "recorder" or "harp" melody (high FM divisor).
+#    - Texture: Granular "crypt" or "wind" drone (long grain size, low density).
+# 5. Arrangement: Intro (Strings/Bass) -> Verse (Texture) -> Chorus (Lead).
 # ==========================================================
 
 use_bpm 80
@@ -23,49 +32,60 @@ use_bpm 80
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
-# 2. THE SCORES (D Minor - Medieval, Haunting, & Majestic)
+# 2. THE SCORES (C Minor - Frozen, Cavernous, & Majestic)
 # ==========================================================
 
-# Slow, heavy marching kick. 
-# Hits on step 0, beat 3 (step 8), and a ghost on the 'a' of 4 (step 14).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Deep, continuous "Sub-Bass" Drone (C Minor).
+# Hits once and rings out for the entire scene (8 bars = 32 beats).
+# Extreme low cutoff (50) and massive release (32.0) create a deep, 
+# continuous, suffocating rumble. (1 x, 1 element)
+s_bass = gen_score("x...............", [
+  {note: :c1, release: 32.0, cutoff: 50, amp: 1.2}
+])
 
-# Massive, echoing snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+# Lush, "String/Harpsichord" Pad (Cm to Ab).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic, frozen wave. 
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:c3, :eb3, :g3], cutoff: 80, attack: 2.0, release: 4.0, amp: 0.4},
+  {note: [:ab2, :c3, :eb3], cutoff: 80, attack: 2.0, release: 4.0, amp: 0.4}
+])
 
-# The "Harpsichord" Arpeggio (D Minor).
-# Uses :play_fm with a low divisor (2) and high depth (3) to create a sharp, 
-# buzzy string tone. Plays continuous, relentless 16th notes.
-s_fm    = (ring {:note => :d4, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :a4, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :f5, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :a4, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :f5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :d5, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :a4, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :e5, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :c5, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :e5, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, {:note => :a4, :amp => 0.4, :divisor => 2, :depth => 3, :release => 0.1})
+# Piercing, "Recorder/Harp" Lead (C Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (1) to create a pristine, 
+# glassy, sine-like wave. Routed through the global tape echo. 
+# (6 x's, 6 elements)
+s_lead = gen_score("x..x..x..x..x..x", [
+  {note: :c5, amp: 0.6, divisor: 3, depth: 1, release: 1.5}, 
+  {note: :eb5, amp: 0.5, divisor: 3, depth: 1, release: 1.5}, 
+  {note: :g5, amp: 0.7, divisor: 3, depth: 1, release: 2.0}, 
+  {note: :c6, amp: 0.5, divisor: 3, depth: 1, release: 1.5}, 
+  {note: :bb5, amp: 0.6, divisor: 3, depth: 1, release: 1.5}, 
+  {note: :g5, amp: 0.7, divisor: 3, depth: 1, release: 2.0}
+])
 
-# Deep, slow drone bass (D Minor).
-# Uses play_sub. Hits strictly on the downbeats. Low cutoff (60) and massive 
-# release (2.0) create a heavy, continuous undercurrent.
-s_bass  = (ring {:note => :d1, :release => 2.0, :cutoff => 60, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :a1, :release => 2.0, :cutoff => 60, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
-
-# Massive, sweeping minor chords (Dm to Am).
-# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
-# blur the chords together into a continuous, haunted choir wave.
-s_chords= (ring {:note => [:d3, :f3, :a3, :d4], :cutoff => 90, :attack => 1.0, :release => 3.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a2, :c3, :e3, :a3], :cutoff => 90, :attack => 1.0, :release => 3.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
-
-# Ethereal, granular "Cave/Choir" drone (using :ambi_choir).
-# Long size (0.4) and low density (1) creates a slow, evolving celestial 
-# texture that drifts in the background like a cold wind.
-s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# "Crypt / Wind" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Massive size (0.5s) and low density (1) time-stretches the sample into 
+# a slow, evolving, cavernous background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :c3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.5, amp: 0.5}
+])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: The Crypt - Just the drone bass, choir, and harpsichord (4 bars)
-  [ [:play_sub, s_bass, 4], [:play_grain, s_grain, 4], [:play_fm, s_fm, 4] ],
+  # Scene 1: The Crypt - Just the deep bass, sweeping strings, and wind drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: The March - Add the slow, heavy drums and sweeping chords (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_fm, s_fm, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_chords, s_chords, 8] ]
+  # Scene 2: The March - Add a sparse, heavy, echoing kick (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8] ],
+    
+  # Scene 3: The Crown - The piercing, echoing recorder melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_lead, s_lead, 8] ]
 )
 
 # ==========================================================
@@ -74,24 +94,22 @@ playbook = (ring
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MEDIEVAL ATMOSPHERE]
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN FROZEN ATMOSPHERE]
 # 
-# 1. FM as a Harpsichord: Look at `s_fm`. The `:play_fm` synth is given a 
-#    `divisor` of `2` and a `depth` of `3`. This creates a sharp, buzzy 
-#    string tone that perfectly mimics a medieval harpsichord. By playing 
-#    continuous 16th notes, the engine creates a relentless, hypnotic 
-#    arpeggio that drives the track forward without needing a fast tempo.
+# 1. The Rhythmic Void: Look at the playbook. There are zero drum instruments 
+#    (`:play_kick`, `:play_snare`, `:play_hats`). The 16-step grid is still 
+#    ticking, but it is used purely to trigger massive durations. The engine's 
+#    strict master clock ensures the chords and bass trigger exactly on beat 1, 
+#    holding perfectly in sync for 8 bars without drifting.
 #
-# 2. Swelling Ghosts: Look at `s_chords`. The Hashes specify an `attack` 
-#    of `1.0` and a `release` of `3.0`. Because the engine reads these 
-#    Hashes, the chords don't just hit; they slowly swell into the mix and 
-#    fade away over three whole beats, creating a continuous, blurred wave 
-#    of dark harmony that sounds like a choir echoing in a cavern.
+# 2. Data-Driven Sustain: Look at `s_bass` and `s_chords`. The `release` times 
+#    are 32.0 and 4.0. Because the scene is only 8 bars (32 beats) long, the 
+#    sub-bass never actually finishes ringing out before the next scene triggers. 
+#    This creates a continuous, overlapping "wall of sound" with no silence.
 #
-# 3. Extreme Sub-Weight: Dungeon Synth relies on a deep, rumbling low-end. 
-#    The `s_bass` sequence uses a very low `cutoff` (60) and a massive 
-#    `release` (2.0) to keep it muffled and continuous. The engine's strict 
-#    16-step grid ensures this massive bass note perfectly anchors the 
-#    frantic harpsichord arpeggio, creating a feeling of immense weight and 
-#    dread.
+# 3. FM as a Recorder: The `s_lead` sequence uses `divisor: 3` and `depth: 1`. 
+#    This gentle harmonic ratio produces a pristine, glassy, sine-like wave that 
+#    mimics a medieval recorder or harp. Because it's routed through the global 
+#    tape echo bus, the sparse notes smear into a soaring, echoing melody that 
+#    perfectly anchors the track's frozen, cavernous atmosphere.
 # ==========================================================

@@ -1,0 +1,127 @@
+# ==========================================================
+# PLAYBOOK: 90s KEYGEN MUSIC / TRACKER CHIPTUNE
+# (Pioneered by 4-mat, Radix, and DOS-era software crackers)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored 80s Chiptune (which was restricted by console hardware) 
+# and 16-Bit JRPGs. Keygen Music is a unique sub-culture of electronic music 
+# made by software crackers using PC trackers. It fuses the bleepy aesthetics 
+# of chiptune with the driving energy of techno/trance. It relies on blistering 
+# tempos, pure, harsh square waves, continuous 16th-note arpeggios, and a 
+# completely dry, reverb-less mix.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 160 BPM. Fast, driving, and hyper-quantized.
+# 2. Harmonic Center: A Minor. Digital and piercing.
+# 3. Rhythmic Skeleton: A rigid 4/4 beat. Continuous 16th-note arpeggios for 
+#    both bass and lead.
+# 4. Timbral Palette:
+#    - Bass: Pure, buzzing square wave (high cutoff, microscopic release).
+#    - Chords: Harsh, staccato, fast synth stabs.
+#    - Lead: Piercing, high-pitched, rapid-fire FM arpeggios (extreme depth).
+#    - Texture: Zero reverb. Everything is bone-dry.
+# 5. Arrangement: Intro (Arp/Bass) -> Verse (Drums) -> Drop (Lead).
+# ==========================================================
+
+use_bpm 160
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Harsh, Digital, & Fast)
+# ==========================================================
+
+# Relentless, rigid 4/4 kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry, lo-fi snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}
+])
+
+# The "Tracker" Bass (A Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# High cutoff (110) and microscopic release (0.03) create a relentless, 
+# buzzing, pure square-wave churn. (16 x's, 16 elements)
+bass_notes = [:a2, :a3, :a2, :a3, :a2, :a3, :a2, :a3, 
+              :g2, :g3, :g2, :g3, :a2, :a3, :a2, :a3]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.03, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Harsh, "Staccato" Synth Stabs (Am to G).
+# Uses :play_fm with a low divisor (2) and extreme depth (8) to create a 
+# harsh, digital square wave. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 8, release: 0.05, amp: 0.5},
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 8, release: 0.05, amp: 0.5},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 8, release: 0.05, amp: 0.5},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 8, release: 0.05, amp: 0.5}
+])
+
+# Piercing, "Arpeggio" Lead (A Minor).
+# Uses :play_fm with a high divisor (4) and extreme depth (8) to create a 
+# piercing, high-pitched, digital tone. Plays a rapid, continuous 16th-note melody.
+# (16 x's, 16 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :a5, :e5, :c6, :e5, 
+              :g5, :d5, :bb5, :d5, :a5, :e5, :c6, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 4, depth: 8, release: 0.02} }
+s_lead = gen_score("xxxxxxxxxxxxxxxx", lead_data)
+
+# "Blip" FX (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Extreme density (6) and microscopic size (0.01) shatter the sample into 
+# high-frequency, digital glitches. (2 x's, 2 elements)
+s_grain = gen_score("x.......x.......", [
+  {note: :a6, buffer: :ambi_choir, pos: 0.9, density: 6, size: 0.01, amp: 0.4},
+  {note: :e6, buffer: :ambi_choir, pos: 0.8, density: 6, size: 0.01, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Crack - Just the buzzing bass, synth stabs, and glitches (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Execute - Add the rigid, 160 BPM drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Keygen - The piercing, 16th-note arpeggio lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DIGITAL PRECISION]
+# 
+# 1. FM as a Square Wave: Look at `s_bass` and `s_lead`. The `:play_fm` synth 
+#    is given a `divisor` of `2` or `4` and an extreme `depth` of `8`. This 
+#    forces the FM modulator to radically reshape the carrier wave, creating a 
+#    pure, buzzing, harsh square wave that perfectly mimics the sound of a 
+#    90s PC sound card (like a Sound Blaster) or a tracker file.
+#
+# 2. The 16th-Note Roll: Look at `s_bass` and `s_lead`. They play on EVERY 
+#    single 16th step. By using microscopic `release` times (0.02 to 0.03), the 
+#    engine creates a relentless, staccato, machine-gun roll that perfectly 
+#    mimics the fast, arpeggiated tracker music used in software cracks.
+#
+# 3. Zero Reverb: Unlike every other playbook, this track is intentionally 
+#    bone-dry. The engine does not route the FM synths through a global tape 
+#    echo. This creates a stark, clinical, and entirely digital atmosphere that 
+#    perfectly captures the lo-fi, isolated sound of a 1990s computer running 
+#    a pirated program.
+# ==========================================================

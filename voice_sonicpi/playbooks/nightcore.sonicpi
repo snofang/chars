@@ -1,0 +1,127 @@
+# ==========================================================
+# PLAYBOOK: NIGHTCORE / SPEED EDIT
+# (Pioneered by Maikel631 and early YouTube speed-edit communities)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored 170 BPM UK Hardcore and 140 BPM Trance. Nightcore is a 
+# unique phenomenon that originated in the early 2000s on YouTube. It takes 
+# existing pop, trance, or Eurodance tracks and simply speeds them up by 
+# 25-35%, raising the pitch of the vocals to a "chipmunk" register. The 
+# engine simulates this effect by pushing the tempo to 180 BPM, using a 
+# continuous, high-cutoff rolling bass, massive euphoric trance chords, and 
+# a granular vocal chop pitched up to the extreme `:c6` range to mimic that 
+# iconic, sugary, high-energy internet sound.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 180 BPM. Frantic, hyper-energetic, and driving.
+# 2. Harmonic Center: F# Minor. Melancholic but euphoric (classic trance).
+# 3. Rhythmic Skeleton: A rigid 4/4 hard dance beat. Off-beat open hats. 
+#    Continuous 16th-note rolling bass.
+# 4. Timbral Palette:
+#    - Bass: Pulsing, high-cutoff 16th-note synth bass (buzzing churn).
+#    - Chords: Massive, wide euphoric trance supersaw stabs.
+#    - Lead: Piercing, high-pitched, rapid-fire FM melody.
+#    - Texture: Pitched-up, stuttering granular "chipmunk" vocal chop.
+# 5. Arrangement: Intro (Bass/Chords) -> Verse (Drums) -> Drop (Lead/Vocals).
+# ==========================================================
+
+use_bpm 180
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Frantic, Euphoric, & High-Energy)
+# ==========================================================
+
+# Relentless, driving 4/4 hard dance kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry rave snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}
+])
+
+# The "Rolling" Bass (F# Minor).
+# Plays continuous 16th notes. 
+# High cutoff (100) and microscopic release (0.05) create a relentless, 
+# buzzing, high-speed churn. (16 x's, 16 elements)
+bass_notes = [:fs1, :fs1, :fs1, :fs1, :fs1, :fs1, :fs1, :fs1, 
+              :a1, :a1, :a1, :a1, :e1, :e1, :e1, :e1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.05, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "Supersaw" Trance Chords (F#m to A to E).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.2) 
+# create a sharp, piercing, stadium-sized wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:fs3, :a3, :c4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:fs3, :a3, :c4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:e3, :g3, :b3], cutoff: 110, release: 0.2, amp: 0.6}
+])
+
+# Piercing, "Catchy" Synth Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (8 x's, 8 elements)
+lead_notes = [:fs5, :a5, :c6, :e6, :d6, :c6, :a5, :fs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.1} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Chipmunk" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP to the extreme `:c6` range.
+# High density (4) and tiny size (0.03) creates a sharp, sugary, high-speed vocal skip.
+# (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :c6, buffer: :ambi_choir, pos: 0.1, density: 4, size: 0.03, amp: 0.7},
+  {note: :e6, buffer: :ambi_choir, pos: 0.3, density: 4, size: 0.03, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Build - Just the rolling bass, supersaw chords, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the relentless 4/4 hard dance drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Drop - The piercing, high-speed synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HIGH-SPEED EUPHORIA]
+# 
+# 1. The 180 BPM Roll: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step. By using a high `cutoff` (100) and a microscopic 
+#    `release` (0.05), the engine creates a relentless, buzzing churn that 
+#    perfectly mimics the high-speed, sped-up basslines of Nightcore edits.
+#
+# 2. The "Chipmunk" Granular: Look at `s_vocal`. The granular engine is given 
+#    a high `density` (4) and a tiny `size` (0.03). By pitching the `:ambi_choir` 
+#    sample up to the extreme `:c6` range, the engine shatters the vocal into a 
+#    sharp, sugary, high-pitched stutter that perfectly mimics the iconic 
+#    "chipmunk" vocal effect of the Nightcore genre.
+#
+# 3. The Off-Beat Wall: Look at `s_hats` and `s_chords`. They ALL hit strictly 
+#    on steps 2, 6, 10, and 14. The engine's strict master clock locks these 
+#    together perfectly at 180 BPM, creating a massive, bouncing "boom-cha" 
+#    momentum that feels like a frantic, hyper-energetic rave.
+# ==========================================================
