@@ -89,7 +89,7 @@ playbook = (ring
   # Scene 3: The Solo - The soaring lead guitar melody drops (8 bars)
   [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
     [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_fm, s_chords, 8], 
-    [:play_grain, s_vocal, 8], [:play_lead, s_lead, 8] ]
+    [:play_grain, s_vocal, 8] ]#, [:play_lead, s_lead, 8] ]
 )
 
 # ==========================================================

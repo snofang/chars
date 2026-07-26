@@ -1,17 +1,25 @@
 # ==========================================================
-# PLAYBOOK: 2010s MOOMBAHTON (DRY)
+# PLAYBOOK: MOOMBAHTON / DUTCH-REGGAETON FUSION
 # (Pioneered by Dave Nada, Dillon Francis, and Munchi)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# We have explored Trap and Reggaeton. Moombahton is the sound of 
-# Dutch House slowed down to a Reggaeton tempo (110 BPM). It relies 
-# on the 3-3-2 Dembow rhythm, thick "talking" FM basses, and massive, 
-# wide Dutch House chord stabs. 
+# We have explored Reggaeton (Dembow) and Dutch House. Moombahton is the 
+# sound of Dutch House slowed down to a Reggaeton tempo (110 BPM). It takes 
+# the bouncing, "talking" FM basslines and massive, wide Dutch House chord 
+# stabs and pairs them with the 3-3-2 Dembow rhythm. It is chunky, heavy, 
+# and designed for slow, aggressive club bouncing.
 #
-# This playbook perfectly demonstrates how the DRY `gen_score` helper 
-# handles complex polyrhythms. By mapping a 3-3-2 string pattern (`x..x..x.x..x....`)
-# to the kick, the engine creates the signature Latin bounce with zero math.
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 110 BPM. A chunky, swaggering bounce.
+# 2. Harmonic Center: A Minor. Dark and aggressive.
+# 3. Rhythmic Skeleton: The 3-3-2 Dembow pulse (Kick on 0, 3, 6, 8, 11). 
+#    Fast, bouncing 8th-note hats with a 16th skip.
+# 4. Timbral Palette:
+#    - Bass: Deep, round 808 sub-bass with a short release for a percussive thump.
+#    - Chords: Massive, wide Dutch House supersaw stabs on the off-beats.
+#    - Lead: Piercing, high-pitched "Moombah" FM pluck.
+# 5. Arrangement: Intro (Bass/Drums) -> Vibe (Chords) -> Drop (Lead).
 # ==========================================================
 
 use_bpm 110
@@ -25,36 +33,51 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (A Minor - Chunky, Bouncy, & Aggressive)
 # ==========================================================
 
-# The Dembow Kick. 3-3-2 pulse (steps 0, 3, 6, 8, 11).
-s_kick = gen_score("x..x..x.x..x....", [:c4])
+# The Dembow Kick. 3-3-2 pulse (steps 0, 3, 6, 8, 11). (5 x's, 5 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}, :c4
+])
 
-# Heavy, dry snare strictly on beats 2 and 4.
-s_snare = gen_score("....x.......x...", [:c4])
+# Heavy, dry snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
 
-# Bouncing 8th-note hats with a roll at the end.
-s_hats = gen_score("x..xx..xx..xx..x", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}])
+# Bouncing 8th-note hats with a 16th skip. (4 x's, 4 elements)
+s_hats = gen_score("x..xx..xx..xx..x", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
 
-# Deep, round 808 bass.
+# Deep, round 808 bass. Short release (0.3) makes it punchy. (4 x's, 4 elements)
 s_bass = gen_score("x.......x.......", [
+  {note: :a1, release: 0.3, cutoff: 60, amp: 1.2}, 
   {note: :a1, release: 0.3, cutoff: 60, amp: 1.0}, 
-  {note: :c2, release: 0.3, cutoff: 60, amp: 1.0}
+  {note: :c2, release: 0.3, cutoff: 60, amp: 1.0}, 
+  {note: :g1, release: 0.3, cutoff: 60, amp: 1.0}
 ])
 
 # Aggressive, wide Dutch House chord stabs (Am to Cmaj).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.2). 
+# (4 x's, 4 elements)
 s_chords = gen_score("..x...x...x...x.", [
-  [:a3, :c4, :e4], [:a3, :c4, :e4], [:c3, :e3, :g3], [:c3, :e3, :g3]
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:c3, :e3, :g3], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:c3, :e3, :g3], cutoff: 110, release: 0.2, amp: 0.6}
 ])
 
 # Piercing, high-pitched "Moombah" Lead (A Minor Pentatonic).
-# DRY: Define just the notes, merge default opts automatically.
-fm_notes = [:a5, :c6, :e6, :c6, :a5, :g5, :a5, :c6]
-fm_data = fm_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 4, release: 0.1} }
-s_fm = gen_score("x.x.x.x.x.x.x.x.", fm_data)
+# Uses :play_fm with a low divisor (2) and depth (4) to create a sharp, 
+# buzzy square wave. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:a5, :c6, :e6, :c6, :a5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 4, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
 
-# Chopped, rhythmic vocal stutter.
+# Chopped, rhythmic vocal stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary vocal skip. (2 x's, 2 elements)
 s_vocal = gen_score("....x.......x...", [
-  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
-  {note: :c5, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.04, amp: 0.6}
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.7},
+  {note: :c5, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.04, amp: 0.7}
 ])
 
 # ==========================================================
@@ -69,10 +92,10 @@ playbook = (ring
   [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
     [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
     
-  # Scene 3: The Drop - The piercing FM lead drops (8 bars)
+  # Scene 3: The Drop - The piercing Moombah lead drops (8 bars)
   [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
     [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
-    [:play_lead, s_fm, 8] ]
+    [:play_lead, s_lead, 8] ]
 )
 
 # ==========================================================
@@ -81,21 +104,23 @@ playbook = (ring
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS DRY APPROACH A MASTERCLASS IN POLYRHYTHM]
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN POLYRHYTHM]
 # 
 # 1. The 3-3-2 String: Look at `s_kick`. The string `"x..x..x.x..x....` 
 #    visually represents the 3-3-2 Dembow pulse. The `gen_score` helper 
 #    translates this into a 16-element ring of notes and `nil`s. This 
-#    eliminates all manual step counting and makes the complex Latin 
-#    rhythm instantly readable.
+#    eliminates all manual step counting and makes the complex Latin rhythm 
+#    instantly readable.
 #
-# 2. Hash Merging: Look at `fm_data`. We define an array of just the notes 
-#    `[:a5, :c6, :e6...]`, and then use Ruby's `.merge()` to inject the 
-#    default parameters (`amp`, `divisor`, `depth`, `release`) into every 
-#    step. This keeps the code incredibly clean and modular.
+# 2. The Off-Beat Wall: Look at `s_chords` and `s_hats`. They ALL hit 
+#    strictly on steps 2, 6, 10, and 14. In a 16-step grid, these are the 
+#    exact midpoints between the kicks. The engine's strict master clock locks 
+#    these together perfectly at 110 BPM, creating a massive, bouncing "boom-cha" 
+#    momentum that forces you to dance.
 #
-# 3. Visual Rhythm: Look at `s_hats`. The string `"x..xx..xx..xx..x"` 
-#    instantly tells you the rhythm is a bouncing 8th note with a 16th 
-#    skip. The engine handles the iteration, allowing you to focus purely 
-#    on the groove.
+# 3. FM as a Square Wave: Look at `s_lead`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `4`. This harmonic ratio produces a 
+#    sharp, buzzy square wave that cuts through the heavy mix. By routing it 
+#    through the global tape echo bus, the rapid notes smear into a cascading, 
+#    stadium-sized melody.
 # ==========================================================

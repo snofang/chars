@@ -1,10 +1,9 @@
 # ==========================================================
 # PLAYBOOK: DARK PSYTRANCE / FOREST PSYTRANCE
 # (Pioneered by Kindzadza, Parasense, and Highko)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Dark Psytrance.
 # We have explored Goa Trance (which is melodic and alien) and Peak-Time 
 # Techno (which is rigid and dark). Dark Psytrance is the sound of a 
 # nightmarish, high-speed alien forest. It operates at 148 BPM and relies 
@@ -12,9 +11,9 @@
 # modulating FM synth lines that sound like insects or liquid metal.
 #
 # This playbook perfectly demonstrates how to push the `:play_fm` synth 
-# to create aggressive, squelching sound design. By using a high `depth` 
-# and `divisor` on the off-beats, the engine creates a frantic, dark, 
-# and hypnotic atmosphere that feels like a psychedelic trip.
+# to create aggressive, squelching sound design. By using an extreme 
+# `depth` (8) and `divisor` (4) on rapid 16th notes, the engine creates 
+# a chaotic, futuristic atmosphere.
 # ==========================================================
 
 use_bpm 148
@@ -25,51 +24,72 @@ use_bpm 148
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
-# 2. THE SCORES (A Minor - Dark, Frantic, & Hypnotic)
+# 2. THE SCORES (A Minor - Frantic, Squelchy, & Driving)
 # ==========================================================
 
-# Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Relentless, driving 4-on-the-floor kick. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [:c4, :c4, :c4, :c4])
 
-# Deep, analog clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Heavy, dry rave clap strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
 
-# Frantic, rolling 16th hats to drive the momentum.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil)
+# Rigid, driving 16th off-beat hats. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
 
 # The "Rolling" Off-Beat Bass (A Minor).
-# Hits strictly on the off-beats (steps 2, 6, 10, 14). Very short release (0.1) 
-# creates a relentless, hypnotic "pump" that drives the track forward.
-s_bass  = (ring nil, nil, {:note => :a1, :release => 0.1}, nil, nil, nil, {:note => :a1, :release => 0.1}, nil, nil, nil, {:note => :a1, :release => 0.1}, nil, nil, nil, {:note => :a1, :release => 0.1}, nil)
+# Plays continuous 16th notes. Very short release (0.1) creates a 
+# relentless, hypnotic "pump" that drives the track forward.
+# (16 x's, 16 elements)
+bass_notes = [:a1, :a1, :a1, :a1, :a1, :a1, :a1, :a1, 
+              :a1, :a1, :a1, :a1, :g1, :g1, :g1, :g1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
 
-# Dark, sparse minor chord stabs (Am to Gm).
-# Hit sparingly on the downbeats to anchor the frantic percussion.
-s_chords= (ring nil, nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, nil, nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil)
+# Stark, "Sci-Fi" Synth Stabs (Am to G).
+# Hit sparingly on the off-beats. High cutoff (110) and short release (0.15) 
+# create a sharp, metallic wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.15, amp: 0.5}
+])
 
-# The "Squelchy" FM Lead (A Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) and extreme depth (6) to create 
-# a sharp, squelchy, "liquid metal" sound that dances over the bassline.
-s_fm    = (ring {:note => :a2, :divisor => 3, :depth => 6, :release => 0.1}, nil, nil, {:note => :a2, :divisor => 3, :depth => 6, :release => 0.1}, nil, nil, {:note => :c3, :divisor => 3, :depth => 6, :release => 0.1}, nil, nil, {:note => :e3, :divisor => 3, :depth => 6, :release => 0.1}, nil, nil, {:note => :a2, :divisor => 3, :depth => 6, :release => 0.1}, nil, nil, nil)
+# Erratic, "Squelchy" FM Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (8) to create 
+# a sharp, squelchy, "liquid metal" sound. Plays a rapid, continuous 
+# 16th-note melody. (16 x's, 16 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :a5, :e5, :c6, :e5, 
+              :g5, :d5, :bb5, :d5, :a5, :e5, :c6, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 8, release: 0.08} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
 
-# Sinister, metallic granular texture (using :elec_piano).
-# High density, tiny size = industrial, machine-like static.
-s_grain = (ring {:note => :a3, :buffer => :elec_piano, :pos => 0.8, :density => 4, :size => 0.02, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :elec_piano, :pos => 0.8, :density => 4, :size => 0.02, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# "Alien" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Massive size (0.5s) and low density (1) creates a slow, evolving, 
+# terrifying background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.5, amp: 0.6}
+])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: The Hypnosis - Just the kick, rolling bass, and granular static (4 bars)
+  # Scene 1: The Hypnosis - Just the kick, rolling bass, and drone (4 bars)
   [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: The Tension - Add the claps, hats, and dark chords (8 bars)
+  # Scene 2: The Tension - Add the claps, hats, and sci-fi stabs (8 bars)
   [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
     
-  # Scene 3: The Trip - The squelchy FM lead drops (8 bars)
+  # Scene 3: The Trip - The erratic, squelchy FM lead drops (8 bars)
   [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
-    [:play_lead, s_fm, 8] ]
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+    [:play_lead, s_lead, 8] ]
 )
 
 # ==========================================================
@@ -80,20 +100,20 @@ start_engine(playbook)
 # ==========================================================
 # [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DARK SOUND DESIGN]
 # 
-# 1. FM Squelch: Look at `s_fm`. The `:play_fm` synth is given a `divisor` 
-#    of `3` and an extreme `depth` of `6`. This forces the FM modulator 
-#    to radically reshape the carrier wave, creating a sharp, squelchy 
-#    "liquid metal" sound that perfectly mimics the modular synth sound 
-#    design of Dark Psytrance.
+# 1. FM Squelch: Look at `s_lead`. The `:play_fm` synth is given a 
+#    `divisor` of `4` and an extreme `depth` of `8`. This forces the FM 
+#    modulator to radically reshape the carrier wave, creating a sharp, 
+#    squelchy, "liquid metal" sound that perfectly mimics the modular synth 
+#    sound design of Dark Psytrance.
 #
-# 2. The Off-Beat Pump: Look at `s_bass`. It hits strictly on steps 2, 6, 
-#    10, and 14—the exact midpoints between the kicks. By using a very 
-#    short `release` (0.1), the engine creates a relentless, hypnotic 
-#    "pump" that drives the track forward unstoppably.
+# 2. The Off-Beat Pump: Look at `s_bass`. It hits strictly on steps 2, 6, 10, 
+#    and 14—the exact midpoints between the kicks. By using a very short 
+#    `release` (0.1), the engine creates a relentless, hypnotic "pump" that 
+#    drives the track forward unstoppably.
 #
-# 3. Industrial Granular Space: The `s_grain` sequence uses a tiny `size` 
-#    (`0.02`) and high `density` (`4`). By targeting the very end of the 
-#    electric piano buffer (`pos: 0.8`), the engine shatters the sample 
-#    into metallic, machine-like static that sits perfectly in the 
-#    background of a dark forest rave.
+# 3. Algorithmic Granular Drone: Look at `s_grain`. The granular engine is 
+#    given a massive `size` of `0.5` (500 milliseconds) and a `density` of `1`. 
+#    By pitching the `:ambi_choir` sample down and using sparse, long grains, 
+#    the engine time-stretches the sample into a formless, terrifying drone 
+#    that perfectly anchors the track's dark, sci-fi atmosphere.
 # ==========================================================

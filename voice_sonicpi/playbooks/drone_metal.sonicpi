@@ -1,0 +1,88 @@
+# ==========================================================
+# PLAYBOOK: DRONE METAL / EARTH / SUNN O))) STYLE
+# ==========================================================
+
+use_bpm 45
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (B Minor - Glacial, Suffocating, & Massive)
+# ==========================================================
+
+# The "Tectonic" Sub-Bass Drone (B Minor).
+# Hits once and rings out for the entire scene (8 bars = 32 beats).
+# Extreme low cutoff (30) creates a physical rumble. (1 x, 1 element)
+s_bass = gen_score("x...............", [
+  {note: :b0, release: 32.0, cutoff: 30, amp: 1.5}
+])
+
+# The "Wall of Amps" Guitars (B5 to F#5).
+# Uses :play_fm with extreme depth (6) for distortion.
+# Massive attack (4.0) and release (28.0) blur the chords together 
+# into a continuous, suffocating wave of sound. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:b2, :fs3], divisor: 2, depth: 6, attack: 4.0, release: 28.0, amp: 0.8},
+  {note: [:fs2, :c3], divisor: 2, depth: 6, attack: 4.0, release: 28.0, amp: 0.8}
+])
+
+# Piercing, "Amp Feedback" Lead (B Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. 
+# The massive release (8.0) creates a wailing, echoing drone. (3 x's, 3 elements)
+s_lead = gen_score("x.......x.......x", [
+  {note: :b5, cutoff: 90, release: 16.0, amp: 0.6}, 
+  {note: :a5, cutoff: 90, release: 16.0, amp: 0.6}, 
+  {note: :fs5, cutoff: 90, release: 16.0, amp: 0.7}
+])
+
+# "Room Noise / Feedback" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Massive size (1.0s) and low density (1) time-stretches the sample into 
+# a slow, evolving, terrifying background hiss. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :b3, buffer: :ambi_choir, pos: 0.8, density: 1, size: 1.0, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the sub-bass rumble and room noise (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8] ],
+  
+  # Scene 2: The Overture - The massive wall of amps enters (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_fm, s_chords, 8] ],
+    
+  # Scene 3: The Wail - The piercing feedback lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_fm, s_chords, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN TEXTURE OVER RHYTHM]
+# 
+# 1. The Rhythmic Void: Look at the playbook. There are zero drum instruments 
+#    (`:play_kick`, `:play_snare`, `:play_hats`). The 16-step grid is still 
+#    ticking, but it is used purely to trigger massive durations. The engine's 
+#    strict master clock ensures the chords and bass trigger exactly on beat 1, 
+#    holding perfectly in sync for 8 bars.
+#
+# 2. Data-Driven Sustain: Look at `s_bass` and `s_chords`. The `release` times 
+#    are 32.0 and 28.0. Because the scene is only 8 bars (32 beats) long, the 
+#    notes never actually finish ringing out before the next scene triggers. This 
+#    creates a continuous, overlapping "wall of sound" with no silence.
+#
+# 3. FM as a Distorted Amp: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `6`, combined with a 4-beat 
+#    `attack`. This forces the FM synth to swell violently into a harsh, 
+#    distorted square wave, perfectly mimicking the sound of a heavy metal 
+#    amplifier being pushed to absolute feedback.
+# ==========================================================
