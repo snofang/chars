@@ -1,0 +1,102 @@
+# ==========================================================
+# PLAYBOOK: SOFT CELL - "TAINTED LOVE" (1981)
+# ==========================================================
+
+use_bpm 122
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Minor - Cold, Driving, & Repetitive)
+# ==========================================================
+
+# Relentless, driving 4/4 drum machine kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Tainted Love" Sequencer Bass (G Minor).
+# Plays the iconic, repetitive 8-note sequence on continuous 8th notes. 
+# High cutoff (110) and microscopic release (0.06) create a relentless, 
+# hypnotic, buzzing analog churn. (8 x's, 8 elements)
+bass_notes = [:g2, :g2, :bb2, :bb2, :c3, :c3, :bb2, :bb2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.06, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Stark, "Synth Brass" Stabs (Gm to Eb).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 4, release: 0.15, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 4, release: 0.15, amp: 0.6},
+  {note: [:eb3, :g3, :bb3], divisor: 2, depth: 4, release: 0.15, amp: 0.6},
+  {note: [:eb3, :g3, :bb3], divisor: 2, depth: 4, release: 0.15, amp: 0.6}
+])
+
+# Piercing, "Echoing" Lead (G Minor).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:g5, :bb5, :d6, :c6, :bb5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Tainted love" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# High density, tiny size = a sharp, robotic, rhythmic vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :g3, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :bb3, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the sequencer bass, synth stabs, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the relentless 4/4 drum machine beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, echoing synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S SYNTH-POP]
+# 
+# 1. The 8-Note Sequencer: Look at `s_bass`. The `:play_sub` synth plays the 
+#    iconic G-G-Bb-Bb-C-C-Bb-Bb sequence on continuous 8th notes. By using a high 
+#    `cutoff` (110) and a microscopic `release` (0.06), the engine turns the 
+#    detuned sawtooth into a relentless, hypnotic, buzzing churn that perfectly 
+#    mimics the legendary analog sequencer bassline of "Tainted Love".
+#
+# 2. The Stark Stabs: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and a `depth` of `4`, with a microscopic `release` 
+#    (0.15). This forces the FM synth to produce a harsh, staccato "hit" that 
+#    perfectly mimics the stark, orchestral synth-brass stabs that define the 
+#    song's cold, minimalist atmosphere.
+#
+# 3. The Echoing Lead: The `s_lead` sequence uses `divisor: 3` and `depth: 3`. 
+#    This harmonic ratio produces a sharp, glassy, digital tone that cuts 
+#    through the heavy mix. Because it's routed through the global tape echo 
+#    bus, the sparse notes smear into a soaring, cinematic melody that perfectly 
+#    anchors the track's emotional, late-night atmosphere.
+# ==========================================================

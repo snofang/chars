@@ -1,0 +1,105 @@
+# ==========================================================
+# PLAYBOOK: RICK ASTLEY - "NEVER GONNA GIVE YOU UP" (1987)
+# ==========================================================
+
+use_bpm 113
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (Db Major - Upbeat, Driving, & Catchy)
+# ==========================================================
+
+# Relentless, driving 4/4 LinnDrum kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic 909 clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}
+])
+
+# The "SAW" Synth Bass (Db Major).
+# Plays continuous, driving 16th notes, alternating octaves. 
+# High cutoff (110) and microscopic release (0.08) create a relentless, 
+# bouncy, buzzing churn that drives the track. (16 x's, 16 elements)
+bass_notes = [:cs2, :cs2, :cs2, :cs2, :cs2, :cs3, :cs2, :cs2, 
+              :fs2, :fs2, :fs2, :fs2, :fs2, :fs3, :fs2, :fs2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.08, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "Brass Section" Stabs (Db to Gb to Ab to Bbm).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# brassy, staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:cs3, :f3, :gs3], divisor: 2, depth: 4, release: 0.15, amp: 0.6},
+  {note: [:cs3, :f3, :gs3], divisor: 2, depth: 4, release: 0.15, amp: 0.6},
+  {note: [:fs3, :a3, :cs4], divisor: 2, depth: 4, release: 0.15, amp: 0.6},
+  {note: [:gs3, :c4, :ds4], divisor: 2, depth: 4, release: 0.15, amp: 0.6}
+])
+
+# Piercing, "Catchy" Synth Lead (Db Major Pentatonic).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:cs5, :ds5, :f5, :gs5, :f5, :ds5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Never gonna give you up" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, pristine vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :cs4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :f4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the driving bass, brass stabs, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the relentless 4/4 LinnDrum beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing catchy synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN LATE 80S POP]
+# 
+# 1. The SAW Bass Pump: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:cs2) and the 
+#    high octave (:cs3). By using a high `cutoff` (110) and a microscopic 
+#    `release` (0.08), the engine turns the detuned sawtooth into a relentless, 
+#    bouncy, buzzing churn that perfectly mimics the driving synth bass of the 
+#    Stock Aitken Waterman era.
+#
+# 2. The Brass Stabs: Look at `s_chords`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `4`, with a microscopic `release` 
+#    (0.15). This forces the FM synth to produce a harsh, brassy, staccato 
+#    "hit" that perfectly mimics the massive synth-brass section stabs that 
+#    define the song's upbeat, catchy atmosphere.
+#
+# 3. The Off-Beat Groove: Look at `s_hats` and `s_chords`. They ALL hit 
+#    strictly on steps 2, 6, 10, and 14. In a 16-step grid, these are the 
+#    exact midpoints between the kicks. The engine's strict master clock locks 
+#    these together perfectly, creating a massive, bouncing "boom-cha" groove 
+#    that forces you to dance.
+# ==========================================================

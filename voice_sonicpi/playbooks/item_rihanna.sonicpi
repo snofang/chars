@@ -1,0 +1,108 @@
+# ==========================================================
+# PLAYBOOK: RIHANNA - "UMBRELLA" (2007)
+# ==========================================================
+
+use_bpm 88
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Dark, Booming, & Cinematic)
+# ==========================================================
+
+# The "Umbrella" Kick. 
+# A heavy, syncopated, booming 808 march. (5 x's, 5 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.6}, :c4
+])
+
+# Crisp, organic snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Fast, rolling 16th hats to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# Deep, massive "Sub-Bass" (F# Minor).
+# Plays a syncopated, booming line. 
+# Extreme low cutoff (40) and massive release (0.4) create a deep, continuous rumble.
+# (4 x's, 4 elements)
+s_bass = gen_score("x.....x.x.....x.", [
+  {note: :fs1, release: 0.4, cutoff: 40, amp: 1.2}, 
+  {note: :fs1, release: 0.4, cutoff: 40, amp: 1.0}, 
+  {note: :a1, release: 0.4, cutoff: 40, amp: 1.0}, 
+  {note: :fs1, release: 0.4, cutoff: 40, amp: 1.0}
+])
+
+# Massive, "Cinematic String" Stabs (F#m to Am).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# brassy, staccato hit. (3 x's, 3 elements)
+s_chords = gen_score("..x.....x.x.....", [
+  {note: [:fs3, :a3, :c4], divisor: 2, depth: 4, release: 0.15, amp: 0.5},
+  {note: [:fs3, :a3, :c4], divisor: 2, depth: 4, release: 0.15, amp: 0.5},
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 4, release: 0.15, amp: 0.5}
+])
+
+# Piercing, "Catchy" Synth Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a pristine, 
+# glassy, pop synth tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:fs5, :a5, :c6, :b5, :a5, :fs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ella, ella" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# High density, tiny size = a sharp, percussive, repetitive vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :fs3, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.7},
+  {note: :a3, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the booming bass, string stabs, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the heavy, syncopated 808 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The catchy synth lead melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DARK POP]
+# 
+# 1. The "Ella, ella" Stutter: Look at `s_vocal`. The granular engine is given 
+#    a high `density` (3) and a tiny `size` (0.04). By pitching the grains 
+#    to `:fs3` and `:a3` and scattering them on a rigid 4-step pattern, the 
+#    engine turns the `:ambi_choir` sample into a sharp, percussive, rhythmic 
+#    vocal skip that perfectly mimics the iconic, stuttering hook of "Umbrella".
+#
+# 2. The Booming 808 Bass: Look at `s_bass`. The `:play_sub` synth is given 
+#    an extreme low `cutoff` (40) and a massive `release` (0.4). This creates 
+#    a deep, round, and warm low-end that rings out over the syncopated kicks, 
+#    carrying the dark, melancholic harmony of the track.
+#
+# 3. The Cinematic Stabs: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and a `depth` of `4`, with a microscopic `release` 
+#    (0.15). This forces the FM synth to produce a harsh, brassy, staccato 
+#    "hit" that perfectly mimics the massive, orchestral string section stabs 
+#    that define the song's theatrical chorus.
+# ==========================================================

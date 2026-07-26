@@ -1,0 +1,106 @@
+# ==========================================================
+# PLAYBOOK: BRITNEY SPEARS - "...BABY ONE MORE TIME" (1998)
+# ==========================================================
+
+use_bpm 93
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C# Minor - Punchy, Pristine, & Melodic)
+# ==========================================================
+
+# Driving 4/4 pop kick with a syncopated 16th hit on the 'a' of 4. (5 x's, 5 elements)
+s_kick = gen_score("x...x...x...x.x.", [
+  :c4, :c4, :c4, {note: :c4, amp: 0.6}, :c4
+])
+
+# Heavy, organic snare/clap strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Swung, bouncing 16th hats. (8 x's, 8 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Dennis Pop" Bass (C# Minor).
+# Plays continuous, driving 16th notes. 
+# High cutoff (110) and microscopic release (0.08) create a relentless, 
+# bouncy, staccato "thwack" that drives the track. (16 x's, 16 elements)
+bass_notes = [:cs1, :cs1, :cs1, :cs1, :cs1, :cs1, :cs1, :cs2, 
+              :cs1, :cs1, :cs1, :cs1, :b0, :b0, :b0, :b0]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.08, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "Cheiron" Piano Stabs (C#m to G# to A to B).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.2) 
+# create a sharp, pristine wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:cs3, :e3, :gs3], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:cs3, :e3, :gs3], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:a2, :cs3, :e3], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:b2, :d3, :fs3], cutoff: 110, release: 0.2, amp: 0.6}
+])
+
+# Piercing, "3-Note" Synth Lead (C# Minor).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a sharp, 
+# buzzy square wave. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:cs5, :gs4, :a4, :b4, :a4, :gs4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 2, depth: 3, release: 0.15} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Oh baby, baby" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, pristine vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :cs4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :e4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the driving bass, piano stabs, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the heavy, swinging pop drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing 3-note synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MAX MARTIN POP]
+# 
+# 1. The "Dennis Pop" Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, mapping out a driving, melodic line. By using a 
+#    high `cutoff` (110) and a microscopic `release` (0.08), the engine turns 
+#    the detuned sawtooth into a relentless, bouncy, staccato "thwack" that 
+#    perfectly mimics the famous Cheiron studio bass sound.
+#
+# 2. The 3-Note Riff: Look at `s_lead`. The `:play_fm` synth is given a low 
+#    `divisor` (2) and a `depth` (3), with a short `release` (0.15). This 
+#    forces the FM synth to produce a piercing, buzzy square wave. By playing 
+#    the iconic C#-G#-A melody, the engine perfectly mimics the track's 
+#    legendary, catchy synth hook.
+#
+# 3. The Off-Beat Groove: Look at `s_hats` and `s_chords`. They ALL hit 
+#    strictly on steps 2, 6, 10, and 14. In a 16-step grid, these are the 
+#    exact midpoints between the kicks. The engine's strict master clock locks 
+#    these together perfectly, creating a massive, bouncing "boom-cha" groove 
+#    that forces you to dance.
+# ==========================================================

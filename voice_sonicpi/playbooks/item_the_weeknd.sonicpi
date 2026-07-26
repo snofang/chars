@@ -1,0 +1,79 @@
+# ==========================================================
+# PLAYBOOK: THE WEEKND - "BLINDING LIGHTS" (2020s)
+# ==========================================================
+
+use_bpm 150
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Dorian - Driving, Nostalgic, & Dark)
+# ==========================================================
+
+# Relentless, driving 4/4 kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Moroder" Driving Bass (F Dorian).
+# Plays continuous 16th notes. High cutoff (100) and short release (0.08) 
+# create a relentless, buzzing churn. (16 x's, 16 elements)
+bass_notes = [:f2, :f2, :f2, :f2, :eb2, :f2, :f2, :c2, 
+              :f2, :f2, :f2, :f2, :eb2, :f2, :f2, :c2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.08, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Lush, "Synth Pad" Chords (Fm to Eb).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.2) 
+# create a sharp, stadium-sized wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:f3, :ab3, :c4], cutoff: 110, release: 0.2, amp: 0.5},
+  {note: [:f3, :ab3, :c4], cutoff: 110, release: 0.2, amp: 0.5},
+  {note: [:eb3, :g3, :bb3], cutoff: 110, release: 0.2, amp: 0.5},
+  {note: [:eb3, :g3, :bb3], cutoff: 110, release: 0.2, amp: 0.5}
+])
+
+# Piercing, "Top-Down" FM Lead (F Dorian).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a sharp, 
+# buzzy square wave. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:f5, :g5, :ab5, :bb5, :ab5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 3, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.4) and low density (1) creates a slow, evolving background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :f4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Highway - Just the driving bass, synth pad, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drive - Add the relentless 4/4 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing FM lead melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)

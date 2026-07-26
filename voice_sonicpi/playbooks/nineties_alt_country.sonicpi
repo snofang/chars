@@ -1,0 +1,130 @@
+# ==========================================================
+# PLAYBOOK: 90s ALT-COUNTRY / AMERICANA
+# (Pioneered by Uncle Tupelo, Whiskeytown, and early Wilco)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Alt-Country.
+# We have explored high-energy electronic and metal genres, but Alt-Country 
+# is the sound of pure, dusty Americana. It fuses the raw, driving energy 
+# of punk rock with the storytelling and instrumentation of country music. 
+# It relies on a driving "train beat" drum rhythm, a picked, walking bass, 
+# strummed acoustic guitars, and a weeping, echoing pedal steel guitar 
+# that feels like driving down a long, empty highway.
+#
+# This playbook perfectly demonstrates how to use the `:play_lead` synth 
+# to simulate a weeping pedal steel, and how to use the `:play_pluck` synth 
+# to simulate a strummed acoustic guitar.
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Major - Dusty, Driving, & Melancholic)
+# ==========================================================
+
+# The "Train Beat" Kick. 
+# A driving, syncopated march. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x.x.x...", [
+  :c4, :c4, :c4, {note: :c4, amp: 0.7}
+])
+
+# Crisp, organic snare on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Fast, driving 16th hats. (8 x's, 8 elements - cycles 4 times)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Walking" Bass (G Major).
+# Plays a driving, root-fifth line. Mid cutoff (80) and short release (0.15) 
+# create a warm, punchy "thwack". (8 x's, 8 elements)
+s_bass = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :g1, cutoff: 80, release: 0.15, amp: 1.0}, 
+  {note: :d2, cutoff: 80, release: 0.15, amp: 0.8}, 
+  {note: :g1, cutoff: 80, release: 0.15, amp: 1.0}, 
+  {note: :d2, cutoff: 80, release: 0.15, amp: 0.8}, 
+  {note: :c2, cutoff: 80, release: 0.15, amp: 1.0}, 
+  {note: :g2, cutoff: 80, release: 0.15, amp: 0.8}, 
+  {note: :d2, cutoff: 80, release: 0.15, amp: 1.0}, 
+  {note: :a1, cutoff: 80, release: 0.15, amp: 0.8}
+])
+
+# The "Acoustic Guitar" Strums (G to C to D).
+# Uses :play_pluck. Hits strictly on the off-beats to mimic fast strumming. 
+# (4 x's, 4 elements)
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:g3, :b3, :d4], amp: 0.6, release: 0.08, coef: 0.3}, 
+  {note: [:c3, :e3, :g3], amp: 0.6, release: 0.08, coef: 0.3}, 
+  {note: [:g3, :b3, :d4], amp: 0.6, release: 0.08, coef: 0.3}, 
+  {note: [:d3, :fs3, :a3], amp: 0.6, release: 0.08, coef: 0.3}
+])
+
+# Weeping, "Pedal Steel" Lead (G Major Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The massive release (1.0) 
+# and low cutoff (80) create a soaring, weeping, country melody. (6 x's, 6 elements)
+lead_notes = [:g5, :b5, :d6, :c6, :b5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 80, release: 1.0} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Highway" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.4) and low density (1) creates a slow, evolving background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :g3, buffer: :ambi_choir, pos: 0.3, density: 1, size: 0.4, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Highway - Just the walking bass, acoustic guitar, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drive - Add the driving train beat drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The weeping pedal steel guitar drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN AMERICANA]
+# 
+# 1. The Pedal Steel: The `s_lead` sequence uses the Prophet synth with a 
+#    low `cutoff` (80) and a massive `release` (1.0). Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a soaring, 
+#    weeping melody that perfectly mimics the sliding, echoing tones of a 
+#    pedal steel guitar.
+#
+# 2. The Acoustic Strum: Look at `s_guitar`. The `:play_pluck` synth hits 
+#    strictly on the off-beats (steps 2, 6, 10, 14). By using a microscopic 
+#    `release` (0.08) and a very low `coef` (0.3), the engine turns the pluck 
+#    into a sharp, percussive "chuka" that perfectly mimics the fast, rhythmic 
+#    strumming of an acoustic guitar.
+#
+# 3. The Train Beat: Look at `s_kick` and `s_hats`. The kick hits on a 
+#    syncopated, driving rhythm, while the hats play continuous 16th notes. 
+#    The engine's strict master clock ensures this rigid, mechanical momentum 
+#    locks perfectly with the walking bassline, creating the signature "train 
+#    beat" groove of Alt-Country.
+# ==========================================================

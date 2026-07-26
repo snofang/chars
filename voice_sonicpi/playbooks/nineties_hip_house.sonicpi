@@ -1,0 +1,128 @@
+# ==========================================================
+# PLAYBOOK: 90s HIP HOUSE / CHICAGO RAP HOUSE
+# (Pioneered by Fast Eddie, Tyree Cooper, and DJ Chip)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 90s Hip House.
+# We have explored Chicago House and Old-School Hip-Hop, but Hip House is 
+# the absolute perfect fusion of the two. It takes the relentless, driving 
+# 4/4 grid of house music and injects it with massive 808 drum breaks, 
+# continuous "acid" 16th-note basslines, and repetitive, rhythmic rap vocal 
+# chants. It is high-energy, bouncy, and undeniably fun.
+#
+# This playbook perfectly demonstrates how to combine a continuous, 
+# filter-sweeping 16th-note bassline with a syncopated 808 drum pattern. 
+# By using the `:play_sub` synth to simulate a Roland TB-303 and routing 
+# a piercing FM lead through the global tape echo, the engine creates a 
+# massive, sweaty, and deeply nostalgic 90s warehouse atmosphere.
+# ==========================================================
+
+use_bpm 125
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Bouncy, Acid, & Driving)
+# ==========================================================
+
+# Relentless, driving 4-on-the-floor kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Crisp, 808 snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Fast, rolling 16th hats to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Acid 303" Bassline (A Minor).
+# Plays continuous 16th notes. The 'cutoff' Hash slowly opens from 70 to 120 
+# and closes back down, simulating the squelching filter envelope of a TB-303.
+# (16 x's, 16 elements)
+bass_cycle = [:a1, :a1, :a2, :a1, :a1, :c2, :a1, :a1, 
+              :g1, :g1, :g2, :g1, :a1, :a1, :e2, :a1]
+bass_data = 16.times.map do |i|
+  # Algorithmically generate the filter sweep
+  cutoff = if i < 8
+             70 + (i * 6) # Opens up
+           else
+             120 - ((i - 8) * 6) # Closes down
+           end
+  {note: bass_cycle[i], cutoff: cutoff, release: 0.1, amp: 1.0}
+end
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, "M1" Piano Stabs (Am to G).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.2) 
+# create a sharp, piercing wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.2, amp: 0.6}
+])
+
+# Piercing, "Rave" FM Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a piercing, 
+# glassy tone. (6 x's, 6 elements)
+lead_notes = [:a5, :c6, :e6, :d6, :c6, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Go!" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, percussive vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Groove - Just the 4/4 beat, acid bass, and hats (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
+  
+  # Scene 2: The Vibe - Add the heavy claps, piano stabs, and vocals (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The piercing rave FM lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+    [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ACID GROOVE]
+# 
+# 1. Algorithmic Filter Sweep: Look at `s_bass`. Instead of typing 16 
+#    repetitive Hashes, we use `16.times.map` to generate the `cutoff` values. 
+#    The filter starts at 70, slowly opens to 120 by step 7, and then closes 
+#    back down to 70. Because the engine loops this 16-step grid, the bassline 
+#    constantly "breathes" and squelches, perfectly mimicking the TB-303 acid 
+#    basslines of 90s Hip House.
+#
+# 2. The Off-Beat Wall: Look at `s_hats` and `s_chords`. They ALL hit strictly 
+#    on steps 2, 6, 10, and 14. The engine's strict master clock locks these 
+#    together perfectly at 125 BPM, creating a massive, bouncing "boom-cha" 
+#    momentum that forces you to dance.
+#
+# 3. The M1 Piano Illusion: Look at `s_chords`. The arrays form massive 3-note 
+#    minor chords. By using a high `cutoff` (110) and a short `release` (0.2), 
+#    the engine turns the `:blade` synth into a bright, piercing piano stab that 
+#    perfectly mimics the legendary Korg M1 "Organ 2" patch used in almost every 
+#    90s house track.
+# ==========================================================

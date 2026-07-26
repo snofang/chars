@@ -1,0 +1,102 @@
+# ==========================================================
+# PLAYBOOK: HADDAWAY - "WHAT IS LOVE" (1993)
+# ==========================================================
+
+use_bpm 126
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Driving, Nostalgic, & Club-Ready)
+# ==========================================================
+
+# Relentless, driving 4/4 Eurodance kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic 909 clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}
+])
+
+# The "What Is Love" Bass Riff (A Minor).
+# Uses :play_fm with a low divisor (2) and mid depth (5) to create a thick, 
+# buzzing, square-wave bass. Plays the iconic, syncopated 16th-note riff. 
+# (16 x's, 16 elements)
+bass_notes = [:a2, :a2, :a3, :a2, :e2, :e2, :e3, :e2, 
+              :g2, :g2, :g3, :g2, :a2, :a2, :a3, :e2]
+bass_data = bass_notes.map { |n| {note: n, amp: 0.8, divisor: 2, depth: 5, release: 0.06} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Lush, "Synth Pad" Chords (Am to G).
+# Hit on the downbeats. The slow 0.5-beat attack and massive 2.0-beat release 
+# blur the chords together into a continuous, cinematic, emotional wave. 
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4},
+  {note: [:g3, :bb3, :d4], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4}
+])
+
+# Piercing, "Catchy" Synth Lead (A Minor).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (8 x's, 8 elements)
+lead_notes = [:a5, :a5, :c6, :c6, :d6, :c6, :a5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.1} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "What is love?" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, robotic, rhythmic vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the iconic bass riff, sweeping pads, and vocal chop (4 bars)
+  [ [:play_fm, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the driving 4/4 Eurodance drums (8 bars)
+  [ [:play_fm, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing catchy synth lead drops (8 bars)
+  [ [:play_fm, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 90S EURODANCE]
+# 
+# 1. FM as a Bass Riff: Look at `s_bass`. The `:play_fm` synth is given a low 
+#    `divisor` (2) and a `depth` (5), with a microscopic `release` (0.06). This 
+#    forces the FM synth to produce a thick, buzzing, square-wave bass that plays 
+#    the iconic, syncopated 16th-note riff. The engine's strict master clock 
+#    ensures this relentless groove locks perfectly with the 4/4 kick.
+#
+# 2. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `0.5` and a `release` of `2.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of warm harmony that 
+#    perfectly mimics the lush, wide-stereo string pads of 90s Eurodance.
+#
+# 3. The Piercing Lead: The `s_lead` sequence uses `divisor: 3` and `depth: 3`. 
+#    This harmonic ratio produces a sharp, glassy, digital tone that cuts 
+#    through the heavy bass and drums. By playing a repetitive, 8th-note 
+#    melody, the engine creates a frantic, high-energy hook that perfectly 
+#    anchors the track's club-ready atmosphere.
+# ==========================================================

@@ -1,0 +1,109 @@
+# ==========================================================
+# PLAYBOOK: BLONDIE - "HEART OF GLASS" (1979)
+# ==========================================================
+
+use_bpm 122
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Cool, Driving, & Disco-Pop)
+# ==========================================================
+
+# Relentless, driving 4/4 CR-78 drum machine kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic disco clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Rigid, continuous 16th hats to drive the disco momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Disco Bass" (F# Minor).
+# Plays a driving, melodic, root-fifth line. 
+# High cutoff (90) and short release (0.15) create a warm, punchy "thwack".
+# (8 x's, 8 elements)
+bass_notes = [:fs1, :fs1, :a1, :b1, :c2, :c2, :b1, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Clean, "Rhythm Guitar" Chops (F#m to C#).
+# Uses :play_pluck. Hits strictly on the off-beats to mimic funky, clean strumming. 
+# (4 x's, 4 elements)
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:fs3, :a3, :cs4], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:fs3, :a3, :cs4], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:cs4, :e4, :g4], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:cs4, :e4, :g4], amp: 0.6, release: 0.08, coef: 0.4}
+])
+
+# Lush, "Prophet-5" Synth Pad (F#m to C#).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:fs3, :a3, :cs4], cutoff: 70, attack: 1.0, release: 4.0, amp: 0.4},
+  {note: [:cs4, :e4, :g4], cutoff: 70, attack: 1.0, release: 4.0, amp: 0.4}
+])
+
+# Piercing, "Glassy" Synth Lead (F# Minor).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:fs5, :a5, :c6, :b5, :a5, :fs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Heart of glass" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, disco-pop vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :fs4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :a4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the disco bass, clean guitar chops, and sweeping pad (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4], [:play_chords, s_chords, 4] ],
+  
+  # Scene 2: The Verse - Add the relentless 4/4 CR-78 disco drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing glassy synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_chords, s_chords, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DISCO-ROCK FUSION]
+# 
+# 1. The Disco Bass Drive: Look at `s_bass`. The `:play_sub` synth plays a 
+#    driving, root-fifth line (F#-F#-A-B-C-C-B-A) on continuous 8th notes. 
+#    By using a high `cutoff` (90) and a short `release` (0.15), the engine 
+#    turns the detuned sawtooth into a warm, punchy "thwack" that perfectly 
+#    mimics the iconic disco bassline that anchors the track.
+#
+# 2. The Clean Guitar Chops: Look at `s_guitar`. The `:play_pluck` synth hits 
+#    strictly on the off-beats (steps 2, 6, 10, 14). By using a microscopic 
+#    `release` (0.08) and a very low `coef` (0.4), the engine turns the pluck 
+#    into a sharp, percussive "chuka" that perfectly mimics the clean, rhythmic 
+#    funk guitar strums that define the groove.
+#
+# 3. The Off-Beat Groove: Look at `s_hats`, `s_clap`, and `s_guitar`. They ALL 
+#    hit strictly on the exact midpoints between the kicks. The engine's strict 
+#    master clock locks these together perfectly, creating a massive, bouncing 
+#    "boom-cha" groove that forces you to dance.
+# ==========================================================

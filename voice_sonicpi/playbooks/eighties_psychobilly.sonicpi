@@ -1,0 +1,122 @@
+# ==========================================================
+# PLAYBOOK: 80s PSYCHOBILLY / HORROR PUNK
+# (Pioneered by The Cramps, Meteors, and Batmobile)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# If I were to select the next playbook, I would choose 80s Psychobilly.
+# We have explored Rockabilly and Hardcore Punk, but Psychobilly is the sound 
+# of a 50s hot rod crashing into a haunted house. It fuses the driving, 
+# slap-bass rhythm of rockabilly with the loud, distorted aggression of 
+# punk rock. It relies on a blistering 150 BPM tempo, a relentless, 
+# continuous 8th-note "slap" upright bass, stark, staccato guitar stabs, 
+# and a piercing, echoing, twangy guitar solo that feels like a high-speed 
+# chase in a hearse.
+#
+# This playbook perfectly demonstrates how to push the engine's master clock 
+# to a high tempo while maintaining a live, raw band feel. By using the 
+# `:play_sub` synth as a continuous, octave-jumping slap bass and the 
+# `:play_lead` synth for a twangy solo, the engine creates a chaotic, 
+# aggressive, and deeply fun atmosphere.
+# ==========================================================
+
+use_bpm 150
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Fast, Twangy, & Aggressive)
+# ==========================================================
+
+# Fast, driving 4/4 punk kick. (4 x's, 1 element - cycles 4 times)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Fast, driving 8th hats. (8 x's, 2 elements - cycles 4 times)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Slap" Upright Bass (E Minor).
+# Plays continuous, driving 8th notes, alternating octaves. 
+# High cutoff (100) and short release (0.1) create a punchy, aggressive "thwack". 
+# (8 x's, 8 elements)
+bass_notes = [:e1, :e2, :e1, :e2, :e1, :e2, :b1, :e2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# The "Twangy" Rhythm Guitar Stabs (E5 to B5).
+# Uses :play_pluck. Hits strictly on the off-beats to mimic fast, punk strumming. 
+# (4 x's, 4 elements)
+s_guitar = gen_score("..x...x...x...x.", [
+  {note: [:e3, :b3], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:e3, :b3], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:b2, :fs3], amp: 0.6, release: 0.08, coef: 0.4}, 
+  {note: [:e3, :b3], amp: 0.6, release: 0.08, coef: 0.4}
+])
+
+# Piercing, "Twangy" Lead Solo (E Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
+# creates a soaring, echoing, twangy solo. (6 x's, 6 elements)
+lead_notes = [:e5, :g5, :b5, :a5, :g5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Yeah!" Gang Shout (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.08) and low density (1) creates a raw, repetitive vocal hit. 
+# (1 x, 1 element)
+s_grain = gen_score("........x.......", [
+  {note: :e3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.08, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Hearse - Just the driving drums, slap bass, and rhythm guitar (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4] ],
+  
+  # Scene 2: The Vibe - Add the gang shouts (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8] ],
+    
+  # Scene 3: The Solo - The piercing twangy guitar solo drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HORROR-PUNK SWING]
+# 
+# 1. The Slap Bass Drive: Look at `s_bass`. The `:play_sub` synth plays on 
+#    every 8th note, alternating between the low octave (:e1) and the high 
+#    octave (:e2). By using a high `cutoff` (100) and a short `release` (0.1), 
+#    the engine turns the detuned sawtooth into a punchy, aggressive "thwack" 
+#    that perfectly mimics the relentless, driving slap bass of Psychobilly.
+#
+# 2. FM as a Twangy Guitar: Look at `s_lead`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and a `depth` of `5`. This harsh harmonic ratio forces 
+#    the FM modulator to shatter the carrier wave, creating a piercing, buzzy 
+#    square wave. By playing a rapid, 8th-note melody, the engine creates a 
+#    frantic, high-energy solo that mimics the twangy, distorted guitars of 
+#    The Cramps.
+#
+# 3. The 8th-Note Drive: 80s Psychobilly relies on a stark, driving rhythm 
+#    section. The `s_hats` play straight 8th notes, and the `s_kick` hits on 
+#    every beat (steps 0, 4, 8, 12). The engine's strict master clock ensures 
+#    this rigid, mechanical momentum locks perfectly with the continuous 
+#    8th-note bassline, creating a massive, forward-driving punk groove.
+# ==========================================================

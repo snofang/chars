@@ -1,0 +1,104 @@
+# ==========================================================
+# PLAYBOOK: NEW ORDER - "BLUE MONDAY" (1983)
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Electronic, Driving, & Hypnotic)
+# ==========================================================
+
+# Relentless, driving 4/4 drum machine kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry snare/clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
+
+# The "Booming" Synth Bass (D Minor).
+# Plays continuous, driving 16th notes. 
+# Mid cutoff (90) and microscopic release (0.08) create a relentless, 
+# hypnotic, booming churn that drives the track. (16 x's, 16 elements)
+bass_notes = [:d2, :d2, :d2, :d2, :d2, :d2, :d2, :d2, 
+              :d2, :d2, :d2, :d2, :a1, :a1, :a1, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.08, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Lush, "String Synth" Pad (Dm to C to Bb to A).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (4 x's, 4 elements)
+s_chords = gen_score("x...x...x...x...", [
+  {note: [:d3, :f3, :a3], cutoff: 70, attack: 1.0, release: 3.0, amp: 0.4},
+  {note: [:c3, :e3, :g3], cutoff: 70, attack: 1.0, release: 3.0, amp: 0.4},
+  {note: [:bb2, :d3, :f3], cutoff: 70, attack: 1.0, release: 3.0, amp: 0.4},
+  {note: [:a2, :c3, :e3], cutoff: 70, attack: 1.0, release: 3.0, amp: 0.4}
+])
+
+# Piercing, "Echoing" Synth Lead (D Minor).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a sharp, 
+# buzzy, analog tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:d5, :c5, :bb4, :a4, :bb4, :c5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 2, depth: 4, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Long size (0.4) and low density (1) creates a slow, evolving, ethereal texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :d4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the booming bass, sweeping pads, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Verse - Add the relentless 4/4 drum machine beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, echoing synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ALTERNATIVE DANCE]
+# 
+# 1. The Booming Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, mapping out a driving, root-note progression. By 
+#    using a mid-range `cutoff` (90) and a microscopic `release` (0.08), the 
+#    engine creates a relentless, hypnotic, booming churn that perfectly mimics 
+#    the legendary synth bass of "Blue Monday".
+#
+# 2. The Echoing Lead: The `s_lead` sequence uses `divisor: 2` and `depth: 4`. 
+#    This harmonic ratio produces a sharp, buzzy, saw-like wave that cuts 
+#    through the heavy mix. Because it's routed through the global tape echo 
+#    bus, the sparse notes smear into a soaring, cinematic melody that perfectly 
+#    anchors the track's cold, emotional atmosphere.
+#
+# 3. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `1.0` and a `release` of `3.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over four whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics the lush, wide-stereo string pads 
+#    of 80s synth-pop.
+# ==========================================================

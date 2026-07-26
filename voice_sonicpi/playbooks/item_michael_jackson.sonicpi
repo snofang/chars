@@ -1,0 +1,111 @@
+# ==========================================================
+# PLAYBOOK: MICHAEL JACKSON - "BILLIE JEAN" (1982)
+# ==========================================================
+
+use_bpm 118
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Funky, Minimalist, & Iconic)
+# ==========================================================
+
+# The "Billie Jean" Kick. 
+# A heavy, syncopated, bouncing funk march. (5 x's, 5 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}
+])
+
+# Crisp, dry snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 1.0}
+])
+
+# The "Shuffled" Hi-Hats.
+# Plays continuous 16th notes with heavy amplitude manipulation to simulate 
+# the famous live drummer's swing. (8 x's, 8 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
+
+# The "Walking" Synth Bass (F# Minor).
+# Plays the iconic, driving, syncopated line. 
+# High cutoff (100) and short release (0.1) create a punchy, clean "thwack".
+# (6 x's, 6 elements)
+s_bass = gen_score("x..x.x..x..x.x..", [
+  {note: :fs2, release: 0.1, cutoff: 100, amp: 1.0}, 
+  {note: :fs2, release: 0.1, cutoff: 100, amp: 0.8}, 
+  {note: :a2, release: 0.1, cutoff: 100, amp: 1.0}, 
+  {note: :cs3, release: 0.1, cutoff: 100, amp: 1.0}, 
+  {note: :a2, release: 0.1, cutoff: 100, amp: 0.8}, 
+  {note: :fs2, release: 0.1, cutoff: 100, amp: 1.0}
+])
+
+# Stark, "String Section" Stabs (F#m to C#).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# staccato hit. (3 x's, 3 elements)
+s_chords = gen_score("..x.....x.x.....", [
+  {note: [:fs3, :a3, :cs4], divisor: 2, depth: 4, release: 0.15, amp: 0.5},
+  {note: [:fs3, :a3, :cs4], divisor: 2, depth: 4, release: 0.15, amp: 0.5},
+  {note: [:cs4, :e4, :g4], divisor: 2, depth: 4, release: 0.15, amp: 0.5}
+])
+
+# Piercing, "Electric Piano" Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a pristine, 
+# glassy tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:fs5, :e5, :cs5, :b4, :cs5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.4) and low density (1) creates a slow, evolving background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :fs3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the iconic bass, string stabs, and vocal drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Verse - Add the heavy, syncopated funk drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing electric piano melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S FUNK-POP]
+# 
+# 1. The Walking Bass: Look at `s_bass`. The `:play_sub` synth plays the iconic, 
+#    syncopated F#-F#-A-C#-A-F# line. By using a high `cutoff` (100) and a short 
+#    `release` (0.1), the engine turns the detuned sawtooth into a punchy, clean 
+#    "thwack" that perfectly mimics the legendary, driving synth bass of "Billie Jean".
+#
+# 2. The Shuffled Groove: Look at `s_hats`. The hats play continuous 16th notes, 
+#    but the amplitudes alternate wildly between 0.4, 0.15, 0.3, and 0.2. By 
+#    emphasizing the off-beats, the engine simulates the famous live drummer's 
+#    swing, creating a massive, bouncing groove that defined 80s pop.
+#
+# 3. The Stark Stabs: Look at `s_chords`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `4`, with a microscopic `release` (0.15). 
+#    This forces the FM synth to produce a harsh, staccato "hit" that perfectly 
+#    mimics the stark, orchestral string section stabs that define the song's 
+#    minimalist, theatrical atmosphere.
+# ==========================================================

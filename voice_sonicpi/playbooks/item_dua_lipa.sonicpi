@@ -1,0 +1,108 @@
+# ==========================================================
+# PLAYBOOK: DUA LIPA - "LEVITATING" (2020s)
+# ==========================================================
+
+use_bpm 103
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Bouncy, Catchy, & Disco-Pop)
+# ==========================================================
+
+# Driving 4/4 disco-pop kick. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [:c4, :c4, :c4, :c4])
+
+# Heavy, organic disco clap strictly on beats 2 and 4. (2 x's, 2 elements)
+s_clap = gen_score("....x.......x...", [:c4, :c4])
+
+# Bouncing, off-beat 8th hats. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
+
+# The "Levitating" Bass (F# Minor).
+# Plays a syncopated, bouncy, octave-jumping line. 
+# High cutoff (100) and short release (0.1) create a punchy, clean "thwack".
+# (6 x's, 6 elements)
+s_bass = gen_score("x..x.x..x..x.x..", [
+  {note: :fs2, release: 0.1, cutoff: 100, amp: 1.0}, 
+  {note: :a2, release: 0.1, cutoff: 100, amp: 0.8}, 
+  {note: :fs2, release: 0.1, cutoff: 100, amp: 1.0}, 
+  {note: :cs3, release: 0.1, cutoff: 100, amp: 1.0}, 
+  {note: :a2, release: 0.1, cutoff: 100, amp: 0.8}, 
+  {note: :fs2, release: 0.1, cutoff: 100, amp: 1.0}
+])
+
+# Bright, "Plucky" FM Chords (F#m to A to C#).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a pristine, 
+# glassy, pop synth tone. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:fs3, :a3, :cs4], divisor: 3, depth: 2, release: 0.15, amp: 0.5},
+  {note: [:a3, :cs4, :e4], divisor: 3, depth: 2, release: 0.15, amp: 0.5},
+  {note: [:fs3, :a3, :cs4], divisor: 3, depth: 2, release: 0.15, amp: 0.5},
+  {note: [:cs4, :e4, :fs4], divisor: 3, depth: 2, release: 0.15, amp: 0.5}
+])
+
+# Piercing, "Catchy" Synth Lead (F# Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a sharp, 
+# buzzy square wave. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:fs5, :e5, :cs5, :b4, :cs5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 3, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Chopped, "Stuttering" Pop Vocal (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, club-ready vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :fs4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
+  {note: :a4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the bouncy bass, plucky chords, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the driving 4/4 disco drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The catchy synth lead melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MODERN DISCO-POP]
+# 
+# 1. The Octave-Jumping Bass: Look at `s_bass`. The `:play_sub` synth plays a 
+#    syncopated, bouncy line, jumping between the root (F#), the third (A), 
+#    and the fifth (C#). By using a high `cutoff` (100) and a short `release` 
+#    (0.1), the engine creates a punchy, clean "thwack" that perfectly mimics 
+#    the iconic, driving bassline of "Levitating".
+#
+# 2. FM as a Pluck: Look at `s_chords`. The `:play_fm` synth is given a high 
+#    `divisor` (3) and a low `depth` (2), with a microscopic `release` (0.15). 
+#    This forces the FM synth to produce a pristine, glassy, staccato "pluck" 
+#    that perfectly mimics the bright, catchy synth presets used in modern 
+#    pop productions.
+#
+# 3. The Off-Beat Groove: Look at `s_hats` and `s_chords`. They ALL hit 
+#    strictly on steps 2, 6, 10, and 14. In a 16-step grid, these are the 
+#    exact midpoints between the kicks. The engine's strict master clock locks 
+#    these together perfectly, creating a massive, bouncing "boom-cha" groove 
+#    that forces you to dance.
+# ==========================================================

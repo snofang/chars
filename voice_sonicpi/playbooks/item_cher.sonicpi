@@ -1,0 +1,107 @@
+# ==========================================================
+# PLAYBOOK: CHER - "BELIEVE" (1998)
+# ==========================================================
+
+use_bpm 133
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Driving, Emotional, & Robotic)
+# ==========================================================
+
+# Relentless, driving 4/4 Eurodance kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic 909 clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}
+])
+
+# The "Eurodance" Bass (F# Minor).
+# Plays continuous, driving 16th notes. 
+# Mid cutoff (90) and microscopic release (0.06) create a relentless, 
+# hypnotic, buzzing churn. (16 x's, 16 elements)
+bass_cycle = [:fs1, :fs1, :fs1, :fs1, :d2, :d2, :d2, :d2, 
+              :b1, :b1, :b1, :b1, :e2, :e2, :e2, :e2]
+bass_data = bass_cycle.map { |n| {note: n, cutoff: 90, release: 0.06, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Lush, "Synth Pad" Chords (F#m to D to Bm to E).
+# Hit on every beat. The slow 0.5-beat attack and massive 2.0-beat release 
+# blur the chords together into a continuous, cinematic, emotional wave. 
+# (4 x's, 4 elements)
+s_chords = gen_score("x...x...x...x...", [
+  {note: [:fs3, :a3, :cs4], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4},
+  {note: [:d3, :fs3, :a3], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4},
+  {note: [:b2, :d3, :fs3], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4},
+  {note: [:e3, :g3, :b3], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4}
+])
+
+# Piercing, "Robotic" FM Lead (F# Minor).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo to mimic the 
+# stuttering Auto-Tune effect. (6 x's, 6 elements)
+lead_notes = [:fs5, :a5, :b5, :a5, :fs5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.15} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Do you believe?" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, robotic, rhythmic vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :fs4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :a4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the driving bass, sweeping pads, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the driving 4/4 Eurodance drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing robotic FM lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 90S DANCE-POP]
+# 
+# 1. The Robotic FM Lead: Look at `s_lead`. The `:play_fm` synth is given a 
+#    high `divisor` (3) and a `depth` (3), with a short `release` (0.15). This 
+#    forces the FM synth to produce a sharp, glassy, digital tone. Because 
+#    it's routed through the global tape echo bus, the rapid notes smear into 
+#    a stuttering, robotic melody that perfectly mimics the iconic Auto-Tune 
+#    vocal effect of "Believe".
+#
+# 2. The Eurodance Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, mapping out a driving, root-note progression. 
+#    By using a mid-range `cutoff` (90) and a microscopic `release` (0.06), 
+#    the engine creates a relentless, hypnotic pump that drives the track 
+#    forward unstoppably.
+#
+# 3. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `0.5` and a `release` of `2.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of warm harmony that 
+#    perfectly mimics the lush, wide-stereo string pads of 90s Eurodance.
+# ==========================================================

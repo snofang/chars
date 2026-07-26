@@ -1,0 +1,107 @@
+# ==========================================================
+# PLAYBOOK: NIRVANA - "SMELLS LIKE TEEN SPIRIT" (1991)
+# ==========================================================
+
+use_bpm 116
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Heavy, Driving, & Anthemic)
+# ==========================================================
+
+# Driving 4/4 rock kick. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [:c4, :c4, :c4, :c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 1.0}
+])
+
+# Rigid, driving 8th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Driving" Bass (E Minor).
+# Plays continuous, driving 8th notes. High cutoff (90) and short release (0.15) 
+# create a warm, punchy "thwack" that mimics a picked electric bass. 
+# (16 x's, 16 elements - 4 beats per chord)
+bass_notes = [:e1, :e1, :e1, :e1, :a1, :a1, :a1, :a1, 
+              :c2, :c2, :c2, :c2, :g1, :g1, :g1, :g1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (E5 to A5 to C5 to G5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding, distorted wave. Plays the iconic 4-chord riff. 
+# (4 x's, 4 elements - 1 stab per beat)
+s_chords = gen_score("x...x...x...x...", [
+  {note: [:e3, :b3], divisor: 2, depth: 6, release: 0.4, amp: 0.7},
+  {note: [:a3, :e4], divisor: 2, depth: 6, release: 0.4, amp: 0.7},
+  {note: [:c4, :g4], divisor: 2, depth: 6, release: 0.4, amp: 0.7},
+  {note: [:g3, :d4], divisor: 2, depth: 6, release: 0.4, amp: 0.7}
+])
+
+# Piercing, "Chaotic" Guitar Solo (E Minor Pentatonic).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.3) 
+# creates a soaring, echoing, chaotic solo. (16 x's, 16 elements)
+lead_notes = [:e5, :g5, :e5, :d5, :e5, :g5, :e5, :d5, 
+              :e5, :g5, :e5, :d5, :c5, :b4, :a4, :g4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.3} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Amp Feedback" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample.
+# Long size (0.4) and low density (1) creates a slow, evolving, terrifying 
+# background texture that mimics amplifier feedback. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Verse - Just the driving bass and feedback drone (quiet/loud dynamic) (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Pre-Chorus - Add the heavy, distorted power chords and drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The piercing, chaotic guitar solo drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN GRUNGE DYNAMICS]
+# 
+# 1. The 4-Chord Riff: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and an extreme `depth` of `6`, with a long `release` 
+#    (0.4). This forces the FM synth to produce a harsh, distorted, sustained 
+#    wave that perfectly mimics the legendary, grinding power chords of the 
+#    track's main riff (E5 - A5 - C5 - G5).
+#
+# 2. The Quiet/Loud Dynamic: Look at `playbook`. Scene 1 strips away the 
+#    drums and distorted guitars, leaving only the driving bass and an eerie, 
+#    feedback drone. Scene 2 smashes back in with the full, distorted band. 
+#    The engine's strict master clock ensures this dramatic shift lands with 
+#    absolute, crushing precision.
+#
+# 3. The Chaotic Solo: The `s_lead` sequence uses the Prophet synth with a 
+#    high `cutoff` (110) and a long `release` (0.3). Because it's routed 
+#    through the global tape echo bus, the rapid, 8th-note notes smear into 
+#    a soaring, cascading guitar solo that perfectly mimics the chaotic, 
+#    dissonant energy of the original recording.
+# ==========================================================

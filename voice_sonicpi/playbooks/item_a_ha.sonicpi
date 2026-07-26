@@ -1,0 +1,103 @@
+# ==========================================================
+# PLAYBOOK: A-HA - "TAKE ON ME" (1985)
+# ==========================================================
+
+use_bpm 169
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Major / F# Minor - Fast, Bouncy, & Nostalgic)
+# ==========================================================
+
+# Driving 4/4 LinnDrum kick. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [:c4, :c4, :c4, :c4])
+
+# Heavy, organic snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Rigid, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Bubbling" Synth Bass (F# Minor to A Major).
+# Plays continuous, driving 16th notes, alternating octaves. 
+# High cutoff (100) and microscopic release (0.05) create a relentless, 
+# bouncy, buzzing churn that drives the track. (16 x's, 16 elements)
+bass_notes = [:fs1, :fs2, :fs1, :fs2, :fs1, :fs2, :fs1, :fs2, 
+              :a1, :a2, :a1, :a2, :e1, :e2, :e1, :e2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.05, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Lush, "Synth Pad" Chords (F#m to D to A to E).
+# Hit on the downbeats. The slow 0.5-beat attack and massive 2.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (4 x's, 4 elements)
+s_chords = gen_score("x...x...x...x...", [
+  {note: [:fs3, :a3, :cs4], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4},
+  {note: [:d3, :fs3, :a3], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4},
+  {note: [:a2, :cs3, :e3], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4},
+  {note: [:e3, :g3, :b3], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.4}
+])
+
+# Piercing, "Octave-Jumping" Lead (A Major).
+# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
+# creates a soaring, echoing, nostalgic melody. (8 x's, 8 elements)
+lead_notes = [:a4, :cs5, :e5, :a5, :e5, :cs5, :a4, :e4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Ahh" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Long size (0.4) and low density (1) creates a slow, evolving, ethereal texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the bubbling bass, sweeping chords, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Verse - Add the driving 4/4 LinnDrum beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, octave-jumping lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S SYNTH-POP]
+# 
+# 1. The Bubbling Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, alternating between the low octave (:fs1) and the 
+#    high octave (:fs2). By using a high `cutoff` (100) and a microscopic 
+#    `release` (0.05), the engine turns the detuned sawtooth into a relentless, 
+#    bouncy, buzzing churn that perfectly mimics the iconic, driving synth bass 
+#    of "Take On Me".
+#
+# 2. The Octave-Jumping Lead: The `s_lead` sequence uses the Prophet synth with 
+#    a high `cutoff` (110) and a long `release` (0.2). Because it's routed 
+#    through the global tape echo bus, the rapid notes (A4-C#5-E5-A5) smear 
+#    into a soaring, cascading melody that perfectly mimics the legendary, 
+#    piercing synth hook of the track.
+#
+# 3. The 169 BPM Drive: 80s synth-pop relies heavily on high-tempo momentum. 
+#    The `s_kick` hits strictly on every beat, while the `s_hats` play continuous 
+#    16th notes. The engine's strict master clock ensures this rigid, mechanical 
+#    momentum locks perfectly with the bubbling bassline, creating a massive, 
+#    forward-driving, nostalgic groove.
+# ==========================================================
