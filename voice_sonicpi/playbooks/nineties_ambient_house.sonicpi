@@ -1,21 +1,26 @@
 # ==========================================================
 # PLAYBOOK: 90s AMBIENT HOUSE / CHILL OUT ROOM
 # (Pioneered by The Orb, The KLF, and Aphex Twin)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 90s Ambient House.
-# We have explored high-energy rave genres and minimal techno, but Ambient 
-# House is the sound of the 90s "chill out room." It fuses the rhythmic, 
-# 4/4 pulse of house music with the lush, evolving textures of ambient music. 
-# It relies on a soft, driving beat, deep, round sub-bass, massive, 
-# slow-attacking "string synth" chords, and echoing, cosmic FM melodies 
-# that feel like floating through a warm, neon nebula.
+# We have explored the frantic energy of rave music (UK Hardcore, Extratone) 
+# and the cold precision of Minimal Techno. Ambient House is the sound of 
+# the 90s "chill out room." It fuses the rhythmic pulse of house music with 
+# the lush, evolving textures of ambient music. It relies on a soft 4/4 beat, 
+# deep, round sub-bass, massive, slow-attacking string synth pads, and 
+# echoing, cosmic FM melodies that feel like floating through a warm nebula.
 #
-# This playbook perfectly demonstrates the ambient power of the Parameter 
-# Hashes. By using massive `attack` and `release` times on the chords, and 
-# a massive grain `size` on the granular drone, the engine creates a 
-# massive, cinematic, and deeply relaxing atmosphere.
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 100 BPM. Relaxed, warm, and hypnotic.
+# 2. Harmonic Center: A Minor. Lush, cosmic, and deep.
+# 3. Rhythmic Skeleton: A soft, driving 4/4 beat. Organic snares on 2 and 4.
+# 4. Timbral Palette:
+#    - Bass: Deep, round, continuous sub-bass drone (low cutoff, massive release).
+#    - Chords: Massive, slow-attacking "string synth" pads (extreme attack/release).
+#    - Lead: Echoing, cosmic FM melody (high divisor, low depth).
+#    - Texture: Ethereal, granular "nebula" drone (long grain size, low density).
+# 5. Arrangement: Intro (Orbit) -> Verse (Flight) -> Chorus (Cosmos).
 # ==========================================================
 
 use_bpm 100
@@ -29,19 +34,20 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (A Minor - Lush, Cosmic, & Deep)
 # ==========================================================
 
-# Soft, driving 4/4 kick. (4 x's, 1 element - cycles 4 times)
+# Soft, driving 4/4 kick. (4 x's, 1 element)
 s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Crisp, organic snare strictly on beats 2 and 4. (2 x's, 1 element - cycles 2 times)
+# Crisp, organic snare strictly on beats 2 and 4. (2 x's, 1 element)
 s_snare = gen_score("....x.......x...", [:c4])
 
-# Rigid, driving 8th hats. (8 x's, 2 elements - cycles 4 times)
+# Rigid, driving 8th hats. (8 x's, 2 elements)
 s_hats = gen_score("x.x.x.x.x.x.x.x.", [
   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
 ])
 
 # Deep, round sub-bass (A Minor).
-# Massive release (2.0) and low cutoff (50) create a deep, continuous rumble. (2 x's, 2 elements)
+# Massive release (2.0) and low cutoff (50) create a deep, continuous rumble.
+# (2 x's, 2 elements)
 s_bass = gen_score("x.......x.......", [
   {note: :a1, release: 2.0, cutoff: 50, amp: 1.2}, 
   {note: :e1, release: 2.0, cutoff: 50, amp: 1.0}
@@ -57,14 +63,15 @@ s_chords = gen_score("x.......x.......", [
 
 # Echoing, "Cosmic" FM Lead (A Minor Pentatonic).
 # Uses :play_fm with a high divisor (3) and low depth (2) to create a pristine, 
-# glassy tone. Routed through the engine's tape echo. (8 x's, 8 elements)
-lead_notes = [:a5, :c6, :e6, :a5, :g5, :e5, :c6, :a5]
+# glassy, sine-like wave. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:a5, :c6, :e6, :a5, :g5, :e5]
 lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.5} }
-s_fm = gen_score("x..x..x..x..x..x", lead_data)
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
 
-# Ethereal, "Nebula" drone (Granular Synth).
+# Ethereal, "Nebula" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
 # Massive size (0.5s) and low density (1) time-stretches the sample into a 
-# slow, evolving background texture that drifts behind the beat. (1 x, 1 element)
+# slow, evolving, celestial background texture. (1 x, 1 element)
 s_grain = gen_score("x...............", [
   {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.5, amp: 0.5}
 ])
@@ -73,17 +80,17 @@ s_grain = gen_score("x...............", [
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: The Orbit - Just the sweeping chords, sub-bass, and nebula drone (4 bars)
+  # Scene 1: The Orbit - Just the sweeping chords, sub-bass, and drone (4 bars)
   [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
   
   # Scene 2: The Flight - Add the soft, driving 4/4 drums (8 bars)
   [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
     [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Cosmos - The echoing cosmic FM lead drops (8 bars)
+  # Scene 3: The Cosmos - The echoing, cosmic FM lead drops (8 bars)
   [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
     [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_fm, s_fm, 8] ]
+    [:play_fm, s_lead, 8] ]
 )
 
 # ==========================================================
@@ -103,9 +110,9 @@ start_engine(playbook)
 #
 # 2. Ambient Granular Time-Stretching: Look at `s_grain`. The granular engine 
 #    is given a massive `size` of `0.5` (500 milliseconds) and a `density` of `1`. 
-#    By using sparse, long grains, the engine time-stretches the vocal sample 
-#    into a slow, formless drone. It sounds like a distant, melancholic memory 
-#    echoing in a massive, warm cavern.
+#    By pitching the `:ambi_choir` sample up and using sparse, long grains, the 
+#    engine time-stretches the sample into a slow, formless, celestial drone. It 
+#    sounds like a distant, melancholic memory echoing in a massive, warm cavern.
 #
 # 3. Deep Sub-Weight: Look at `s_bass`. The `:play_sub` synth is given a 
 #    massive `release` of `2.0` and a very low `cutoff` of `50`. This creates 

@@ -1,22 +1,29 @@
 # ==========================================================
-# PLAYBOOK: 2010s CHILLWAVE / GLO-FI
+# PLAYBOOK: CHILLWAVE / GLO-FI
 # (Pioneered by Washed Out, Neon Indian, and Toro y Moi)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Chillwave / Glo-Fi.
-# We have explored pristine pop and heavy bass music. Chillwave is the 
-# sound of warped cassette tapes and hazy summer nostalgia. It takes the 
-# 16-step grid, slows it down, heavily muffles the synths (low `cutoff`), 
-# and uses slow, swelling chords and echoing, lo-fi drum machines.
+# We have explored pristine Synthpop and Lo-Fi House. Chillwave takes the 
+# lush, nostalgic chords of 80s synth-pop and intentionally degrades them. 
+# It relies on massive, slow-attacking "warped" synth pads, deep, warm 
+# sub-bass, and a "lo-fi" drum groove. The granular engine is pushed to its 
+# ambient limit, using massive grain sizes (0.5s) to time-stretch a vocal 
+# sample into a slow, melancholic, tape-warped drone.
 #
-# This playbook perfectly demonstrates how to simulate tape saturation 
-# and lo-fi warmth purely via data. By using low `cutoff` values and long 
-# `attack`/`release` times, the engine creates a warm, hazy wall of sound 
-# that feels like listening to a dream through a busted boombox.
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 85 BPM. Laid-back, hazy, and nostalgic.
+# 2. Harmonic Center: E Major. Warm, summery, and slightly melancholic.
+# 3. Rhythmic Skeleton: A slow, lazy 4/4 beat. Swung, quiet hats.
+# 4. Timbral Palette:
+#    - Bass: Deep, round, warm analog sub-bass (low cutoff, medium release).
+#    - Chords: Lush, slow-attacking "warped" synth pads (extreme attack/release).
+#    - Lead: Wobbly, echoing "vibrato" synth melody.
+#    - Texture: Granular "VHS warble" or "tape hiss" (long grain size, low density).
+# 5. Arrangement: Intro (Pad/Texture) -> Verse (Slow Drums) -> Chorus (Lead).
 # ==========================================================
 
-use_bpm 95
+use_bpm 85
 
 # ==========================================================
 # 1. REQUIRE ENGINE
@@ -27,49 +34,68 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (E Major - Warm, Hazy, & Nostalgic)
 # ==========================================================
 
-# Soft, muffled 4/4 kick. Lower amplitude for a gentle pulse.
-s_kick  = (ring {:note => :c4, :amp => 0.7}, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+# The "Laid-Back" Kick. 
+# A slow, heavy pulse. Hits on 1 and the 'and' of 3. (2 x's, 2 elements)
+s_kick = gen_score("x.......x.......", [
+  {note: :c4, amp: 0.7}, {note: :c4, amp: 0.6}
+])
 
-# Crisp, lo-fi snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+# Crisp, organic snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
 
-# Slow, echoing 8th hats. Notice the low amplitudes.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.25}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.25}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.25}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.25}, nil)
+# Swung, lazy 8th hats. (4 x's, 4 elements)
+s_hats = gen_score("x..x..x..x..x..x", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}
+])
 
-# Warm, muffled sub-bass (E Major).
-# Very low cutoff (70) and medium release to create a hazy undercurrent.
-s_bass  = (ring {:note => :e2, :cutoff => 70, :release => 0.4}, nil, nil, nil, nil, nil, nil, nil, {:note => :a2, :cutoff => 70, :release => 0.4}, nil, nil, nil, nil, nil, nil, nil)
+# Deep, warm "Analog" Sub-Bass (E Major).
+# Hits on the downbeats. Very low cutoff (60) and long release (1.5) 
+# to create a warm, muffled undercurrent. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :e1, release: 1.5, cutoff: 60, amp: 1.0}, 
+  {note: :b1, release: 1.5, cutoff: 60, amp: 0.8}
+])
 
-# Lush, swelling Major 9th chords (Emaj9 to Amaj7).
-# Hit on the downbeats. The low cutoff (75) and slow 0.5-beat attack 
-# blur the chords together into a continuous, warm wave.
-s_chords= (ring {:note => [:e3, :g3, :b3, :d4], :cutoff => 75, :attack => 0.5, :release => 2.0, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a2, :c3, :e3, :g3], :cutoff => 75, :attack => 0.5, :release => 2.0, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+# Lush, "Warped" Synth Pad (Emaj9 to Amaj7).
+# Hit on the downbeats. The slow 1.5-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, hazy wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:e3, :g3, :b3, :eb4], cutoff: 75, attack: 1.5, release: 4.0, amp: 0.5},
+  {note: [:a2, :cs3, :e3, :g3], cutoff: 75, attack: 1.5, release: 4.0, amp: 0.5}
+])
 
-# Soft, wobbly "Analogue" Melody (E Major Pentatonic).
-# Uses :play_fm with a low divisor (2) and depth (1) to create a soft, 
-# sine-like wave. Routed through the engine's tape echo for a cascading smear.
-s_fm    = (ring nil, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 1, :release => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :g5, :amp => 0.4, :divisor => 2, :depth => 1, :release => 0.8}, nil, nil, nil)
+# Wobbly, "Vibrato" Lead (E Major Pentatonic).
+# Uses :play_fm with a low divisor (2) and low depth (1) to create a soft, 
+# sine-like wave. Routed through the global tape echo for a nostalgic smear. 
+# (6 x's, 6 elements)
+lead_notes = [:e5, :g5, :b5, :a5, :g5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 1, release: 0.8} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
 
-# Warped, granular vocal "Ahh" (using :ambi_choir).
-# Long size (0.3) and low density (1) creates a slow, evolving background 
-# texture that sounds like a distant memory.
-s_grain = (ring {:note => :e4, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# "VHS / Tape Warp" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Massive size (0.5s) and low density (1) time-stretches the sample into 
+# a slow, evolving, degraded background drone. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.5, amp: 0.5}
+])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: The Dream - Just the swelling chords, bass, and vocal pad (4 bars)
-  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  # Scene 1: The Memory - Just the deep bass, warped pad, and VHS texture (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: The Pulse - Add the muffled lo-fi drums (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+  # Scene 2: The Groove - Add the slow, laid-back drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
     [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Memory - The wobbly analog melody drops (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+  # Scene 3: The Dream - The wobbly, echoing lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
     [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_lead, s_fm, 8] ]
+    [:play_fm, s_lead, 8] ]
 )
 
 # ==========================================================
@@ -80,21 +106,21 @@ start_engine(playbook)
 # ==========================================================
 # [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HAZY WARMTH]
 # 
-# 1. Data-Driven Saturation: Look at `s_chords` and `s_bass`. Both 
-#    sequences use very low `cutoff` values (70 and 75). In Sonic Pi, 
-#    pushing the filter down this hard on a `:dsaw` or `:blade` synth 
-#    strips away all the high-frequency harshness, leaving only a warm, 
-#    muffled mid-range. This makes the track sound like it is playing 
-#    from a worn-out cassette tape.
+# 1. Data-Driven Saturation: Look at `s_chords` and `s_bass`. Both sequences use 
+#    very low `cutoff` values (60 and 75). In Sonic Pi, pushing the filter down 
+#    this hard on a `:dsaw` or `:blade` synth strips away the high-frequency 
+#    harshness, leaving only a warm, muffled mid-range. This makes the track 
+#    sound like it is playing from a worn-out VHS tape.
 #
-# 2. Swelling Waves: Look at `s_chords`. The Hashes specify an `attack` 
-#    of `0.5` and a `release` of `2.0`. Because the engine reads these 
-#    Hashes, the chords don't just hit; they slowly swell into the mix 
-#    and fade away, creating a continuous, blurred wave of warmth.
+# 2. Swelling Waves: Look at `s_chords`. The Hashes specify an `attack` of `1.5` 
+#    and a `release` of `4.0`. Because the engine reads these Hashes, the chords 
+#    don't just hit; they slowly swell into the mix and fade away, creating a 
+#    continuous, blurred wave of warmth that perfectly mimics the warble of an 
+#    analog tape.
 #
-# 3. Soft FM Bells: The `s_fm` sequence uses `divisor: 2` and `depth: 1`. 
-#    This gentle ratio produces a soft, sine-like wave that mimics an 
-#    old analog synth. Routed through the tape echo, the sparse notes 
-#    cascade across the empty space, perfectly anchoring the track's 
-#    nostalgic, dreamlike atmosphere.
+# 3. Ambient Granular Time-Stretching: Look at `s_grain`. The granular engine 
+#    is given a massive `size` of `0.5` (500 milliseconds) and a `density` of `1`. 
+#    By pitching the `:ambi_choir` sample down and using sparse, long grains, the 
+#    engine time-stretches the sample into a formless, mournful drone that sounds 
+#    like a distant, forgotten memory echoing through a degraded VCR.
 # ==========================================================

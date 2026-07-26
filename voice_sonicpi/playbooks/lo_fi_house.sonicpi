@@ -1,20 +1,28 @@
 # ==========================================================
 # PLAYBOOK: LO-FI HOUSE / DUSTY DEEP HOUSE
 # (Pioneered by DJ Boring, Ross From Friends, and Mall Grab)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Lo-Fi House.
-# We have explored hyper-technical genres (Complextro, IDM) and massive
-# festival sounds (Trance, EDM). Lo-Fi House is the exact opposite. It
-# strips away the polish, relying on saturated, muffled drums, deep 
-# analog chords, and a lazy, swinging groove. It feels like listening 
-# to a deep house track through a wall or a worn-out cassette tape.
+# We have explored pristine Deep House and rigid Minimal Techno. Lo-Fi House 
+# takes the grooves of classic house music but intentionally degrades them. 
+# It relies on heavily swung, "dusty" drum programming (simulated via extreme 
+# amplitude manipulation on the 16-step grid), deep, muffled sub-bass, and 
+# lush, warm electric piano chords that sound like they are playing through 
+# a worn-out cassette tape.
 #
-# This playbook perfectly demonstrates how to use the Parameter Hashes 
-# to simulate "MPC Swing" and saturation. By heavily manipulating the 
-# amplitudes on the 16-step grid and using low cutoffs on the synths, 
-# the engine creates a warm, nostalgic, head-nodding groove.
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 118 BPM. A laid-back, head-nodding house groove.
+# 2. Harmonic Center: G Minor. Warm, melancholic, and dusty.
+# 3. Rhythmic Skeleton: A 4/4 kick, but with heavily swung 16th hats. 
+#    The swing is achieved not by moving notes, but by extreme alternating 
+#    amplitudes (simulating an MPC 54% swing quantize).
+# 4. Timbral Palette:
+#    - Bass: Deep, round, muffled sub-bass (low cutoff, medium release).
+#    - Chords: Lush, heavily filtered electric piano (low cutoff, slow attack).
+#    - Lead: Soft, wobbly, analog melody.
+#    - Texture: Dusty vinyl/air texture via granular time-stretching.
+# 5. Arrangement: Intro (Bass/Chords) -> Groove (Swung Drums) -> Late Night (Lead).
 # ==========================================================
 
 use_bpm 118
@@ -28,54 +36,71 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (G Minor - Warm, Dusty, & Swung)
 # ==========================================================
 
-# Muffled, saturated 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Muffled, saturated 4/4 kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Thick, vinyl-crackle snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Thick, vinyl-crackle snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
 
 # "MPC Swung" Hi-Hats.
-# Instead of straight 16ths, they hit on the 'e' and 'a' with varying 
-# amplitudes to simulate a classic 54% swing quantize.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.4})
+# Instead of straight 16ths, they hit on the 'e' and 'a' with varying amplitudes
+# to simulate a classic 54% swing quantize. (8 x's, 8 elements)
+s_hats = gen_score("x..x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
 
 # Deep, round analog bass (G Minor).
-# Low cutoff (70) and medium release to create a warm, muffled undercurrent.
-s_bass  = (ring {:note => :g1, :release => 0.5, :cutoff => 70}, nil, nil, nil, nil, nil, nil, nil, {:note => :eb1, :release => 0.5, :cutoff => 70}, nil, nil, nil, nil, nil, nil, nil)
+# Low cutoff (70) and medium release (0.3) to create a warm, muffled undercurrent.
+# (4 x's, 4 elements)
+s_bass = gen_score("x.....x.x.....x.", [
+  {note: :g1, release: 0.3, cutoff: 70, amp: 1.0}, 
+  {note: :bb1, release: 0.3, cutoff: 70, amp: 0.8}, 
+  {note: :d2, release: 0.3, cutoff: 70, amp: 1.0}, 
+  {note: :f2, release: 0.3, cutoff: 70, amp: 0.8}
+])
 
-# Lush, muted minor 9th chords (Gm9 to Ebm9).
-# Hit on the off-beats. The low cutoff (85) gives them that classic 
-# "tape saturation" feel.
-s_chords= (ring nil, nil, {:note => [:g3, :bb3, :d4, :f4], :cutoff => 85, :release => 0.8, :amp => 0.6}, nil, nil, nil, {:note => [:g3, :bb3, :d4, :f4], :cutoff => 85, :release => 0.8, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:eb3, :gb3, :bb3, :db4], :cutoff => 85, :release => 0.8, :amp => 0.6}, nil, nil, nil, {:note => [:eb3, :gb3, :bb3, :db4], :cutoff => 85, :release => 0.8, :amp => 0.6}, nil)
+# Lush, "Electric Piano" Chords (Gm9 to Cm9).
+# Hit on the off-beats. The extreme low cutoff (75) gives them that classic 
+# "tape saturation / muffled" feel. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:g3, :bb3, :d4, :f4], cutoff: 75, attack: 0.1, release: 0.8, amp: 0.5},
+  {note: [:g3, :bb3, :d4, :f4], cutoff: 75, attack: 0.1, release: 0.8, amp: 0.5},
+  {note: [:c3, :eb3, :g3, :bb3], cutoff: 75, attack: 0.1, release: 0.8, amp: 0.5},
+  {note: [:c3, :eb3, :g3, :bb3], cutoff: 75, attack: 0.1, release: 0.8, amp: 0.5}
+])
 
-# Distant, echoing Rhodes/marimba melody (G Minor Pentatonic).
-# Uses :play_fm with a low divisor to create a soft, organic bell tone.
-# Routed through the engine's tape echo for a nostalgic, cascading smear.
-# FIXED: Exactly 16 steps.
-s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :bb4, :amp => 0.4, :divisor => 2, :depth => 2, :release => 0.5}, nil)
+# Soft, wobbly "Analog" Melody (G Minor Pentatonic).
+# Uses :play_fm with a low divisor (2) and low depth (1) to create a soft, 
+# sine-like wave. Routed through the engine's tape echo for a nostalgic smear.
+# (6 x's, 6 elements)
+lead_notes = [:g5, :bb5, :d6, :c6, :bb5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.5, divisor: 2, depth: 1, release: 0.5} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
 
-# Dusty, chopped "tape" vocal stutter (Granular Synth).
-# High density, small size = a warm, degraded vocal skip.
-s_vocal = (ring nil, nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.5}, nil, nil, 
-           nil, nil, nil, nil, {:note => :bb4, :buffer => :ambi_choir, :pos => 0.6, :density => 3, :size => 0.04, :amp => 0.5}, nil, nil, nil)
+# Dusty, "Vinyl/Air" texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Long size (0.4) and low density (1) creates a slow, evolving, warm background hiss.
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :g3, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.4, amp: 0.3}
+])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: The Groove - Just the swung drums and deep bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
+  # Scene 1: The Vibe - Just the deep bass, muffled chords, and vinyl texture (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: The Vibe - Add the lush, muted chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
+  # Scene 2: The Groove - Add the swung, dusty drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Late Night - The echoing Rhodes and vocal chops drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
-    [:play_fm, s_fm, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 3: The Late Night - The wobbly analog melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_lead, 8] ]
 )
 
 # ==========================================================
@@ -86,22 +111,19 @@ start_engine(playbook)
 # ==========================================================
 # [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN WARMTH & SWING]
 # 
-# 1. MPC Swing via Amplitude: Look at `s_hats`. The hats play on almost 
-#    every 16th step, but the amplitudes swing wildly between 0.15, 0.2, 
-#    0.3, and 0.4. By emphasizing the off-beats (the 'e' and 'a') and 
-#    leaving gaps (`nil`), the engine simulates the famous 54% MPC swing 
-#    quantize that defines Lo-Fi House, all while maintaining a rigid 
-#    `sleep 0.25` master clock.
+# 1. MPC Swing via Amplitude: Look at `s_hats`. The hats don't just play straight 
+#    16th notes; they leave gaps (`nil`) on the downbeats and have alternating 
+#    amplitudes (0.15 to 0.4). By emphasizing the off-beats, the engine simulates 
+#    the famous 54% MPC swing quantize that gives Lo-Fi House its lazy, human feel.
 #
-# 2. Data-Driven Saturation: Look at `s_chords` and `s_bass`. Both 
-#    sequences use low `cutoff` values (70 and 85). In Sonic Pi, pushing 
-#    the filter down on a `:dsaw` or `:blade` synth strips away the 
-#    high-frequency harshness, leaving only the warm, muffled mid-range. 
-#    This makes the track sound like it is playing from a worn-out cassette 
-#    tape without needing external saturation plugins.
+# 2. Data-Driven Saturation: Look at `s_chords` and `s_bass`. Both sequences use 
+#    very low `cutoff` values (70 and 75). In Sonic Pi, pushing the filter down 
+#    this hard on a `:dsaw` or `:blade` synth strips away the high-frequency 
+#    harshness, leaving only a warm, muffled mid-range. This makes the track 
+#    sound like it is playing from a worn-out cassette tape.
 #
-# 3. The Off-Beat Pocket: The `s_chords` hit strictly on steps 2, 6, 10, 
-#    and 14, exactly in sync with the loudest hi-hats. The engine's strict 
-#    master clock locks these elements together, creating a deep, bouncy 
-#    "pocket" that makes the track feel relentlessly smooth and head-nodding.
+# 3. The Off-Beat Pocket: The `s_chords` hit strictly on steps 2, 6, 10, and 14, 
+#    exactly in sync with the loudest hi-hats. The engine's strict master clock 
+#    locks these elements together, creating a deep, bouncy "pocket" that makes 
+#    the track feel relentlessly smooth and head-nodding.
 # ==========================================================

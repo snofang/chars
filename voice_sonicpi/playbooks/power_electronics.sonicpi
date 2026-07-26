@@ -1,0 +1,117 @@
+# ==========================================================
+# PLAYBOOK: POWER ELECTRONICS / HARSH NOISE WALL
+# (Pioneered by Whitehouse, Merzbow, and Prurient)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have pushed rhythm to its extremes (Extratone, Grindcore, Microhouse).
+# Power Electronics abandons rhythm entirely. It is the sound of pure,
+# suffocating, atonal noise. It relies on extreme distortion, massive
+# overlapping sub-bass rumbles, high-frequency FM screeches, and pitched-down
+# granular textures that mimic industrial machinery and screaming. This playbook
+# tests the `:play_fm` and `:play_grain` engines at their absolute breaking points.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 60 BPM. A slow clock used only to trigger massive durations.
+# 2. Harmonic Center: Atonal / Dissonant. Clusters of semitones.
+# 3. Rhythmic Skeleton: None. The 16-step grid is used purely to trigger
+#    massive, sustained events, not rhythmic hits.
+# 4. Timbral Palette:
+#    - Bass: Deep, continuous, distorted rumble (extreme cutoff, massive release).
+#    - Chords: Dissonant, high-frequency FM noise walls (extreme depth, cluster chords).
+#    - Lead: Piercing, erratic, atonal FM screeches.
+#    - Texture: Granular "scream" drone, pitched down with high density.
+# 5. Arrangement: Intro (Rumble) -> Build (Noise Wall) -> Climax (Screeches).
+# ==========================================================
+
+use_bpm 60
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (Atonal - Suffocating, Piercing, & Massive)
+# ==========================================================
+
+# The "Industrial" Sub-Bass Rumble (Atonal).
+# Hits once and rings out for the entire scene (8 bars = 32 beats).
+# Extreme cutoff (120) creates massive distortion. (1 x, 1 element)
+s_bass = gen_score("x...............", [
+  {note: :a1, release: 32.0, cutoff: 120, amp: 1.5}
+])
+
+# The "Wall of Noise" Chords (Atonal Cluster).
+# Uses :play_fm with extreme depth (8) for distortion.
+# Plays a dissonant cluster chord (A, Bb, B).
+# Massive attack (4.0) and release (28.0) blur it into a continuous wall.
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :bb3, :b3], divisor: 2, depth: 8, attack: 4.0, release: 28.0, amp: 0.8},
+  {note: [:g3, :ab3, :a3], divisor: 2, depth: 8, attack: 4.0, release: 28.0, amp: 0.8}
+])
+
+# Piercing, "Screech" Lead (Atonal).
+# Uses :play_fm with a high divisor (2) and extreme depth (8) to create a
+# harsh, piercing, digital screech. Plays an erratic, high-pitched melody.
+# (6 x's, 6 elements)
+s_lead = gen_score("x..x..x..x..x..x", [
+  {note: :a7, amp: 0.6, divisor: 2, depth: 8, release: 0.2},
+  {note: :g7, amp: 0.7, divisor: 2, depth: 8, release: 0.15},
+  {note: :ab7, amp: 0.5, divisor: 2, depth: 8, release: 0.3},
+  {note: :a7, amp: 0.6, divisor: 2, depth: 8, release: 0.1},
+  {note: :b6, amp: 0.7, divisor: 2, depth: 8, release: 0.25},
+  {note: :bb6, amp: 0.6, divisor: 2, depth: 8, release: 0.2}
+])
+
+# "Scream" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# High density (5) and long size (0.2) creates a slow, evolving,
+# terrifying background texture that mimics distant screaming or machinery.
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a2, buffer: :ambi_choir, pos: 0.8, density: 5, size: 0.2, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the sub-bass rumble and scream texture (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8] ],
+  
+  # Scene 2: The Build - The massive wall of noise enters (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_fm, s_chords, 8] ],
+    
+  # Scene 3: The Climax - The piercing, atonal screeches drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_fm, s_chords, 8],
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN PURE TEXTURE]
+# 
+# 1. The Rhythmic Void: Look at the playbook. There are zero drum instruments
+#    (`:play_kick`, `:play_snare`, `:play_hats`). The 16-step grid is still
+#    ticking, but it is used purely to trigger massive durations. The engine's
+#    strict master clock ensures the chords and bass trigger exactly on beat 1,
+#    holding perfectly in sync for 8 bars without drifting.
+#
+# 2. Data-Driven Distortion: Look at `s_bass` and `s_chords`. The `cutoff`
+#    is pushed to 120 (maximum) and the `depth` to 8 (extreme). This forces
+#    the `:play_sub` and `:play_fm` synths to produce harsh, distorted,
+#    suffocating walls of noise, perfectly mimicking the analog distortion
+#    pedals used in Power Electronics.
+#
+# 3. Dissonant Clusters: Look at `s_chords`. The arrays use semitone clusters
+#    (e.g., [:a3, :bb3, :b3]). This creates a harsh, atonal, and evil sound
+#    that perfectly anchors the track's terrifying atmosphere. The `attack`
+#    (4.0) and `release` (28.0) ensure the sound never actually stops,
+#    creating a continuous, suffocating wall.
+# ==========================================================

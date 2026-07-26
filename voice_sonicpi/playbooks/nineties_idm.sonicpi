@@ -1,0 +1,131 @@
+# ==========================================================
+# PLAYBOOK: 90s IDM / DRILL 'N' BASS
+# (Pioneered by Aphex Twin, Squarepusher, and µ-Ziq)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored chaotic breakbeats (Jungle, Big Beat) and microscopic 
+# timing (Microhouse, Extratone). IDM (Intelligent Dance Music) fuses these 
+# concepts, taking the "Amen" break and shattering it into microscopic, 
+# hyper-quantized fragments. It relies on blistering 175 BPM drum rolls, 
+# detuned "Reese" bass, lush, distant pad chords, and erratic, granular 
+# vocal glitches that feel like a beautiful, mathematical machine malfunction.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 175 BPM. Frantic, mathematical, and chaotic.
+# 2. Harmonic Center: E Minor. Melancholic but manic.
+# 3. Rhythmic Skeleton: The "Amen" break chopped into 16th-note fragments. 
+#    Kicks and snares blur into machine-gun rolls. Frantic 16th hats.
+# 4. Timbral Palette:
+#    - Bass: Detuned, rolling "Reese" synth bass.
+#    - Chords: Lush, distant, synthetic string pads (extreme attack/release).
+#    - Lead: Piercing, erratic, high-frequency FM bleeps.
+#    - Texture: Granular "glitch" vocal stutter (extreme density, tiny size).
+# 5. Arrangement: Intro (Pad/Bass) -> Drill (Frantic Drums) -> Glitch (Lead).
+# ==========================================================
+
+use_bpm 175
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor - Frantic, Mathematical, & Lush)
+# ==========================================================
+
+# The "Shattered" Kick. 
+# A hyper-quantized, chopped breakbeat pattern. (6 x's, 6 elements)
+s_kick = gen_score("x..x..x.x..x.x..", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}, :c4, {note: :c4, amp: 0.8}
+])
+
+# The "Shattered" Snare. 
+# Heavy hits on 2 and 4, with frantic, machine-gun rolls. (6 x's, 6 elements)
+s_snare = gen_score("..x.x.....x.x.xx", [
+  :c4, {note: :c4, amp: 0.5}, :c4, {note: :c4, amp: 0.9}, {note: :c4, amp: 0.4}, :c4, {note: :c4, amp: 0.8}
+])
+
+# Relentless, erratic 16th hats to add to the chaotic wall of sound. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Reese" Bass (E Minor).
+# Plays a continuous, rolling 16th-note line. 
+# Mid cutoff (90) and short release (0.1) create a relentless, hypnotic churn.
+# (8 x's, 8 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :g1, :g1, :g1, :g1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Lush, "Distant Strings" Pad (Em to G).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:e3, :g3, :b3, :d4], cutoff: 70, attack: 2.0, release: 4.0, amp: 0.4},
+  {note: [:g3, :b3, :d4, :fs4], cutoff: 70, attack: 2.0, release: 4.0, amp: 0.4}
+])
+
+# Piercing, "Erratic" FM Lead (E Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (6) to create a 
+# sharp, piercing, digital tone. Plays an erratic, 8th-note melody. 
+# (6 x's, 6 elements)
+lead_notes = [:e6, :b5, :g6, :e6, :d6, :b5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 6, release: 0.05} }
+s_lead = gen_score("x..x.x..x..x.x..", lead_data)
+
+# "Glitch" Vocal Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Extreme density (6) and microscopic size (0.02) shatter the sample into 
+# high-frequency, digital glitches. (3 x's, 3 elements)
+s_grain = gen_score("..x.....x.....x.", [
+  {note: :e5, buffer: :ambi_choir, pos: 0.8, density: 6, size: 0.02, amp: 0.5},
+  {note: :g5, buffer: :ambi_choir, pos: 0.6, density: 6, size: 0.02, amp: 0.5},
+  {note: :b5, buffer: :ambi_choir, pos: 0.4, density: 6, size: 0.02, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the lush pad, Reese bass, and glitches (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Drill - Add the frantic, shattered breakbeat (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Glitch - The piercing, erratic FM lead drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CONTROLLED CHAOS]
+# 
+# 1. The Shattered Breakbeat: Look at `s_kick` and `s_snare`. They are densely 
+#    packed and completely avoid landing on a standard 4/4 pulse. The engine's 
+#    strict master clock ensures these complex, overlapping hits fire with 
+#    absolute mathematical precision at 175 BPM, perfectly mimicking the chopped, 
+#    hyper-quantized "Amen" breakbeats of 90s IDM.
+#
+# 2. The Reese Bass: Look at `s_bass`. The `:play_sub` synth plays a continuous, 
+#    rolling line. By using a mid-range `cutoff` (90) and a short `release` (0.1), 
+#    the engine creates a relentless, hypnotic churn that anchors the erratic, 
+#    skittering drums, perfectly mimicking the dark, rolling basslines of 
+#    Aphex Twin and Squarepusher.
+#
+# 3. Granular as Glitch: Look at `s_grain`. The granular engine is given an 
+#    extreme `density` of `6` and a microscopic `size` of `0.02`. By pitching 
+#    the `:ambi_choir` sample up and shattering it into tiny shards, the engine 
+#    turns a vocal into high-frequency, digital static that sounds like a 
+#    beautiful, mathematical machine malfunction.
+# ==========================================================

@@ -1,0 +1,126 @@
+# ==========================================================
+# PLAYBOOK: 80s ELECTRO-INDUSTRIAL / SKINNY PUPPY STYLE
+# (Pioneered by Skinny Puppy, Front Line Assembly, and Coil)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored EBM (which is rigid and danceable) and Industrial Metal 
+# (which fuses metal guitars with electronic elements). Electro-Industrial 
+# is the pure, cold, horror-movie sound of 80s industrial music. It relies 
+# on heavily distorted, metallic percussion, eerie, dissonant synth pads, 
+# and a chaotic, granular vocal texture that sounds like a machine 
+# malfunctioning or a dystopian broadcast.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 120 BPM. A rigid, mechanical, yet suffocating pace.
+# 2. Harmonic Center: C# Minor / Dissonant. Harsh, evil, and cold.
+# 3. Rhythmic Skeleton: A 4/4 beat with heavily syncopated, metallic snare 
+#    rolls and ghost notes. The kick is less prominent than the snare/hats.
+# 4. Timbral Palette:
+#    - Bass: Deep, distorted, continuous 16th-note "churn" (extreme cutoff).
+#    - Chords: Eerie, dissonant, slow-attacking string pads.
+#    - Lead: Piercing, erratic, atonal FM bleeps.
+#    - Texture: Granular "malfunction" or "static" drone (high density, tiny size).
+# 5. Arrangement: Intro (Dissonance) -> Verse (Machinery) -> Chorus (Static).
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C# Minor / Dissonant - Harsh, Cold, & Mechanical)
+# ==========================================================
+
+# The "Industrial" Kick. 
+# A heavy, syncopated, distorted march. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x.x.x...", [:c4, :c4, :c4, {note: :c4, amp: 0.6}])
+
+# Heavy, metallic snare with frantic, machine-gun rolls. (5 x's, 5 elements)
+s_snare = gen_score("....x.....x.x.xx", [
+  :c4, :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}
+])
+
+# Rigid, off-beat 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}
+])
+
+# The "Distorted Churn" Bass (C# Minor).
+# Plays continuous 16th notes. Extreme cutoff (120) and microscopic release 
+# (0.05) create a relentless, grinding, distorted wall of sound. (16 x's, 16 elements)
+bass_notes = [:cs2, :cs2, :cs2, :cs2, :cs2, :cs2, :cs2, :cs2, 
+              :b1, :b1, :b1, :b1, :gs1, :gs1, :gs1, :gs1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.05, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Eerie, "Dissonant" String Pad (C#m to G# Diminished).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic, horror wave. 
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:cs3, :e3, :gs3], cutoff: 70, attack: 1.0, release: 4.0, amp: 0.4},
+  {note: [:gs3, :b3, :d4], cutoff: 70, attack: 1.0, release: 4.0, amp: 0.4}
+])
+
+# Piercing, "Atonal" FM Lead (C# Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (6) to create a 
+# harsh, piercing, digital tone. Plays an erratic, 8th-note melody. 
+# (6 x's, 6 elements)
+lead_notes = [:cs5, :b4, :gs4, :e4, :cs5, :b4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 6, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Malfunction / Static" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Extreme density (6) and microscopic size (0.02) shatter the sample into 
+# high-frequency, digital static. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :cs3, buffer: :ambi_choir, pos: 0.8, density: 6, size: 0.02, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the dissonant pad, distorted churn, and static (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Machine - Add the heavy, metallic drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Climax - The piercing, atonal FM lead drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ELECTRO-INDUSTRIAL]
+# 
+# 1. The Distorted Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step. By using an extreme `cutoff` (120) and a 
+#    microscopic `release` (0.05), the engine turns the detuned sawtooth into 
+#    a relentless, grinding, distorted wall of sound that perfectly mimics the 
+#    heavy, overdriven analog basslines of Skinny Puppy and Front Line Assembly.
+#
+# 2. Dissonant Harmony: Look at `s_chords`. The arrays use standard minor 
+#    chords, but the progression (C#m to G# Diminished) creates a harsh, 
+#    dissonant, and evil sound. The `attack` (1.0) and `release` (4.0) ensure 
+#    the sound slowly swells and fades, creating a continuous, eerie atmosphere.
+#
+# 3. Granular as Static: Look at `s_grain`. The granular engine is given an 
+#    extreme `density` of `6` and a microscopic `size` of `0.02`. By pitching 
+#    the `:ambi_choir` sample down and shattering it into tiny shards, the 
+#    engine turns a vocal into high-frequency, digital static that sounds like 
+#    a machine malfunctioning or a dystopian broadcast.
+# ==========================================================
