@@ -1,0 +1,106 @@
+# ==========================================================
+# PLAYBOOK: KYLIE MINOGUE - "CAN'T GET YOU OUT OF MY HEAD" (2001)
+# ==========================================================
+
+use_bpm 124
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Hypnotic, Pulsing, & Catchy)
+# ==========================================================
+
+# Relentless, driving 4/4 dance-pop kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic 909 clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
+
+# The "Pulsing" Synth Bass (D Minor).
+# Plays continuous, driving 16th notes. 
+# Mid cutoff (90) and microscopic release (0.05) create a relentless, 
+# hypnotic, buzzing analog churn that drives the track. (16 x's, 16 elements)
+bass_notes = [:d2, :d2, :d2, :d2, :bb1, :bb1, :bb1, :bb1, 
+              :f2, :f2, :f2, :f2, :c2, :c2, :c2, :c2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.05, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Lush, "String Synth" Pad (Dm to Bb to F to C).
+# Hit on every beat. The slow 1.0-beat attack and massive 2.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (4 x's, 4 elements)
+s_chords = gen_score("x...x...x...x...", [
+  {note: [:d3, :f3, :a3], cutoff: 70, attack: 1.0, release: 2.0, amp: 0.4},
+  {note: [:bb2, :d3, :f3], cutoff: 70, attack: 1.0, release: 2.0, amp: 0.4},
+  {note: [:f3, :a3, :c4], cutoff: 70, attack: 1.0, release: 2.0, amp: 0.4},
+  {note: [:c3, :e3, :g3], cutoff: 70, attack: 1.0, release: 2.0, amp: 0.4}
+])
+
+# Piercing, "Catchy" Synth Lead (D Minor).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone that mimics the iconic "la la la" hook. 
+# Routed through the global tape echo. (8 x's, 8 elements)
+lead_notes = [:d4, :d4, :c4, :a3, :g3, :f3, :g3, :a3]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.15} }
+s_lead = gen_score("x..x.x..x..x.x..", lead_data)
+
+# "La la la" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, pristine vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :d4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :f4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the pulsing bass, sweeping pads, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the relentless 4/4 dance drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, catchy synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 2000S DANCE-POP]
+# 
+# 1. The Pulsing Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, mapping out a driving, root-note progression 
+#    (D-Bb-F-C). By using a mid-range `cutoff` (90) and a microscopic 
+#    `release` (0.05), the engine creates a relentless, hypnotic, buzzing 
+#    churn that perfectly mimics the legendary, pulsating synth bass that 
+#    drives the track.
+#
+# 2. The "La la la" Hook: The `s_lead` sequence uses `divisor: 3` and 
+#    `depth: 3`. This harmonic ratio produces a sharp, glassy, digital tone 
+#    that cuts through the heavy mix. Because it's routed through the global 
+#    tape echo bus, the rapid notes smear into a soaring, catchy melody that 
+#    perfectly mimics the iconic vocal hook.
+#
+# 3. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `1.0` and a `release` of `2.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away, creating a continuous, blurred wave of warm harmony that 
+#    perfectly mimics the lush, wide-stereo string pads of 2000s dance-pop.
+# ==========================================================

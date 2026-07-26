@@ -1,0 +1,108 @@
+# ==========================================================
+# PLAYBOOK: PORTISHEAD - "GLORY BOX" (1994)
+# ==========================================================
+
+use_bpm 75
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Sultry, Heavy, & Cinematic)
+# ==========================================================
+
+# The "Laid-Back" Kick. 
+# Heavily swung. Hits on step 0, the 'a' of 2 (step 7), and beat 3 (step 8).
+# (3 x's, 3 elements)
+s_kick = gen_score("x......xx.......", [
+  :c4, {note: :c4, amp: 0.8}, :c4
+])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Swung, lazy 16th hats. (8 x's, 8 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}
+])
+
+# Deep, "Moog" Sub-Bass (D Minor).
+# Plays a slow, melodic, root-fifth line. 
+# Extreme low cutoff (50) and massive release (2.0) create a deep, 
+# continuous, warm rumble. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :d1, release: 2.0, cutoff: 50, amp: 1.2}, 
+  {note: :a1, release: 2.0, cutoff: 50, amp: 1.0}
+])
+
+# Lush, "String Synth" Pad (Dm to Bb).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic, weeping wave. 
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :f3, :a3], cutoff: 60, attack: 2.0, release: 4.0, amp: 0.4},
+  {note: [:bb2, :d3, :f3], cutoff: 60, attack: 2.0, release: 4.0, amp: 0.4}
+])
+
+# Piercing, "Wurlitzer/Rhodes" Lead (D Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a pristine, 
+# glassy, echoing tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:d5, :f5, :a5, :g5, :f5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.8} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Give me a reason to love you" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Massive size (0.5s) and low density (1) time-stretches the sample into a 
+# slow, evolving, melancholic background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :d3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.5, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the deep Moog bass, sweeping strings, and vocal drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Verse - Add the heavy, laid-back drum break (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, echoing Wurlitzer melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN TRIP-HOP]
+# 
+# 1. The "Laid-Back" Swing: Look at `s_kick`. Instead of hitting on step 4 
+#    (beat 2), it hits on step 7 (the 'a' of beat 2), immediately followed 
+#    by step 8. In trip-hop, drummers physically play slightly behind the 
+#    beat. Because the engine's grid is mathematically perfect, pushing the 
+#    kick just one 16th note late creates that heavy, leaning, "drunken" 
+#    bounce that defines the Bristol sound.
+#
+# 2. The Moog Sub-Bass: Look at `s_bass`. The `:play_sub` synth is given 
+#    an extreme low `cutoff` (50) and a massive `release` (2.0). This creates 
+#    a deep, round, and warm low-end that rings out for two whole beats, 
+#    providing the immense, suffocating weight required for 90s trip-hop.
+#
+# 3. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `2.0` and a `release` of `4.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over six whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics the lush, weeping string pads 
+#    of "Glory Box".
+# ==========================================================

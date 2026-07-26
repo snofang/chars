@@ -1,0 +1,110 @@
+# ==========================================================
+# PLAYBOOK: MICHAEL JACKSON - "THRILLER" (1982)
+# ==========================================================
+
+use_bpm 118
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (C# Minor - Spooky, Driving, & Cinematic)
+# ==========================================================
+
+# The "Thriller" Kick. 
+# A heavy, syncopated, bouncing funk march. (5 x's, 5 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}
+])
+
+# Crisp, dry snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 1.0}
+])
+
+# The "Shuffled" Hi-Hats.
+# Plays continuous 16th notes with heavy amplitude manipulation to simulate 
+# the famous live drummer's swing. (8 x's, 8 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+])
+
+# The "SH-101" Synth Bass (C# Minor).
+# Plays the iconic, driving, continuous 16th-note line. 
+# High cutoff (100) and microscopic release (0.06) create a relentless, 
+# hypnotic, buzzing analog churn. (16 x's, 16 elements)
+bass_notes = [:cs2, :cs2, :cs2, :cs2, :cs2, :cs2, :cs2, :cs2, 
+              :fs2, :fs2, :fs2, :fs2, :gs2, :gs2, :gs2, :gs2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.06, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Spooky, "String Section" Stabs (C#m to F#m to G#m).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# dissonant, staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:cs3, :e3, :gs3], divisor: 2, depth: 4, release: 0.15, amp: 0.5},
+  {note: [:cs3, :e3, :gs3], divisor: 2, depth: 4, release: 0.15, amp: 0.5},
+  {note: [:fs3, :a3, :cs4], divisor: 2, depth: 4, release: 0.15, amp: 0.5},
+  {note: [:gs3, :b3, :ds4], divisor: 2, depth: 4, release: 0.15, amp: 0.5}
+])
+
+# Piercing, "Creepy" Synth Lead (C# Minor).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:cs5, :e5, :ds5, :e5, :fs5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Thriller!" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# High density, tiny size = a sharp, percussive, spooky vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :cs3, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.7},
+  {note: :e3, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the SH-101 bass, spooky stabs, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the heavy, syncopated funk drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, creepy synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC FUNK]
+# 
+# 1. The SH-101 Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step, mapping out a driving, root-note progression. By 
+#    using a high `cutoff` (100) and a microscopic `release` (0.06), the engine 
+#    creates a relentless, hypnotic, buzzing churn that perfectly mimics the 
+#    legendary Roland SH-101 sequencer bassline that drives "Thriller".
+#
+# 2. The Spooky Stabs: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and a `depth` of `4`, with a microscopic `release` 
+#    (0.15). This forces the FM synth to produce a harsh, dissonant, staccato 
+#    "hit" that perfectly mimics the stark, orchestral string section stabs 
+#    that define the song's horror-film atmosphere.
+#
+# 3. The Shuffled Groove: Look at `s_hats`. The hats play continuous 16th 
+#    notes, but the amplitudes alternate wildly between 0.4, 0.15, 0.3, and 0.2. 
+#    By emphasizing the off-beats, the engine simulates the famous live 
+#    drummer's swing, creating a massive, bouncing groove that defined 80s pop.
+# ==========================================================

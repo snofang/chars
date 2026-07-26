@@ -1,0 +1,108 @@
+# ==========================================================
+# PLAYBOOK: MASSIVE ATTACK - "TEARDROP" (1998)
+# ==========================================================
+
+use_bpm 80
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Dark, Swung, & Ethereal)
+# ==========================================================
+
+# The "Drunken" Kick. 
+# Heavily swung. Hits on step 0, the 'a' of 2 (step 7), and beat 3 (step 8).
+# This lopsided placement creates the signature stumbling, heavy feel.
+# (3 x's, 3 elements)
+s_kick = gen_score("x......xx.......", [
+  :c4, {note: :c4, amp: 0.7}, :c4
+])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Swung, lazy 16th hats. (8 x's, 8 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}
+])
+
+# Deep, massive "Sub-Bass" (A Minor).
+# Plays a slow, melodic line. 
+# Extreme low cutoff (50) and massive release (2.0) create a deep, 
+# continuous, suffocating rumble. (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :a1, release: 2.0, cutoff: 50, amp: 1.2}, 
+  {note: :g1, release: 2.0, cutoff: 50, amp: 1.0}
+])
+
+# Lush, "String Synth" Pad (Am to G).
+# Hit on the downbeats. The slow 2.0-beat attack and massive 4.0-beat release 
+# blur the chords together into a continuous, cinematic, dark wave. 
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4, :g4], cutoff: 60, attack: 2.0, release: 4.0, amp: 0.4},
+  {note: [:g3, :bb3, :d4, :f4], cutoff: 60, attack: 2.0, release: 4.0, amp: 0.4}
+])
+
+# Piercing, "Harpsichord/Rhodes" Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a pristine, 
+# glassy, echoing tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:a5, :g5, :e5, :d5, :c5, :a4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 1.0} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Teardrop" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Massive size (0.5s) and low density (1) time-stretches the sample into a 
+# slow, evolving, ethereal background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.3, density: 1, size: 0.5, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the deep sub-bass, sweeping pad, and vocal drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Verse - Add the heavy, swung drum loop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, echoing harpsichord melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN TRIP-HOP]
+# 
+# 1. The "Drunken" Swing: Look at `s_kick`. Instead of hitting on step 4 
+#    (beat 2), it hits on step 7 (the 'a' of beat 2), immediately followed 
+#    by step 8. In trip-hop, drummers physically play slightly behind the 
+#    beat. Because the engine's grid is mathematically perfect, pushing the 
+#    kick just one 16th note late creates that heavy, leaning, stumbling 
+#    bounce that defines the Bristol sound.
+#
+# 2. Subterranean Weight: Look at `s_bass`. The `:play_sub` synth is given 
+#    an extreme low `cutoff` (50) and a massive `release` (2.0). This creates 
+#    a deep, round, and warm low-end that rings out for two whole beats, 
+#    providing the immense, suffocating weight required for 90s trip-hop.
+#
+# 3. Ethereal Granular Time-Stretching: Look at `s_grain`. The granular engine 
+#    is given a massive `size` of `0.5` (500 milliseconds) and a `density` of `1`. 
+#    By using sparse, long grains, the engine time-stretches the `:ambi_choir` 
+#    sample into a slow, formless, celestial drone that perfectly mimics the 
+#    haunting, vocal atmospheres of the track.
+# ==========================================================

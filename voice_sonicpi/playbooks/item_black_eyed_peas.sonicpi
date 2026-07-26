@@ -1,0 +1,107 @@
+# ==========================================================
+# PLAYBOOK: BLACK EYED PEAS - "I GOTTA FEELING" (2009)
+# ==========================================================
+
+use_bpm 128
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (G Major - Euphoric, Driving, & Stadium-Sized)
+# ==========================================================
+
+# Relentless, driving 4/4 dance-pop kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic 909 clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}
+])
+
+# The "Bouncing" Synth Bass (G Major).
+# Hits strictly on the off-beats. 
+# High cutoff (90) and short release (0.1) create a relentless, bouncy "thwack".
+# (4 x's, 4 elements)
+s_bass = gen_score("..x...x...x...x.", [
+  {note: :g1, release: 0.1, cutoff: 90, amp: 1.0}, 
+  {note: :c2, release: 0.1, cutoff: 90, amp: 1.0}, 
+  {note: :d2, release: 0.1, cutoff: 90, amp: 1.0}, 
+  {note: :e2, release: 0.1, cutoff: 90, amp: 1.0}
+])
+
+# Massive, "Supersaw" Chords (G to C to D to Em).
+# Hit strictly on the off-beats in sync with the bass. 
+# High cutoff (110) and short release (0.2) create a sharp, stadium-sized wall of sound. 
+# (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:g3, :b3, :d4], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:c3, :e3, :g3], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:d3, :fs3, :a3], cutoff: 110, release: 0.2, amp: 0.6},
+  {note: [:e3, :g3, :b3], cutoff: 110, release: 0.2, amp: 0.6}
+])
+
+# Piercing, "Catchy" Synth Lead (G Major).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:g5, :fs5, :e5, :d5, :c5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "I gotta feeling" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, pristine vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :g4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :b4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the bouncing bass, supersaw stabs, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the relentless 4/4 dance drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, catchy synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EDM-POP]
+# 
+# 1. The Off-Beat Wall: Look at `s_bass`, `s_hats`, and `s_chords`. They 
+#    ALL hit strictly on steps 2, 6, 10, and 14. In a 16-step grid, these 
+#    are the exact midpoints between the kicks. The engine's strict master 
+#    clock locks these together perfectly at 128 BPM, creating a massive, 
+#    bouncing "boom-cha" momentum that forces you to dance.
+#
+# 2. The Supersaw Stabs: Look at `s_chords`. The `:play_chords` synth is 
+#    given a high `cutoff` (110) and a short `release` (0.2). This creates 
+#    a bright, soaring wall of sound that perfectly mimics the massive, 
+#    wide-stereo supersaw synth stabs that defined the late 2000s EDM-pop 
+#    crossover.
+#
+# 3. The Catchy Lead: The `s_lead` sequence uses `divisor: 3` and `depth: 3`. 
+#    This harmonic ratio produces a sharp, glassy, digital tone that cuts 
+#    through the heavy mix. Because it's routed through the global tape echo 
+#    bus, the rapid notes smear into a soaring, cascading melody that perfectly 
+#    mimics the iconic, uplifting vocal hook.
+# ==========================================================

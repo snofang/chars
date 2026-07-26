@@ -1,0 +1,101 @@
+# ==========================================================
+# PLAYBOOK: MADONNA - "LIKE A VIRGIN" (1984)
+# ==========================================================
+
+use_bpm 117
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Bouncy, Funky, & Pop-Ready)
+# ==========================================================
+
+# Driving 4/4 LinnDrum kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Funky" Synth Bass (F# Minor).
+# Plays a sparse, syncopated, melodic line. 
+# High cutoff (100) and short release (0.1) create a warm, punchy "thwack".
+# (8 x's, 8 elements)
+bass_notes = [:fs2, :fs2, :gs2, :a2, :a2, :gs2, :fs2, :cs3]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x..x.x..x.x.x..x", bass_data)
+
+# Clean, "Rhythm Guitar" Stabs (F#m to C#).
+# Uses :play_fm with a high divisor (3) and low depth (2) to create a clean, 
+# plucky, staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:fs3, :a3, :cs4], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:fs3, :a3, :cs4], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:cs4, :e4, :g4], divisor: 3, depth: 2, release: 0.08, amp: 0.6},
+  {note: [:cs4, :e4, :g4], divisor: 3, depth: 2, release: 0.08, amp: 0.6}
+])
+
+# Piercing, "Catchy" Synth Lead (F# Minor).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a sharp, 
+# buzzy square wave. Routed through the global tape echo. (8 x's, 8 elements)
+lead_notes = [:fs5, :e5, :cs5, :b4, :cs5, :fs5, :e5, :cs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 2, depth: 3, release: 0.2} }
+s_lead = gen_score("x..x.x..x..x.x..", lead_data)
+
+# "Like a virgin" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, pristine vocal skip. (1 x, 1 element)
+s_vocal = gen_score("........x.......", [
+  {note: :fs4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the funky bass, guitar stabs, and vocal chop (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the driving 4/4 LinnDrum beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, catchy synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S DANCE-POP]
+# 
+# 1. The Funky Synth Bass: Look at `s_bass`. The `:play_sub` synth plays a 
+#    sparse, syncopated line (F#-F#-G#-A-A-G#-F#-C#). By using a high `cutoff` 
+#    (100) and a short `release` (0.1), the engine turns the detuned sawtooth 
+#    into a warm, punchy "thwack" that perfectly mimics the driving, melodic 
+#    synth bass that anchors the track.
+#
+# 2. FM as a Clean Guitar: Look at `s_chords`. The `:play_fm` synth is given 
+#    a high `divisor` (3) and a low `depth` (2), with a microscopic `release` 
+#    (0.08). This forces the FM synth to produce a clean, plucky, staccato 
+#    "hit" that perfectly mimics the funky, off-beat rhythm guitar stabs that 
+#    define the groove.
+#
+# 3. The Catchy Lead: The `s_lead` sequence uses `divisor: 2` and `depth: 3`. 
+#    This harmonic ratio produces a sharp, buzzy, square wave that cuts 
+#    through the heavy mix. Because it's routed through the global tape echo 
+#    bus, the rapid notes smear into a soaring, cascading melody that perfectly 
+#    mimics the iconic vocal hook.
+# ==========================================================

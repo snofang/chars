@@ -1,0 +1,109 @@
+# ==========================================================
+# PLAYBOOK: GOTYE FT. KIMBRA - "SOMEBODY THAT I USED TO KNOW" (2011)
+# ==========================================================
+
+use_bpm 129
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Hypnotic, Minimalist, & Melancholic)
+# ==========================================================
+
+# The "Found-Sound" Kick. 
+# A sparse, syncopated, organic bounce. (4 x's, 4 elements)
+s_kick = gen_score("x.....x.x.....x.", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}
+])
+
+# Crisp, organic snare/rimshot strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Very sparse, "ticking" 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x..x..x..x..x..x", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}
+])
+
+# Deep, "Upright" Bass (D Minor).
+# Plays a syncopated, melodic line. 
+# Mid cutoff (80) and medium release (0.2) create a warm, round undercurrent.
+# (4 x's, 4 elements)
+s_bass = gen_score("x..x.x.....x.x..", [
+  {note: :d2, release: 0.2, cutoff: 80, amp: 1.0}, 
+  {note: :a2, release: 0.2, cutoff: 80, amp: 0.8}, 
+  {note: :c3, release: 0.2, cutoff: 80, amp: 1.0}, 
+  {note: :d2, release: 0.2, cutoff: 80, amp: 0.8}
+])
+
+# The "Iconic" Xylophone Riff (D Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (1) to create a pristine, 
+# glassy, wooden marimba tone. (6 x's, 6 elements)
+lead_notes = [:d5, :c5, :a4, :g4, :f4, :d4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 4, depth: 1, release: 0.3} }
+s_lead = gen_score("x..x.x..x..x.x..", lead_data)
+
+# Stark, "Synth/Brass" Stabs (Dm to Bb to F to C).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a warm, 
+# staccato hit. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:d3, :f3, :a3], divisor: 2, depth: 3, release: 0.15, amp: 0.5},
+  {note: [:bb2, :d3, :f3], divisor: 2, depth: 3, release: 0.15, amp: 0.5},
+  {note: [:f3, :a3, :c4], divisor: 2, depth: 3, release: 0.15, amp: 0.5},
+  {note: [:c3, :e3, :g3], divisor: 2, depth: 3, release: 0.15, amp: 0.5}
+])
+
+# "Somebody" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, rhythmic vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :d4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :a4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the iconic xylophone riff, bass, and vocal chops (4 bars)
+  [ [:play_fm, s_lead, 4], [:play_sub, s_bass, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the sparse, syncopated drums (8 bars)
+  [ [:play_fm, s_lead, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The stark, brass stabs drop (8 bars)
+  [ [:play_fm, s_lead, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MINIMALIST POP]
+# 
+# 1. FM as a Xylophone: Look at `s_lead`. The `:play_fm` synth is given a 
+#    high `divisor` (4) and a low `depth` (1). This harmonic ratio produces a 
+#    pristine, glassy, sine-like wave that perfectly mimics a wooden marimba 
+#    or xylophone. By playing the iconic D-C-A-G-F riff, the engine creates 
+#    the hypnotic, looping melody that defined the track.
+#
+# 2. The Syncopated Groove: Look at `s_kick` and `s_bass`. The kick avoids 
+#    a standard 4/4 pulse, hitting on a syncopated, organic rhythm (steps 0, 6, 8, 14). 
+#    The bass weaves a melodic line around the kick. The engine's strict master 
+#    clock ensures this complex rhythm locks together with absolute precision.
+#
+# 3. The Off-Beat Stabs: Look at `s_chords`. The stark, minor chords hit 
+#    strictly on steps 2, 6, 10, and 14. In a 16-step grid, these are the 
+#    exact midpoints between the kicks. The engine's strict master clock locks 
+#    these together perfectly, creating a massive, bouncing "boom-cha" groove 
+#    that forces you to dance.
+# ==========================================================

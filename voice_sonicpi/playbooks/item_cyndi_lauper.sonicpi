@@ -1,0 +1,102 @@
+# ==========================================================
+# PLAYBOOK: CYNDI LAUPER - "GIRLS JUST WANT TO HAVE FUN" (1983)
+# ==========================================================
+
+use_bpm 128
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (Ab Major - Bouncy, Bright, & Exuberant)
+# ==========================================================
+
+# Relentless, driving 4/4 LinnDrum kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic snare/clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Bouncy" Synth Bass (Ab Major).
+# Plays the iconic, syncopated, octave-jumping line. 
+# High cutoff (100) and short release (0.1) create a warm, punchy "thwack".
+# (8 x's, 8 elements)
+bass_notes = [:ab2, :ab3, :eb3, :f3, :ab2, :ab3, :eb3, :f3]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Stark, "Synth Brass" Stabs (Ab to Eb to Fm to Db).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:ab3, :c4, :eb4], divisor: 2, depth: 4, release: 0.15, amp: 0.6},
+  {note: [:ab3, :c4, :eb4], divisor: 2, depth: 4, release: 0.15, amp: 0.6},
+  {note: [:f3, :ab3, :c4], divisor: 2, depth: 4, release: 0.15, amp: 0.6},
+  {note: [:db3, :f3, :ab3], divisor: 2, depth: 4, release: 0.15, amp: 0.6}
+])
+
+# Piercing, "Catchy" Synth Lead (Ab Major Pentatonic).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:ab5, :g5, :f5, :eb5, :c5, :ab4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Girls just want to have fun" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, pristine vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :ab4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :c5, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the bouncy bass, synth stabs, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the driving 4/4 LinnDrum beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, catchy synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S POP]
+# 
+# 1. The Bouncy Bass: Look at `s_bass`. The `:play_sub` synth plays the 
+#    iconic, syncopated line, jumping rapidly between the low octave (:ab2) and 
+#    the high octave (:ab3). By using a high `cutoff` (100) and a short `release` 
+#    (0.1), the engine turns the detuned sawtooth into a warm, punchy "thwack" 
+#    that perfectly mimics the driving, exuberant synth bass of the track.
+#
+# 2. FM as a Synth Brass: Look at `s_chords`. The `:play_fm` synth is given 
+#    a `divisor` of `2` and a `depth` of `4`, with a microscopic `release` 
+#    (0.15). This forces the FM synth to produce a harsh, brassy, staccato 
+#    "hit" that perfectly mimics the massive synth-brass section stabs that 
+#    define the song's upbeat, catchy atmosphere.
+#
+# 3. The Catchy Lead: The `s_lead` sequence uses `divisor: 3` and `depth: 3`. 
+#    This harmonic ratio produces a sharp, glassy, digital tone that cuts 
+#    through the heavy mix. Because it's routed through the global tape echo 
+#    bus, the rapid notes smear into a soaring, cascading melody that perfectly 
+#    mimics the iconic vocal hook.
+# ==========================================================

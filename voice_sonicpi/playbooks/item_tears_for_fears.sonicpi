@@ -1,0 +1,103 @@
+# ==========================================================
+# PLAYBOOK: TEARS FOR FEARS - "EVERYBODY WANTS TO RULE THE WORLD" (1985)
+# ==========================================================
+
+use_bpm 114
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Major - Lush, Driving, & Melancholic)
+# ==========================================================
+
+# Driving 4/4 LinnDrum kick with a syncopated, laid-back bounce. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Swung, continuous 16th hats to create the 12/8 triplet feel. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Iconic" Synth Bass (D Major).
+# Plays the legendary, syncopated, melodic line. 
+# High cutoff (90) and short release (0.15) create a warm, punchy "thwack".
+# (8 x's, 8 elements)
+bass_notes = [:a1, :a1, :g1, :g1, :e1, :e1, :d1, :d1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.15, amp: 1.0} }
+s_bass = gen_score("x..x.x..x..x.x..", bass_data)
+
+# Lush, "Synth Pad" Chords (A to G to D to Bm).
+# Hit on the downbeats. The slow 1.0-beat attack and massive 3.0-beat release 
+# blur the chords together into a continuous, cinematic wave. (4 x's, 4 elements)
+s_chords = gen_score("x...x...x...x...", [
+  {note: [:a3, :cs4, :e4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.4},
+  {note: [:g3, :b3, :d4], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.4},
+  {note: [:d3, :fs3, :a3], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.4},
+  {note: [:b2, :d3, :fs3], cutoff: 80, attack: 1.0, release: 3.0, amp: 0.4}
+])
+
+# Piercing, "Catchy" Synth Lead (D Major).
+# Uses :play_fm with a high divisor (3) and mid depth (3) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (8 x's, 8 elements)
+lead_notes = [:d5, :cs5, :b4, :a4, :g4, :fs4, :e4, :d4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 3, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Rule the world" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, pristine vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :d4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :fs4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the iconic bass, sweeping pads, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the driving, laid-back LinnDrum beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, catchy synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S SOPHISTI-POP]
+# 
+# 1. The Iconic Bassline: Look at `s_bass`. The `:play_sub` synth plays the 
+#    legendary A-A-G-G-E-E-D-D syncopated line. By using a high `cutoff` (90) 
+#    and a short `release` (0.15), the engine turns the detuned sawtooth into a 
+#    warm, punchy "thwack" that perfectly mimics the driving, melodic synth bass 
+#    that anchors the track.
+#
+# 2. The 12/8 Swing Feel: Look at `s_hats`. The hats play continuous 16th notes, 
+#    but the alternating amplitudes (0.3 vs 0.15) create a triplet-based, 
+#    "skipping" feel that gives the track its signature laid-back, rolling 
+#    momentum. The engine's strict master clock ensures this complex rhythm 
+#    locks perfectly with the syncopated bassline.
+#
+# 3. The Cinematic Swell: Look at `s_chords`. The Hashes specify an `attack` 
+#    of `1.0` and a `release` of `3.0`. Because the engine reads these 
+#    Hashes, the chords don't just hit; they slowly swell into the mix and 
+#    fade away over four whole beats, creating a continuous, blurred wave 
+#    of warm harmony that perfectly mimics the lush, wide-stereo synth pads 
+#    of 80s sophisti-pop.
+# ==========================================================
