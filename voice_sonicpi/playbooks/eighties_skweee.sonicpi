@@ -1,21 +1,28 @@
 # ==========================================================
-# PLAYBOOK: 80s SKWEEE / NORDIC SYNTH-FUNK
+# PLAYBOOK: 80s SKEWEE / NORDIC SYNTH-FUNK
 # (Pioneered by Daniel Savio, Eddore, and Mesak)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 80s Skweee.
-# We have explored Synth-Funk and Electro, but Skweee is a highly distinct, 
-# quirky microgenre born in Sweden and Finland. It operates at a slow 85 
-# BPM and relies on a raw, punchy analog bass, sparse, swinging drums, 
-# and a highly distinctive "squelchy" lead synth that sounds like it is 
-# being physically squeezed (hence the name "skweee").
+# We have explored pristine 80s Boogie and raw Electro-Funk. Skweee is the 
+# sound of the Swedish and Finnish underground. It operates at a slow, bouncy 
+# 85 BPM and relies on a raw, punchy analog bass, sparse, stark drum breaks, 
+# and a highly distinctive "squelchy" lead synth. The engine tests its FM 
+# synthesis capabilities by rapidly cycling the `divisor` and `depth` Hashes 
+# on the lead to create a "squeezed" or "squashed" texture, perfectly mimicking 
+# the genre's namesake sound.
 #
-# This playbook perfectly demonstrates how to push the `:play_fm` synth 
-# to create that signature "squeezing" sound. By using an extreme `depth` 
-# (8) and rapidly changing the `divisor` Hash on every hit, the engine 
-# forces the FM modulator to wildly reshape the carrier wave, creating a 
-# bouncy, quirky, and undeniably funky lead.
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 85 BPM. Slow, bouncy, and raw.
+# 2. Harmonic Center: A Dorian. Quirky, warm, and lo-fi.
+# 3. Rhythmic Skeleton: A syncopated, old-school electro break. Spare, punchy, 
+#    and stark.
+# 4. Timbral Palette:
+#    - Bass: Raw, punchy "analog" synth bass (mid cutoff, short release).
+#    - Chords: Stark, staccato synth stabs (FM, low divisor, mid depth).
+#    - Lead: The "Squelch" (FM with extreme depth, rapidly changing divisor).
+#    - Texture: Granular lo-fi noise or vocal skip.
+# 5. Arrangement: Intro (Bass/Drums) -> Vibe (Chords) -> Drop (Squelch Lead).
 # ==========================================================
 
 use_bpm 85
@@ -26,55 +33,82 @@ use_bpm 85
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
-# 2. THE SCORES (A Minor - Quirky, Raw, & Bouncy)
+# 2. THE SCORES (A Dorian - Quirky, Raw, & Bouncy)
 # ==========================================================
 
 # The "Skweee" Kick. 
-# Syncopated. Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+# A syncopated, bouncy electro march. (4 x's, 4 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}
+])
 
-# Heavy, dry snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+# Crisp, dry snare on beats 2 and 4, with a syncopated ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
 
-# Swung, bouncing 16th hats.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+# Swung, bouncing 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
 
-# The "Punchy" Analog Bass (A Minor).
-# Plays a syncopated line. Mid cutoff (90) and very short release (0.15) 
-# create a raw, bouncy undercurrent.
-s_bass  = (ring {:note => :a1, :release => 0.15, :cutoff => 90, :amp => 1.0}, nil, nil, {:note => :a1, :release => 0.15, :cutoff => 90, :amp => 0.8}, nil, {:note => :c2, :release => 0.15, :cutoff => 90, :amp => 1.0}, nil, nil, {:note => :e2, :release => 0.15, :cutoff => 90, :amp => 1.0}, nil, nil, {:note => :e2, :release => 0.15, :cutoff => 90, :amp => 0.8}, nil, {:note => :d2, :release => 0.15, :cutoff => 90, :amp => 1.0}, nil, nil)
+# The "Punchy" Analog Bass (A Dorian).
+# Plays a syncopated, bouncy line. 
+# Mid cutoff (90) and very short release (0.15) create a raw, percussive "thwack".
+# (4 x's, 4 elements)
+s_bass = gen_score("x.....x.x.....x.", [
+  {note: :a2, release: 0.15, cutoff: 90, amp: 1.0}, 
+  {note: :c3, release: 0.15, cutoff: 90, amp: 0.8}, 
+  {note: :e3, release: 0.15, cutoff: 90, amp: 1.0}, 
+  {note: :d3, release: 0.15, cutoff: 90, amp: 0.8}
+])
 
-# Stark, staccato minor chord stabs (Am to C to E).
-# Hit strictly on the off-beats (steps 2, 6, 10, 14). High cutoff (100) 
-# and short release (0.2) create a sharp, funky wall of sound.
-s_chords= (ring nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:c4, :e4, :g4], nil, nil, nil, [:e3, :g3, :b3], nil)
+# Stark, "Staccato" Synth Stabs (Am to Dm).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a sharp, 
+# staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 4, release: 0.08, amp: 0.6},
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 4, release: 0.08, amp: 0.6},
+  {note: [:d3, :f3, :a3], divisor: 2, depth: 4, release: 0.08, amp: 0.6},
+  {note: [:d3, :f3, :a3], divisor: 2, depth: 4, release: 0.08, amp: 0.6}
+])
 
-# The "Squelchy" Skweee Lead (A Minor Pentatonic).
+# The "Squelch" Lead (A Dorian Pentatonic).
 # Uses :play_fm. The 'divisor' and 'depth' Hashes change radically on every 
 # single hit, forcing the FM synth to morph between a hollow click, a piercing 
-# square wave, and a squeezing, squelchy chirp.
-s_fm    = (ring {:note => :a4, :amp => 0.6, :divisor => 2, :depth => 8, :release => 0.3}, nil, {:note => :a4, :amp => 0.5, :divisor => 3, :depth => 6, :release => 0.3}, nil, {:note => :c5, :amp => 0.6, :divisor => 2, :depth => 8, :release => 0.3}, nil, {:note => :e5, :amp => 0.7, :divisor => 4, :depth => 5, :release => 0.3}, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 7, :release => 0.3}, nil, {:note => :c5, :amp => 0.6, :divisor => 2, :depth => 8, :release => 0.3}, nil, {:note => :a4, :amp => 0.7, :divisor => 4, :depth => 4, :release => 0.3}, nil, nil, nil)
+# square wave, and a squeezing, squelchy chirp. (6 x's, 6 elements)
+s_lead = gen_score("x..x..x..x..x..x", [
+  {note: :a4, amp: 0.6, divisor: 2, depth: 8, release: 0.2}, 
+  {note: :a4, amp: 0.5, divisor: 3, depth: 6, release: 0.2}, 
+  {note: :c5, amp: 0.6, divisor: 2, depth: 8, release: 0.2}, 
+  {note: :e5, amp: 0.7, divisor: 4, depth: 5, release: 0.2}, 
+  {note: :d5, amp: 0.5, divisor: 3, depth: 7, release: 0.2}, 
+  {note: :c5, amp: 0.6, divisor: 2, depth: 8, release: 0.2}
+])
 
-# Rhythmic, pitched-down "Funk" vocal stutter (Granular Synth).
-# High density, tiny size = a sharp, percussive vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :a3, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.04, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :c3, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.04, :amp => 0.5}, nil, nil, nil)
+# "Lo-Fi Noise" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# High density (2) and small size (0.05) creates a raw, percussive, 
+# lo-fi background skip. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.6, density: 2, size: 0.05, amp: 0.4}
+])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: The Groove - Just the punchy bass, drums, and chord stabs (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
+  # Scene 1: The Groove - Just the punchy bass, synth stabs, and noise (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: The Vibe - Add the rhythmic vocal chops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+  # Scene 2: The Vibe - Add the syncopated electro drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Drop - The squelchy Skweee lead drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
-    [:play_fm, s_fm, 8] ]
+  # Scene 3: The Drop - The squelchy, morphing FM lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
 )
 
 # ==========================================================
@@ -85,22 +119,22 @@ start_engine(playbook)
 # ==========================================================
 # [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN NORDIC FUNK]
 # 
-# 1. FM as a "Squeeze": Look at `s_fm`. The `:play_fm` synth is given an 
+# 1. FM as a "Squelch": Look at `s_lead`. The `:play_fm` synth is given an 
 #    extreme `depth` of `8` and the `divisor` changes on every single hit 
-#    (from 2 to 3 to 4). Because the engine reads these Hashes independently, 
-#    the FM modulator radically reshapes the carrier wave on every step. 
-#    This creates the signature "squeezing" squelch sound that defines the 
-#    Skweee genre, mimicking the behavior of a heavily tweaked analog filter.
+#    (e.g., from `divisor: 2` to `divisor: 4`). Because the engine reads 
+#    these Hashes independently, the FM modulator radically reshapes the 
+#    carrier wave on every step. This creates the signature "squeezing" 
+#    squelch sound that defines the Skweee genre.
 #
 # 2. The Punchy Analog Bass: Look at `s_bass`. The `:play_sub` synth is 
-#    given a `cutoff` of `90` and a very short `release` of `0.15`. This 
-#    strips away the sub-frequencies and cuts the note off instantly, turning 
-#    the detuned sawtooth into a raw, aggressive "thwack" that perfectly 
-#    mimics the punchy analog basslines of Nordic synth-funk.
+#    given a mid-range `cutoff` (90) and a very short `release` (0.15). 
+#    This strips away the sub-frequencies and cuts the note off cleanly, 
+#    turning the detuned sawtooth into a raw, punchy "thwack" that perfectly 
+#    mimics the lo-fi, analog basslines of Nordic synth-funk.
 #
 # 3. The Off-Beat Pocket: Look at `s_chords`. The staccato chords hit strictly 
 #    on steps 2, 6, 10, and 14. In a 16-step grid, these are the exact 
-#    midpoints between the kicks. The engine's strict 16-step grid locks 
+#    midpoints between the kicks. The engine's strict master clock locks 
 #    these stabs perfectly between the bassline notes, creating a bouncy, 
-#    deeply funky "pocket" that leaves maximum room for the squelchy lead.
+#    deeply funky "pocket" that leaves maximum room for the squelch lead.
 # ==========================================================

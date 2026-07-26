@@ -1,6 +1,28 @@
 # ==========================================================
-# PLAYBOOK: 2010s HALFTIME DnB / 170 TRAP (CORRECTED)
+# PLAYBOOK: 2010s HALFTIME DnB / 170 TRAP
 # (Pioneered by Spectrasoul, Ivy Lab, and Noisia)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored heavy Dubstep (which is 140 BPM half-time) and fast Liquid 
+# DnB (which is 170 BPM full-time). Halftime DnB (or "170 Trap") is the sound 
+# of the modern underground bass scene. It takes the tempo of Drum & Bass (170 
+# BPM) but plays a slow, half-time trap groove, creating a massive sense of 
+# pace and space. It relies on deep, evolving Reese bass, sparse, trap-style 
+# hi-hat rolls, and bright, echoing FM plucks that feel like floating in slow 
+# motion over a fast-moving grid.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 170 BPM. A fast grid played with a slow, half-time groove.
+# 2. Harmonic Center: F# Minor. Deep, atmospheric, and modern.
+# 3. Rhythmic Skeleton: A sparse, heavy 808 bounce. Kick on 1 and 3. 
+#    Snare on 3. Frantic, rolling Trap hi-hats with rising amplitudes.
+# 4. Timbral Palette:
+#    - Bass: Deep, evolving "Reese" sub-bass (low cutoff, massive release).
+#    - Chords: Stark, "synth string" stabs (high cutoff, staccato).
+#    - Lead: Bright, echoing "synth flute" pluck (high FM divisor, long release).
+#    - Texture: Pitched-down, "Grrt" vocal stutter (granular, rhythmic).
+# 5. Arrangement: Intro (Bass/Strings) -> Groove (Half-time Drums) -> Drop (Flute).
 # ==========================================================
 
 use_bpm 170
@@ -15,14 +37,16 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # The "Half-Time" Kick. 
+# A sparse, heavy 808 bounce. Hits on step 0 and beat 3 (step 8). 
+# (3 x's, 3 elements)
 s_kick = gen_score("x.....x.x.....x.", [
   :c4, {note: :c4, amp: 0.8}, {note: :c4, amp: 0.9}
 ])
 
-# Crisp, dry snare strictly on beat 3 (step 8).
+# Crisp, dry snare strictly on beat 3 (step 8). (1 x, 1 element)
 s_snare = gen_score("........x.......", [:c4])
 
-# Frantic, rolling Trap hats with rising amplitudes.
+# Frantic, rolling Trap hats with rising amplitudes. (8 x's, 8 elements)
 s_hats = gen_score("x..x..x..x.x.x.x", [
   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, 
   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}, {note: :c4, amp: 0.3}, 
@@ -30,6 +54,8 @@ s_hats = gen_score("x..x..x..x.x.x.x", [
 ])
 
 # Deep, "Reese" Sub-Bass (F# Minor).
+# Massive release (2.0) and low cutoff (50) create a deep, continuous rumble.
+# (3 x's, 3 elements)
 s_bass = gen_score("x.......x.....x.", [
   {note: :fs1, release: 2.0, cutoff: 50, amp: 1.2}, 
   {note: :a1, release: 1.5, cutoff: 50, amp: 1.0}, 
@@ -37,6 +63,8 @@ s_bass = gen_score("x.......x.....x.", [
 ])
 
 # Stark, "Synth String" Stabs (F#m to Am).
+# Hit strictly on the off-beats. High cutoff (100) and short release (0.15) 
+# create a sharp, staccato wall of sound. (4 x's, 4 elements)
 s_chords = gen_score("..x.....x.x.....", [
   {note: [:fs3, :a3, :c4], cutoff: 100, release: 0.15, amp: 0.5},
   {note: [:fs3, :a3, :c4], cutoff: 100, release: 0.15, amp: 0.5},
@@ -45,12 +73,16 @@ s_chords = gen_score("..x.....x.x.....", [
 ])
 
 # Piercing, "Synth Flute" Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and mid depth (2) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
 lead_notes = [:fs5, :a5, :c6, :a5, :g5, :fs5]
-lead_data = lead_notes.map { |n| {note: n, amp: 0.6, cutoff: 100, release: 0.5} }
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 2, release: 0.5} }
 s_lead = gen_score("x..x..x..x..x..x", lead_data)
 
-# Pitched-down, Vocal Stutter (Granular Synth)
-# FIXED: Using :ambi_choir instead of :ambi_choir
+# "Grrt" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# High density, tiny size = a sharp, percussive, rhythmic vocal skip. 
+# (1 x, 1 element)
 s_vocal = gen_score("........x.......", [
   {note: :fs3, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7}
 ])
@@ -73,3 +105,26 @@ playbook = (ring
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HALFTIME BASS]
+# 
+# 1. The Half-Time Illusion: The engine's master clock is ticking at a frantic 
+#    170 BPM. But because the `s_kick` only hits on steps 0 and 8, and the 
+#    `s_snare` only hits on step 8, the psychological tempo feels like 85 BPM. 
+#    The rolling hi-hats fill in the gaps, creating the signature Halftime DnB 
+#    illusion of slow heaviness over fast momentum.
+#
+# 2. The Reese Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    massive `release` of `2.0` (nearly two whole beats) and an extreme low 
+#    `cutoff` of `50`. This creates a deep, continuous rumble that anchors the 
+#    erratic, skittering drums, perfectly mimicking the massive, dark Reese 
+#    basslines of modern Halftime DnB.
+#
+# 3. Echoing Space: The `s_lead` sequence plays a simple F# minor pentatonic 
+#    melody, but leaves massive gaps (`nil`) between the notes. Because the 
+#    engine routes the `:play_lead` synth through the global tape echo bus, 
+#    those empty spaces are filled by delay tails, creating a cascading, 
+#    stadium-sized soundscape that perfectly anchors the track's deep, 
+#    hypnotic atmosphere.
+# ==========================================================
