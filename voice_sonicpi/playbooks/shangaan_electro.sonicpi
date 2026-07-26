@@ -1,0 +1,131 @@
+# ==========================================================
+# PLAYBOOK: SHANGAAN ELECTRO / TSONGA DISCO
+# (Pioneered by Paul Ndlovu, Penny Penny, and Richard Mthethwa)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored heavy, slow genres (Drone, Doom) and rigid, fast genres 
+# (Techno, Hardcore). Shangaan Electro explores the extreme upper limit of 
+# dance music tempo (185 BPM), fusing traditional South African Tsonga music 
+# with cheap, Casio-style synthesizers. The result is a blistering, shuffling, 
+# high-pitched, alien dance groove that feels like a high-speed celebration.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 185 BPM. Frantic, high-energy, and shuffling.
+# 2. Harmonic Center: A Minor. Exotic and joyful.
+# 3. Rhythmic Skeleton: A fast, galloping 16-step grid. Syncopated kicks, 
+#    heavy swinging snares, and relentless 16th-note shakers.
+# 4. Timbral Palette:
+#    - Bass: Fast, bouncy, continuous 16th-note synth bass.
+#    - Chords: Stark, tinny, staccato stabs.
+#    - Lead: Piercing, high-pitched, "Casio" FM synth melodies.
+# 5. Arrangement: Intro (Drums/Bass) -> Vibe (Chords) -> Drop (Lead).
+# ==========================================================
+
+use_bpm 185
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Frantic, Shuffling, & Alien)
+# ==========================================================
+
+# The "Gallop" Kick. 
+# A fast, syncopated, bouncing march. (5 x's, 5 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}, {note: :c4, amp: 0.9}
+])
+
+# Heavy, swinging snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 1.0}
+])
+
+# Relentless, continuous 16th shaker to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Bouncy" Synth Bass (A Minor).
+# Plays a fast, syncopated, continuous 16th-note line. 
+# High cutoff (100) and microscopic release (0.05) create a relentless, 
+# bouncy, buzzing churn. (16 x's, 16 elements)
+bass_notes = [:a2, :a2, :c3, :a2, :a2, :a2, :c3, :a2, 
+              :g2, :g2, :bb2, :g2, :a2, :a2, :c3, :a2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 100, release: 0.05, amp: 1.0} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Stark, "Tinny" Synth Stabs (Am to G).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to create a harsh, 
+# staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 3, release: 0.08, amp: 0.5},
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 3, release: 0.08, amp: 0.5},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.08, amp: 0.5},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.08, amp: 0.5}
+])
+
+# Piercing, "Casio" FM Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to create a piercing, 
+# glassy, cheap-keyboard tone. Plays a rapid, continuous 16th-note melody.
+# (16 x's, 16 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :a5, :e5, :c6, :e5, 
+              :g5, :d5, :bb5, :d5, :a5, :e5, :c6, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 4, depth: 2, release: 0.03} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Ayi!" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, rhythmic vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.03, amp: 0.7},
+  {note: :c5, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.03, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Street - Just the galloping drums and bouncy bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+    [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Party - Add the tinny stabs and vocal chops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The piercing Casio lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EXTREME TEMPO]
+# 
+# 1. The 185 BPM Blur: Look at `s_lead` and `s_bass`. They play on EVERY 
+#    single 16th step. At 185 BPM, the engine is firing a note every 32 
+#    milliseconds. Because the engine's strict master clock is perfectly rigid, 
+#    this creates an auditory blur that sounds like a buzzing saw wave, perfectly 
+#    mimicking the frantic, cheap-synth arpeggios of Shangaan Electro.
+#
+# 2. The Galloping Syncopation: Look at `s_kick`. It completely avoids landing 
+#    on a standard 4/4 pulse. By hitting on syncopated, galloping steps 
+#    (0, 3, 6, 8, 11), the engine creates a lopsided, fast-paced groove that 
+#    feels like a live drummer playing a traditional Tsonga rhythm.
+#
+# 3. FM as a Casio: The `s_lead` sequence uses `divisor: 4` and `depth: 2`. 
+#    This gentle harmonic ratio produces a piercing, glassy, sine-like wave 
+#    that sounds more like a cheap 1990s portable keyboard than a synthesizer. 
+#    By playing a rapid, continuous melody, the engine creates a frantic, 
+#    high-energy hook that perfectly anchors the track's chaotic, joyful 
+#    atmosphere.
+# ==========================================================

@@ -1,0 +1,129 @@
+# ==========================================================
+# PLAYBOOK: GRINDCORE / CRUST PUNK
+# (Pioneered by Napalm Death, Repulsion, and Carcass)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored slow, heavy extremes (Drone, Sludge, Doom) and fast, 
+# rhythmic extremes (Speedcore, Shangaan Electro). Grindcore is the extreme 
+# of pure, chaotic aggression. It fuses the raw, lo-fi energy of hardcore 
+# punk with the extreme tempos and guttural vocals of death metal. It relies 
+# on a blistering 200 BPM "blast beat," a distorted, continuous 16th-note 
+# bass churn, dissonant power chords, and a terrifying, pitched-down granular 
+# drone that mimics a death metal growl.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 200 BPM. Blistering and relentless.
+# 2. Harmonic Center: E Minor / Dissonant. Harsh and evil.
+# 3. Rhythmic Skeleton: A relentless "blast beat" (continuous 8th notes on 
+#    kick and snare simultaneously). Fast, chaotic 16th hats.
+# 4. Timbral Palette:
+#    - Bass: "Fuzz" bass, extreme cutoff, continuous 16th-note churn.
+#    - Chords: Massive, dissonant, distorted power chords (extreme FM depth).
+#    - Lead: Piercing, chaotic, atonal FM solo.
+#    - Texture: Pitched-down granular "growl" drone.
+# 5. Arrangement: Intro (Drone/Bass) -> Blast (Drums/Chords) -> Solo.
+# ==========================================================
+
+use_bpm 200
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor / Dissonant - Chaotic, Heavy, & Fast)
+# ==========================================================
+
+# The "Blast Beat" Kick. 
+# Plays continuous, driving 8th notes. (8 x's, 8 elements)
+s_kick = gen_score("x.x.x.x.x.x.x.x.", [:c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4])
+
+# The "Blast Beat" Snare. 
+# Plays continuous 8th notes in sync with the kick. (8 x's, 8 elements)
+s_snare = gen_score("x.x.x.x.x.x.x.x.", [:c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4])
+
+# Fast, chaotic 16th hats to add to the wall of noise. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Fuzz" Bass (E Minor).
+# Plays a continuous, driving 16th-note line. 
+# Extreme cutoff (120) and microscopic release (0.04) create a relentless, 
+# grinding, distorted churn. (16 x's, 16 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :e1, :e1, :e1, :e1, 
+              :d1, :d1, :d1, :d1, :b0, :b0, :b0, :b0]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.04, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "Dissonant" Power Chords (E5 to D5 to B5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Hits only on beats 1 and 3. (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:e3, :b3], divisor: 2, depth: 6, release: 0.2, amp: 0.7},
+  {note: [:d3, :a3], divisor: 2, depth: 6, release: 0.2, amp: 0.7},
+  {note: [:b2, :fs3], divisor: 2, depth: 6, release: 0.2, amp: 0.7}
+])
+
+# Piercing, "Chaotic" Lead Solo (E Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (5) to create a 
+# harsh, piercing, atonal tone. Routed through the global tape echo. 
+# (8 x's, 8 elements)
+lead_notes = [:e5, :d5, :b4, :a4, :g4, :e4, :d4, :b3]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 4, depth: 5, release: 0.05} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Death Growl" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Massive size (0.2s) and low density (1) creates a slow, evolving, 
+# terrifying background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e2, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.2, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the fuzz bass, dissonant chords, and growl (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Blast - Add the relentless 200 BPM blast beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Meltdown - The piercing, chaotic lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EXTREME AGGRESSION]
+# 
+# 1. The Blast Beat: Look at `s_kick` and `s_snare`. They both play 
+#    continuous 8th notes at 200 BPM, hitting simultaneously on every beat. 
+#    This creates a relentless, mechanical wall of percussion that perfectly 
+#    mimics the legendary "blast beat" drumming of Grindcore. The engine's 
+#    strict master clock ensures this chaotic rhythm locks together with 
+#    absolute mathematical precision.
+#
+# 2. The Fuzz Bass Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step. By using an extreme `cutoff` (120) and a 
+#    microscopic `release` (0.04), the engine turns the detuned sawtooth into 
+#    a relentless, grinding, distorted wall of sound that perfectly mimics the 
+#    heavily distorted bass tones of extreme metal.
+#
+# 3. Dissonant Harmony: Look at `s_chords`. The arrays use standard power 
+#    chords (E5, D5, B5), but the `:play_fm` synth is given an extreme `depth` 
+#    (6). This forces the FM modulator to grind the carrier wave, creating a 
+#    harsh, dissonant, and evil sound that perfectly anchors the track's 
+#    chaotic, aggressive atmosphere.
+# ==========================================================

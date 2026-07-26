@@ -1,4 +1,29 @@
-use_bpm 175
+# ==========================================================
+# PLAYBOOK: NEUROFUNK / TECHSTEP DnB
+# (Pioneered by Ed Rush, Optical, Noisia, and Black Sun Empire)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored the organic swing of Liquid DnB and the chaotic chopping 
+# of Jungle. Neurofunk explores the exact opposite: razor-sharp, mechanical, 
+# and heavily sound-designed futuristic bass music. It relies on blistering 
+# 174 BPM breakbeats, deep continuous "Reese" sub-bass, dissonant sci-fi 
+# stabs, and erratic, metallic FM bleeps that sound like a machine malfunction.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 174 BPM. Frantic, dark, and highly technical.
+# 2. Harmonic Center: F# Minor. Dissonant and sci-fi.
+# 3. Rhythmic Skeleton: A tight, syncopated "2-step" breakbeat. Heavy kicks 
+#    and snares with frantic ghost notes, relentless 16th hats.
+# 4. Timbral Palette:
+#    - Bass: Deep, continuous "Reese" sub-bass (low cutoff, massive release).
+#    - Chords: Stark, dissonant, echoing sci-fi stabs.
+#    - Lead: Piercing, erratic, metallic FM bleeps (extreme depth, high divisor).
+#    - Texture: Industrial, machine-like granular static.
+# 5. Arrangement: Intro (Atmosphere/Bass) -> Drop (Drums/Stabs) -> Climax (Lead).
+# ==========================================================
+
+use_bpm 174
 
 # ==========================================================
 # 1. REQUIRE ENGINE
@@ -6,47 +31,98 @@ use_bpm 175
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
-# 2. THE SCORES (F Minor - Dark, Sci-Fi, Aggressive)
+# 2. THE SCORES (F# Minor - Dark, Sci-Fi, & Aggressive)
 # ==========================================================
 
-# Tight, syncopated DnB breakbeat kick. 
-s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, :c4, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, :c4, nil, nil, nil)
+# The "2-Step" Kick. 
+# A tight, syncopated, chopped breakbeat pattern. (4 x's, 4 elements)
+s_kick = gen_score("x.....x.x.....x.", [
+  :c4, {note: :c4, amp: 0.7}, :c4, {note: :c4, amp: 0.6}
+])
 
-# Heavy, punchy snares on beat 2 and 4 (steps 4 and 12), with a ghost snare.
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil)
+# Heavy, punchy snares on beat 2 and 4, with frantic ghost notes. (4 x's, 4 elements)
+s_snare = gen_score("....x.....x.x.x.", [
+  :c4, {note: :c4, amp: 0.4}, :c4, {note: :c4, amp: 0.9}
+])
 
-# Relentless, rolling 16th hi-hats
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4})
+# Relentless, rolling 16th hats to maintain high-speed momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
 
-# The "Reese" Bass. Deep, long release, and heavily filtered (cutoff 70).
-s_bass  = (ring {:note => :f2, :release => 2.0, :cutoff => 70}, nil, nil, nil, nil, nil, nil, nil, {:note => :f2, :release => 2.0, :cutoff => 70}, nil, nil, nil, nil, nil, nil, nil)
+# Deep, continuous "Reese" Bass (F# Minor).
+# Massive release (2.0) and low cutoff (50) create a dark, rumbling undercurrent.
+# (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :fs1, release: 2.0, cutoff: 50, amp: 1.2}, 
+  {note: :eb1, release: 2.0, cutoff: 50, amp: 1.0}
+])
 
-# Erratic, squelchy FM sci-fi stabs.
-# Uses Hashes to dynamically change the FM depth and divisor for a "talking" synth.
-s_fm    = (ring nil, nil, nil, nil, nil, nil, {:note => :f5, :amp => 0.7, :depth => 4, :divisor => 2}, nil, nil, nil, nil, nil, nil, nil, {:note => :eb5, :amp => 0.6, :depth => 1, :divisor => 4}, nil)
+# Stark, "Sci-Fi" Stabs (F#m to C# to B).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.15) 
+# create a sharp, metallic wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:fs3, :a3, :cs4], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:fs3, :a3, :cs4], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:cs4, :e4, :g4], cutoff: 110, release: 0.15, amp: 0.5},
+  {note: [:b3, :d4, :fs4], cutoff: 110, release: 0.15, amp: 0.5}
+])
 
-# Metallic, machine-room texture (Granular Synth)
-# Using :elec_piano, tiny size (0.02), high density (6) = industrial static.
-s_grain = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil)
+# Piercing, "Alien" FM Bleeps (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (6) to create a 
+# harsh, metallic, piercing tone. Plays an erratic, 8th-note melody.
+# (8 x's, 8 elements)
+lead_notes = [:fs5, :cs5, :a5, :fs5, :e5, :cs5, :b4, :fs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 6, release: 0.05} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Cyber" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# High density (4) and microscopic size (0.02) shatter the sample into 
+# industrial, machine-like static. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :fs3, buffer: :ambi_choir, pos: 0.8, density: 4, size: 0.02, amp: 0.5}
+])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: Just the frantic breakbeat and Reese bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
+  # Scene 1: The Subway - Just the Reese bass, sci-fi stabs, and drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: Add the erratic FM sci-fi stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8] ],
+  # Scene 2: The Chase - Add the frantic 2-step drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: Add the metallic granular texture (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], [:play_grain, s_grain, 4] ]
+  # Scene 3: The Hunt - The piercing alien FM bleeps drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
 )
 
 # ==========================================================
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DYSTOPIAN BASS]
+# 
+# 1. The 2-Step Syncopation: Look at `s_kick` and `s_snare`. They are densely 
+#    packed and completely avoid landing on a standard 4/4 pulse. The engine's 
+#    strict master clock ensures these complex, overlapping hits fire with 
+#    absolute mathematical precision at 174 BPM, perfectly mimicking the 
+#    chopped, mechanical breakbeats of 90s Darkside Jungle and Techstep.
+#
+# 2. The Reese Bass: Look at `s_bass`. The `:play_sub` synth is given a 
+#    massive `release` of `2.0` (two whole beats) and an extreme low `cutoff` 
+#    of `50`. This creates a deep, distorted, continuous rumble that anchors 
+#    the erratic, skittering drums, perfectly mimicking the massive, dark 
+#    Reese basslines of Ed Rush and Optical.
+#
+# 3. FM as an Alien: The `s_lead` sequence uses `divisor: 4` and an extreme 
+#    `depth` of `6`. This harsh harmonic ratio produces a piercing, metallic, 
+#    and dissonant tone that cuts through the heavy mix, perfectly mimicking 
+#    the cold, sci-fi synthesizer sounds of late 90s Techstep.
+# ==========================================================

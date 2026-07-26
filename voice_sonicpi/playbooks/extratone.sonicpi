@@ -1,0 +1,127 @@
+# ==========================================================
+# PLAYBOOK: EXTRATONE / ULTRA-HARDCORE
+# (Pioneered by NASAT, The Speed Freak, and The Paralyzer)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored blistering tempos (Grindcore, Speedcore, Shangaan Electro). 
+# Extratone pushes the 16-step grid so fast that the individual beats merge 
+# into a continuous, piercing tone. Operating at 1000 BPM, a 16th note is 
+# just 15 milliseconds long. The rhythm literally becomes a frequency. This 
+# playbook explores how the engine handles extreme data density, turning drum 
+# patterns into buzzing synthesizer waves.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 1000 BPM. The threshold where rhythm becomes tone.
+# 2. Harmonic Center: A Minor. Harsh, digital, and piercing.
+# 3. Rhythmic Skeleton: A relentless 4/4 kick that blurs into a continuous tone.
+# 4. Timbral Palette:
+#    - Bass/Drums: Continuous, overlapping 16th notes that merge into a buzz.
+#    - Chords: Staccato stabs that sound like machine-gun fire.
+#    - Lead: A piercing, chaotic, high-frequency FM arpeggio.
+#    - Texture: Granular static that sounds like a broken data stream.
+# 5. Arrangement: Intro (Buzz) -> Drop (Machine Gun) -> Climax (Lead).
+# ==========================================================
+
+use_bpm 1000
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor - Piercing, Chaotic, & Continuous)
+# ==========================================================
+
+# The "Extratone" Kick. 
+# A relentless 4/4 pulse that blurs into a continuous tone. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [:c4, :c4, :c4, :c4])
+
+# Heavy, dry snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Rigid, driving 16th off-beat hats. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}
+])
+
+# The "Continuous" Bass (A Minor).
+# Plays continuous 16th notes. 
+# Mid cutoff (90) and microscopic release (0.01) create a relentless, 
+# continuous, buzzing churn. (16 x's, 16 elements)
+bass_notes = [:a1, :a1, :a1, :a1, :a1, :a1, :a1, :a1, 
+              :a1, :a1, :a1, :a1, :a1, :a1, :a1, :a1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.01, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, "Machine-Gun" Synth Stabs (Am to G).
+# Hit strictly on the off-beats. High cutoff (110) and short release (0.01) 
+# create a sharp, piercing wall of sound. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.01, amp: 0.5},
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 0.01, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.01, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 0.01, amp: 0.5}
+])
+
+# Piercing, "Chaotic" FM Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (6) to create a 
+# sharp, piercing, digital tone. Plays a rapid, continuous 16th-note melody.
+# (16 x's, 16 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :a5, :e5, :c6, :e5, 
+              :g5, :d5, :bb5, :d5, :a5, :e5, :c6, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 6, release: 0.005} }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# "Data Stream" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density (8) and microscopic size (0.01) shatter the sample into 
+# piercing, digital static. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.9, density: 8, size: 0.01, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the continuous bass, stabs, and data stream (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Machine - Add the relentless 1000 BPM drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Meltdown - The piercing, chaotic FM lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EXTREME PERCEPTION]
+# 
+# 1. The 1000 BPM Blur: Look at `s_bass`, `s_lead`, and `s_kick`. At 1000 BPM, 
+#    the engine is firing a 16th note every 15 milliseconds. Because the 
+#    engine's strict master clock is perfectly rigid, the individual drum hits 
+#    merge into a continuous, piercing tone, perfectly mimicking the defining 
+#    characteristic of Extratone.
+#
+# 2. Data-Driven Micro-timing: Look at the `release` values in `s_bass` (0.01), 
+#    `s_chords` (0.01), and `s_lead` (0.005). By using microscopic release 
+#    times, the engine prevents the notes from overlapping and turning into mud, 
+#    ensuring that each 15-millisecond hit remains distinct and piercing.
+#
+# 3. Granular as Static: Look at `s_grain`. The granular engine is given a 
+#    massive `density` of `8` and a microscopic `size` of `0.01`. By targeting 
+#    the very end of the `:ambi_choir` buffer (`pos: 0.9`), the engine shatters 
+#    the sample into high-frequency, digital static that sounds like a broken 
+#    data stream, perfectly anchoring the track's extreme, digital atmosphere.
+# ==========================================================
