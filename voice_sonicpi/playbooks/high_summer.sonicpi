@@ -1,101 +1,123 @@
 # ==========================================================
-# PLAYBOOK: HIGH SUMMER
-# (Pioneered by Kerri Chandler, DJ Sprinkles, Floating Points)
+# PLAYBOOK: SUMMER HIGH (GLITCHCORE REMIX)
+# (Inspired by the chaotic energy of SOPHIE, machine gun DnB, and broken circuitry)
 # ==========================================================
 # 
-# [WHY THIS VIBE?]
-# High Summer isn't just a season; it's a sticky, euphoric, 
-# endless afternoon turning into a sweaty, pulsating night. 
-# It’s the sound of car windows down, open-air festivals, 
-# and deep house rhythms that feel both driving and weightless.
+# [WHY THIS REMIX?]
+# The original was too clean. This remix weaponizes micro-timing, FM dissonance,
+# and extreme granular density to turn sunshine into a data-scrambled rave.
 #
 # [THE CAREFULLY DESCRIBED DNA]
-#   1. Tempo: 122 BPM (The quintessential deep house groove—
-#      fast enough to move, slow enough to breathe).
-#   2. Harmonic Center: A minor (The nostalgic, bittersweet 
-#      warmth of summer fading, using classic Am - F progressions).
-#   3. Rhythmic Skeleton: 4-on-the-floor kick, skipping 
-#      off-beat hats, and a bouncy, syncopated bassline.
-#   4. Timbral Palette: Warm, rounded sub-bass; bright, 
-#      echoing prophetic leads; lush sustained blades; 
-#      and stuttered vocal grains evoking distant memories.
-#   5. Arrangement: Slow build from a hazy afternoon pad 
-#      into a full, driving night-time groove.
+#   1. Tempo: 165 BPM – pushing the conductor to its limit for frantic energy.
+#   2. Harmonic Center: C Minor → F# Tritonal clash – deliberately unstable.
+#   3. Rhythmic Skeleton:
+#      - Kick: 2-step breakcore pattern with ghost triggers.
+#      - Snare: Half-time, massive reverb slaps hitting on the 3rd beat.
+#      - Hats: Continuous 16th-note barrage.
+#      - Bass: Syncopated, distorted saw with a filter sweep that climbs 
+#        every bar, introducing harmonic tension.
+#      - FM Stabs: Glassy, piercing chords acting as "drop bombs".
+#      - Lead: A frantic, chromatic arpeggio that spirals upward.
+#      - Granular: Micro-grains (10ms) firing at max density to create a 
+#        "vocal stutter storm".
+#   4. Timbral Palette (Aggressive & Glassy):
+#      - Sub Bass: Cutoff aggressively automated (60 → 130) per step.
+#      - FM Chords: Divisor 3, Depth 4 for a ringing, metallic attack.
+#      - Lead: Prophet with high cutoff and heavy tape echo for a cascading effect.
+#      - Drums: Pitched kick (C2), snare with epic reverb, tight hats.
+#      - Granular: Buffer `:ambi_choir` pitched +12 semitones, density 8, size 0.01.
+#   5. Arrangement (Deconstructed & Rebuilt):
+#      - Scene 1 (Intro, 4 bars): Distorted bass and FM stabs hit sporadically 
+#        to establish the chaotic palette.
+#      - Scene 2 (Verse, 8 bars): Drums enter with a broken, stuttering breakbeat 
+#        while the bass sweeps wildly.
+#      - Scene 3 (Drop, 8 bars): Everything fires at max intensity – the lead 
+#        spirals, FM stabs hit on off-beats, and the granular vocal glitch 
+#        becomes the main focal point.
 # ==========================================================
 
-use_bpm 122
+use_bpm 165
 
-# 1. REQUIRE ENGINE
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+# 1. REQUIRE ENGINE (adjust path if needed)
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# 2. THE SCORES (Data)
+# 2. THE SCORES (Data – Algorithmically generated for chaos)
 
-# -- Drums: Crisp, driving, classic house pulse
-s_kick  = gen_score("x...x...x...x...", [:c3, :c3, :c3, :c3])
-s_snare = gen_score("....x.......x...", [:c3, :c3])
-s_hats  = gen_score("..x...x...x...x.", [:c3, :c3, :c3, :c3])
+# ---------- Drums (Breakcore) ----------
+# Kick: A frantic, 16-step broken pattern with 8 triggers.
+s_kick = gen_score("x.x...x.x..x...x.", 
+  [:c2] * 8) # 8 kicks, matches the 8 'x's
 
-# -- Bass: Bouncy, warm, syncopated deep house bottom end
-s_bass  = gen_score("x.....x.x.....x.", [
-  {note: :a2, cutoff: 85, release: 0.15}, 
-  {note: :a2, cutoff: 90, release: 0.1}, 
-  {note: :c3, cutoff: 85, release: 0.15}, 
-  {note: :e2, cutoff: 90, release: 0.1}
-])
+# Snare: Massive backbeat only twice per bar for contrast.
+s_snare = gen_score("....x.......x...", 
+  [:c4, :c4])
 
-# -- Chords: Warm, sustained summer evening harmony
-s_chords = gen_score("x.......x.......", [
-  [:a3, :c4, :e4], 
-  [:f3, :a3, :c4]
-])
+# Hats: Full 16th-note blizzard.
+s_hats = gen_score("xxxxxxxxxxxxxxxx", 
+  [:c4] * 16)
 
-# -- Lead: Bright, echoing, nostalgic top-line melody
-s_lead = gen_score("x.x.....x.x.....", [
-  {note: :c5, cutoff: 110, release: 0.2}, 
-  {note: :e5, cutoff: 110, release: 0.2}, 
-  {note: :d5, cutoff: 110, release: 0.2}, 
-  {note: :c5, cutoff: 110, release: 0.2}
-])
+# ---------- Bass (Filter Sweep Mayhem) ----------
+# Root note C2, with cutoff climbing from 60 to 130 over 16 steps.
+bass_data = 16.times.map { |i| 
+  { note: [:c2, :g1, :f2, :c2][i % 4], cutoff: 60 + (i * 4.375), release: 0.1 } 
+}
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# -- Grain: Chopped, pitched vocal stutters filtering through the mix
-s_grain = gen_score("x.x.x.x.x.x.x.x.", 8.times.map { 
-  {note: :c4, buffer: :ambi_choir, pos: 0.4, density: 4, size: 0.03, amp: 0.5} 
-})
+# ---------- FM Chords (Glassy, Piercing Stabs) ----------
+# Dissonant minor and tritone chord stabs, triggered off the downbeats.
+chord_data = [
+  {note: [:c4, :eb4, :g4], divisor: 3, depth: 4, release: 0.15, amp: 0.9},
+  {note: [:f4, :ab4, :b4], divisor: 3, depth: 4, release: 0.15, amp: 0.9},
+  {note: [:c4, :e4, :g4], divisor: 4, depth: 3, release: 0.2, amp: 0.8},
+  {note: [:g4, :bb4, :db5], divisor: 3, depth: 5, release: 0.1, amp: 1.0}
+]
+# Trigger them on the 1st, 5th, 9th, 13th steps.
+s_fm_stabs = gen_score("x...x...x...x...", chord_data)
 
-# -- Pad: Hazy, deep, ambient afternoon heat
-s_pad = gen_score("x...............", [
-  {note: :a2, attack: 2, release: 2}
-])
+# ---------- Lead (Spiraling Chromatic Arpeggio) ----------
+# Ascending C major scale with a high cutoff and echo.
+lead_notes = [:c5, :d5, :e5, :f5, :g5, :a5, :b5, :c6]
+lead_data = lead_notes.map { |n| { note: n, cutoff: 120, release: 0.1 } }
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data) # 8 triggers
 
-# 3. THE PLAYBOOK (Timeline)
+# ---------- Granular Vocal (Maximum Glitch) ----------
+# Pitched up, micro-sized grains with extreme density.
+grain_data = 8.times.map { 
+  { 
+    note: :c6, 
+    buffer: :ambi_choir, 
+    pos: rrand(0.1, 0.9), 
+    density: 8,          # 8 grains per 16th step = 128 grains per second!
+    size: 0.01,          # 10ms grains for a stuttering, bit-crushed texture
+    amp: 0.6 
+  } 
+}
+s_grain = gen_score("x...x...x...x...", grain_data) # 4 triggers per bar
+
+# 3. THE PLAYBOOK (Timeline – Chaotic Build)
 playbook = (ring
-  # Scene 1: Afternoon Heat (Bass + Pad)
-  # The groove establishes itself over a hazy drone.
-  [ [:play_sub, s_bass, 4], [:play_pad, s_pad, 4] ],
+  # Scene 1: Intro – 4 bars – just bass and FM stabs to set the tension
+  [ [:play_sub, s_bass, 4], [:play_fm, s_fm_stabs, 4] ],
   
-  # Scene 2: Sunset Drive (Add Drums + Chords)
-  # The rhythm kicks in, the dance floor finds its pulse.
-  [ [:play_sub, s_bass, 8], [:play_kick, s_kick, 8], 
-    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8] ],
+  # Scene 2: Verse – 8 bars – drums crash in, full rhythm section
+  [ [:play_sub, s_bass, 8], [:play_fm, s_fm_stabs, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Peak Night (Add Lead + Vocals)
-  # Full euphoria, the melody soars and the vocals float through the air.
-  [ [:play_sub, s_bass, 8], [:play_kick, s_kick, 8], 
-    [:play_chords, s_chords, 8], [:play_lead, s_lead, 8], 
-    [:play_grain, s_grain, 8] ]
+  # Scene 3: Drop – 8 bars – lead and glitch vocals explode on top
+  [ [:play_sub, s_bass, 8], [:play_fm, s_fm_stabs, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
+    [:play_lead, s_lead, 8], [:play_grain, s_grain, 8] ]
 )
 
 # 4. RUN
 start_engine(playbook)
 
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HIGH SUMMER]
-# It captures the essence of deep house through contrast. The 
-# `:play_sub` bass is tightly controlled with low cutoffs and 
-# short releases, creating a rounded, physical bounce. Against 
-# this, the `:play_lead` uses high cutoffs and is automatically 
-# routed through the engine's tape echo, giving it that wide, 
-# nostalgic, outdoor-festival reverberation. The `:play_grain` 
-# uses a high density and micro-size (0.03s) to create a 
-# rhythmic stutter that feels like a distant radio signal 
-# cutting through the summer heat.
+# [WHAT MAKES THIS REMIX A MASTERCLASS IN CHAOS?]
+# - BPM 165 pushes the engine into urgent, claustrophobic territory.
+# - The bass filter sweep adds an evolving tension that fights against the 
+#   repetitive chord stabs, creating harmonic friction.
+# - Granular density at 8 with 10ms grain sizes transforms a gentle choir 
+#   into an aggressive, glitchy data-stream, perfectly capturing the 
+#   "corrupted summer" vibe.
+# - The scene structure forces a brutal drop where all elements collide, 
+#   giving the listener zero room to breathe—exactly what a hardcore remix demands.
