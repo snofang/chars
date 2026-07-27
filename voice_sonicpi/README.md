@@ -1,4 +1,4 @@
-<img src="cover.jpg" alt="Voice Sonic Pi Engine Poster" width="600"/>
+<img src="cover.jpg" alt="Voice Sonic Pi Engine Poster"/>
 
 # Voice Sonic Pi Engine
 
