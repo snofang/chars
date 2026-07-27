@@ -1,4 +1,4 @@
-<img src="cover.jpg" alt="Voice Sonic Pi Engine Poster" />
+<img src="cover.jpg" alt="Voice Sonic Pi Engine Poster"/>
 
 # Voice Sonic Pi Engine
 
@@ -45,7 +45,8 @@ A score is a ring of exactly 16 elements. Elements can be notes, chords (arrays 
 s_bass = gen_score("x...x...x...x...", [:c2, :c2, :eb2, :g2])
 
 # 16-step sequence using Parameter Hashes for dynamics
-s_kick = gen_score("x...x...x...x...", [:c4, {note: :c4, amp: 0.7}, :c4, :c4 ])
+# (The length of the array matches the number of 'x's in the pattern string)
+s_kick = gen_score("x...x...x...x...", [:c4, {note: :c4, amp: 0.7}, :c4, :c4])
 
 # Chords (Arrays) inside the grid
 s_chords = gen_score("x.......x.......", [[:c3, :eb4, :g4, :bb4], [:f3, :ab4, :c5, :eb5]])
