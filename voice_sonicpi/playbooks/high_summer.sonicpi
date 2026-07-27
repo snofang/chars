@@ -1,0 +1,101 @@
+# ==========================================================
+# PLAYBOOK: HIGH SUMMER
+# (Pioneered by Kerri Chandler, DJ Sprinkles, Floating Points)
+# ==========================================================
+# 
+# [WHY THIS VIBE?]
+# High Summer isn't just a season; it's a sticky, euphoric, 
+# endless afternoon turning into a sweaty, pulsating night. 
+# It’s the sound of car windows down, open-air festivals, 
+# and deep house rhythms that feel both driving and weightless.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+#   1. Tempo: 122 BPM (The quintessential deep house groove—
+#      fast enough to move, slow enough to breathe).
+#   2. Harmonic Center: A minor (The nostalgic, bittersweet 
+#      warmth of summer fading, using classic Am - F progressions).
+#   3. Rhythmic Skeleton: 4-on-the-floor kick, skipping 
+#      off-beat hats, and a bouncy, syncopated bassline.
+#   4. Timbral Palette: Warm, rounded sub-bass; bright, 
+#      echoing prophetic leads; lush sustained blades; 
+#      and stuttered vocal grains evoking distant memories.
+#   5. Arrangement: Slow build from a hazy afternoon pad 
+#      into a full, driving night-time groove.
+# ==========================================================
+
+use_bpm 122
+
+# 1. REQUIRE ENGINE
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# 2. THE SCORES (Data)
+
+# -- Drums: Crisp, driving, classic house pulse
+s_kick  = gen_score("x...x...x...x...", [:c3, :c3, :c3, :c3])
+s_snare = gen_score("....x.......x...", [:c3, :c3])
+s_hats  = gen_score("..x...x...x...x.", [:c3, :c3, :c3, :c3])
+
+# -- Bass: Bouncy, warm, syncopated deep house bottom end
+s_bass  = gen_score("x.....x.x.....x.", [
+  {note: :a2, cutoff: 85, release: 0.15}, 
+  {note: :a2, cutoff: 90, release: 0.1}, 
+  {note: :c3, cutoff: 85, release: 0.15}, 
+  {note: :e2, cutoff: 90, release: 0.1}
+])
+
+# -- Chords: Warm, sustained summer evening harmony
+s_chords = gen_score("x.......x.......", [
+  [:a3, :c4, :e4], 
+  [:f3, :a3, :c4]
+])
+
+# -- Lead: Bright, echoing, nostalgic top-line melody
+s_lead = gen_score("x.x.....x.x.....", [
+  {note: :c5, cutoff: 110, release: 0.2}, 
+  {note: :e5, cutoff: 110, release: 0.2}, 
+  {note: :d5, cutoff: 110, release: 0.2}, 
+  {note: :c5, cutoff: 110, release: 0.2}
+])
+
+# -- Grain: Chopped, pitched vocal stutters filtering through the mix
+s_grain = gen_score("x.x.x.x.x.x.x.x.", 8.times.map { 
+  {note: :c4, buffer: :ambi_choir, pos: 0.4, density: 4, size: 0.03, amp: 0.5} 
+})
+
+# -- Pad: Hazy, deep, ambient afternoon heat
+s_pad = gen_score("x...............", [
+  {note: :a2, attack: 2, release: 2}
+])
+
+# 3. THE PLAYBOOK (Timeline)
+playbook = (ring
+  # Scene 1: Afternoon Heat (Bass + Pad)
+  # The groove establishes itself over a hazy drone.
+  [ [:play_sub, s_bass, 4], [:play_pad, s_pad, 4] ],
+  
+  # Scene 2: Sunset Drive (Add Drums + Chords)
+  # The rhythm kicks in, the dance floor finds its pulse.
+  [ [:play_sub, s_bass, 8], [:play_kick, s_kick, 8], 
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_chords, s_chords, 8] ],
+    
+  # Scene 3: The Peak Night (Add Lead + Vocals)
+  # Full euphoria, the melody soars and the vocals float through the air.
+  [ [:play_sub, s_bass, 8], [:play_kick, s_kick, 8], 
+    [:play_chords, s_chords, 8], [:play_lead, s_lead, 8], 
+    [:play_grain, s_grain, 8] ]
+)
+
+# 4. RUN
+start_engine(playbook)
+
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HIGH SUMMER]
+# It captures the essence of deep house through contrast. The 
+# `:play_sub` bass is tightly controlled with low cutoffs and 
+# short releases, creating a rounded, physical bounce. Against 
+# this, the `:play_lead` uses high cutoffs and is automatically 
+# routed through the engine's tape echo, giving it that wide, 
+# nostalgic, outdoor-festival reverberation. The `:play_grain` 
+# uses a high density and micro-size (0.03s) to create a 
+# rhythmic stutter that feels like a distant radio signal 
+# cutting through the summer heat.
