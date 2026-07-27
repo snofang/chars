@@ -23,7 +23,7 @@ You must use the `gen_score` helper and the 10 core instruments. You do not writ
 *   `:play_grain` - True Granular Synthesizer.
 *   `:play_fm` - FM Bell/Synth (`:fm`).
 *   `:play_pluck` - Physical modeling (`:pluck`).
-*   `:play_pad` - Dark ambient drone (`:dark_ambience`).
+*   `:play_pad` - Dark ambient drone (`:dark_therm`).
 *   `:play_kick` - Pitched kick drum sampler.
 *   `:play_snare` - Snare sampler routed through a massive hall reverb.
 *   `:play_hats` - Micro-timed hi-hats with ghost notes.
@@ -149,6 +149,10 @@ When building a playbook, follow this formalization:
 ## Output Formatting Rules
 
 Every playbook output MUST be a single Ruby code block. It must be a standalone blueprint, with all titles, intros, DNA info, and analysis included entirely as comments within the code.
+
+### Critical Formatting Rules:
+1.  **DO NOT INCLUDE THE ENGINE CODE.** The engine is immutable and is assumed to be loaded via `eval_file`. Do not paste the engine functions or definitions in the playbook output. Only include the `eval_file "path/to/engine.sonicpi"` line.
+2.  **Standalone Blueprint:** The output must be a standalone blueprint, with all titles, intros, DNA info, and analysis included entirely as comments within the code.
 
 ### Code Structure:
 ```ruby
