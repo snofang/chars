@@ -8,16 +8,9 @@ This engine separates musical *data* (the playbooks) from the *synthesis and tim
 
 ## The Playbook Builder (AI Integration)
 
-Creating playbooks by hand can be tedious. To make the process instant, we have created the **Playbook Builder**. 
+Creating playbooks is instant. Load the **Playbook Builder** prompt into any AI chat agent. It knows the engine's strict schema and translates any prompt—not just genres or songs—into a functional, engine-ready playbook. Any prompt instantly is a track.
 
-By loading the `playbook_builder_prompt.md` into any modern AI chat agent (like ChatGPT, Claude, etc.), you instantly convert the AI into a "Playbook Builder". The AI will know the engine's strict schema and will translate any musical subject into a functional, engine-ready playbook.
-
-**How to use it:**
-1.  Copy the contents of `playbook_builder_prompt.md`.
-2.  Paste it into a new AI chat as the first message (or system prompt).
-3.  Simply type: `gimme playbook for [subject]` (e.g., `gimme playbook for 90s UK Street Soul`).
-
-The AI will analyze the musical DNA of the subject and output a single Ruby code block containing a standalone blueprint, ready to be run by the engine. You can also just say `gimme next` to get a new random playbook.
+You can also just say `gimme next` to get a new random playbook.
 
 ## Playbook Library
 
@@ -99,7 +92,7 @@ The `:play_grain` instrument is a fully featured granular engine. You can contro
 
 **Example Granular Step:**
 ```ruby
-{note: :c4, buffer: :misc_lori, pos: 0.5, density: 8, size: 0.08}
+{note: :c4, buffer: :ambi_choir, pos: 0.5, density: 8, size: 0.08}
 ```
 
 ## Execution
