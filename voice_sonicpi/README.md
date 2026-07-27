@@ -1,26 +1,26 @@
-<img src="cover.jpg" alt="Voice Sonic Pi Engine Poster"/>
+<img src="cover.jpg" alt="Voice Sonic Pi Engine Poster" width="600"/>
 
 # Voice Sonic Pi Engine
 
-A declarative, strict-schema step-sequencer, granular synthesizer, and sampling engine built for Sonic Pi. 
+A declarative, strict-schema step-sequencer, granular synthesizer, and sampling engine for Sonic Pi.
 
-This engine separates musical *data* (the playbooks) from the *synthesis and timing logic* (the engine). It enforces a rigid 16-step, 4/4 time signature grid, allowing the composer to focus entirely on crafting arrays of notes, chords, and parameters without worrying about thread management, timing drift, or concurrency bugs.
+The engine separates musical *data* (the playbooks) from synthesis and timing logic. It enforces a rigid 16-step, 4/4 time signature grid, allowing the composer to focus entirely on crafting arrays of notes, chords, and parameters without worrying about thread management, timing drift, or concurrency bugs.
 
 ## The Playbook Builder (AI Integration)
 
-Creating playbooks is instant. Load the **Playbook Builder** prompt into any AI chat agent. It knows the engine's strict schema and translates any prompt—not just genres or songs—into a functional, engine-ready playbook. Any prompt instantly is a track.
+Creating playbooks is instant. Load the **Playbook Builder** prompt into any AI chat agent. It understands the engine's strict schema and translates any prompt—not just genres or songs—into a functional, engine-ready playbook. Any prompt instantly is a track.
 
 You can also just say `gimme next` to get a new random playbook.
 
 ## Playbook Library
 
-A library of pre-built playbooks has already been created using the Playbook Builder. These cover a massive range of genres, sub-genres, and specific hit songs. You can find them in the `playbooks/` directory. 
+A library of pre-built playbooks has already been created using the Playbook Builder, covering a massive range of genres, sub-genres, and specific hit songs. You can find them in the `playbooks/` directory.
 
 To use one, simply open the `.sonicpi` file in Sonic Pi and hit **Run**.
 
 ## Core Philosophy
 
-The engine's strict schema provides separation of concerns. The composer focuses solely on writing notes and data; the engine handles execution and synthesis. This confinement is the case which works: without changing the API, the composer can create most sounds. To maintain this separation, there is `engine_plain.sonicpi` (the known, unoptimized version referenced by the AI prompt) and `engine.sonicpi` (the optimized version used for execution). Separation of concerns happens because the engine does its work and the composer focuses on data.
+The engine's strict schema enforces separation of concerns. The composer focuses solely on writing notes and data; the engine handles execution and synthesis. This confinement is the case which works: without changing the API, the composer can create most sounds. To maintain this separation, there is `engine_plain.sonicpi` (the known, unoptimized version referenced by the AI prompt) and `engine.sonicpi` (the optimized version used for execution). Separation of concerns happens because the engine does its work and the composer focuses on data.
 
 ## The Schema
 
