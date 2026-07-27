@@ -1,0 +1,124 @@
+# ==========================================================
+# PLAYBOOK: 90s ITALO HOUSE / DREAM HOUSE
+# (Pioneered by Gigi D'Agostino, Robert Miles, and Black Box)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Italo Disco (which is rigid and robotic) and French House 
+# (which is filtered and disco-based). Italo House (and its close cousin, Dream 
+# House) is the sound of 90s Rimini and Milan. It fuses a relentless, 
+# pulsating 16th-note synth bass with massive, wide piano stabs and ethereal, 
+# pitched-up "diva" vocal melodies. The engine captures that exact, bouncy, 
+# neon-lit, melancholic rave atmosphere.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 120 BPM. A driving, melancholic, and bouncy pace.
+# 2. Harmonic Center: F Minor. Deep, soulful, and nocturnal.
+# 3. Rhythmic Skeleton: A driving 4/4 beat. Off-beat open hats. The groove 
+#    is carried by a continuous, pulsating 16th-note bass and off-beat piano stabs.
+# 4. Timbral Palette:
+#    - Bass: Deep, pulsing, continuous 16th-note synth bass (mid cutoff, short release).
+#    - Chords: Massive, wide "piano" stabs (FM, low divisor, mid depth).
+#    - Lead: Piercing, "celesta" or "diva" synth melody (FM, high divisor).
+#    - Texture: Pitched-up, "celestial" vocal drone (granular, pitched up).
+# 5. Arrangement: Intro (Bass/Chords) -> Verse (Drums) -> Drop (Lead/Vocals).
+# ==========================================================
+
+use_bpm 120
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Minor - Deep, Bouncy, & Melancholic)
+# ==========================================================
+
+# Relentless, driving 4/4 house kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, organic 909 clap strictly on beats 2 and 4. (2 x's, 1 element)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}
+])
+
+# The "Pulsing" Bass (F Minor).
+# Plays continuous 16th notes. 
+# Mid cutoff (90) and microscopic release (0.05) create a relentless, 
+# bouncy, hypnotic churn that drives the track. (16 x's, 16 elements)
+bass_notes = [:f1, :f1, :f1, :f1, :f1, :f1, :f1, :f1, 
+              :eb1, :eb1, :eb1, :eb1, :c2, :c2, :c2, :c2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.05, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "Piano" Stabs (Fm to Eb to C).
+# Uses :play_fm with a low divisor (2) and mid depth (3) to simulate a bright, 
+# digital 90s piano. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:f3, :ab3, :c4, :eb4], divisor: 2, depth: 3, release: 0.2, amp: 0.6},
+  {note: [:f3, :ab3, :c4, :eb4], divisor: 2, depth: 3, release: 0.2, amp: 0.6},
+  {note: [:eb3, :g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.2, amp: 0.6},
+  {note: [:c3, :eb3, :g3, :bb3], divisor: 2, depth: 3, release: 0.2, amp: 0.6}
+])
+
+# Piercing, "Celesta/Diva" Lead (F Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and mid depth (4) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:f5, :ab5, :c6, :ab5, :g5, :f5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 4, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Celestial" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Massive size (0.5s) and low density (1) creates a slow, evolving, 
+# ethereal background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :f4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.5, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the pulsing bass, piano stabs, and vocal drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Verse - Add the relentless 4/4 house drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Drop - The piercing, celesta lead and vocal chops drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MELANCHOLIC RAVE]
+# 
+# 1. The Pulsing Bass: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step. By using a mid-range `cutoff` (90) and a 
+#    microscopic `release` (0.05), the engine creates a relentless, bouncy, 
+#    buzzing churn that perfectly mimics the driving, pulsating synth bass 
+#    that defines the genre.
+#
+# 2. FM as a Piano: Look at `s_chords`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `3`. This harmonic ratio produces a 
+#    bright, brassy, saw-like wave that perfectly mimics the massive, wide-stereo 
+#    digital pianos used in 90s Italo House.
+#
+# 3. The Off-Beat Groove: Look at `s_hats` and `s_chords`. They ALL hit 
+#    strictly on steps 2, 6, 10, and 14. The engine's strict master clock 
+#    locks these together perfectly, creating a massive, bouncing "boom-cha" 
+#    momentum that forces you to dance.
+# ==========================================================
