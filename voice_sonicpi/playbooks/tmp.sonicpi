@@ -1,37 +1,35 @@
 # ==========================================================
-# PLAYBOOK: DANCE FLOOR
-# A Euphoric, Pumping, Movement-Driven Experience
+# PLAYBOOK: IDM GLITCH
+# A Cerebral, Polyrythmic, Textural Experience
 # ==========================================================
 #
-# WHAT IS "DANCE FLOOR"?
-# This is the sound of a packed room, lasers cutting through 
-# smoke, and bodies moving as one. It's 4-on-the-floor, 
-# hands-in-the-air, peak-time energy. No breaks, no breathing – 
-# just pure, unstoppable momentum.
+# WHAT IS IDM?
+# Intelligent Dance Music – think Autechre, Aphex Twin,
+# Boards of Canada. It's rhythmic but not straightforward,
+# melodic but often dissonant, and built on intricate
+# sound design. This playbook uses swung 16ths, odd
+# time signatures, granular textures, and a shifting
+# harmonic palette.
 #
 # DNA:
-#   1. Tempo: 126 BPM – the sweet spot for house and techno.
-#   2. Harmonic Center: A minor – dark but euphoric, with 
-#      a relentless drive.
+#   1. Tempo: 115 BPM – relaxed but intricate.
+#   2. Harmonic Center: A mix of Lydian and Phrygian – floating.
 #   3. Rhythmic Skeleton:
-#      - Kick: solid 4-on-the-floor – the heartbeat.
-#      - Snare/Clap: on 2 and 4, crisp and punchy.
-#      - Hats: rolling 16th notes with swing – the engine.
+#      - Kick: off‑grid, syncopated with accents.
+#      - Snare: flams and ghost notes, not on 2/4.
+#      - Hats: swung 16ths with random velocity.
+#      - Overall: lots of space and irregular accents.
 #   4. Timbral Palette:
-#      - Bass: a deep, rolling saw – with a filter that opens 
-#        and closes like breathing.
-#      - Lead: a bright, staccato arpeggio – hypnotic and uplifting.
-#      - Chords: a lush, sustained pad – the emotional core.
-#      - Pluck: rhythmic accent – adds texture and movement.
-#      - Grain: vocal chops – like a crowd singing.
-#      - Drums: punchy, with tight reverb and compression.
-#   5. Arrangement:
-#      - Scene 1 (Intro): Kick + Bass (4 bars) – "the pulse"
-#      - Scene 2 (Build): Add Hats + Chords (8 bars) – "the rise"
-#      - Scene 3 (Drop): Full ensemble + Lead + Grain (8 bars) – "release"
+#      - Bass: a warm, subby sine with a touch of distortion.
+#      - Lead: a detuned FM bell – ethereal and cold.
+#      - Chords: a soft, evolving pad – like a film score.
+#      - Pluck: a glockenspiel‑like sound – bright and percussive.
+#      - Grain: granular clouds – shimmering, evolving.
+#      - Drums: processed, with reverb and pitch‑shifting.
+#   5. Arrangement: 3 scenes, but with a gradual build and a final climax.
 # ==========================================================
 
-use_bpm 126
+use_bpm 115
 
 # ---------- ENGINE (inline – unchanged) ----------
 define :gen_score do |pattern, data|
@@ -68,78 +66,78 @@ end
 
 define :play_sub do |n|
   use_synth :dsaw
-  note, opts = parse_step(n, {release: 0.15, amp: 1.3, cutoff: 70})
+  note, opts = parse_step(n, {release: 0.2, amp: 1.0, cutoff: 70})
   play note, **opts if note
 end
 
 define :play_lead do |n|
-  use_synth :prophet
-  note, opts = parse_step(n, {release: 0.1, amp: 0.8, cutoff: rrand(100,130)})
-  with_fx :echo, phase: 0.125, decay: 2, mix: 0.15 do
+  use_synth :fm
+  note, opts = parse_step(n, {release: 0.4, amp: 0.7, divisor: 2, depth: 2})
+  with_fx :echo, phase: 0.5, decay: 3, mix: 0.3 do
     play note, **opts if note
   end
 end
 
 define :play_chords do |n|
   use_synth :blade
-  note, opts = parse_step(n, {release: 1.5, amp: 0.5, attack: 0.1, cutoff: 80})
+  note, opts = parse_step(n, {release: 2.0, amp: 0.4, attack: 0.3, cutoff: 70})
   play note, **opts if note
 end
 
 define :play_grain do |n|
   return unless n
-  note, opts = parse_step(n, {amp: 0.4})
-  density = (opts[:density] || 6).to_i
-  pos     = opts[:pos] || rrand(0.2,0.5)
-  size    = opts[:size] || 0.025
-  buffer  = opts[:buffer] || :ambi_choir
+  note, opts = parse_step(n, {amp: 0.3})
+  density = (opts[:density] || 5).to_i
+  pos     = opts[:pos] || rrand(0.2,0.6)
+  size    = opts[:size] || 0.04
+  buffer  = opts[:buffer] || :ambi_soft_buzz
   opts.delete(:density); opts.delete(:pos); opts.delete(:size); opts.delete(:buffer)
   pitch_shift = note(note) - note(:c4)
   interval = 0.25 / density
   at density.times.map { |i| i * interval } do
-    grain_start = pos + rrand(-0.005,0.005)
+    grain_start = pos + rrand(-0.01,0.01)
     grain_finish = grain_start + size
     sample buffer, pitch: pitch_shift, start: grain_start, finish: grain_finish,
-      pan: rrand(-0.5,0.5), attack: size/2, release: size/2, **opts
+      pan: rrand(-0.7,0.7), attack: size/2, release: size/2, **opts
   end
 end
 
 define :play_fm do |n|
   use_synth :fm
-  note, opts = parse_step(n, {release: 0.2, amp: 0.6, divisor: 2, depth: 3})
+  note, opts = parse_step(n, {release: 0.3, amp: 0.6, divisor: 3, depth: 3})
   play note, **opts if note
 end
 
 define :play_pluck do |n|
   use_synth :pluck
-  note, opts = parse_step(n, {release: 0.15, amp: 0.6, coef: rrand(0.4,0.6)})
+  note, opts = parse_step(n, {release: 0.3, amp: 0.6, coef: rrand(0.3,0.5)})
   play note, **opts if note
 end
 
 define :play_pad do |n|
   use_synth :dark_ambience
-  note, opts = parse_step(n, {release: 1.0, amp: 0.3, attack: 0.2})
+  note, opts = parse_step(n, {release: 2.0, amp: 0.3, attack: 0.5})
   play note, **opts if note
 end
 
 define :play_kick do |n|
-  note, opts = parse_step(n, {amp: 1.8})
+  note, opts = parse_step(n, {amp: 1.2})
   sample :bd_haus, pitch: (note(note) - note(:c4)), **opts if note
 end
 
 define :play_snare do |n|
-  note, opts = parse_step(n, {amp: 0.9})
-  with_fx :reverb, room: 0.5, mix: 0.2 do
+  note, opts = parse_step(n, {amp: 0.6})
+  with_fx :reverb, room: 0.7, mix: 0.5 do
     sample :sn_dolf, pitch: (note(note) - note(:c4)), **opts if note
   end
 end
 
 define :play_hats do |n|
-  note, opts = parse_step(n, {amp: 0.3})
+  note, opts = parse_step(n, {amp: 0.2})
   if note
-    # Tight, rolling hi-hats – the engine of the track
-    at [0, 0.125, 0.25, 0.375] do
-      sample :drum_cymbal_closed, rate: 1.0, pan: rrand(-0.2,0.2), **opts
+    # irregular micro‑timing – swing
+    at [0, 0.1, 0.25, 0.35] do
+      sample :drum_cymbal_closed, rate: 0.9 + rrand(-0.1,0.1), pan: rrand(-0.4,0.4), **opts
     end
   end
 end
@@ -168,88 +166,88 @@ define :start_engine do |playbook|
 end
 # ---------- ENGINE (end) ----------
 
-# ---------- SCORES (DANCE FLOOR) ----------
-# Kick: 4‑on‑the‑floor – the heartbeat
-s_kick = gen_score("x...x...x...x...", 
-  [{note: :a2, amp: 1.8}, {note: :a2, amp: 1.5}])
+# ---------- SCORES (IDM) ----------
+# Kick: syncopated, off‑grid – not 4/4
+s_kick = gen_score("x..x..x..x..x...", 
+  [{note: :c2, amp: 1.2}, {note: :c2, amp: 0.8}, {note: :c2, amp: 0.5}])
 
-# Snare: on 2 and 4, crisp and punchy
-s_snare = gen_score("...x...x...x...x", 
-  [{note: :e3, amp: 0.9}, {note: :e3, amp: 0.7}])
+# Snare: flams and ghost notes – irregular
+s_snare = gen_score("..x..x...x..x...", 
+  [{note: :g2, amp: 0.6}, {note: :g2, amp: 0.3}, {note: :g2, amp: 0.7}])
 
-# Hats: rolling 16th notes – the engine
+# Hats: swung 16ths with random velocity
 hat_notes = 16.times.map { |i| 
-  amp = (i % 2 == 0) ? 0.35 : 0.2
-  {note: :a3, amp: amp}
+  amp = (i % 3 == 0) ? 0.25 : (i % 2 == 0 ? 0.15 : 0.05)
+  {note: :c3, amp: amp}
 }
 s_hats = gen_score("x.x.x.x.x.x.x.x.", hat_notes)
 
-# Bass: deep, rolling saw with a filter that opens and closes
+# Bass: subby sine with a touch of distortion – warm and round
 bass_data = 16.times.map { |i| 
-  cutoff_val = 50 + (i % 16) * 3  # 50→98→50 over 16 steps
-  {note: :a2, cutoff: cutoff_val, release: 0.15, amp: 1.3}
+  cutoff_val = 50 + (i % 8) * 5
+  {note: :c2, cutoff: cutoff_val, release: 0.3, amp: 1.0}
 }
 s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# Chords: Am – F – G – E (i – VI – VII – V) – euphoric progression
+# Chords: floating Lydian/Dorian – Cmaj13, Dm9, Am11
 chords = [
-  [:a3, :c4, :e4],  # Am
-  [:a3, :c4, :e4],
-  [:f3, :a3, :c4],  # F
-  [:f3, :a3, :c4],
-  [:g3, :b3, :d4],  # G
-  [:g3, :b3, :d4],
-  [:e3, :g3, :b3],  # E
-  [:e3, :g3, :b3],
-  [:a3, :c4, :e4],
-  [:a3, :c4, :e4],
-  [:f3, :a3, :c4],
-  [:f3, :a3, :c4],
-  [:g3, :b3, :d4],
-  [:g3, :b3, :d4],
-  [:e3, :g3, :b3],
-  [:e3, :g3, :b3]
+  [:c3, :e3, :g3, :b3],  # Cmaj7
+  [:c3, :e3, :g3, :b3],
+  [:d3, :f3, :a3, :c4],  # Dm7
+  [:d3, :f3, :a3, :c4],
+  [:a3, :c4, :e4, :g4],  # Am7
+  [:a3, :c4, :e4, :g4],
+  [:g3, :b3, :d4, :f4],  # G7
+  [:g3, :b3, :d4, :f4],
+  [:c3, :e3, :g3, :b3],
+  [:c3, :e3, :g3, :b3],
+  [:d3, :f3, :a3, :c4],
+  [:d3, :f3, :a3, :c4],
+  [:a3, :c4, :e4, :g4],
+  [:a3, :c4, :e4, :g4],
+  [:g3, :b3, :d4, :f4],
+  [:g3, :b3, :d4, :f4]
 ]
-s_chords = gen_score("xxxxxxxxxxxxxxxx", chords.map { |ch| {note: ch, cutoff: 80, release: 1.5, amp: 0.5} })
+s_chords = gen_score("xxxxxxxxxxxxxxxx", chords.map { |ch| {note: ch, cutoff: 70, release: 2.0, amp: 0.35} })
 
-# Lead: a bright, hypnotic arpeggio – hands in the air
+# Lead: detuned FM bell – cold and ethereal
 lead_notes = [
-  :a4, :c5, :e5, :g5,
-  :a4, :c5, :e5, :g5,
-  :f4, :a4, :c5, :e5,
-  :f4, :a4, :c5, :e5
+  :c4, :e4, :g4, :b4,
+  :c4, :e4, :g4, :b4,
+  :d4, :f4, :a4, :c5,
+  :d4, :f4, :a4, :c5
 ]
-s_lead = gen_score("x..x..x..x..x...", lead_notes.map { |n| {note: n, amp: 0.7, cutoff: rrand(110,140)} })
+s_lead = gen_score("x...x...x...x...", lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 2} })
 
-# Pluck: rhythmic accent – a percussive counterpoint
+# Pluck: glockenspiel‑like – bright and percussive
 pluck_notes = [
-  :e4, :g4, :c5, :b4,
-  :e4, :g4, :c5, :b4,
-  :d4, :f4, :a4, :g4,
-  :d4, :f4, :a4, :g4
+  :g4, :e4, :c4, :b3,
+  :g4, :e4, :c4, :b3,
+  :a4, :f4, :d4, :c4,
+  :a4, :f4, :d4, :c4
 ]
-s_pluck = gen_score("x...x...x...x...", pluck_notes.map { |n| {note: n, amp: 0.5, coef: rrand(0.5,0.7)} })
+s_pluck = gen_score("x...x...x...x...", pluck_notes.map { |n| {note: n, amp: 0.5, coef: rrand(0.4,0.6)} })
 
-# Grain: vocal chops – like a crowd singing
+# Grain: granular clouds – shimmering and evolving
 grain_data = 16.times.map { |i| 
-  pos = 0.1 + (i % 8) * 0.05
-  {note: :c5, buffer: :ambi_choir, pos: pos, density: 4 + (i % 3), size: 0.02, amp: 0.25}
+  pos = 0.1 + (i % 8) * 0.06
+  {note: :c5, buffer: :ambi_soft_buzz, pos: pos, density: 4 + (i % 3), size: 0.04 + (i % 4) * 0.005, amp: 0.25}
 }
 s_grain = gen_score("x..x..x..x..x...", grain_data)
 
-# ---------- PLAYBOOK (DANCE FLOOR ARC) ----------
+# ---------- PLAYBOOK (IDM ARC) ----------
 playbook = (ring
-  # Scene 1: Intro – Kick + Bass (4 bars) – the pulse
-  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4] ],
+  # Scene 1: Intro – Pad + Pluck + Bass (4 bars) – atmospheric
+  [ [:play_pad, s_pad, 4], [:play_pluck, s_pluck, 4], [:play_sub, s_bass, 4] ],
   
-  # Scene 2: Build – Hats + Chords enter (8 bars) – the rise
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
-    [:play_hats, s_hats, 8], [:play_chords, s_chords, 8],
-    [:play_snare, s_snare, 8] ],
+  # Scene 2: Verse – Drums enter + Chords (8 bars) – rhythm locks in
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_pluck, s_pluck, 8] ],
     
-  # Scene 3: Drop – Full ensemble + Lead + Grain (8 bars) – release
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
-    [:play_hats, s_hats, 8], [:play_snare, s_snare, 8],
+  # Scene 3: Drop – Lead + Grain + full texture (8 bars) – climax
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
     [:play_chords, s_chords, 8], [:play_pluck, s_pluck, 8],
     [:play_lead, s_lead, 8], [:play_grain, s_grain, 8] ]
 )
@@ -258,13 +256,12 @@ playbook = (ring
 start_engine(playbook)
 
 # ==========================================================
-# WHAT MAKES THIS A DANCE FLOOR DESTROYER?
-# - 126 BPM – the perfect house/techno tempo.
-# - Solid 4‑on‑the‑floor kick – hypnotic and driving.
-# - Rolling hi‑hats – the engine that never stops.
-# - Filter‑opening bass – like breathing with the track.
-# - Euphoric chord progression – Am → F → G → E.
-# - Bright, arpeggiated lead – hands in the air.
-# - Vocal grain chops – the crowd becomes part of the music.
-# - Three‑scene arc: Pulse → Rise → Release.
+# WHAT MAKES THIS IDM?
+# - Syncopated, off‑grid kick – not predictable.
+# - Flam‑heavy snare with ghost notes – irregular accents.
+# - Swung hi‑hats with micro‑timing – organic feel.
+# - Detuned FM lead – cold and ethereal.
+# - Granular clouds – shimmering texture.
+# - Lydian/Dorian harmonic palette – floating and unresolved.
+# - A gradual build from atmosphere to full complexity.
 # ==========================================================
