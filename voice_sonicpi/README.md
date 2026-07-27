@@ -27,7 +27,7 @@ To use one, simply open the `.sonicpi` file in Sonic Pi and hit **Run**.
 
 ## Core Philosophy
 
-The engine provides strict separation of concerns. It is an immutable black box; the composer focuses solely on writing notes, rhythms, and timbres as data, while the engine handles all underlying execution, timing, and synthesis routing. You declare *what* notes play and *when* they play, without writing `play` or `sleep` loops.
+The engine's strict schema provides separation of concerns. The composer focuses solely on writing notes and data; the engine handles execution and synthesis. This confinement is the case which works: without changing the API, the composer can create most sounds. To maintain this separation, there is `engine_plain.sonicpi` (the known, unoptimized version referenced by the AI prompt) and `engine.sonicpi` (the optimized version used for execution). Separation of concerns happens because the engine does its work and the composer focuses on data.
 
 ## The Schema
 
@@ -104,7 +104,7 @@ The `:play_grain` instrument is a fully featured granular engine. You can contro
 
 ## Execution
 
-To use the engine, load it into memory using `eval_file` in your composition script, define your scores using `gen_score`, define your playbook, and call `start_engine`.
+To use the engine, load the optimized version into memory using `eval_file "path/to/engine.sonicpi"` in your composition script, define your scores using `gen_score`, define your playbook, and call `start_engine`.
 
 ```ruby
 use_bpm 120
