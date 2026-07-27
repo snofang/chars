@@ -1,0 +1,134 @@
+# ==========================================================
+# PLAYBOOK: UK GARAGE / 2-STEP
+# (Pioneered by MJ Cole, Artful Dodger, and El-B)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Dubstep (which is half-time) and Drum & Bass (which is 
+# fast). UK Garage sits right in the middle at 130 BPM. It relies on a 
+# specific "swung" 2-step drum pattern where the kick and snare avoid landing 
+# on the same beats, creating a bouncy, skipping groove. It fuses deep, warm 
+# Reese bass with lush, sweeping chords and, most importantly, chopped, 
+# stuttering R&B vocal samples.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 130 BPM. Bouncy, swinging, and energetic.
+# 2. Harmonic Center: F# Minor. Deep, soulful, and nocturnal.
+# 3. Rhythmic Skeleton: The "2-Step". Kick on 1 and the 'a' of 2. Snare on 2 
+#    and 4. Swung, skipping 16th hats.
+# 4. Timbral Palette:
+#    - Bass: Deep, warm "Reese" sub-bass (low cutoff, massive release).
+#    - Chords: Lush, slow-attacking "Rhodes" synth pads (extreme attack/release).
+#    - Lead: Rhythmic, chopped "R&B" vocal stutters (granular, high density).
+#    - Texture: Pitched-up, echoing "Diva" vocal drone (granular, long size).
+# 5. Arrangement: Intro (Bass/Chords) -> Verse (2-Step Drums) -> Drop (Vocals).
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Bouncy, Swung, & Soulful)
+# ==========================================================
+
+# The "2-Step" Kick. 
+# Hits on step 0, then stutters on the 'a' of 2 (step 7) and beat 3 (step 8).
+# This lopsided placement creates the signature skipping "drunken" groove.
+# (3 x's, 3 elements)
+s_kick = gen_score("x......xx.......", [
+  :c4, {note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}
+])
+
+# Tight, metallic snare strictly on beat 2 (step 4), with a ghost on the 'a' of 4.
+# (2 x's, 2 elements)
+s_snare = gen_score("....x.........x.", [
+  :c4, {note: :c4, amp: 0.3}
+])
+
+# Bouncing, syncopated 16th hats. 
+# Notice the gaps and amplitude jumps that simulate a shuffle feel.
+# (8 x's, 8 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}
+])
+
+# Deep, "Reese" Sub-Bass (F# Minor).
+# Massive release (1.5) and low cutoff (50) create a dark, rumbling undercurrent.
+# (2 x's, 2 elements)
+s_bass = gen_score("x.......x.......", [
+  {note: :fs1, release: 1.5, cutoff: 50, amp: 1.2}, 
+  {note: :ab1, release: 1.5, cutoff: 50, amp: 1.0}
+])
+
+# Lush, "Rhodes" Synth Pad (F#m9 to Abm9).
+# Hit on the downbeats. The 0.5-beat attack and massive 2.0-beat release 
+# blur the chords together into a continuous, warm, nocturnal wave. 
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:fs3, :a3, :c4, :e4], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.5},
+  {note: [:ab3, :cb4, :eb4, :gb4], cutoff: 80, attack: 0.5, release: 2.0, amp: 0.5}
+])
+
+# Rhythmic, "Chopped" Vocal Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and low depth (2) to simulate a pitched-up 
+# vocal chop. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:fs5, :a5, :c6, :a5, :g5, :fs5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 2, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Diva" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Massive size (0.2) and low density (1) creates a slow, evolving, ethereal 
+# background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :fs4, buffer: :ambi_choir, pos: 0.3, density: 1, size: 0.2, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Night - Just the Reese bass, lush chords, and vocal drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the swung 2-step drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Drop - The chopped, rhythmic vocal lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SWING]
+# 
+# 1. The "Drunken" 2-Step: Look at `s_kick`. After the initial hit on step 0, 
+#    the next kick doesn't hit until step 7 (the very last 16th note of beat 2), 
+#    followed immediately by step 8. Because the engine's master clock is rigid, 
+#    this specific placement creates a lopsided, "drunken" groove that feels like 
+#    walking through puddles on a wet street.
+#
+# 2. Subterranean Warmth: Look at `s_bass`. The `:play_sub` synth is given a 
+#    massive `release` of `1.5` and a very low `cutoff` of `50`. This filters out 
+#    all the harsh high frequencies, leaving only a deep, round, warm rumble that 
+#    rings out for two whole beats, providing the immense, suffocating weight 
+#    required for UK Garage.
+#
+# 3. Granular as a Diva: Look at `s_grain`. The granular engine is given a 
+#    `density` of `1` and a `size` of `0.2`. By pitching the `:ambi_choir` sample 
+#    up to `:fs4`, the engine time-stretches the sample into a slow, mournful wail. 
+#    It no longer sounds like a voice; it sounds like a memory echoing in the 
+#    distance.
+# ==========================================================

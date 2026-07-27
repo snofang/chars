@@ -1,0 +1,128 @@
+# ==========================================================
+# PLAYBOOK: 80s EBM (ELECTRONIC BODY MUSIC)
+# (Pioneered by Front 242, Nitzer Ebb, and DAF)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored New Beat (which is slow) and Electro-Industrial (which is 
+# horror-focused). EBM is the sound of pure, muscular, sequenced aggression. 
+# It relies on a relentless 130 BPM 4/4 march, a continuous, distorted 16th-note 
+# "pulse" bass, stark, digital brass stabs, and a piercing, robotic FM lead. 
+# The engine captures that exact, militaristic, dance-floor momentum.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 130 BPM. A relentless, marching pace.
+# 2. Harmonic Center: A Minor / Dissonant. Cold and industrial.
+# 3. Rhythmic Skeleton: A rigid 4/4 beat. Off-beat open hats. The groove is 
+#    carried entirely by a continuous 16th-note "pulse" bass.
+# 4. Timbral Palette:
+#    - Bass: "Pulse" sawtooth, extreme cutoff, very short release (buzzing churn).
+#    - Chords: Stark, digital brass stabs (FM, low divisor, mid depth).
+#    - Lead: Piercing, robotic, "alarm" FM melody (high divisor, extreme depth).
+#    - Texture: Pitched-down, aggressive "shout" vocal drone.
+# 5. Arrangement: Intro (Pulse) -> Verse (Drums) -> Drop (Lead).
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Minor / Dissonant - Rigid, Mechanical, & Aggressive)
+# ==========================================================
+
+# Relentless, heavy 4/4 kick. (4 x's, 1 element)
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Heavy, dry, industrial snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Rigid, off-beat open hats to drive the momentum. (4 x's, 4 elements)
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3}
+])
+
+# The "Pulse" Bass (A Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# Extreme cutoff (110) and microscopic release (0.05) create a relentless, 
+# aggressive, buzzing churn that drives the track. (16 x's, 16 elements)
+bass_notes = [:a1, :a2, :a1, :a2, :a1, :a2, :a1, :a2, 
+              :g1, :g2, :g1, :g2, :a1, :a2, :a1, :a2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.05, amp: 1.0} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, "Digital Brass" Stabs (Am to G).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 4, release: 0.1, amp: 0.6}
+])
+s_chords= (ring nil, nil, [:c3, :eb3, :g3], nil, nil, nil, [:c3, :eb3, :g3], nil, 
+           nil, nil, [:bb2, :d3, :f3], nil, nil, nil, [:bb2, :d3, :f3], nil)
+
+
+# Piercing, "Robotic" Lead (A Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (6) to create a 
+# sharp, piercing, digital tone. Routed through the global tape echo. 
+# (6 x's, 6 elements)
+lead_notes = [:a5, :e5, :c6, :e5, :g5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 4, depth: 6, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# Aggressive, "Shout" Vocal Drone (Granular Synthesis).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Long size (0.1) and low density (1) creates a dark, repetitive, 
+# commanding vocal hit. (2 x's, 2 elements)
+s_grain = gen_score("....x.......x...", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.1, amp: 0.7},
+  {note: :g3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.1, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Machine - Just the pulse bass, digital stabs, and shouts (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The March - Add the relentless 4/4 drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Drop - The piercing, robotic FM lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INDUSTRIAL MOMENTUM]
+# 
+# 1. The Pulse Bass: Look at `s_bass`. The `:play_sub` synth plays on EVERY 
+#    single 16th step, alternating octaves. By using an extreme `cutoff` (110) 
+#    and a microscopic `release` (0.05), the engine turns the detuned sawtooth 
+#    into a relentless, buzzing churn that perfectly mimics the classic Roland 
+#    SH-101/MS-20 sequencer basslines of EBM.
+#
+# 2. The Digital Brass: Look at `s_chords`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `4`, with a microscopic `release` (0.1). 
+#    This forces the FM synth to produce a harsh, brassy, staccato "hit" that 
+#    perfectly mimics the stark, orchestral brass stabs that define the genre.
+#
+# 3. The Robotic Lead: The `s_lead` sequence uses `divisor: 4` and an extreme 
+#    `depth` of `6`. This harsh harmonic ratio produces a piercing, metallic, 
+#    and dissonant tone that cuts through the heavy mix, perfectly mimicking the 
+#    cold, robotic synthesizer sounds of Front 242 and Nitzer Ebb.
+# ==========================================================
