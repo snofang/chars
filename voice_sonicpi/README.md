@@ -1,3 +1,5 @@
+<img src="cover.jpg" alt="Voice Sonic Pi Engine Poster" />
+
 # Voice Sonic Pi Engine
 
 A declarative, strict-schema step-sequencer, granular synthesizer, and sampling engine built for Sonic Pi. 
@@ -46,7 +48,7 @@ s_bass = gen_score("x...x...x...x...", [:c2, :c2, :eb2, :g2])
 s_kick = gen_score("x...x...x...x...", [:c4, nil, nil, nil, {note: :c4, amp: 0.7}, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil])
 
 # Chords (Arrays) inside the grid
-s_chords = gen_score("x.......x.......", [[:c3, :eb4, :g4, :bb4], [:f3, :ab4, :c5, :eb5])
+s_chords = gen_score("x.......x.......", [[:c3, :eb4, :g4, :bb4], [:f3, :ab4, :c5, :eb5]])
 ```
 
 ### 2. Playbook (Timeline of Scenes)

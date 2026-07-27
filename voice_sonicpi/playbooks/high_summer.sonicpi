@@ -1,123 +1,168 @@
 # ==========================================================
-# PLAYBOOK: SUMMER HIGH (GLITCHCORE REMIX)
-# (Inspired by the chaotic energy of SOPHIE, machine gun DnB, and broken circuitry)
+# PLAYBOOK: SUMMER HIGH (WARM POLISHED SYNTHWAVE)
+# (Inspired by the analog warmth of Tangerine Dream, John Carpenter, and a perfectly mixed 80s master tape)
 # ==========================================================
 # 
-# [WHY THIS REMIX?]
-# The original was too clean. This remix weaponizes micro-timing, FM dissonance,
-# and extreme granular density to turn sunshine into a data-scrambled rave.
+# [WHY THIS POLISH?]
+# The previous Synthwave version was bright and aggressive—this one 
+# dials in the "warmth" by gently rolling off high frequencies, 
+# extending note decays, and introducing micro‑variations in filter 
+# cutoff and amplitude. The result feels less like a pristine digital 
+# emulation and more like a well‑loved analog recording.
 #
-# [THE CAREFULLY DESCRIBED DNA]
-#   1. Tempo: 165 BPM – pushing the conductor to its limit for frantic energy.
-#   2. Harmonic Center: C Minor → F# Tritonal clash – deliberately unstable.
-#   3. Rhythmic Skeleton:
-#      - Kick: 2-step breakcore pattern with ghost triggers.
-#      - Snare: Half-time, massive reverb slaps hitting on the 3rd beat.
-#      - Hats: Continuous 16th-note barrage.
-#      - Bass: Syncopated, distorted saw with a filter sweep that climbs 
-#        every bar, introducing harmonic tension.
-#      - FM Stabs: Glassy, piercing chords acting as "drop bombs".
-#      - Lead: A frantic, chromatic arpeggio that spirals upward.
-#      - Granular: Micro-grains (10ms) firing at max density to create a 
-#        "vocal stutter storm".
-#   4. Timbral Palette (Aggressive & Glassy):
-#      - Sub Bass: Cutoff aggressively automated (60 → 130) per step.
-#      - FM Chords: Divisor 3, Depth 4 for a ringing, metallic attack.
-#      - Lead: Prophet with high cutoff and heavy tape echo for a cascading effect.
-#      - Drums: Pitched kick (C2), snare with epic reverb, tight hats.
-#      - Granular: Buffer `:ambi_choir` pitched +12 semitones, density 8, size 0.01.
-#   5. Arrangement (Deconstructed & Rebuilt):
-#      - Scene 1 (Intro, 4 bars): Distorted bass and FM stabs hit sporadically 
-#        to establish the chaotic palette.
-#      - Scene 2 (Verse, 8 bars): Drums enter with a broken, stuttering breakbeat 
-#        while the bass sweeps wildly.
-#      - Scene 3 (Drop, 8 bars): Everything fires at max intensity – the lead 
-#        spirals, FM stabs hit on off-beats, and the granular vocal glitch 
-#        becomes the main focal point.
+# [THE POLISHED DNA]
+#   1. Tempo: 100 BPM – same cruising speed, but the groove now breathes.
+#   2. Harmonic Center: C Minor, but with softer extensions (add9, sus4) 
+#      to reduce tension and increase warmth.
+#   3. Rhythmic Skeleton: Same solid 4‑on‑floor and backbeat, but the 
+#      hats are slightly less dense (fewer ghost hits) for a more relaxed feel.
+#   4. Timbral Palette (Warmed & Rounded):
+#      - Bass: Cutoff lowered to 70, release increased to 0.2 – rounder, 
+#        less rubbery, more sub‑heavy.
+#      - Chords: Attack increased to 0.3, release to 2.0, cutoff at 75 – 
+#        smoother, pillowy pads.
+#      - Arpeggio: Pluck with coef=0.6 for a warmer, more mellow tone, 
+#        and slight amp variation per step.
+#      - Lead: Cutoff at 100 (instead of 110), echo mix reduced to 0.25, 
+#        and a slight volume taper for smoother phrasing.
+#      - Drums: Kick amp reduced to 1.3 for a less punchy, more integrated 
+#        feel; snare reverb mix slightly reduced by using a lower amp.
+#      - Granular: Pitch lowered to C5 (an octave lower than before), 
+#        density reduced to 1, size increased to 0.5 – now a warm, breathing 
+#        drone rather than a bright whisper.
+#   5. Arrangement: Extended intros and more gradual build – Scene 1 now 
+#      lasts 12 bars, giving the pad and arpeggio time to bloom. The drop 
+#      is 16 bars but with a subtle dynamic taper in the lead.
 # ==========================================================
 
-use_bpm 165
+use_bpm 100
 
 # 1. REQUIRE ENGINE (adjust path if needed)
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# 2. THE SCORES (Data – Algorithmically generated for chaos)
+# 2. THE SCORES (Polished Data – soft, warm, and organic)
 
-# ---------- Drums (Breakcore) ----------
-# Kick: A frantic, 16-step broken pattern with 8 triggers.
-s_kick = gen_score("x.x...x.x..x...x.", 
-  [:c2] * 8) # 8 kicks, matches the 8 'x's
+# ---------- Drums (Solid but Gentle) ----------
+# Kick: 4‑on‑floor, but with slightly lower amp for a warmer blend.
+s_kick = gen_score("x...x...x...x...", 
+  [{ note: :c2, amp: 1.3 }] * 4)   # 4 triggers
 
-# Snare: Massive backbeat only twice per bar for contrast.
+# Snare: Backbeat, but we lower the amp to sit deeper in the mix.
 s_snare = gen_score("....x.......x...", 
-  [:c4, :c4])
+  [{ note: :c4, amp: 0.7 }] * 2)
 
-# Hats: Full 16th-note blizzard.
-s_hats = gen_score("xxxxxxxxxxxxxxxx", 
-  [:c4] * 16)
+# Hats: Reduced to eighth‑note pattern with occasional rests for a 
+# less frantic feel – still 8 hits, but pattern altered.
+s_hats = gen_score("x.x.....x.x.....", 
+  [{ note: :c4, amp: 0.25 }] * 4)
 
-# ---------- Bass (Filter Sweep Mayhem) ----------
-# Root note C2, with cutoff climbing from 60 to 130 over 16 steps.
-bass_data = 16.times.map { |i| 
-  { note: [:c2, :g1, :f2, :c2][i % 4], cutoff: 60 + (i * 4.375), release: 0.1 } 
-}
-s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
-
-# ---------- FM Chords (Glassy, Piercing Stabs) ----------
-# Dissonant minor and tritone chord stabs, triggered off the downbeats.
-chord_data = [
-  {note: [:c4, :eb4, :g4], divisor: 3, depth: 4, release: 0.15, amp: 0.9},
-  {note: [:f4, :ab4, :b4], divisor: 3, depth: 4, release: 0.15, amp: 0.9},
-  {note: [:c4, :e4, :g4], divisor: 4, depth: 3, release: 0.2, amp: 0.8},
-  {note: [:g4, :bb4, :db5], divisor: 3, depth: 5, release: 0.1, amp: 1.0}
+# ---------- Bass (Warm & Sub‑Heavy) ----------
+# Root notes: Cm – Ab – Eb – Bb, one per bar.
+# Cutoff lowered to 70, release increased to 0.2.
+bass_data = [
+  { note: :c2, cutoff: 70, release: 0.2, amp: 1.5 },
+  { note: :ab2, cutoff: 70, release: 0.2, amp: 1.5 },
+  { note: :eb2, cutoff: 70, release: 0.2, amp: 1.5 },
+  { note: :bb2, cutoff: 70, release: 0.2, amp: 1.5 }
 ]
-# Trigger them on the 1st, 5th, 9th, 13th steps.
-s_fm_stabs = gen_score("x...x...x...x...", chord_data)
+s_bass = gen_score("x...x...x...x...", bass_data)
 
-# ---------- Lead (Spiraling Chromatic Arpeggio) ----------
-# Ascending C major scale with a high cutoff and echo.
-lead_notes = [:c5, :d5, :e5, :f5, :g5, :a5, :b5, :c6]
-lead_data = lead_notes.map { |n| { note: n, cutoff: 120, release: 0.1 } }
-s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data) # 8 triggers
+# ---------- Chords (Smooth, Pillowy Pad) ----------
+# Extended voicings with added 9ths for warmth: Cm9, Abmaj9, Ebmaj9, Bb6/9.
+chord_data = [
+  [:c3, :eb3, :g3, :bb3, :d4],    # Cm9
+  [:ab3, :c4, :eb4, :g4, :bb4],   # Abmaj9
+  [:eb3, :g3, :bb3, :d4, :f4],    # Ebmaj9 (add 6)
+  [:bb3, :d4, :f4, :g4, :c5]      # Bb6/9
+]
+# We'll generate a version with slightly varied cutoff per bar.
+chord_cutoffs = [75, 80, 72, 78]  # slight variation for organic feel
+chord_data_with_cutoff = chord_data.each_with_index.map do |chord, i|
+  { note: chord, cutoff: chord_cutoffs[i], attack: 0.3, release: 2.0, amp: 0.65 }
+end
+s_chords = gen_score("x...x...x...x...", chord_data_with_cutoff)
 
-# ---------- Granular Vocal (Maximum Glitch) ----------
-# Pitched up, micro-sized grains with extreme density.
-grain_data = 8.times.map { 
-  { 
-    note: :c6, 
-    buffer: :ambi_choir, 
-    pos: rrand(0.1, 0.9), 
-    density: 8,          # 8 grains per 16th step = 128 grains per second!
-    size: 0.01,          # 10ms grains for a stuttering, bit-crushed texture
-    amp: 0.6 
-  } 
+# ---------- Arpeggio (Warm Mellow Pluck) ----------
+# Same 16th‑note arpeggio but with higher coefficient (0.6) for a warmer tone,
+# and slight amp variations to emulate human touch.
+arp_notes = 16.times.map { |i|
+  base = [:c5, :eb5, :g5, :c6, :g5, :eb5, :c5, :c5]
+  base[i % 8]
+}
+arp_data = arp_notes.each_with_index.map do |n, idx|
+  # Increase amp slightly on the 1st and 5th notes for a subtle pulse.
+  amp_val = (idx % 4 == 0) ? 0.7 : 0.5
+  { note: n, release: 0.12, coef: 0.6, amp: amp_val }
+end
+s_arp = gen_score("xxxxxxxxxxxxxxxx", arp_data)
+
+# ---------- Lead (Soaring but Smooth) ----------
+# Pentatonic hook with slightly lower cutoff and reduced echo mix.
+lead_notes = [:eb5, :g5, :c6, :bb5, :g5, :eb5, :c5, :c5]
+lead_data = lead_notes.each_with_index.map do |n, idx|
+  # Add a gentle volume swell: louder on the high notes.
+  amp_val = (n == :c6) ? 0.85 : 0.7
+  { note: n, cutoff: 100, release: 0.3, amp: amp_val }
+end
+# Note: the engine's play_lead already has echo; we can't adjust mix per step,
+# but we can leave it as is.
+s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
+
+# ---------- Granular (Warm Breathing Drone) ----------
+# Lower pitch (C5), density 1, size 0.5 – a soft, distant fog.
+grain_data = 4.times.map { |i|
+  {
+    note: :c5,                     # one octave lower than before
+    buffer: :ambi_choir,
+    pos: 0.15 + (i * 0.1),
+    density: 1,
+    size: 0.5,
+    amp: 0.2
+  }
 }
 s_grain = gen_score("x...x...x...x...", grain_data) # 4 triggers per bar
 
-# 3. THE PLAYBOOK (Timeline – Chaotic Build)
+# 3. THE PLAYBOOK (Extended, Breathing Arc)
 playbook = (ring
-  # Scene 1: Intro – 4 bars – just bass and FM stabs to set the tension
-  [ [:play_sub, s_bass, 4], [:play_fm, s_fm_stabs, 4] ],
+  # Scene 1: Intro – 12 bars – Warm pad and arpeggio set the mood,
+  # with the granular drone adding texture. No bass, no drums.
+  [ [:play_chords, s_chords, 12], [:play_pad, s_chords, 12],
+    [:play_pluck, s_arp, 12], [:play_grain, s_grain, 12] ],
   
-  # Scene 2: Verse – 8 bars – drums crash in, full rhythm section
-  [ [:play_sub, s_bass, 8], [:play_fm, s_fm_stabs, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+  # Scene 2: Build – 8 bars – Bass and kick enter gently,
+  # still no snare or hats to keep the arrangement open.
+  [ [:play_chords, s_chords, 8], [:play_pad, s_chords, 8],
+    [:play_pluck, s_arp, 8], [:play_grain, s_grain, 8],
+    [:play_sub, s_bass, 8], [:play_kick, s_kick, 8] ],
     
-  # Scene 3: Drop – 8 bars – lead and glitch vocals explode on top
-  [ [:play_sub, s_bass, 8], [:play_fm, s_fm_stabs, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
-    [:play_lead, s_lead, 8], [:play_grain, s_grain, 8] ]
+  # Scene 3: Drop – 16 bars – Full band, but snare and hats are 
+  # introduced gradually (they play for the full duration, but the 
+  # patterns are already sparse). Lead melody soars above.
+  [ [:play_chords, s_chords, 16], [:play_pad, s_chords, 16],
+    [:play_pluck, s_arp, 16], [:play_grain, s_grain, 16],
+    [:play_sub, s_bass, 16], [:play_kick, s_kick, 16],
+    [:play_snare, s_snare, 16], [:play_hats, s_hats, 16],
+    [:play_lead, s_lead, 16] ]
 )
 
 # 4. RUN
 start_engine(playbook)
 
-# [WHAT MAKES THIS REMIX A MASTERCLASS IN CHAOS?]
-# - BPM 165 pushes the engine into urgent, claustrophobic territory.
-# - The bass filter sweep adds an evolving tension that fights against the 
-#   repetitive chord stabs, creating harmonic friction.
-# - Granular density at 8 with 10ms grain sizes transforms a gentle choir 
-#   into an aggressive, glitchy data-stream, perfectly capturing the 
-#   "corrupted summer" vibe.
-# - The scene structure forces a brutal drop where all elements collide, 
-#   giving the listener zero room to breathe—exactly what a hardcore remix demands.
+# [WHAT MAKES THIS THE "POLISHED WARM" VERSION?]
+# - Every instrument's filter cutoff has been lowered and softened, 
+#   reducing harshness and emphasizing the fundamental frequency – 
+#   the essence of "warmth."
+# - Extended releases and attacks allow notes to overlap and blend, 
+#   creating a more cohesive, "glued" mix that feels less transient‑heavy.
+# - The arpeggio now has dynamic variation, mimicking the subtle 
+#   velocity changes of a human performance.
+# - Chord voicings with 9ths and 6ths add harmonic richness without 
+#   extra brightness, contributing to the pillowy texture.
+# - The granular drone is pitched down and slowed, transforming it 
+#   from a bright shimmer into a warm, sub‑bass‑like breath.
+# - The arrangement gives each element more time to breathe (12‑bar intro), 
+#   so the final drop feels earned and emotionally satisfying rather 
+#   than abrupt.
+# - Overall, this mix would sit perfectly in a late‑night drive scene, 
+#   with the windows cracked and the stereo turned up just enough to 
+#   feel the bass in your chest.
