@@ -27,11 +27,7 @@ To use one, simply open the `.sonicpi` file in Sonic Pi and hit **Run**.
 
 ## Core Philosophy
 
-1. **Single Master Clock:** The entire engine runs inside a single `live_loop`. There are no `in_thread` calls, no `cue`/`sync` race conditions, and zero timing drift. All instruments are triggered sequentially step-by-step.
-2. **Strict Schema Validation:** Every score must be exactly 16 steps long. If a score has 15 or 17 steps, the engine "fails fast" and throws an error, preventing hidden timing bugs.
-3. **Single-Note Triggers:** Instruments (like `:play_sub`) are completely "dumb." They do not know about sequences or time. They only know how to play one note/chord when handed one. The Engine handles all iteration.
-4. **Bulletproof Parameter Hashing:** A step in a score can be a simple note (`:c4`), a rest (`nil`), an array of notes (a chord), or a Hash of parameters (`{note: :c4, amp: 0.5}`). The engine's `parse_step` function sanitizes all incoming data—automatically cleaning out `nil` values from arrays to prevent runtime crashes.
-5. **Professional Signal Chain:** FX routing (reverbs, echoes) is encapsulated directly inside the instrument definitions, keeping the musical data clean.
+The engine provides strict separation of concerns. It is an immutable black box; the composer focuses solely on writing notes, rhythms, and timbres as data, while the engine handles all underlying execution, timing, and synthesis routing. You declare *what* notes play and *when* they play, without writing `play` or `sleep` loops.
 
 ## The Schema
 
