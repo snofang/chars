@@ -36,6 +36,27 @@ You MUST use ONLY these instrument names. No variations, no synonyms:
 
 **DO NOT invent names.** `play_bass` does not exist. `play_drone` does not exist. `play_melody` does not exist. Only the 10 functions above are valid. Any other name will crash the engine.
 
+### Note Naming (CRITICAL)
+
+Sonic Pi uses **abbreviated note names**. Always use the short form:
+
+| Correct | Incorrect |
+|---------|-----------|
+| `:c4` | `:c_nat4` |
+| `:cs4` | `:c_sharp4` |
+| `:eb4` | `:e_flat4` |
+| `:fs3` | `:f_sharp3` |
+| `:bb5` | `:b_flat5` |
+
+**Format:** `:[a-g][s/b]?[0-9]`
+- Lowercase letter: `a` through `g`
+- Optional `s` for sharp or `b` for flat
+- Octave number: `0` through `8`
+
+**Examples:** `:c4`, `:cs4`, `:eb4`, `:fs3`, `:bb5`, `:a2`
+
+**NEVER use:** underscores, underscores with "sharp"/"flat", or long-form names. `:f_sharp3` will crash. Use `:fs3`.
+
 ### Data Serialization (`gen_score`):
 Every sequence is defined by a pair `<P, D>`:
 *   **$P$ (Pattern String):** A 16-character string (`"x...x...x...x..."`).
