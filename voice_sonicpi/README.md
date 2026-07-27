@@ -45,7 +45,7 @@ A score is a ring of exactly 16 elements. Elements can be notes, chords (arrays 
 s_bass = gen_score("x...x...x...x...", [:c2, :c2, :eb2, :g2])
 
 # 16-step sequence using Parameter Hashes for dynamics
-s_kick = gen_score("x...x...x...x...", [:c4, nil, nil, nil, {note: :c4, amp: 0.7}, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil])
+s_kick = gen_score("x...x...x...x...", [:c4, {note: :c4, amp: 0.7}, :c4, :c4 ])
 
 # Chords (Arrays) inside the grid
 s_chords = gen_score("x.......x.......", [[:c3, :eb4, :g4, :bb4], [:f3, :ab4, :c5, :eb5]])
