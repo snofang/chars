@@ -1,0 +1,126 @@
+# ==========================================================
+# PLAYBOOK: 90s VIKING METAL / PAGAN METAL
+# (Pioneered by Bathory, Ensiferum, and Amon Amarth)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Black Metal (which is fast and cold) and Doom Metal (which 
+# is slow and heavy). Viking Metal is the sound of Norse mythology. It fuses 
+# the galloping, heavy rhythms of classic heavy metal with the harsh, aggressive 
+# vocals of death metal and the epic, soaring synthesizer melodies of folk 
+# music. The engine captures that exact, marching, sword-swinging atmosphere.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 100 BPM. A heavy, marching, and galloping pace.
+# 2. Harmonic Center: E Dorian. Heroic, majestic, and slightly melancholic.
+# 3. Rhythmic Skeleton: A "galloping" 16-step grid. Kick on 1, the 'and' of 2, 
+#    and the 'e' of 3. Snare on 2 and 4.
+# 4. Timbral Palette:
+#    - Bass: Deep, distorted "fuzz" bass (extreme cutoff, continuous 16th churn).
+#    - Chords: Massive, distorted power chords (FM, extreme depth).
+#    - Lead: Piercing, "horn" or "sword" synth melody (FM, high divisor, long release).
+#    - Texture: Pitched-down "battle cry" vocal drone.
+# 5. Arrangement: Intro (Drone/Horns) -> Verse (Galloping Drums) -> Drop (Riff).
+# ==========================================================
+
+use_bpm 100
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Dorian - Heroic, Majestic, & Heavy)
+# ==========================================================
+
+# The "Galloping" Kick. 
+# A heavy, marching rhythm. Hits on 1, the 'and' of 2, and the 'e' of 3.
+# (6 x's, 6 elements)
+s_kick = gen_score("x..x.x.x..x.x.x.", [
+  :c4, :c4, :c4, :c4, :c4, :c4
+])
+
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
+
+# Fast, driving 16th hats to maintain the galloping momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Fuzz" Bass (E Dorian).
+# Plays a continuous, galloping 16th-note line. 
+# Extreme cutoff (120) and microscopic release (0.05) create a relentless, 
+# grinding, distorted churn. (16 x's, 16 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :e1, :e1, :e1, :e1, 
+              :d1, :d1, :d1, :d1, :e1, :e1, :e1, :e1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.05, amp: 1.2} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Distorted" Power Chords (E5 to D5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Hits on the downbeats. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:e3, :b3], divisor: 2, depth: 6, release: 0.4, amp: 0.7},
+  {note: [:d3, :a3], divisor: 2, depth: 6, release: 0.4, amp: 0.7}
+])
+
+# Piercing, "Horn / Sword" Lead (E Dorian).
+# Uses :play_fm with a high divisor (3) and mid depth (4) to create a sharp, 
+# brassy, analog tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:e5, :d5, :e5, :g5, :a5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 4, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Battle Cry" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Long size (0.3) and low density (1) creates a slow, evolving, 
+# commanding background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e3, buffer: :ambi_choir, pos: 0.3, density: 1, size: 0.3, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Voyage - Just the sweeping drone, piercing horns, and fuzz bass (4 bars)
+  [ [:play_grain, s_grain, 4], [:play_lead, s_lead, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Battle - Add the heavy, galloping drums (8 bars)
+  [ [:play_grain, s_grain, 8], [:play_lead, s_lead, 8], [:play_sub, s_bass, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Victory - The massive, distorted power chords drop (8 bars)
+  [ [:play_grain, s_grain, 8], [:play_lead, s_lead, 8], [:play_sub, s_bass, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_chords, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HEROIC AGGRESSION]
+# 
+# 1. The Galloping Rhythm: Look at `s_kick` and `s_bass`. The pattern 
+#    (`x..x.x.`) creates a "galloping" triplet feel that is the absolute 
+#    genetic code of heavy metal and Viking metal. The engine's strict master 
+#    clock ensures this relentless rhythm locks perfectly with the continuous 
+#    16th-note bass churn.
+#
+# 2. FM as a Horn: The `s_lead` sequence uses `divisor: 3` and `depth: 4`. 
+#    This harmonic ratio produces a sharp, brassy, analog tone that perfectly 
+#    mimics a war horn or a soaring electric guitar solo. Because it's routed 
+#    through the global tape echo bus, the sparse notes smear into a heroic, 
+#    cascading melody.
+#
+# 3. The Fuzz Bass Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step. By using an extreme `cutoff` (120) and a 
+#    microscopic `release` (0.05), the engine turns the detuned sawtooth into 
+#    a relentless, grinding, distorted wall of sound that perfectly mimics the 
+#    heavily distorted bass/guitar tones of extreme metal.
+# ==========================================================

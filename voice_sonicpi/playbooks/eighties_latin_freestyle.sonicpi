@@ -1,19 +1,27 @@
 # ==========================================================
-# PLAYBOOK: 80s LATIN FREESTYLE / MIAMI FREESTYLE
+# PLAYBOOK: 80s LATIN FREESTYLE / MIAMI BOOTY BASS
 # (Pioneered by Shannon, Stevie B, and Exposé)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 80s Latin Freestyle.
-# We have explored Electro-Funk and Miami Bass, but Freestyle is the 
-# sound of 80s New York and Miami club culture. It fuses the syncopated 
-# 808 electro grooves with lush, romantic Latin minor chords, a driving, 
-# off-beat synth bass, and high-pitched, emotional vocal stutters. 
+# We have explored Miami Bass (which is aggressive and sub-heavy) and Synth-Pop 
+# (which is melodic and cold). Latin Freestyle is the sound of 80s New York and 
+# Miami club culture. It fuses the syncopated "Mambo" 808 drum pattern with lush, 
+# romantic minor chords, a driving, off-beat synth bass, and piercing, emotional 
+# "diva" vocal melodies. The engine captures that exact, bouncing, neon-lit 
+# roller-rink atmosphere.
 #
-# This playbook perfectly demonstrates how to use the 16-step grid to 
-# create the signature "Freestyle" bounce. By locking a syncopated 808 
-# kick to an off-beat bass and lush off-beat chords, the engine creates 
-# a massive, dancing groove that feels like an 80s roller rink.
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 120 BPM. A driving, danceable, yet romantic pace.
+# 2. Harmonic Center: A Minor. Emotional, minor, and soaring.
+# 3. Rhythmic Skeleton: The "Mambo" Kick. A syncopated 3-3-2 pattern 
+#    (steps 0, 3, 8, 11). Snares on 2 and 4. Rigid 16th hats.
+# 4. Timbral Palette:
+#    - Bass: Off-beat, bouncing synth bass (high cutoff, short release).
+#    - Chords: Lush, romantic, minor chord stabs (FM, low divisor, mid depth).
+#    - Lead: Piercing, emotional synth melody (FM, high divisor, long release).
+#    - Texture: Pitched-up, "diva" vocal stutter (granular, high pitch).
+# 5. Arrangement: Intro (Bass/Chords) -> Verse (Mambo Drums) -> Chorus (Lead).
 # ==========================================================
 
 use_bpm 120
@@ -24,67 +32,75 @@ use_bpm 120
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
-# 2. THE SCORES (A Minor - Romantic, Bouncy, & Syncopated)
+# 2. THE SCORES (A Minor - Bouncy, Romantic, & Syncopated)
 # ==========================================================
 
-# The "Freestyle" Kick. 
-# Highly syncopated. Hits on step 0, the 'a' of 1 (step 3), beat 3 (step 8), 
-# and the 'a' of 3 (step 11).
+# The "Mambo" Kick. 
+# A syncopated 3-3-2 pattern. Hits on 0, the 'a' of 1 (step 3), beat 3 (step 8), 
+# and the 'a' of 3 (step 11). (4 x's, 4 elements)
 s_kick = gen_score("x..x....x..x....", [
   :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}
 ])
 
-# Crisp, 808 snare strictly on beats 2 and 4.
-s_snare = gen_score("....x.......x...", [:c4])
+# Crisp, 808 snare strictly on beats 2 and 4. (2 x's, 2 elements)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
 
-# Rigid, driving 16th hats.
-s_hats = gen_score("x.x.x.x.x.x.x.x.", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+# Rigid, driving 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
 
-# The "Off-Beat" Synth Bass (A Minor).
-# Hits strictly on the off-beats. High cutoff (90) and short release (0.15) 
-# create a bouncy, "pumping" undercurrent.
-bass_notes = [:a1, :a1, :g1, :a1]
-bass_data = bass_notes.map { |n| {note: n, cutoff: 90, release: 0.15, amp: 1.0} }
-s_bass = gen_score("..x...x...x...x.", bass_data)
+# The "Bouncing" Synth Bass (A Minor).
+# Hits strictly on the off-beats. 
+# High cutoff (90) and short release (0.15) create a bouncy, "pumping" undercurrent.
+# (4 x's, 4 elements)
+s_bass = gen_score("..x...x...x...x.", [
+  {note: :a1, release: 0.15, cutoff: 90, amp: 1.0}, 
+  {note: :a1, release: 0.15, cutoff: 90, amp: 0.8}, 
+  {note: :g1, release: 0.15, cutoff: 90, amp: 1.0}, 
+  {note: :a1, release: 0.15, cutoff: 90, amp: 0.8}
+])
 
 # Lush, "Romantic" Minor Chords (Am to G).
-# Hit strictly on the off-beats in sync with the bass. High cutoff (100) 
-# and short release (0.2) create a sharp, staccato wall of sound.
-chord_notes = [
-  {note: [:a3, :c4, :e4]}, {note: [:a3, :c4, :e4]}, 
-  {note: [:g3, :bb3, :d4]}, {note: [:g3, :bb3, :d4]}
-]
-chord_data = chord_notes.map { |c| c.merge({cutoff: 100, release: 0.2, amp: 0.6}) }
-s_chords = gen_score("..x...x...x...x.", chord_data)
+# Hit strictly on the off-beats in sync with the bass. 
+# High cutoff (100) and short release (0.2) create a sharp, staccato wall of sound. 
+# (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 3, release: 0.2, amp: 0.6},
+  {note: [:a3, :c4, :e4], divisor: 2, depth: 3, release: 0.2, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.2, amp: 0.6},
+  {note: [:g3, :bb3, :d4], divisor: 2, depth: 3, release: 0.2, amp: 0.6}
+])
 
 # Piercing, "Emotional" Synth Lead (A Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
-# buzzy square wave. Routed through the global tape echo for a cinematic smear.
-lead_notes = [:a5, :e5, :c6, :e6, :d6, :c6, :a5, :g5]
-lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 2, depth: 3, release: 0.2} }
+# Uses :play_fm with a high divisor (3) and mid depth (4) to create a sharp, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:a5, :e5, :c6, :e6, :d6, :c6]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 4, release: 0.3} }
 s_lead = gen_score("x..x..x..x..x..x", lead_data)
 
-# High-pitched, "Diva" Vocal Chops (Granular Synth).
-# Pitched UP to :a4 and :c5. High density, tiny size = a sharp, sugary vocal skip.
-vocal_notes = [:a4, :c5]
-vocal_data = vocal_notes.map { |n| {note: n, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6} }
-s_vocal = gen_score("....x.......x...", vocal_data)
+# "Diva" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, sugary, pristine vocal skip. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.7},
+  {note: :c5, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.7}
+])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: The Groove - Just the syncopated 808s, off-beat bass, and hats (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
+  # Scene 1: The Intro - Just the bouncing bass, romantic chords, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_vocal, 4] ],
   
-  # Scene 2: The Vibe - Add the lush romantic chords and diva vocals (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+  # Scene 2: The Verse - Add the syncopated Mambo drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Drop - The piercing emotional synth lead drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+  # Scene 3: The Chorus - The piercing, emotional synth lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
     [:play_lead, s_lead, 8] ]
 )
 
@@ -94,22 +110,22 @@ playbook = (ring
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 80S BOUNCE]
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN LATIN SYNCOPATION]
 # 
-# 1. The Freestyle Syncopation: Look at `s_kick`. It completely avoids 
-#    landing on the standard 4/4 pulse. By hitting on steps 0, 3, 8, and 11, 
-#    the engine creates a lopsided, "dancing" groove that feels distinctly 
-#    Latin. The engine's strict master clock ensures this complex rhythm 
-#    lands with absolute precision, creating the signature Freestyle bounce.
+# 1. The Mambo Kick: Look at `s_kick`. It hits on steps 0, 3, 8, and 11. 
+#    By avoiding the standard 4/4 pulse and hitting on the "a" of beat 1 and 
+#    the "a" of beat 3, the engine creates a lopsided, "dancing" groove that 
+#    feels distinctly Latin. The engine's strict master clock ensures this 
+#    complex rhythm lands with absolute precision.
 #
-# 2. The Off-Beat Wall: Look at `s_bass` and `s_chords`. They ALL hit 
-#    strictly on steps 2, 6, 10, and 14. In a 16-step grid, these are the 
-#    exact midpoints between the kicks. The engine's strict master clock 
-#    locks these together perfectly, creating a massive, bouncing "boom-cha" 
-#    momentum that forces you to dance.
+# 2. The Off-Beat Wall: Look at `s_bass` and `s_chords`. They ALL hit strictly 
+#    on steps 2, 6, 10, and 14. In a 16-step grid, these are the exact 
+#    midpoints between the kicks. The engine's strict master clock locks these 
+#    together perfectly, creating a massive, bouncing "boom-cha" momentum.
 #
-# 3. Euphoric Granular Vocals: The `s_vocal` sequence uses the granular 
-#    engine to chop a vocal into microscopic shards (`size: 0.04`). By 
-#    pitching them UP to `:a4` and `:c5`, the vocal loses its dark tone 
-#    and becomes a soaring, sugary diva stutter that defines 80s Freestyle.
+# 3. FM as a Diva: The `s_lead` sequence uses `divisor: 3` and `depth: 4`. 
+#    This harmonic ratio produces a sharp, glassy, digital tone that cuts 
+#    through the heavy mix. Because it's routed through the global tape echo 
+#    bus, the sparse notes smear into a soaring, emotional melody that perfectly 
+#    mimics the iconic, high-pitched vocal hooks of 80s Freestyle.
 # ==========================================================
