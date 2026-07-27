@@ -1,0 +1,135 @@
+# ==========================================================
+# PLAYBOOK: WONKY / BRAINDANCE
+# (Pioneered by Flying Lotus, Hudson Mohawke, and Prefuse 73)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored IDM (which is clean and mathematical) and Lo-Fi Hip-Hop 
+# (which is relaxed and jazzy). Wonky (or Braindance) is the sound of producers 
+# like Flying Lotus and Hudson Mohawke. It takes the tempo of hip-hop (85 BPM) 
+# but injects it with erratic, "drunken" drum programming that feels like it is 
+# constantly falling off the grid. It relies on deep, warm sub-bass, lush, jazzy 
+# minor 9th chords, and a skittering, unpredictable hi-hat pattern that simulates 
+# complex polyrhythms.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 85 BPM. A hip-hop tempo, but played with extreme, erratic swing.
+# 2. Harmonic Center: D Minor / Jazzy. Warm, complex, and slightly melancholic.
+# 3. Rhythmic Skeleton: A heavily swung, "drunken" 16-step grid. Kicks and 
+#    snares are pushed late. Skittering, unpredictable hi-hat rolls.
+# 4. Timbral Palette:
+#    - Bass: Deep, warm, round sub-bass (low cutoff, medium release).
+#    - Chords: Lush, complex minor 11th chords (FM, high divisor, low depth).
+#    - Lead: Erratic, pitch-bent, echoing synth melody (FM, high cutoff).
+#    - Texture: Granular "vinyl crackle" or field recording ambience.
+# 5. Arrangement: Intro (Bass/Chords) -> Verse (Drunken Drums) -> Drop (Lead).
+# ==========================================================
+
+use_bpm 85
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor - Jazzy, Erratic, & Warm)
+# ==========================================================
+
+# The "Drunken" Kick. 
+# Highly swung. Hits on step 0, the 'a' of 2 (step 7), and the 'e' of 3 (step 10).
+# This lopsided placement creates the signature stumbling, off-grid feel.
+# (3 x's, 3 elements)
+s_kick = gen_score("x......x.x......", [
+  :c4, {note: :c4, amp: 0.7}, {note: :c4, amp: 1.0}
+])
+
+# Crisp, organic snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Skittering, unpredictable hi-hats. 
+# Notice the erratic gaps and amplitude jumps simulating a complex polyrhythm.
+# (8 x's, 8 elements)
+s_hats = gen_score("x..x.x..x..x.x..", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, 
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}
+])
+
+# Deep, warm "Sub-Bass" (D Minor).
+# Plays a syncopated, melodic line. 
+# Very low cutoff (60) and medium release (0.4) to create a warm undercurrent.
+# (4 x's, 4 elements)
+s_bass = gen_score("x.....x.x.....x.", [
+  {note: :d1, release: 0.4, cutoff: 60, amp: 1.2}, 
+  {note: :f1, release: 0.4, cutoff: 60, amp: 1.0}, 
+  {note: :a1, release: 0.4, cutoff: 60, amp: 1.0}, 
+  {note: :g1, release: 0.4, cutoff: 60, amp: 1.0}
+])
+
+# Lush, "Electric Piano" Chords (Dm11 to Gm11).
+# Hit on the downbeats. The slow 0.3-beat attack and massive 1.5-beat release 
+# blur the chords together into a continuous, warm, jazzy wave. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :f3, :a3, :c4], cutoff: 80, attack: 0.3, release: 1.5, amp: 0.5},
+  {note: [:g3, :bb3, :d4, :f4], cutoff: 80, attack: 0.3, release: 1.5, amp: 0.5}
+])
+
+# Erratic, "Pitch-bent" Lead (D Minor Pentatonic).
+# Uses :play_fm with a high divisor (3) and mid depth (4) to create a sharp, 
+# buzzy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:d5, :f5, :a5, :g5, :f5, :d5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 3, depth: 4, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Vinyl Crackle / Field Recording" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Long size (0.3) and low density (1) creates a slow, evolving, 
+# warm background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :d3, buffer: :ambi_choir, pos: 0.5, density: 1, size: 0.3, amp: 0.4}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Vibe - Just the deep bass, lush chords, and vinyl texture (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the drunken, skittering drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Solo - The erratic, pitch-bent lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ERRATIC SWING]
+# 
+# 1. The "Drunken" Swing: Look at `s_kick`. Instead of hitting on step 4 
+#    (beat 2), it hits on step 7 (the 'a' of beat 2). In Wonky music, 
+#    drummers physically play slightly behind the beat. Because the engine's 
+#    grid is mathematically perfect, pushing the kick just one 16th note late 
+#    creates that heavy, leaning, "drunken" bounce that defines the genre.
+#
+# 2. Jazzy Harmony: Look at `s_chords`. The arrays form lush 4-note minor 11th 
+#    chords. By using a low `cutoff` (80) and a slow `attack` (0.3), the engine 
+#    turns the `:blade` synth into a soft, muffled electric piano that perfectly 
+#    mimics the lush, complex chords of Flying Lotus and Thundercat.
+#
+# 3. Skittering Polyrhythms: Look at `s_hats`. The hats don't just play straight 
+#    16th notes; they leave erratic gaps (`nil`) and have wildly varying amplitudes. 
+#    By emphasizing the off-beats, the engine simulates a complex, polyrhythmic 
+#    drummer playing a fast, skittering groove that feels entirely human and 
+#    unpredictable.
+# ==========================================================

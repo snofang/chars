@@ -1,0 +1,112 @@
+# ==========================================================
+# PLAYBOOK: DARK AMBIENT / ISOLATIONISM
+# (Pioneered by Lustmord, Brian Eno's darker works, and Vidna Obmana)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Ambient House (which has a beat) and Japanese Ambient 
+# (which is bright and tranquil). Dark Ambient is the sound of pure, 
+# subterranean isolation. It strips away all rhythm and tempo, relying entirely 
+# on massive, slow-evolving sub-bass drones, dissonant, metallic textures, and 
+# granular time-stretching. The engine tests its absolute limits of sustain and 
+# texture, creating a soundscape that feels like drifting through a frozen, 
+# empty void.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 50 BPM. A glacial, almost non-existent pulse.
+# 2. Harmonic Center: D Minor / Dissonant. Cold, subterranean, and vast.
+# 3. Rhythmic Skeleton: None. The 16-step grid is used purely to trigger 
+#    massive, sustained events, not rhythmic hits.
+# 4. Timbral Palette:
+#    - Bass: Tectonic sub-bass drone (extreme low cutoff, massive release).
+#    - Chords: Dissonant, slow-attacking "metallic" pads (FM, extreme depth).
+#    - Lead: Distant, echoing, piercing FM bleeps (high divisor, extreme echo).
+#    - Texture: Pitched-down granular "cave" or "rumble" drone (massive size).
+# 5. Arrangement: Intro (Void) -> Build (Metallics) -> Climax (Echoes).
+# ==========================================================
+
+use_bpm 50
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (D Minor / Dissonant - Vast, Cold, & Textural)
+# ==========================================================
+
+# The "Tectonic" Sub-Bass Drone (D Minor).
+# Hits once and rings out for the entire scene (8 bars = 32 beats).
+# Extreme low cutoff (30) and massive release (32.0) create a deep, 
+# continuous, suffocating rumble. (1 x, 1 element)
+s_bass = gen_score("x...............", [
+  {note: :d1, release: 32.0, cutoff: 30, amp: 1.5}
+])
+
+# Dissonant, "Metallic" Drone Pad (Dm to G Diminished).
+# Uses :play_fm with a low divisor (2) and extreme depth (8) to create a 
+# harsh, metallic, dissonant wave. Massive attack (4.0) and release (28.0) 
+# blur the chords together into a continuous, terrifying drone. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :ab3], divisor: 2, depth: 8, attack: 4.0, release: 28.0, amp: 0.6},
+  {note: [:g3, :cs4], divisor: 2, depth: 8, attack: 4.0, release: 28.0, amp: 0.6}
+])
+
+# Distant, "Echoing" FM Bleeps (D Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and mid depth (3) to create a piercing, 
+# glassy, digital tone. Routed through the global tape echo. (3 x's, 3 elements)
+s_lead = gen_score("x.......x.......x", [
+  {note: :d6, amp: 0.5, divisor: 4, depth: 3, release: 8.0}, 
+  {note: :a5, amp: 0.4, divisor: 4, depth: 3, release: 8.0}, 
+  {note: :d6, amp: 0.6, divisor: 4, depth: 3, release: 16.0}
+])
+
+# "Cave / Rumble" Drone (Granular Synthesis).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Massive size (1.0s) and low density (1) time-stretches the sample into 
+# a slow, evolving, cavernous background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :d3, buffer: :ambi_choir, pos: 0.8, density: 1, size: 1.0, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the tectonic sub-bass and cavernous drone (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8] ],
+  
+  # Scene 2: The Metallics - The dissonant, metallic drone pad enters (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_fm, s_chords, 8] ],
+    
+  # Scene 3: The Echoes - The distant, piercing FM bleeps drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_fm, s_chords, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN PURE TEXTURE]
+# 
+# 1. The Rhythmic Void: Look at the playbook. There are zero drum instruments 
+#    (`:play_kick`, `:play_snare`, `:play_hats`). The 16-step grid is still 
+#    ticking, but it is used purely to trigger massive durations. The engine's 
+#    strict master clock ensures the chords and bass trigger exactly on beat 1, 
+#    holding perfectly in sync for 8 bars without drifting.
+#
+# 2. Data-Driven Sustain: Look at `s_bass` and `s_chords`. The `release` times 
+#    are 32.0 and 28.0. Because the scene is only 8 bars (32 beats) long, the 
+#    notes never actually finish ringing out before the next scene triggers. This 
+#    creates a continuous, overlapping "wall of sound" with no silence, perfectly 
+#    mimicking the endless, suffocating drone of Dark Ambient.
+#
+# 3. Dissonant FM: Look at `s_chords`. The arrays use tritones and minor 2nds 
+#    (e.g., D and Ab). Combined with the extreme FM `depth` (8), the engine 
+#    produces a harsh, metallic, and dissonant wave that perfectly mimics the 
+#    terrifying, cold atmosphere of isolationism.
+# ==========================================================

@@ -1,0 +1,135 @@
+# ==========================================================
+# PLAYBOOK: LATE 80s UK STREET SOUL / RARE GROOVE
+# (Pioneered by Soul II Soul, Caron Wheeler, and The Young Disciples)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored US Boogie and New Jack Swing. UK Street Soul is the British 
+# answer to those genres, emerging from the sound system culture of the late 80s. 
+# It fuses the swinging, quantized rhythms of American R&B with a distinctly 
+# British, DIY electronic aesthetic. It relies on a warm, analog synth bass, 
+# lush, echoing electric piano chords, and a heavy, syncopated LinnDrum swing. 
+# The engine captures that exact, deep, late-night, sound-system atmosphere.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 95 BPM. A laid-back, mid-tempo, swinging groove.
+# 2. Harmonic Center: F Major / D Minor. Warm, soulful, and slightly melancholic.
+# 3. Rhythmic Skeleton: A syncopated LinnDrum beat. Kick on 1 and the 'and' of 2. 
+#    Snare on 2 and 4. Swung, bouncing 16th hats.
+# 4. Timbral Palette:
+#    - Bass: Warm, round, analog synth bass (mid cutoff, medium release).
+#    - Chords: Lush, echoing electric piano (FM, high divisor, low depth).
+#    - Lead: Piercing, brassy synth melody (FM, mid divisor, mid depth).
+#    - Texture: Granular "DJ cut" or vocal stutter (pitched up, rhythmic).
+# 5. Arrangement: Intro (Bass/Chords) -> Verse (Drums) -> Chorus (Lead).
+# ==========================================================
+
+use_bpm 95
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F Major - Warm, Soulful, & Swung)
+# ==========================================================
+
+# The "Street Soul" Kick. 
+# A syncopated, laid-back bounce. Hits on 1 and the 'and' of 2 (step 6). 
+# (3 x's, 3 elements)
+s_kick = gen_score("x.....x.........", [
+  :c4, {note: :c4, amp: 0.8}, {note: :c4, amp: 0.6}
+])
+
+# Heavy, organic snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 1.0}
+])
+
+# Swung, bouncing 16th hats. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Analog" Bass (F Major).
+# Plays a deep, melodic, syncopated line. 
+# Mid cutoff (80) and medium release (0.2) create a warm, round undercurrent.
+# (6 x's, 6 elements)
+s_bass = gen_score("x..x.x..x..x.x..", [
+  {note: :f1, release: 0.2, cutoff: 80, amp: 1.0}, 
+  {note: :a1, release: 0.2, cutoff: 80, amp: 0.8}, 
+  {note: :c2, release: 0.2, cutoff: 80, amp: 1.0}, 
+  {note: :d2, release: 0.2, cutoff: 80, amp: 0.8}, 
+  {note: :c2, release: 0.2, cutoff: 80, amp: 1.0}, 
+  {note: :a1, release: 0.2, cutoff: 80, amp: 0.8}
+])
+
+# Lush, "Electric Piano" Chords (Fmaj9 to Dm9).
+# Hit strictly on the off-beats. The slow 0.2-beat attack and massive 1.5-beat 
+# release blur the chords together into a continuous, warm, soulful wave. 
+# (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:f3, :a3, :c4, :e4], divisor: 3, depth: 2, attack: 0.2, release: 1.5, amp: 0.5},
+  {note: [:f3, :a3, :c4, :e4], divisor: 3, depth: 2, attack: 0.2, release: 1.5, amp: 0.5},
+  {note: [:d3, :f3, :a3, :c4], divisor: 3, depth: 2, attack: 0.2, release: 1.5, amp: 0.5},
+  {note: [:d3, :f3, :a3, :c4], divisor: 3, depth: 2, attack: 0.2, release: 1.5, amp: 0.5}
+])
+
+# Piercing, "Brassy" Lead (F Major Pentatonic).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a sharp, 
+# brassy, analog tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:f5, :a5, :c6, :a5, :g5, :f5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 2, depth: 4, release: 0.3} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "DJ Cut" Vocal Stutter (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density, tiny size = a sharp, percussive, rhythmic vocal skip. 
+# (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :f4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
+  {note: :a4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Intro - Just the analog bass, lush chords, and vocal chops (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
+  
+  # Scene 2: The Verse - Add the heavy, syncopated LinnDrum beat (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Chorus - The piercing, brassy lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN UK SOUL]
+# 
+# 1. The LinnDrum Swing: Look at `s_hats`. The hats play continuous 16th notes, 
+#    but the amplitudes alternate perfectly between 0.3 and 0.15. By emphasizing 
+#    the off-beats, the engine simulates the famous LinnDrum swing quantize that 
+#    gave UK Street Soul its bouncy, laid-back, "head-nodding" feel.
+#
+# 2. FM as an Electric Piano: Look at `s_chords`. The `:play_fm` synth is given 
+#    a high `divisor` (3) and a low `depth` (2), with a slow `attack` (0.2) and a 
+#    massive `release` (1.5). This forces the FM synth to produce a warm, glassy, 
+#    echoing tone that perfectly mimics the Fender Rhodes electric pianos used by 
+#    British producers in the late 80s.
+#
+# 3. The Syncopated Bass: Look at `s_bass`. The `:play_sub` synth plays a deep, 
+#    melodic line that weaves perfectly between the kicks. By using a mid-range 
+#    `cutoff` (80) and a medium `release` (0.2), the engine creates a warm, round 
+#    undercurrent that anchors the track's soulful, sound-system groove.
+# ==========================================================

@@ -1,0 +1,136 @@
+# ==========================================================
+# PLAYBOOK: BRAZILIAN BAILE FUNK / FUNK CARIOCA
+# (Pioneered by DJ Marlboro, Anitta, and MC Kevinho)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Miami Bass and Chicago Ghetto House. Baile Funk is the 
+# Brazilian evolution of those genres. It pushes the tempo to 130 BPM and relies 
+# on a highly specific, aggressive, syncopated drum pattern known as the 
+# "Tamborzão." It fuses massive, booming 808 sub-bass with stark, aggressive 
+# synth brass stabs and repetitive, percussive vocal shouts. The engine 
+# captures the raw, high-energy, and distinctly tropical street-party atmosphere 
+# of Rio.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 130 BPM. Aggressive, bouncy, and high-energy.
+# 2. Harmonic Center: F# Minor. Dark, heavy, and distinctly tropical.
+# 3. Rhythmic Skeleton: The "Tamborzão" rhythm. A highly syncopated, 
+#    interlocking 16-step grid. Kick on 0, 3, 6, 8, 11. Snares fill the gaps.
+# 4. Timbral Palette:
+#    - Bass: Massive, booming 808 sub-bass (extreme low cutoff, percussive).
+#    - Chords: Stark, dissonant brass/synth stabs (FM, low divisor, mid depth).
+#    - Lead: Piercing, high-pitched "siren" or "brass" FM melody.
+#    - Texture: Pitched-down, percussive "Tamborzão" vocal shouts.
+# 5. Arrangement: Intro (Bass/Drums) -> Vibe (Stabs) -> Drop (Lead/Vocals).
+# ==========================================================
+
+use_bpm 130
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (F# Minor - Aggressive, Bouncy, & Raw)
+# ==========================================================
+
+# The "Tamborzão" Kick. 
+# A highly syncopated, bouncing 808 pattern. (5 x's, 5 elements)
+s_kick = gen_score("x..x..x.x..x....", [
+  :c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}
+])
+
+# The "Tamborzão" Snare. 
+# Interlocking syncopated hits that fill the gaps between the kicks. (6 x's, 6 elements)
+s_snare = gen_score("..x.x.....x.x.x.", [
+  :c4, {note: :c4, amp: 0.6}, :c4, {note: :c4, amp: 0.9}, 
+  :c4, {note: :c4, amp: 0.5}, {note: :c4, amp: 0.8}
+])
+
+# Fast, rolling 16th hats to drive the momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
+])
+
+# The "Booming" 808 Bass (F# Minor).
+# Plays a syncopated, melodic line. 
+# Extreme low cutoff (50) and short release (0.2) create a massive, 
+# percussive, sub-rattling thump. (5 x's, 5 elements)
+s_bass = gen_score("x..x..x.x..x....", [
+  {note: :fs1, release: 0.2, cutoff: 50, amp: 1.5}, 
+  {note: :fs1, release: 0.2, cutoff: 50, amp: 1.0}, 
+  {note: :fs1, release: 0.2, cutoff: 50, amp: 1.5}, 
+  {note: :fs1, release: 0.2, cutoff: 50, amp: 1.0}, 
+  {note: :fs1, release: 0.2, cutoff: 50, amp: 1.5}
+])
+
+# Stark, "Brass" Synth Stabs (F#m to A to C#).
+# Uses :play_fm with a low divisor (2) and mid depth (4) to create a harsh, 
+# brassy, staccato hit. Hit strictly on the off-beats. (4 x's, 4 elements)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:fs3, :a3, :cs4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:fs3, :a3, :cs4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:a3, :cs4, :e4], divisor: 2, depth: 4, release: 0.1, amp: 0.6},
+  {note: [:cs4, :e4, :g4], divisor: 2, depth: 4, release: 0.1, amp: 0.6}
+])
+
+# Piercing, "Siren" Lead (F# Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and mid depth (3) to create a piercing, 
+# glassy, digital tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:fs5, :a5, :cs5, :e5, :cs5, :a5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.6, divisor: 4, depth: 3, release: 0.1} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Tamborzão" Vocal Shouts (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# High density (3) and tiny size (0.04) creates a sharp, percussive, 
+# repetitive vocal shout. (2 x's, 2 elements)
+s_vocal = gen_score("....x.......x...", [
+  {note: :fs3, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.7},
+  {note: :fs3, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.7}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Favela - Just the Tamborzão rhythm and booming 808 bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_sub, s_bass, 4] ],
+  
+  # Scene 2: The Vibe - Add the rolling hats, brass stabs, and vocal shouts (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_sub, s_bass, 8], 
+    [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
+    
+  # Scene 3: The Drop - The piercing, siren-like lead drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_sub, s_bass, 8], 
+    [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN TROPICAL GROOVE]
+# 
+# 1. The Tamborzão Syncopation: Look at `s_kick` and `s_snare`. They are densely 
+#    packed and completely avoid landing on a standard 4/4 pulse. By hitting on 
+#    syncopated, interlocking steps (Kick: 0, 3, 6, 8, 11; Snare: 2, 4, 9, 11, 13, 14), 
+#    the engine creates a lopsided, bouncing groove that is the absolute genetic 
+#    code of Brazilian Baile Funk.
+#
+# 2. The Booming 808: Look at `s_bass`. The `:play_sub` synth is given an 
+#    extreme low `cutoff` (50) and a short `release` (0.2). This creates a deep, 
+#    round, and warm low-end that hits in sync with the kick, carrying the 
+#    massive, sub-rattling weight required for the genre.
+#
+# 3. FM as Brass: Look at `s_chords`. The `:play_fm` synth is given a 
+#    `divisor` of `2` and a `depth` of `4`, with a microscopic `release` (0.1). 
+#    This forces the FM synth to produce a harsh, brassy, staccato "hit" that 
+#    perfectly mimics the aggressive, orchestral brass section stabs that define 
+#    the genre's raw, street-party atmosphere.
+# ==========================================================
