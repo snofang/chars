@@ -1,0 +1,118 @@
+# ==========================================================
+# PLAYBOOK: 80s JAPANESE NOISE / JAPANOISE
+# (Pioneered by Merzbow, Hijokaidan, and Incapacitants)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored structured noise (Power Electronics) and chaotic breakbeats 
+# (Breakcore). Japanoise is the sound of pure, unstructured sonic violence. 
+# It abandons all rhythm, melody, and harmony, relying entirely on massive, 
+# layered walls of distortion, feedback, and granular static. The engine tests 
+# its absolute limits of distortion and granular density, creating a soundscape 
+# that feels like being inside a collapsing factory.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 60 BPM. A slow clock used only to trigger massive durations.
+# 2. Harmonic Center: Atonal / Dissonant. Pure noise.
+# 3. Rhythmic Skeleton: None. The 16-step grid is used purely to trigger 
+#    massive, sustained events, not rhythmic hits.
+# 4. Timbral Palette:
+#    - Bass: Deep, continuous, distorted "rumble" drone (extreme cutoff).
+#    - Chords: Dissonant, high-frequency "screech" walls (FM, extreme depth).
+#    - Lead: Piercing, erratic, atonal FM squeals (extreme depth, high pitch).
+#    - Texture: Granular "static storm" (extreme density, microscopic size).
+# 5. Arrangement: Intro (Rumble) -> Build (Screech) -> Climax (Storm).
+# ==========================================================
+
+use_bpm 60
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (Atonal - Chaotic, Piercing, & Massive)
+# ==========================================================
+
+# The "Industrial Rumble" Bass (Atonal).
+# Hits once and rings out for the entire scene (8 bars = 32 beats).
+# Extreme cutoff (120) and massive release (32.0) create a deep, 
+# continuous, distorted rumble. (1 x, 1 element)
+s_bass = gen_score("x...............", [
+  {note: :a1, release: 32.0, cutoff: 120, amp: 1.5}
+])
+
+# The "Screech Wall" Chords (Atonal Cluster).
+# Uses :play_fm with a low divisor (1) and extreme depth (8) to create a 
+# harsh, dissonant, metallic wall of noise. 
+# Massive attack (4.0) and release (28.0) blur it into a continuous drone.
+# (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:a4, :bb4, :b4], divisor: 1, depth: 8, attack: 4.0, release: 28.0, amp: 0.8},
+  {note: [:e4, :f4, :gb4], divisor: 1, depth: 8, attack: 4.0, release: 28.0, amp: 0.8}
+])
+
+# Piercing, "Erratic" Lead (Atonal).
+# Uses :play_fm with a high divisor (2) and extreme depth (8) to create a 
+# harsh, piercing, digital squeal. Plays an erratic, high-pitched melody.
+# (6 x's, 6 elements)
+s_lead = gen_score("x..x..x..x..x..x", [
+  {note: :a7, amp: 0.7, divisor: 2, depth: 8, release: 0.3},
+  {note: :g7, amp: 0.6, divisor: 2, depth: 8, release: 0.2},
+  {note: :ab7, amp: 0.8, divisor: 2, depth: 8, release: 0.4},
+  {note: :a7, amp: 0.7, divisor: 2, depth: 8, release: 0.1},
+  {note: :b6, amp: 0.8, divisor: 2, depth: 8, release: 0.3},
+  {note: :bb6, amp: 0.7, divisor: 2, depth: 8, release: 0.2}
+])
+
+# "Static Storm" Texture (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched DOWN.
+# Extreme density (8) and microscopic size (0.01) shatter the sample into 
+# high-frequency, digital static that sounds like a broken radio.
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.9, density: 8, size: 0.01, amp: 0.8}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the distorted rumble and static storm (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8] ],
+  
+  # Scene 2: The Build - The massive screech wall enters (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_fm, s_chords, 8] ],
+    
+  # Scene 3: The Climax - The piercing, erratic FM squeals drop (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], [:play_fm, s_chords, 8],
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN PURE NOISE]
+# 
+# 1. The Rhythmic Void: Look at the playbook. There are zero drum instruments 
+#    (`:play_kick`, `:play_snare`, `:play_hats`). The 16-step grid is still 
+#    ticking, but it is used purely to trigger massive durations. The engine's 
+#    strict master clock ensures the noise walls trigger exactly on beat 1, 
+#    holding perfectly in sync for 8 bars without drifting.
+#
+# 2. Data-Driven Distortion: Look at `s_bass` and `s_chords`. The `cutoff` 
+#    is pushed to 120 (maximum) and the FM `depth` to 8 (extreme). This forces 
+#    the `:play_sub` and `:play_fm` synths to produce harsh, distorted, 
+#    suffocating walls of noise, perfectly mimicking the analog distortion 
+#    pedals and feedback loops used by Merzbow.
+#
+# 3. Granular as a Storm: Look at `s_grain`. The granular engine is given an 
+#    extreme `density` of `8` and a microscopic `size` of `0.01`. By targeting 
+#    the very end of the `:ambi_choir` buffer (`pos: 0.9`), the engine shatters 
+#    the sample into high-frequency, digital static that sounds like a broken 
+#    radio or a collapsing factory.
+# ==========================================================

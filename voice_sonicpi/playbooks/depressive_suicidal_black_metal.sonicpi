@@ -1,0 +1,129 @@
+# ==========================================================
+# PLAYBOOK: DEPRESSIVE SUICIDAL BLACK METAL (DSBM)
+# (Pioneered by Xasthur, Leviathan, and Silencer)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Viking Metal (which is heroic and galloping) and Funeral 
+# Doom (which is heavy and slow). DSBM is the sound of pure, frozen despair. 
+# It fuses the harsh, tremolo-picked aesthetics of Black Metal with 
+# agonizingly slow tempos, dissonant, weeping melodies, and a sense of 
+# profound hopelessness. The engine captures that exact, suffocating, and 
+# tragic atmosphere.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 90 BPM. A slow, plodding, and agonizing pace.
+# 2. Harmonic Center: E Minor / Dissonant. Despairing and atonal.
+# 3. Rhythmic Skeleton: A slow, relentless "tremolo" 16th-note bass churn. 
+#    Sparse, echoing "blast beat" drums that feel distant and exhausted.
+# 4. Timbral Palette:
+#    - Bass: Distorted "fuzz" bass, continuous 16th-note churn (extreme cutoff).
+#    - Chords: Stark, dissonant, minor 2nd power chords (FM, extreme depth).
+#    - Lead: Piercing, "weeping" synth melody (FM, high divisor, extreme echo).
+#    - Texture: Pitched-down, "shriek" vocal drone (granular, long size).
+# 5. Arrangement: Intro (Shriek/Bass) -> Verse (Slow Blast) -> Chorus (Dissonance).
+# ==========================================================
+
+use_bpm 90
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Minor / Dissonant - Despairing, Cold, & Tragic)
+# ==========================================================
+
+# The "Exhausted" Kick. 
+# A slow, sparse, and heavy march. (4 x's, 4 elements)
+s_kick = gen_score("x...x...x...x...", [:c4, :c4, :c4, :c4])
+
+# Heavy, echoing snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.9}
+])
+
+# Fast, rigid 16th hats to simulate the relentless "tremolo picking" of black metal.
+# (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.1}
+])
+
+# The "Tremolo" Bass (E Minor).
+# Plays continuous 16th notes, alternating octaves. 
+# Extreme cutoff (120) and microscopic release (0.04) create a relentless, 
+# grinding, distorted churn that mimics a tremolo-picked guitar. (16 x's, 16 elements)
+bass_notes = [:e1, :e2, :e1, :e2, :e1, :e2, :e1, :e2, 
+              :d1, :d2, :d1, :d2, :e1, :e2, :e1, :e2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.04, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Stark, "Dissonant" Power Chords (E5 to D5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Hits sparingly on the downbeats. (2 x's, 2 elements)
+s_chords = gen_score("x.......x.......", [
+  {note: [:e3, :b3], divisor: 2, depth: 6, release: 0.5, amp: 0.7},
+  {note: [:d3, :a3], divisor: 2, depth: 6, release: 0.5, amp: 0.7}
+])
+
+# Piercing, "Weeping" Lead (E Minor Pentatonic).
+# Uses :play_fm with a high divisor (4) and extreme depth (5) to create a 
+# sharp, piercing, digital tone. Routed through the global tape echo for a 
+# cavernous, mournful smear. (6 x's, 6 elements)
+lead_notes = [:e5, :d5, :c5, :b4, :a4, :g4]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 4, depth: 5, release: 0.8} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Shriek" Vocal Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Massive size (0.4s) and low density (1) time-stretches the sample into 
+# a slow, evolving, terrifying background texture that mimics a distant scream.
+# (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e4, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.4, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Abyss - Just the shriek, tremolo bass, and weeping lead (4 bars)
+  [ [:play_grain, s_grain, 4], [:play_sub, s_bass, 4], [:play_lead, s_lead, 4] ],
+  
+  # Scene 2: The Descent - Add the slow, exhausted blast beat drums (8 bars)
+  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], [:play_lead, s_lead, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The End - The massive, dissonant power chords drop (8 bars)
+  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], [:play_lead, s_lead, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_fm, s_chords, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN DESPAIR]
+# 
+# 1. The Tremolo Churn: Look at `s_bass` and `s_hats`. The bass plays 
+#    continuous 16th notes while the hats play rigid 16ths. At 90 BPM, this 
+#    creates a relentless, buzzing "tremolo" effect that perfectly mimics the 
+#    signature guitar style of Black Metal, but at a slow, agonizing pace 
+#    that defines DSBM.
+#
+# 2. The Weeping Lead: The `s_lead` sequence uses `divisor: 4` and `depth: 5`. 
+#    This harsh harmonic ratio produces a piercing, digital tone. Because it's 
+#    routed through the global tape echo bus, the sparse, descending notes 
+#    (E-D-C-B-A-G) smear into a mournful, cascading melody that perfectly 
+#    mimics a weeping guitar or a distant shriek.
+#
+# 3. Dissonant Harmony: Look at `s_chords`. The arrays use standard power 
+#    chords (E5, D5), but the `:play_fm` synth is given an extreme `depth` 
+#    (6). This forces the FM modulator to grind the carrier wave, creating a 
+#    harsh, dissonant, and evil sound that perfectly anchors the track's 
+#    tragic, suffocating atmosphere.
+# ==========================================================

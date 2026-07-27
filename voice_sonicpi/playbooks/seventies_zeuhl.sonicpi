@@ -1,0 +1,133 @@
+# ==========================================================
+# PLAYBOOK: 70s ZEUHL / MAGMA STYLE
+# (Pvented by Magma, Christian Vander, and Jannick Top)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Krautrock (which is motorik and spacey) and Symphonic Prog 
+# (which is orchestral). Zeuhl is a genre invented entirely by the French band 
+# Magma in the early 70s. It fuses jazz fusion, classical avant-garde, and 
+# space rock into a highly dramatic, operatic style. It relies on odd-time 
+# signatures, a relentless, driving "fuzz" bass, massive, dissonant "brass" 
+# stabs, and soaring, operatic synth melodies. The engine captures that exact, 
+# theatrical, and otherworldly atmosphere.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 100 BPM. A heavy, marching, and complex pace.
+# 2. Harmonic Center: E Dorian / Dissonant. Dark, jazzy, and alien.
+# 3. Rhythmic Skeleton: A syncopated, odd-time march. Kick on 1, the 'and' of 
+#    2, and the 'e' of 3. Snares on 2 and 4, with heavy ghost notes.
+# 4. Timbral Palette:
+#    - Bass: Deep, distorted "fuzz" bass, continuous 16th-note churn (extreme cutoff).
+#    - Chords: Massive, dissonant "brass" stabs (FM, extreme depth).
+#    - Lead: Piercing, "operatic" synth melody (FM, high divisor, long release).
+#    - Texture: Granular "cosmic" or "alien" drone (long grain size, low density).
+# 5. Arrangement: Intro (Drone/Bass) -> Verse (Odd-Time Drums) -> Drop (Lead).
+# ==========================================================
+
+use_bpm 100
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (E Dorian / Dissonant - Theatrical, Heavy, & Complex)
+# ==========================================================
+
+# The "Zeuhl" Kick. 
+# A syncopated, odd-time march. Hits on 1, the 'and' of 2 (step 6), and the 'e' of 3 (step 10).
+# (3 x's, 3 elements)
+s_kick = gen_score("x.....x.x.......", [
+  :c4, {note: :c4, amp: 0.8}, :c4
+])
+
+# Heavy, echoing snare strictly on beats 2 and 4, with a syncopated ghost note. 
+# (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.3}, {note: :c4, amp: 1.0}
+])
+
+# Fast, driving 16th hats to maintain the complex momentum. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# The "Fuzz" Bass (E Dorian).
+# Plays a continuous, driving 16th-note line. 
+# Extreme cutoff (120) and microscopic release (0.04) create a relentless, 
+# grinding, distorted churn that mimics a fuzz bass/guitar. (16 x's, 16 elements)
+bass_notes = [:e1, :e1, :e1, :e1, :e1, :e1, :e1, :e1, 
+              :d1, :d1, :d1, :d1, :e1, :e1, :e1, :e1]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.04, amp: 1.2} }
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
+
+# Massive, "Dissonant" Brass Stabs (E5 to D5).
+# Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
+# harsh, grinding hit. Plays a classic, palm-muted riff. (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:e3, :b3], divisor: 2, depth: 6, release: 0.2, amp: 0.7},
+  {note: [:d3, :a3], divisor: 2, depth: 6, release: 0.2, amp: 0.7},
+  {note: [:e3, :b3], divisor: 2, depth: 6, release: 0.2, amp: 0.7}
+])
+
+# Piercing, "Operatic" Lead (E Dorian).
+# Uses :play_fm with a high divisor (3) and mid depth (4) to create a sharp, 
+# brassy, analog tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:e5, :g5, :a5, :b5, :a5, :g5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 4, release: 0.4} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Cosmic / Alien" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Massive size (0.5s) and low density (1) creates a slow, evolving, 
+# otherworldly background texture. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :e4, buffer: :ambi_choir, pos: 0.3, density: 1, size: 0.5, amp: 0.5}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Void - Just the fuzz bass, dissonant stabs, and cosmic drone (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_chords, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The March - Add the syncopated, odd-time drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Opera - The piercing, operatic lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN AVANT-GARDE PROG]
+# 
+# 1. The Odd-Time Syncopation: Look at `s_kick`. It hits on steps 0, 6, and 10. 
+#    By avoiding the standard 4/4 pulse and hitting on the "and" of beat 2 and 
+#    the "e" of beat 3, the engine creates a lopsided, complex groove that feels 
+#    like a live jazz drummer playing an odd-time signature (like 7/8 or 5/4). 
+#    The engine's strict master clock ensures this complex rhythm lands with 
+#    absolute precision.
+#
+# 2. The Fuzz Bass Churn: Look at `s_bass`. The `:play_sub` synth plays on 
+#    EVERY single 16th step. By using an extreme `cutoff` (120) and a 
+#    microscopic `release` (0.04), the engine turns the detuned sawtooth into 
+#    a relentless, grinding, distorted wall of sound that perfectly mimics the 
+#    heavily distorted fuzz bass of Zeuhl.
+#
+# 3. FM as Brass: Look at `s_chords` and `s_lead`. The `:play_fm` synth is 
+#    given a `divisor` of `2` or `3` and an extreme `depth` of `4` or `6`. 
+#    This harmonic ratio produces a sharp, brassy, saw-like wave that cuts 
+#    through the heavy mix, perfectly mimicking the massive brass section and 
+#    operatic synth solos that define the genre's theatrical atmosphere.
+# ==========================================================

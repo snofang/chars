@@ -1,0 +1,136 @@
+# ==========================================================
+# PLAYBOOK: 80s BURGER HIGHLIFE / GHANAIAN POP
+# (Pioneered by George Darko, Lumba Brothers, and Pat Thomas)
+# ==========================================================
+# 
+# [WHY THIS GENRE?]
+# We have explored Afrobeat (which is horn-heavy and polyrhythmic) and City 
+# Pop (which is pristine and studio-polished). Burger Highlife emerged in the 
+# 80s when Ghanaian musicians living in Germany fused traditional Highlife 
+# guitar picking with 80s drum machines, synthesizers, and disco basslines. 
+# It relies on bright, interlocking 16th-note guitar stabs, a deep, round 
+# analog bass, and piercing, celebratory synth melodies. The engine tests its 
+# ability to simulate interlocking, polyrhythmic guitar and synth layers.
+#
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 115 BPM. A driving, celebratory, and danceable pace.
+# 2. Harmonic Center: A Major / Dorian. Bright, joyful, and African.
+# 3. Rhythmic Skeleton: A syncopated 4/4 beat. Kick on 1 and the 'and' of 2. 
+#    Snares on 2 and 4. Continuous 16th shakers.
+# 4. Timbral Palette:
+#    - Bass: Deep, round, analog synth bass (mid cutoff, short release).
+#    - Chords: Bright, interlocking 16th-note "guitar" stabs (`:play_pluck`).
+#    - Lead: Piercing, "brass" or "flute" synth melody (FM, high divisor).
+#    - Texture: Granular "vocal shout" or crowd drone.
+# 5. Arrangement: Intro (Bass/Guitar) -> Verse (Drums) -> Drop (Lead).
+# ==========================================================
+
+use_bpm 115
+
+# ==========================================================
+# 1. REQUIRE ENGINE
+# ==========================================================
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+
+# ==========================================================
+# 2. THE SCORES (A Major - Bright, Interlocking, & Celebratory)
+# ==========================================================
+
+# The "Highlife" Kick. 
+# A syncopated, driving march. Hits on 1 and the 'and' of 2 (step 6). 
+# (3 x's, 3 elements)
+s_kick = gen_score("x.....x.........", [
+  :c4, {note: :c4, amp: 0.8}, {note: :c4, amp: 0.6}
+])
+
+# Crisp, organic snare strictly on beats 2 and 4, with a ghost note. (3 x's, 3 elements)
+s_snare = gen_score("....x.....x.x...", [
+  :c4, {note: :c4, amp: 0.4}, {note: :c4, amp: 1.0}
+])
+
+# Continuous, driving 16th shaker. (8 x's, 2 elements)
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15}
+])
+
+# The "Analog" Bass (A Major).
+# Plays a deep, melodic, syncopated line. 
+# Mid cutoff (80) and short release (0.15) create a warm, percussive "thwack".
+# (6 x's, 6 elements)
+s_bass = gen_score("x..x.x..x..x.x..", [
+  {note: :a1, release: 0.15, cutoff: 80, amp: 1.0}, 
+  {note: :a1, release: 0.15, cutoff: 80, amp: 0.8}, 
+  {note: :e1, release: 0.15, cutoff: 80, amp: 1.0}, 
+  {note: :d1, release: 0.15, cutoff: 80, amp: 0.8}, 
+  {note: :c2, release: 0.15, cutoff: 80, amp: 1.0}, 
+  {note: :d1, release: 0.15, cutoff: 80, amp: 0.8}
+])
+
+# The "Interlocking" Guitar Stabs (Amaj7 to Dmaj7).
+# Uses :play_pluck. Plays continuous, rapid 16th notes (a Highlife arpeggio).
+# Microscopic release (0.05) and low coef (0.2) create a sharp, staccato "chuka".
+# (16 x's, 16 elements)
+guitar_notes = [:a3, :cs4, :e4, :a4, :cs4, :e4, :a4, :cs4, 
+                :d4, :fs4, :a4, :d5, :fs4, :a4, :d5, :fs4]
+guitar_data = guitar_notes.map { |n| {note: n, amp: 0.5, release: 0.05, coef: 0.2} }
+s_guitar = gen_score("x.x.x.x.x.x.x.x.", guitar_data)
+
+# Piercing, "Brass/Flute" Lead (A Major Pentatonic).
+# Uses :play_fm with a high divisor (4) and mid depth (3) to create a sharp, 
+# brassy, analog tone. Routed through the global tape echo. (6 x's, 6 elements)
+lead_notes = [:a5, :cs5, :e5, :a5, :g5, :e5]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 4, depth: 3, release: 0.2} }
+s_lead = gen_score("x..x..x..x..x..x", lead_data)
+
+# "Vocal Shout" Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# High density (3) and tiny size (0.05) creates a raw, rhythmic, 
+# celebratory vocal skip. (1 x, 1 element)
+s_grain = gen_score("x...............", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.05, amp: 0.6}
+])
+
+# ==========================================================
+# 3. THE PLAYBOOK
+# ==========================================================
+playbook = (ring
+  # Scene 1: The Jam - Just the analog bass, interlocking guitar, and shout (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_pluck, s_guitar, 4], [:play_grain, s_grain, 4] ],
+  
+  # Scene 2: The Groove - Add the syncopated Highlife drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+    
+  # Scene 3: The Drop - The piercing, brass/flute lead drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_pluck, s_guitar, 8], [:play_grain, s_grain, 8], 
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+    [:play_lead, s_lead, 8] ]
+)
+
+# ==========================================================
+# 4. RUN
+# ==========================================================
+start_engine(playbook)
+
+# ==========================================================
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INTERLOCKING GROOVES]
+# 
+# 1. The Interlocking Guitar: Look at `s_guitar`. The `:play_pluck` synth 
+#    plays on EVERY single 16th step, mapping out a rapid, arpeggiated Highlife 
+#    line. By using a microscopic `release` (0.05) and a very low `coef` (0.2), 
+#    the engine turns the pluck into a sharp, percussive, staccato "chuka" that 
+#    perfectly mimics the interlocking, 16th-note guitar style of West African 
+#    Highlife.
+#
+# 2. The Analog Bass Drive: Look at `s_bass`. The `:play_sub` synth plays a 
+#    syncopated, melodic line that weaves perfectly between the kicks. By using 
+#    a mid-range `cutoff` (80) and a short `release` (0.15), the engine turns 
+#    the detuned sawtooth into a warm, percussive "thwack" that anchors the 
+#    track's driving, danceable momentum.
+#
+# 3. FM as Brass/Flute: The `s_lead` sequence uses `divisor: 4` and `depth: 3`. 
+#    This harmonic ratio produces a sharp, brassy, analog tone that cuts through 
+#    the heavy mix. Because it's routed through the global tape echo bus, the 
+#    sparse notes smear into a soaring, cascading melody that perfectly mimics 
+#    the celebratory, festival atmosphere of Burger Highlife.
+# ==========================================================

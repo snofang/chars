@@ -1,24 +1,29 @@
 # ==========================================================
-# PLAYBOOK: 90s SYMPHONIC BLACK METAL
-# (Pioneered by Emperor, Dimmu Borgir, and Cradle of Filth)
-# ========================================================== 
+# PLAYBOOK: 90s SYMPHONIC POWER METAL / FANTASY METAL
+# (Pioneered by Rhapsody, Blind Guardian, and Nightwish)
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 90s Symphonic Black Metal.
-# We have explored Black Metal and Symphonic Metal, but Symphonic Black Metal 
-# is the sound of pure, freezing Scandinavian aggression fused with high-fantasy 
-# classical grandeur. It relies on a blistering "blast beat" (continuous, rapid 
-# 8th notes on kick and snare), a massively distorted, continuous 16th-note 
-# "tremolo picked" guitar riff, lush, sweeping orchestral string pads, and a 
-# piercing, chaotic "shredding" guitar solo that feels like a blizzard tearing 
-# through a medieval castle.
+# We have explored Speed Metal (which is fast and melodic) and Symphonic 
+# Black Metal (which is dark and cold). Symphonic Power Metal is the sound 
+# of high-fantasy, dragon-slaying anthems. It fuses the galloping, double-kick 
+# drumming of power metal with massive, sweeping classical string sections, 
+# soaring, virtuosic synth/guitar solos, and a triumphant, harmonic minor 
+# scale. The engine tests its ability to blend extreme rhythmic density with 
+# lush, cinematic orchestration.
 #
-# This playbook perfectly demonstrates how to combine extreme rhythmic 
-# aggression with lush, cinematic atmosphere. By using the `:play_fm` synth 
-# with an extreme `depth` for the distorted guitars, and pairing it with 
-# massive `attack`/`release` Hashes on the `:play_chords` synth to simulate 
-# a string section, the engine creates a massive, theatrical, and deeply epic 
-# atmosphere.
+# [THE CAREFULLY DESCRIBED DNA]
+# 1. Tempo: 160 BPM. Blistering, heroic, and driving.
+# 2. Harmonic Center: C# Harmonic Minor. Exotic, epic, and triumphant.
+# 3. Rhythmic Skeleton: A relentless "double-kick" gallop (continuous 8th 
+#    notes on kick). Heavy snares on 2 and 4. Fast 16th hats.
+# 4. Timbral Palette:
+#    - Bass: Distorted, continuous 16th-note "chug" bass (extreme cutoff).
+#    - Chords: Massive, distorted power chords (FM, extreme depth).
+#    - Strings: Lush, slow-attacking orchestral string pads (extreme attack/release).
+#    - Lead: Piercing, "shredding" synth/guitar solo (FM, high cutoff, rapid 16ths).
+#    - Texture: Massive, celestial "choir" drone (granular, pitched up, long size).
+# 5. Arrangement: Intro (Strings/Choir) -> Verse (Double Kick/Chug) -> Drop (Solo).
 # ==========================================================
 
 use_bpm 160
@@ -29,76 +34,79 @@ use_bpm 160
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
-# 2. THE SCORES (E Minor - Fast, Dark, & Orchestral)
+# 2. THE SCORES (C# Harmonic Minor - Epic, Triumphant, & Fast)
 # ==========================================================
 
-# The "Blast Beat" Kick. 
-# Plays continuous, driving 8th notes. (8 x's, 8 elements)
+# The "Double Kick" Drum. 
+# A blistering, continuous 8th-note gallop. (8 x's, 8 elements)
 s_kick = gen_score("x.x.x.x.x.x.x.x.", [:c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4])
 
-# The "Blast Beat" Snare. 
-# Plays continuous 8th notes in sync with the kick. (8 x's, 8 elements)
-s_snare = gen_score("x.x.x.x.x.x.x.x.", [:c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4])
+# Heavy, echoing snare strictly on beats 2 and 4. (2 x's, 1 element)
+s_snare = gen_score("....x.......x...", [:c4])
 
 # Fast, driving 16th hats to add to the chaotic wall of sound. (8 x's, 2 elements)
 s_hats = gen_score("x.x.x.x.x.x.x.x.", [
   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}
 ])
 
-# The "Tremolo Picked" Distorted Guitar (E Minor).
+# The "Chug" Bass (C# Harmonic Minor).
+# Plays a continuous, driving 16th-note line. 
+# Extreme cutoff (120) and microscopic release (0.04) create a relentless, 
+# grinding, distorted churn that mimics palm-muted rhythm guitars. (16 x's, 16 elements)
+bass_notes = [:cs2, :cs2, :cs2, :cs2, :cs2, :cs2, :cs2, :cs2, 
+              :b1, :b1, :b1, :b1, :cs2, :cs2, :cs2, :cs2]
+bass_data = bass_notes.map { |n| {note: n, cutoff: 120, release: 0.04, amp: 1.2} }
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
+
+# Massive, "Distorted" Power Chords (C#5 to B5).
 # Uses :play_fm with a low divisor (2) and extreme depth (6) to create a 
-# harsh, buzzy square wave. Plays continuous, rapid 16th notes. (16 x's, 16 elements)
-guitar_notes = [:e3, :b3, :e3, :b3, :e3, :b3, :e3, :b3, 
-                :c3, :g3, :c3, :g3, :d3, :a3, :d3, :a3]
-guitar_data = guitar_notes.map { |n| {note: n, divisor: 2, depth: 6, release: 0.05, amp: 0.7} }
-s_guitar = gen_score("xxxxxxxxxxxxxxxx", guitar_data)
+# harsh, grinding hit. Plays a classic, palm-metal riff. (3 x's, 3 elements)
+s_chords = gen_score("x.....x...x.....", [
+  {note: [:cs3, :gs3], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:b2, :fs3], divisor: 2, depth: 6, release: 0.15, amp: 0.7},
+  {note: [:cs3, :gs3], divisor: 2, depth: 6, release: 0.15, amp: 0.7}
+])
 
-# Deep, distorted bass (E Minor).
-# Plays continuous 8th notes. High cutoff (110) and short release (0.1). (8 x's, 8 elements)
-bass_notes = [:e1, :e1, :e1, :e1, :c1, :c1, :d1, :d1]
-bass_data = bass_notes.map { |n| {note: n, cutoff: 110, release: 0.1, amp: 1.2} }
-s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_data)
-
-# Lush, "String Section" Chords (Em to Cmaj to Dmaj).
+# Lush, "Orchestral String" Pad (C#m to F#m).
 # Hit on the downbeats. The slow 1.5-beat attack and massive 4.0-beat release 
 # blur the chords together into a continuous, cinematic orchestral wave. 
 # (2 x's, 2 elements)
 s_strings = gen_score("x.......x.......", [
-  {note: [:e3, :g3, :b3, :e4], cutoff: 70, attack: 1.5, release: 4.0, amp: 0.5},
-  {note: [:d3, :fs3, :a3, :d4], cutoff: 70, attack: 1.5, release: 4.0, amp: 0.5}
+  {note: [:cs4, :e4, :gs4, :b4], cutoff: 80, attack: 1.5, release: 4.0, amp: 0.4},
+  {note: [:fs3, :a3, :cs4, :e4], cutoff: 80, attack: 1.5, release: 4.0, amp: 0.4}
 ])
 
-# Piercing, "Shredding" Guitar Solo (E Minor Pentatonic).
-# Uses :play_lead routed through the global tape echo bus. The long release (0.2) 
-# and rapid, 8th-note melody create a soaring, chaotic solo. (8 x's, 8 elements)
-lead_notes = [:e5, :g5, :a5, :b5, :a5, :g5, :e5, :d5]
-lead_data = lead_notes.map { |n| {note: n, amp: 0.7, cutoff: 110, release: 0.2} }
+# Piercing, "Shredding" Synth/Guitar Solo (C# Harmonic Minor).
+# Uses :play_fm with a high divisor (3) and mid depth (4) to create a sharp, 
+# brassy, analog tone. Routed through the global tape echo. (8 x's, 8 elements)
+lead_notes = [:cs5, :ds5, :e5, :fs5, :gs5, :a5, :b5, :cs6]
+lead_data = lead_notes.map { |n| {note: n, amp: 0.7, divisor: 3, depth: 4, release: 0.1} }
 s_lead = gen_score("x.x.x.x.x.x.x.x.", lead_data)
 
-# "Choir" Drone (Granular Synth).
-# Using the built-in :ambi_choir sample.
-# Long size (0.4) and low density (1) creates a slow, evolving background texture 
-# that mimics a massive, haunting choir. (1 x, 1 element)
+# "Celestial" Choir Drone (Granular Synth).
+# Using the built-in :ambi_choir sample. Pitched UP.
+# Massive size (0.5s) and low density (1) creates a slow, evolving, 
+# celestial background texture. (1 x, 1 element)
 s_grain = gen_score("x...............", [
-  {note: :e3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5}
+  {note: :cs5, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.5, amp: 0.5}
 ])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: The Overture - Just the tremolo guitar, strings, and choir (4 bars)
-  [ [:play_fm, s_guitar, 4], [:play_chords, s_strings, 4], [:play_grain, s_grain, 4] ],
+  # Scene 1: The Overture - Just the orchestral strings, choir, and chug bass (4 bars)
+  [ [:play_chords, s_strings, 4], [:play_grain, s_grain, 4], [:play_sub, s_bass, 4] ],
   
-  # Scene 2: The Blizzard - Add the blast beat drums and bass (8 bars)
-  [ [:play_fm, s_guitar, 8], [:play_chords, s_strings, 8], [:play_grain, s_grain, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8] ],
+  # Scene 2: The Charge - Add the blistering double-kick drums and power chords (8 bars)
+  [ [:play_chords, s_strings, 8], [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
+    [:play_fm, s_chords, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Climax - The piercing shredding guitar solo drops (8 bars)
-  [ [:play_fm, s_guitar, 8], [:play_chords, s_strings, 8], [:play_grain, s_grain, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_lead, s_lead, 8] ]
+  # Scene 3: The Climax - The piercing, shredding synth/guitar solo drops (8 bars)
+  [ [:play_chords, s_strings, 8], [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
+    [:play_fm, s_chords, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], 
+    [:play_hats, s_hats, 8], [:play_lead, s_lead, 8] ]
 )
 
 # ==========================================================
@@ -107,25 +115,24 @@ playbook = (ring
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ORCHESTRAL EXTREMITY]
+# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN FANTASY EPICS]
 # 
-# 1. The Blast Beat: Look at `s_kick` and `s_snare`. They both play 
-#    continuous 8th notes at 160 BPM, hitting simultaneously on every beat. 
-#    This creates a relentless, mechanical wall of percussion that perfectly 
-#    mimics the legendary "blast beat" drumming of Symphonic Black Metal. 
-#    The engine's strict master clock ensures this chaotic rhythm locks 
-#    together with absolute mathematical precision.
+# 1. The Harmonic Minor Scale: Look at `s_lead` and `s_strings`. The melody 
+#    uses C#, D#, E, F#, G#, A, B, C#. The augmented 2nd interval between B 
+#    and C# creates the exotic, "Middle Eastern" sound that defines the genre, 
+#    evoking images of deserts, castles, and dragons. The engine's strict 
+#    16-step grid ensures this rapid, complex melody fires flawlessly.
 #
 # 2. The Orchestral Swell: Look at `s_strings`. The Hashes specify an `attack` 
 #    of `1.5` and a `release` of `4.0`. Because the engine reads these 
 #    Hashes, the chords don't just hit; they slowly swell into the mix and 
 #    fade away over five whole beats, creating a continuous, blurred wave 
 #    of warm harmony that perfectly mimics a lush, cinematic string section 
-#    soaring over a freezing metal band.
+#    soaring over a heavy metal band.
 #
-# 3. FM as a Distorted Amp: Look at `s_guitar` and `s_lead`. The `:play_fm` 
-#    synth is given an extreme `depth` (6). This harsh harmonic ratio forces 
-#    the FM modulator to grind the carrier wave, creating a piercing, buzzy 
-#    square wave. By playing continuous, rapid 16th notes, the engine perfectly 
-#    mimics the "tremolo picking" technique used by black metal guitarists.
+# 3. The Double Kick Gallop: Look at `s_kick`. It plays a blistering, 
+#    continuous 8th-note pattern at 160 BPM. This creates a relentless, 
+#    mechanical foundation that perfectly mimics the legendary "double kick" 
+#    drumming of power metal. The engine's strict master clock ensures this 
+#    chaotic rhythm locks perfectly with the galloping bass and shredding lead.
 # ==========================================================
