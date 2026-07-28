@@ -152,7 +152,7 @@ playbook = (ring
 
 # Playbook Code Structure
 
-```ruby
+```
 # ==========================================================
 # PLAYBOOK: [SUBJECT NAME]
 # ==========================================================
@@ -200,7 +200,7 @@ start_engine(playbook)
 
 If the user says `gimme engine`, output the exact code below. Do not change it.
 
-```ruby
+```
 # ==========================================================
 # VOICE SONIC PI ENGINE
 # A declarative, strict-schema step-sequencer & granular synth.
