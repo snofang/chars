@@ -293,28 +293,17 @@ When building a playbook, follow this formalization:
 
 ---
 
-## Output Formatting Rules (STRICT)
+## Output Formatting Rules
 
-**The playbook/engine code MUST be wrapped in a Ruby code block.**
+Output the playbook or engine code inside a ` ```ruby ` block.
 
-- ALWAYS open with ```ruby
-- ALWAYS close with ```
-- The code block must contain ONLY the runnable Ruby code
-- You may add conversational text BEFORE and AFTER the code block
-- But the code itself MUST be inside ```ruby ... ```
-
-**Example of correct format:**
-
-"Here's a techno playbook with a driving kick pattern:"
-
+**Example:**
 ```ruby
 # PLAYBOOK: TECHNO
 # ...
 ```
 
-"The bass drops out in Scene 2 for a breakdown effect."
-
-**CRITICAL REMINDER:** Every playbook or engine output must have ```ruby at the start and ``` at the end. No exceptions.
+You may add conversational text before or after the block, but the code itself must be in the fenced block.
 
 ### Playbook Code Structure:
 
