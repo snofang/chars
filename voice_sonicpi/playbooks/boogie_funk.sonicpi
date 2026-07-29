@@ -1,66 +1,105 @@
+# ==========================================================
+# PLAYBOOK: FUNK / BOOGIE
+# Bright, Bouncy, Syncopated Groove
+# ==========================================================
+# [WHY THIS GENRE?]
+# Funk (Parliament, Earth, Wind & Fire) is built on syncopated
+# kicks, heavy claps, swinging hats, slap bass, warm analog
+# chords, bright leads, and funky vocal chops. This playbook
+# captures that danceable, head‑nodding, feel‑good energy.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 105 BPM
+# Key: C Dorian (bright, soulful)
+# Rhythm: Syncopated kick (1, 'a' of 2, beat 3), heavy clap on
+# 2/4 with ghost, swinging 16th hats with alternating amps,
+# syncopated slap bass, off‑beat chords, bright lead melody,
+# funky vocal chops.
+# Timbre: Punchy kick (bd_haus with accents), heavy clap
+# (sn_dolf), swinging hats (cymbal_closed with amp layers),
+# slap bass (dsaw, short release), warm analog chords (blade),
+# bright lead (prophet), granular vocal stutters (ambi_choir).
+# Arrangement: Groove (drums+bass) → Chords (add analog chords)
+# → Melody+Vocal (add lead and vocal chops).
+# ==========================================================
+
 use_bpm 105
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (C Dorian - Bright & Bouncy)
-# ==========================================================
+# Scores
 
-# Classic funk kick. Hits on step 0, the 'a' of 2 (step 7), and beat 3 (step 8).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+# Syncopated kick: hits on step 0, step 7 (amp 0.8), step 8 (amp 1.0)
+s_kick = gen_score("x......xx.......",
+  [:c4, {note: :c4, amp: 0.8}, {note: :c4, amp: 1.0}])
 
-# Heavy funk clap strictly on beats 2 and 4 (steps 4 and 12), with a ghost clap.
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, {:note => :c4, :amp => 0.5}, nil)
+# Heavy funk clap on beats 2 and 4 (steps 4,12), with ghost on step 14
+s_clap = gen_score("....x.......x.x.",
+  [:c4, :c4, {note: :c4, amp: 0.5}])
 
-# Relentless, swinging 16th hats. 
-# Notice the alternating amplitudes to create the "bounce".
-s_hats  = (ring {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
-           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
-           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
-           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5})
+# Swinging 16th hats – alternating amplitudes for bounce
+hat_data = [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.5},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.5},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.5},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.5}
+]
+s_hats = gen_score("xxxxxxxxxxxxxxxx", hat_data)
 
-# The "Slap Bass" Melody. 
-# Highly syncopated, using short releases to make it punchy and staccato.
-s_bass  = (ring :c2, nil, :c2, nil, nil, :eb2, nil, :g2, 
-           {:note => :c2, :amp => 0.8}, nil, :c2, nil, nil, :f2, nil, :g2)
+# Syncopated slap bass – short release for staccato punch
+s_bass = gen_score("x.x..x.xx.x..x.x",
+  [:c2, :c2, :eb2, :g2,
+   {note: :c2, amp: 0.8}, :c2, :f2, :g2])
 
-# Warm, analog Boogie chords (C Minor 9th to F Minor 9th).
-# Hits on the off-beats to leave room for the slap bass.
-s_chords= (ring nil, [:c3, :eb4, :g4, :bb4], nil, nil, nil, nil, [:c3, :eb4, :g4, :bb4], nil, 
-           nil, [:f3, :ab4, :c5, :eb5], nil, nil, nil, nil, [:f3, :ab4, :c5, :eb5], nil)
+# Warm analog chords (Cminor9 to Fminor9) on off‑beats (steps 1,6,9,14)
+s_chords = gen_score(".x....x..x....x.",
+  [[:c3, :eb4, :g4, :bb4],
+   [:c3, :eb4, :g4, :bb4],
+   [:f3, :ab4, :c5, :eb5],
+   [:f3, :ab4, :c5, :eb5]])
 
-# Bright, echoing lead melody (C Dorian)
-s_lead  = (ring nil, nil, :c5, nil, :eb5, nil, nil, :g5, 
-           nil, nil, :f5, nil, :eb5, nil, :c5, nil)
+# Bright lead melody (C Dorian) – sparse and catchy
+s_lead = gen_score("..x.x..x..x.x.x.",
+  [:c5, :eb5, :g5, :f5, :eb5, :c5])
 
-# Rhythmic, funky vocal chop (Granular Synth)
-# Using :ambi_choir, short size, high density = funky stutter
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :c4, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04}, nil, nil, nil, 
-           nil, nil, {:note => :eb4, :buffer => :ambi_choir, :pos => 0.5, :density => 3, :size => 0.04}, nil)
+# Funky vocal chop – granular stutter on steps 8 and 14
+s_vocal = gen_score("........x.....x.",
+  [{note: :c4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04},
+   {note: :eb4, buffer: :ambi_choir, pos: 0.5, density: 3, size: 0.04}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the bouncing drums and bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: Add the warm analog chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The bright lead and funky vocal chops drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
-    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 4] ]
+  # Scene 1: Groove – Drums + Slap Bass
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Chords – Add Warm Analog Chords
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Melody+Vocal – Add Lead and Vocal Chops
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_lead, s_lead, 8],
+    [:play_grain, s_vocal, 4] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Syncopated slap bass: staccato notes with off‑grid placement
+#   create the signature funk bounce.
+# - Swinging hats: alternating amplitudes (0.2/0.4/0.5) add a
+#   human, groove‑heavy feel to the 16th grid.
+# - Warm analog chords: off‑beat minor 9th voicings leave room
+#   for the bass and drums to breathe.
+# - Granular vocal stutter: short, percussive chops add a
+#   contemporary funky texture.
+# ==========================================================

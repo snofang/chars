@@ -1,100 +1,108 @@
 # ==========================================================
 # PLAYBOOK: CINEMATIC TRAP / "ASTROWORLD" ERA
-# (Pioneered by Travis Scott, Don Toliver, and WondaGurl)
-# ========================================================== 
-# 
+# Dark, Massive, Psychedelic Stadium Energy
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Cinematic Trap.
-# We have explored standard Trap and Dark R&B, but Cinematic Trap is the 
-# sound of 2010s/2020s stadium rap. It takes the half-time 75 BPM grid 
-# and injects it with massive, booming 808 basses, dark, sweeping minor 
-# pads, and echoing, autotuned flute/whistle melodies. 
+# Cinematic Trap (Travis Scott, Don Toliver) takes the half‑time
+# 75 BPM grid and injects it with booming 808s, dark sweeping
+# pads, and echoing autotuned flute melodies. This playbook
+# captures that slow, suffocating, stadium‑sized atmosphere.
 #
-# This playbook perfectly demonstrates how to use immense negative space 
-# and massive `release` times to create a slow, suffocating, and psychedelic 
-# atmosphere that feels like floating through a dark, massive stadium.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 75 BPM
+# Key: F minor (dark, massive)
+# Rhythm: Half‑time kick with syncopated ghosts (1, 'e' of 3,
+# 'a' of 4), snare on beat 3, frantic trap hats with rolls,
+# booming 808 on downbeats, lush chords on downbeats,
+# echoing flute melody, ghostly vocal drone.
+# Timbre: Heavy kick (bd_haus with accents), massive snare
+# (sn_dolf), frantic hats (cymbal_closed with rolls), booming
+# 808 (dsaw, long release, low cutoff), dark minor 9th chords
+# (blade, slow attack, long release), autotuned flute FM
+# (divisor 3, depth 1, tape echo), granular vocal drone.
+# Arrangement: Void (chords+808+grain) → Groove (add drums)
+# → Trip (add flute melody).
 # ==========================================================
 
 use_bpm 75
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Dark, Massive, & Psychedelic)
-# ==========================================================
+# Scores
 
-# Half-time, heavy kick. 
-# Hits on step 0, the 'e' of 3 (step 10), and the 'a' of 4 (step 14).
-s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil)
+# Half‑time kick with syncopated ghosts (steps 0, 10, 14)
+s_kick = gen_score("x.........x..x.",
+  [{note: :c4, amp: 1.0},
+   {note: :c4, amp: 0.8},
+   {note: :c4, amp: 0.6}])
 
-# Massive, echoing snare strictly on beat 3 (step 8).
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+# Massive echoing snare on beat 3 (step 8)
+s_snare = gen_score("........x.......",
+  [{note: :c4, amp: 1.0}])
 
-# Frantic, rolling Trap hats with rising amplitude rolls.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, nil, nil, {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, nil)
+# Frantic trap hats with rising rolls (steps 0,3,4,5,8,11,12,13,14)
+s_hats = gen_score("x..xxxx..x..xxxx",
+  [{note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.5},
+   {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.5},
+   {note: :c4, amp: 0.6}])
 
-# Massive, booming 808 Bass (F Minor).
-# Massive release (1.5) allows the bass to ring out and carry the dark melody.
-s_bass  = (ring {:note => :f1, :release => 1.5, :cutoff => 70, :amp => 1.2}, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :ab1, :release => 1.5, :cutoff => 70, :amp => 1.0}, nil, nil, nil, {:note => :c2, :release => 1.5, :cutoff => 70, :amp => 1.0}, nil)
+# Booming 808 bass – long release, low cutoff (steps 0, 10, 14)
+s_bass = gen_score("x.........x..x.",
+  [{note: :f1, release: 1.5, cutoff: 70, amp: 1.2},
+   {note: :ab1, release: 1.5, cutoff: 70, amp: 1.0},
+   {note: :c2, release: 1.5, cutoff: 70, amp: 1.0}])
 
-# Dark, lush minor 9th chords (Fm9 to Abm9).
-# Hit on the downbeats. The slow 0.5-beat attack and massive 2.5-beat release 
-# blur the chords together into a continuous, psychedelic wave.
-s_chords= (ring {:note => [:f3, :ab3, :c4, :eb4], :cutoff => 90, :attack => 0.5, :release => 2.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:ab3, :cb4, :eb4, :gb4], :cutoff => 90, :attack => 0.5, :release => 2.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# Dark lush minor 9th chords – slow attack, long release (steps 0, 8)
+s_chords = gen_score("x.......x.......",
+  [{note: [:f3, :ab3, :c4, :eb4], cutoff: 90, attack: 0.5, release: 2.5, amp: 0.6},
+   {note: [:ab3, :cb4, :eb4, :gb4], cutoff: 90, attack: 0.5, release: 2.5, amp: 0.6}])
 
-# Echoing, "Autotuned Flute" Melody (F Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) and low depth (1) to create a soft, 
-# sine-like wave. Routed through the engine's tape echo for a cavernous smear.
-s_fm    = (ring nil, nil, nil, nil, {:note => :f5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil, {:note => :ab5, :amp => 0.4, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil, {:note => :c6, :amp => 0.5, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil)
+# Echoing autotuned flute melody – tape echo (steps 4, 8, 12)
+s_fm = gen_score("....x...x...x...",
+  [{note: :f5, amp: 0.5, divisor: 3, depth: 1, release: 1.0},
+   {note: :ab5, amp: 0.4, divisor: 3, depth: 1, release: 1.0},
+   {note: :c6, amp: 0.5, divisor: 3, depth: 1, release: 1.0}])
 
-# Pitched-down, ghostly "Vocal" drone (Granular Synth).
-# Long size (0.3) and low density (1) creates a slow, evolving background 
-# texture that sounds like a choir echoing in an empty stadium.
-s_grain = (ring {:note => :f3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.3, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :c3, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.3, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# Ghostly vocal drone – slow evolving grain (steps 0, 8)
+s_grain = gen_score("x.......x.......",
+  [{note: :f3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.6},
+   {note: :c3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.3, amp: 0.6}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Void - Just the massive chords, 808, and ghostly vocal (4 bars)
-  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
-  
-  # Scene 2: The Groove - Add the half-time drums and rolling hats (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: The Trip - The echoing autotuned flute melody drops (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 1: Void – Chords + 808 + Grain
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4],
+    [:play_grain, s_grain, 4] ],
+
+  # Scene 2: Groove – Add Drums
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8],
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+
+  # Scene 3: Trip – Add Flute Melody
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8],
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_lead, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CINEMATIC WEIGHT]
-# 
-# 1. The 808 Weight: Look at `s_bass`. The `:play_sub` synth is given a 
-#    `release` of `1.5` (nearly two whole beats) and a low `cutoff` of `70`. 
-#    Because the BPM is 75, that low F note rings out for over a second, 
-#    creating a massive, booming low-end that carries the dark melody and 
-#    provides immense, suffocating weight.
-#
-# 2. Swelling Psychedelia: Look at `s_chords`. The Hashes specify an `attack` 
-#    of `0.5` and a `release` of `2.5`. Because the engine reads these 
-#    Hashes, the chords don't just hit; they slowly swell into the mix and 
-#    fade away, creating a continuous, blurred wave of dark harmony that 
-#    feels like floating through a massive, dark stadium.
-#
-# 3. Echoing Space: Cinematic Trap relies on extreme sparsity. 80% of the 
-#    `s_hats` and `s_fm` grids are `nil`. The engine honors these rests 
-#    perfectly, letting the reverb tails of the snare and the delay tails 
-#    of the FM melody ring out into the void, creating a dark, cinematic 
-#    atmosphere that feels larger than life.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The 808 weight: release 1.5 and cutoff 70 create a booming,
+#   suffocating low‑end that carries the dark melody.
+# - Swelling psychedelia: attack 0.5 and release 2.5 turn chords
+#   into blurred waves of dark harmony – the engine's grid
+#   locks them with precision.
+# - Echoing space: sparse patterns with gaps let reverb and
+#   delay tails ring into the void, creating a larger‑than‑life
+#   cinematic atmosphere.
 # ==========================================================

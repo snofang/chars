@@ -1,76 +1,101 @@
+# ==========================================================
+# PLAYBOOK: BALLAD / CRYING GUITAR
+# Emotional, Legato, Weeping Melody
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook captures the emotional weight of a slow ballad,
+# featuring a crying guitar melody with overlapping, legato
+# phrasing. Long release times (up to 1.5 beats) allow notes to
+# ring out and blend into each other, creating a continuous,
+# weeping line over a minimal rhythm section.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 75 BPM
+# Key: E minor (melancholic, emotional)
+# Rhythm: Minimal soft kick on 1 and 3, snare on 2 and 4,
+# sustained bass on downbeats, slow chord stabs.
+# Timbre: Soft kick (bd_haus), gentle snare (sn_dolf),
+# warm sustained bass (dsaw), lush chords (blade), crying
+# lead guitar (prophet with long release, tape echo).
+# Arrangement: Intro (chords+bass) → Verse 1 (melody 1) →
+# Verse 2 (melody 2) → Climax (descending melody 3).
+# ==========================================================
+
 use_bpm 75
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (E Minor Ballad)
-# ==========================================================
+# Scores
 
-# Soft, minimal rhythm section to let the guitar shine
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
-s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Minimal rhythm section
+s_kick  = gen_score("x.......x.......", [:c4])
+s_snare = gen_score("....x.......x...", [:c4])
 
-# Warm, sustained bass notes
-s_bass  = (ring :e2, nil, nil, nil, nil, nil, nil, nil, :d2, nil, nil, nil, nil, nil, nil, nil)
+# Warm sustained bass notes
+s_bass  = gen_score("x.......x.......", [:e2, :d2])
 
 # Slow chord stabs (E minor to D Major)
-# FIXED: :f#3 changed to :fs3
-s_chords = (ring [:e3, :g3, :b3, :e4], nil, nil, nil, nil, nil, nil, nil, 
-            [:d3, :fs3, :a3, :d4], nil, nil, nil, nil, nil, nil, nil)
+s_chords = gen_score("x.......x.......",
+  [[:e3, :g3, :b3, :e4],
+   [:d3, :fs3, :a3, :d4]])
 
 # --- THE CRYING GUITAR MELODIES ---
-# Notice the 'release: 1.5' and 'release: 1.0' in the Hashes. 
-# Because the steps are only 0.25 beats apart, a release of 1.5 means 
-# the note rings out for 6 steps, heavily overlapping the next note.
-# This creates a continuous, weeping legato phrasing.
+# Long release times (1.5 and 1.0) create overlapping, legato phrasing
 
-s_lead_1 = (ring 
-  {note: :b4, release: 1.5, amp: 0.9, cutoff: 90}, nil, nil, nil, 
-  {note: :g4, release: 1.0, amp: 0.7, cutoff: 85}, nil, nil, nil, 
-  {note: :e4, release: 1.5, amp: 1.0, cutoff: 95}, nil, nil, nil, 
-  nil, nil, nil, nil
-)
+# Melody 1: Weeping opening phrase
+s_lead_1 = gen_score("x...x...x.......",
+  [{note: :b4, release: 1.5, amp: 0.9, cutoff: 90},
+   {note: :g4, release: 1.0, amp: 0.7, cutoff: 85},
+   {note: :e4, release: 1.5, amp: 1.0, cutoff: 95}])
 
-s_lead_2 = (ring 
-  {note: :d5, release: 1.5, amp: 0.9, cutoff: 90}, nil, nil, nil, 
-  {note: :b4, release: 1.0, amp: 0.7, cutoff: 85}, nil, nil, nil, 
-  {note: :g4, release: 1.5, amp: 1.0, cutoff: 95}, nil, nil, nil, 
-  nil, nil, nil, nil
-)
+# Melody 2: Higher, answering phrase
+s_lead_2 = gen_score("x...x...x.......",
+  [{note: :d5, release: 1.5, amp: 0.9, cutoff: 90},
+   {note: :b4, release: 1.0, amp: 0.7, cutoff: 85},
+   {note: :g4, release: 1.5, amp: 1.0, cutoff: 95}])
 
-# A dramatic descending climb to end the phrase
-s_lead_3 = (ring 
-  {note: :e5, release: 1.5, amp: 0.9, cutoff: 95}, nil, nil, nil, 
-  {note: :d5, release: 1.0, amp: 0.8, cutoff: 90}, nil, nil, nil, 
-  {note: :b4, release: 1.0, amp: 0.8, cutoff: 90}, nil, nil, nil, 
-  {note: :a4, release: 0.5, amp: 0.6, cutoff: 85}, nil, {note: :g4, release: 0.5, amp: 0.6, cutoff: 85}, nil
-)
+# Melody 3: Dramatic descending climb to end the phrase
+s_lead_3 = gen_score("x...x...x...x.x.",
+  [{note: :e5, release: 1.5, amp: 0.9, cutoff: 95},
+   {note: :d5, release: 1.0, amp: 0.8, cutoff: 90},
+   {note: :b4, release: 1.0, amp: 0.8, cutoff: 90},
+   {note: :a4, release: 0.5, amp: 0.6, cutoff: 85},
+   {note: :g4, release: 0.5, amp: 0.6, cutoff: 85}])
 
-# ==========================================================
-# 3. THE PLAYBOOK (Em - D - Em - D Progression)
-# ==========================================================
+# Playbook (Em - D - Em - D Progression)
 playbook = (ring
-  # Scene 1: Intro (Just chords and bass for 2 bars)
-  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2], 
+  # Scene 1: Intro – Chords + Bass (2 bars)
+  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2],
     [:play_chords, s_chords, 2] ],
-    
-  # Scene 2: Guitar enters, weeping melody (2 bars)
-  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2], 
+
+  # Scene 2: Verse 1 – Crying melody 1 enters (2 bars)
+  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2],
     [:play_chords, s_chords, 2], [:play_lead, s_lead_1, 2] ],
-    
-  # Scene 3: Guitar replies, higher melody (2 bars)
-  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2], 
+
+  # Scene 3: Verse 2 – Higher answering melody (2 bars)
+  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2],
     [:play_chords, s_chords, 2], [:play_lead, s_lead_2, 2] ],
-    
-  # Scene 4: The climax - descending cry (2 bars)
-  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2], 
+
+  # Scene 4: Climax – Descending cry (2 bars)
+  [ [:play_kick, s_kick, 2], [:play_sub, s_bass, 2],
     [:play_chords, s_chords, 2], [:play_lead, s_lead_3, 2] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Legato phrasing: release times of 1.5 and 1.0 cause notes
+#   to overlap across multiple steps (at 75 BPM, 1.5 beats = 6 steps),
+#   creating a continuous, weeping guitar line.
+# - Dynamic contrast: amp values vary between 0.6 and 1.0,
+#   adding emotional expression to the melody.
+# - Call and response: melody 1 opens (low), melody 2 answers
+#   (high), melody 3 resolves (descending) – a classic blues/
+#   ballad narrative arc.
+# - Tape echo: the Prophet synth's built‑in echo adds a
+#   cathedral‑like reverb, enhancing the emotional weight.
+# - The minimal rhythm section leaves space for the guitar
+#   to sing, making the melody the absolute focus.
+# ==========================================================

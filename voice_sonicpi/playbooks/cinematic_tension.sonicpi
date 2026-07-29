@@ -1,53 +1,83 @@
+# ==========================================================
+# PLAYBOOK: SYSTEM FAILURE / GENERATIVE DREAD
+# Rising Pulse, Random Blips, Massive Impacts
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook explores a slow‑building sense of dread – a
+# relentless 16th‑note sub‑bass pulse that grows from a whisper
+# to a roar, punctuated by massive impacts on beat 1 and random
+# generative FM blips that suggest a system glitching into chaos.
+# It's the sound of tension, anticipation, and eventual breakdown.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 60 BPM (slow, brooding)
+# Key: C minor (dark, ominous)
+# Rhythm: Single kick on beat 1, continuous 16th bass with rising
+# amplitude, sparse generative FM blips, massive dark drone.
+# Timbre: Deep sub‑bass (dsaw with amp envelope), huge kick
+# (bd_haus), dark pad (dark_ambience), generative FM blips
+# (fm with random notes from C minor scale).
+# Arrangement: Drone+Impacts (foundation) → Pulse (add rising bass)
+# → Failure (add generative blips).
+# ==========================================================
+
 use_bpm 60
 
-# ==========================================================
-# 1. REQUIRE ENGINE & GENERATIVE HELPER
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# Generative blips (High density, random C minor)
+# Generative helper (returns a ring of random notes from scale)
 define :gen_melody do |scale_notes, density = 0.5|
   16.times.map do
     if rand < density then scale_notes.choose else nil end
   end.ring
 end
 
-# ==========================================================
-# 2. THE SCORES (C Minor Dread)
-# ==========================================================
-# Relentless 16th-note sub-bass pulse. 
-# Notice how the amp grows from 0.3 to 1.5 over the 16 steps!
-s_bass  = (ring {note: :c2, amp: 0.3}, {note: :c2, amp: 0.4}, {note: :c2, amp: 0.5}, {note: :c2, amp: 0.6},
-           {note: :c2, amp: 0.7}, {note: :c2, amp: 0.8}, {note: :c2, amp: 0.9}, {note: :c2, amp: 1.0},
-           {note: :c2, amp: 1.1}, {note: :c2, amp: 1.2}, {note: :c2, amp: 1.3}, {note: :c2, amp: 1.4},
-           {note: :c2, amp: 1.5}, {note: :c2, amp: 1.5}, {note: :c2, amp: 1.5}, {note: :c2, amp: 1.5})
-           
-# Generative system failure blips
-s_fm    = gen_melody((scale :c6, :minor), 0.2)
+# Scores
 
-# Huge impacts on beat 1
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Massive impact kick on beat 1 only
+s_kick = gen_score("x...............", [:c4])
 
-# Massive dark drone
-s_pad   = (ring :c3, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Relentless 16th‑note sub‑bass pulse with growing amp
+bass_data = 16.times.map do |i|
+  amp = case i
+        when 0..11 then 0.3 + i * 0.1  # 0.3,0.4,...1.4
+        else 1.5  # steps 12-15: 1.5
+        end
+  {note: :c2, amp: amp}
+end
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Massive dark drone (sustained)
+s_pad = gen_score("x...............", [:c3])
+
+# Generative system failure blips (random notes from C minor scale)
+s_fm = gen_melody((scale :c6, :minor), 0.2)
+
+# Playbook
 playbook = (ring
-  # Scene 1: Just the drone and impacts (4 bars)
+  # Scene 1: Drone + Impacts
   [ [:play_pad, s_pad, 4], [:play_kick, s_kick, 4] ],
-  
-  # Scene 2: The pulse begins (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_kick, s_kick, 8], 
+
+  # Scene 2: Pulse begins – rising bass enters
+  [ [:play_pad, s_pad, 8], [:play_kick, s_kick, 8],
     [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: System failure - generative blips enter (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_kick, s_kick, 8], 
+
+  # Scene 3: System failure – generative blips enter
+  [ [:play_pad, s_pad, 8], [:play_kick, s_kick, 8],
     [:play_sub, s_bass, 8], [:play_fm, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The rising bass: amplitude increases from 0.3 to 1.5 over
+#   16 steps, creating a gradual swell that builds tension.
+# - Generative blips: random notes from C minor scale with low
+#   density (0.2) create sparse, unpredictable glitches.
+# - The slow tempo (60 BPM) and single kick on beat 1 give
+#   the track a massive, ominous sense of space.
+# - The dark pad anchors the harmony, while the bass and blips
+#   push the narrative from calm to chaos.
+# ==========================================================

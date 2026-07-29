@@ -1,109 +1,107 @@
 # ==========================================================
 # PLAYBOOK: BASS HOUSE / HEAVY BASS
-# (Pioneered by Jauz, Joyryde, and Habstrakt)
-# ========================================================== 
-# 
+# Aggressive, Wonky, Mainstage Energy
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Bass House.
-# We have explored Tech House (which is groovy) and Slap House (which 
-# is pop-focused). Bass House is the sound of the heavy, mainstage 
-# underground. It takes the rigid 4/4 grid of house music and injects 
-# it with massive, aggressive, "wonky" FM basslines that sound like 
-# robots fighting. 
+# Bass House (Jauz, Joyryde) injects the rigid 4/4 house grid
+# with massive, aggressive, "wonky" FM basslines that sound
+# like robots fighting. This playbook captures that heavy,
+# mainstage underground energy.
 #
-# This playbook perfectly demonstrates how to push the `:play_fm` synth 
-# to act as a thick, talking bassline. By hitting on the off-beats with 
-# rapidly changing `divisor` and `depth` Hashes, the engine creates a 
-# "talking" bass that drives the track forward with undeniable swagger.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 125 BPM
+# Key: G minor (heavy, aggressive)
+# Rhythm: 4/4 kick, clap on 2/4, off‑beat hats, wonky FM bass
+# with double‑hit bounce on off‑beats, staccato chord stabs,
+# echoing pluck melody, chopped vocal stutters.
+# Timbre: Driving kick (bd_haus), heavy dry clap (sn_dolf),
+# rigid hats (cymbal_closed with amp layers), wonky FM bass
+# (fm with changing divisor/depth), staccato minor chords
+# (blade), high pluck (fm, tape echo), granular vocal chops.
+# Arrangement: Groove (kick+hats+bass) → Vibe (add clap+
+# chords) → Drop (add pluck+vocal).
 # ==========================================================
 
 use_bpm 125
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (G Minor - Aggressive, Wonky, & Heavy)
-# ==========================================================
+# Scores
 
-# Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Relentless 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Heavy, dry, organic clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Heavy dry clap on beats 2 and 4 (steps 4 and 12)
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Off‑beat hats (steps 2,6,10,14) with alternating amps
+s_hats = gen_score("..x..x..x..x....",
+  [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
 
-# The "Wonky" Bass House Bass (G Minor).
-# Hits on the off-beats with a double-hit bounce (steps 2-3, 6-7, 10-11, 14-15).
-# The rapidly changing 'divisor' and 'depth' Hashes make the FM synth squelch 
-# and "talk" in the pockets between the kick.
-s_bass  = (ring nil, nil, {:note => :g1, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, {:note => :g1, :divisor => 3, :depth => 5, :release => 0.12, :amp => 0.8}, nil, nil, {:note => :bb1, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, {:note => :bb1, :divisor => 4, :depth => 6, :release => 0.12, :amp => 0.8}, nil, nil, {:note => :d2, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, {:note => :d2, :divisor => 3, :depth => 5, :release => 0.12, :amp => 0.8}, nil, nil, {:note => :f1, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, {:note => :f1, :divisor => 4, :depth => 6, :release => 0.12, :amp => 0.8})
+# Wonky FM bass – double‑hit bounce on off‑beats with changing divisor/depth
+bass_data = [
+  {note: :g1, divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :g1, divisor: 3, depth: 5, release: 0.12, amp: 0.8},
+  {note: :bb1, divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :bb1, divisor: 4, depth: 6, release: 0.12, amp: 0.8},
+  {note: :d2, divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :d2, divisor: 3, depth: 5, release: 0.12, amp: 0.8},
+  {note: :f1, divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :f1, divisor: 4, depth: 6, release: 0.12, amp: 0.8}
+]
+s_bass = gen_score("..xx..xx..xx..xx.", bass_data)
 
-# Staccato, minor chord stabs (Gm to Bb to D).
-# Hit sparingly on the off-beats to leave maximum room for the wonky bass.
-s_chords= (ring nil, nil, nil, nil, 
-           {:note => [:g3, :bb3, :d4], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil, nil, nil, 
-           nil, {:note => [:bb3, :db4, :f4], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil, nil, 
-           nil, nil, {:note => [:d3, :f3, :a3], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil)
+# Staccato minor chord stabs (steps 4,9,14)
+chord_data = [
+  {note: [:g3, :bb3, :d4], cutoff: 100, release: 0.15, amp: 0.6},
+  {note: [:bb3, :db4, :f4], cutoff: 100, release: 0.15, amp: 0.6},
+  {note: [:d3, :f3, :a3], cutoff: 100, release: 0.15, amp: 0.6}
+]
+s_chords = gen_score("....x....x....x.", chord_data)
 
-# High-pitched, echoing "Pluck" melody (G Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) to create a sharp, organic pluck.
-# Routed through the engine's tape echo for a cascading, stadium smear.
-s_fm    = (ring {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :bb5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, {:note => :g5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, nil)
+# High echoing pluck melody – routed through tape echo
+s_fm = gen_score("x..x.x..x..x....",
+  [{note: :g5, amp: 0.6, divisor: 3, depth: 2, release: 0.2},
+   {note: :d5, amp: 0.5, divisor: 3, depth: 2, release: 0.2},
+   {note: :bb5, amp: 0.6, divisor: 3, depth: 2, release: 0.2},
+   {note: :a5, amp: 0.5, divisor: 3, depth: 2, release: 0.2},
+   {note: :g5, amp: 0.7, divisor: 3, depth: 2, release: 0.2}])
 
-# Choppy, repetitive "Pop" vocal stutter (Granular Synth).
-# FIXED: Exactly 16 steps. High density, tiny size = a sharp, sugary vocal skip.
-s_vocal = (ring nil, nil, nil, nil, 
-           {:note => :g4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
-           nil, nil, {:note => :bb4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.03, :amp => 0.6}, nil, 
-           nil, nil, nil, nil)
+# Choppy vocal stutters – granular chops (steps 4 and 10)
+s_vocal = gen_score("....x.....x.....",
+  [{note: :g4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.03, amp: 0.6},
+   {note: :bb4, buffer: :ambi_choir, pos: 0.4, density: 2, size: 0.03, amp: 0.6}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Groove - Just the kick, off-beat hats, and wonky bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_fm, s_bass, 4] ],
-  
-  # Scene 2: The Vibe - Add the heavy claps and sparse chord stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Drop - The echoing pluck and vocal chops drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
-    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Groove – Kick, Hats, Bass
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4],
+    [:play_fm, s_bass, 4] ],
+
+  # Scene 2: Vibe – Add Clap and Chords
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8],
+    [:play_fm, s_bass, 8], [:play_snare, s_clap, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Drop – Add Pluck and Vocal
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8],
+    [:play_fm, s_bass, 8], [:play_snare, s_clap, 8],
+    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HEAVY BASS]
-# 
-# 1. The "Wonky" FM Bass: Look at `s_bass`. The `:play_fm` synth hits on the 
-#    off-beats with a double-hit bounce (steps 2-3, 6-7, etc.). By rapidly 
-#    changing the `divisor` and `depth` Hashes on every hit, the FM 
-#    modulator radically reshapes the carrier wave, creating the thick, 
-#    squelching, "talking" sound that defines Bass House (think Jauz or 
-#    Joyryde).
-#
-# 2. The Off-Beat Pocket: Look at `s_bass`, `s_hats`, and `s_chords`. They 
-#    ALL hit strictly on steps 2, 6, 10, and 14. In a 16-step grid, these 
-#    are the exact midpoints between the kicks. The engine's strict master 
-#    clock locks these together perfectly, creating a massive, bouncing 
-#    "boom-cha" momentum that forces you to dance.
-#
-# 3. Pristine Mix: Bass House is designed for massive sound systems. The 
-#    `s_fm` melody uses a high `divisor` to cut through the heavy bass, while 
-#    the `s_vocal` uses the granular engine to chop a vocal into pristine, 
-#    sugary shards. The engine's strict clock ensures these dense elements 
-#    fire with absolute mathematical precision, keeping the mix clean and 
-#    punishingly punchy.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The wonky FM bass: double‑hit bounce on off‑beats (steps
+#   2‑3, 6‑7, 10‑11, 14‑15) with changing divisor/depth creates
+#   a thick, squelching, "talking" sound.
+# - Off‑beat pocket: bass, hats, and chords all hit on the
+#   midpoints between kicks – the engine locks them for a
+#   massive "boom‑cha" momentum.
+# - Pristine mix: high FM pluck cuts through the heavy bass,
+#   while granular vocal chops add texture without muddying
+#   the low end.
 # ==========================================================

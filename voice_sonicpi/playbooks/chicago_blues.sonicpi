@@ -1,93 +1,122 @@
+# ==========================================================
+# PLAYBOOK: 12‑BAR BLUES
+# Shuffle Groove, Walking Bass, Comping Chords, Blues Lead
+# ==========================================================
+# [WHY THIS GENRE?]
+# The 12‑bar blues is the foundation of modern popular music.
+# This playbook faithfully recreates the classic form with a
+# shuffle rhythm, walking basslines, comping 7th chords, and
+# a blues‑scale lead solo with tape echo.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 105 BPM
+# Key: C (with blues inflections)
+# Rhythm: Standard shuffle groove, 8th‑note hats, walking
+# bass on 8th notes, chord stabs on the "and" of beat 2.
+# Timbre: Kick, snare, hats, walking bass (dsaw), 7th chords
+# (blade), blues lead (prophet with tape echo), harmonica
+# wail (granular on vocal sample).
+# Arrangement: 12‑bar form with scenes: Verse 1 (groove),
+# Verse 2 (lead), Turnaround (with harmonica wail).
+# ==========================================================
+
 use_bpm 105
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (12-Bar Blues in C)
-# ==========================================================
+# Scores
 
-# Rhythm Section (Standard Shuffle Groove)
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
-s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
-# 8th-note hats to drive the shuffle
-s_hats  = (ring :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil, :c4, nil)
+# Shuffle groove drums
+s_kick  = gen_score("x.......x.......", [:c4])
+s_snare = gen_score("....x.......x...", [:c4])
+s_hats  = gen_score("x.x.x.x.x.x.x.x.", [:c4])
 
-# Walking Basslines (8th notes, bouncing between root and 5th/octave)
-s_bass_C = (ring :c2, nil, :g2, nil, :c3, nil, :g2, nil, :c2, nil, :g2, nil, :c3, nil, :g2, nil)
-s_bass_F = (ring :f2, nil, :c3, nil, :f3, nil, :c3, nil, :f2, nil, :c3, nil, :f3, nil, :c3, nil)
-s_bass_G = (ring :g2, nil, :d3, nil, :g3, nil, :d3, nil, :g2, nil, :d3, nil, :g3, nil, :d3, nil)
+# Walking basslines (8th notes, all even steps)
+s_bass_C = gen_score("x.x.x.x.x.x.x.x.",
+  [:c2, :g2, :c3, :g2, :c2, :g2, :c3, :g2])
+s_bass_F = gen_score("x.x.x.x.x.x.x.x.",
+  [:f2, :c3, :f3, :c3, :f2, :c3, :f3, :c3])
+s_bass_G = gen_score("x.x.x.x.x.x.x.x.",
+  [:g2, :d3, :g3, :d3, :g2, :d3, :g3, :d3])
 
-# Comping Chords (C7, F7, G7) - Stabbing on the "and" of the beat
-s_chord_C = (ring nil, nil, nil, nil, [:c3, :e3, :g3, :bb3], nil, nil, nil, nil, nil, nil, nil, [:c3, :e3, :g3, :bb3], nil, nil, nil)
-s_chord_F = (ring nil, nil, nil, nil, [:f3, :a3, :c4, :eb4], nil, nil, nil, nil, nil, nil, nil, [:f3, :a3, :c4, :eb4], nil, nil, nil)
-s_chord_G = (ring nil, nil, nil, nil, [:g3, :b3, :d4, :f4], nil, nil, nil, nil, nil, nil, nil, [:g3, :b3, :d4, :f4], nil, nil, nil)
+# Comping 7th chords (stabs on beat 2 – step 4 and step 12)
+s_chord_C = gen_score("....x.......x...",
+  [[:c3, :e3, :g3, :bb3], [:c3, :e3, :g3, :bb3]])
+s_chord_F = gen_score("....x.......x...",
+  [[:f3, :a3, :c4, :eb4], [:f3, :a3, :c4, :eb4]])
+s_chord_G = gen_score("....x.......x...",
+  [[:g3, :b3, :d4, :f4], [:g3, :b3, :d4, :f4]])
 
-# Blues Lead Solo (C Minor Pentatonic with dynamic Hashes)
-# Routed through the Prophet's Tape Echo for that classic blues wail
-s_lead  = (ring :c4, nil, nil, nil, {note: :eb4, amp: 0.8}, nil, :g4, nil, 
-           nil, nil, :f4, nil, {note: :eb4, amp: 0.6}, nil, :c4, nil)
+# Blues lead solo (C minor pentatonic with dynamic amp)
+s_lead = gen_score("x...x.x...x.x..",
+  [:c4,
+   {note: :eb4, amp: 0.8},
+   :g4,
+   :f4,
+   {note: :eb4, amp: 0.6},
+   :c4])
 
-# Turnaround Harmonica Wail (Using Granular synth on a vocal sample)
-s_harp   = (ring {note: :c4, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
-            {note: :eb4, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
-            {note: :g4, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil,
-            {note: :c5, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15}, nil, nil, nil)
+# Turnaround harmonica wail (granular on vocal sample)
+s_harp = gen_score("x...x...x...x...",
+  [{note: :c4,  buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15},
+   {note: :eb4, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15},
+   {note: :g4,  buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15},
+   {note: :c5,  buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.15}])
 
-# ==========================================================
-# 3. THE PLAYBOOK (12-Bar Blues Form)
-# ==========================================================
-# 4 beats per bar. 16 steps = 1 bar.
-# Scene 1: 4 bars of C7
-# Scene 2: 2 bars of F7, 2 bars of C7
-# Scene 3: 1 bar G7, 1 bar F7, 2 bars C7 (Turnaround)
-
+# Playbook – 12‑bar blues form with scenes
 playbook = (ring
-  # --- VERSE 1: Just the groove ---
-  # 4 Bars of C7
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+  # --- VERSE 1: Groove only ---
+  # 4 bars of C7
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4],
     [:play_sub, s_bass_C, 4], [:play_chords, s_chord_C, 4] ],
-    
-  # 2 Bars of F7, 2 Bars of C7
-  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2], 
+
+  # 2 bars of F7, 2 bars of C7
+  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2],
     [:play_sub, s_bass_F, 2], [:play_chords, s_chord_F, 2] ],
-    
-  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2], 
+  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2],
     [:play_sub, s_bass_C, 2], [:play_chords, s_chord_C, 2] ],
-    
-  # --- VERSE 2: Add the lead guitar ---
-  # 4 Bars of C7
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+
+  # --- VERSE 2: Add lead guitar ---
+  # 4 bars of C7
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4],
     [:play_sub, s_bass_C, 4], [:play_chords, s_chord_C, 4], [:play_lead, s_lead, 4] ],
-    
-  # 2 Bars of F7, 2 Bars of C7
-  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2], 
+
+  # 2 bars of F7, 2 bars of C7
+  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2],
     [:play_sub, s_bass_F, 2], [:play_chords, s_chord_F, 2], [:play_lead, s_lead, 2] ],
-    
-  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2], 
+  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], [:play_hats, s_hats, 2],
     [:play_sub, s_bass_C, 2], [:play_chords, s_chord_C, 2], [:play_lead, s_lead, 2] ],
 
-  # --- THE TURNAROUND ---
-  # 1 Bar G7
-  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1], 
+  # --- TURNAROUND ---
+  # 1 bar G7
+  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1],
     [:play_sub, s_bass_G, 1], [:play_chords, s_chord_G, 1] ],
-    
-  # 1 Bar F7
-  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1], 
+  # 1 bar F7
+  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1],
     [:play_sub, s_bass_F, 1], [:play_chords, s_chord_F, 1] ],
-    
-  # 1 Bar C7
-  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1], 
+  # 1 bar C7
+  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1],
     [:play_sub, s_bass_C, 1], [:play_chords, s_chord_C, 1] ],
-    
-  # 1 Bar G7 (With Granular Harp Wail to end the phrase)
-  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1], 
+  # 1 bar G7 with harmonica wail
+  [ [:play_kick, s_kick, 1], [:play_snare, s_snare, 1], [:play_hats, s_hats, 1],
     [:play_sub, s_bass_G, 1], [:play_chords, s_chord_G, 1], [:play_grain, s_harp, 1] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Walking bass: 8th‑note patterns on even steps create a
+#   classic blues feel – the engine's grid locks the shuffle.
+# - Comping chords: 7th chords on the "and" of beat 2
+#   (steps 4 and 12) leave space for the bass and lead.
+# - Blues lead: C minor pentatonic with dynamic amp and tape
+#   echo – the engine routes it through the Prophet's echo.
+# - Harmonica wail: granular synth on a vocal sample with
+#   high density (8) and long size (0.15) produces a gritty,
+#   bluesy texture.
+# - The playbook demonstrates that any musical form, even
+#   the classic 12‑bar blues, can be expressed with precision
+#   on the 16‑step grid.
+# ==========================================================

@@ -1,108 +1,131 @@
 # ==========================================================
 # PLAYBOOK: BREAKCORE / MASHCORE
-# (Pioneered by Venetian Snares, Igorrr, and goreshit)
-# ========================================================== 
-# 
+# Chaotic, Distorted, Frantic Glitch Energy
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Breakcore.
-# We have explored fast, 4/4 genres (Gabber, Singeli) and broken beats 
-# (Jungle, Footwork). Breakcore is the absolute extreme of the 16-step 
-# grid. Operating at 180 BPM, it takes the "Amen" break and shatters it 
-# into microscopic, chaotic fragments, pairing it with distorted bass 
-# and erratic, classical-sounding FM synth stabs.
+# Breakcore (Venetian Snares, Igorrr) shatters the Amen break
+# into microscopic, chaotic fragments at 180 BPM, paired with
+# distorted bass and erratic classical‑sounding FM stabs. This
+# playbook captures that beautiful, controlled chaos.
 #
-# This playbook perfectly demonstrates how to push the engine's master 
-# clock to its rhythmic limit. By filling the 16-step grid with dense, 
-# overlapping ghost notes and rapid amplitude changes, the engine 
-# creates a frantic, mathematical wall of sound that feels like a 
-# beautiful, controlled glitch.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 180 BPM
+# Key: A minor (dark, frantic)
+# Rhythm: Shattered kick (1, 'a' of 1, 'and' of 2, beat 3,
+# 'e' of 4), Amen snare with rolls (2/4 with 'a' of 3 and beat 4
+# stutters), erratic 16th hats with random amplitude, continuous
+# rolling bass, spastic chord stabs, frantic harpsichord lead,
+# sliced vocal glitches.
+# Timbre: Punched kick (bd_haus with accents), heavy snare
+# (sn_dolf with rolls), erratic hats (cymbal_closed with amp
+# layers), distorted Reese bass (dsaw, extreme cutoff, short
+# release), spastic classical chord stabs (blade), harpsichord‑
+# style FM lead (divisor 2, depth 3), glitchy granular vocal.
+# Arrangement: Chaos (drums+bass) → Tension (add chord stabs)
+# → Meltdown (add harpsichord+vocal glitches).
 # ==========================================================
 
 use_bpm 180
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Chaotic, Distorted, & Frantic)
-# ==========================================================
+# Scores
 
-# The "Shattered" Kick. 
-# Highly syncopated, hits on step 0, the 'a' of 1 (step 3), 
-# the 'and' of 2 (step 6), beat 3 (step 8), and the 'e' of 4 (step 12).
-s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.7}, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 1.0}, nil, {:note => :c4, :amp => 0.6}, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil)
+# Shattered kick – highly syncopated (indices 0,3,5,8,10,13)
+s_kick = gen_score("x..x.x..x.x..x..",
+  [{note: :c4, amp: 1.0},
+   {note: :c4, amp: 0.7},
+   {note: :c4, amp: 0.9},
+   {note: :c4, amp: 1.0},
+   {note: :c4, amp: 0.6},
+   {note: :c4, amp: 0.8}])
 
-# The "Amen" Snare. 
-# Heavy hits on 2 and 4, with frantic rolls on the 'a' of 3 and beat 4.
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.9}, {:note => :c4, :amp => 1.0}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.5})
+# Amen snare – heavy hits with rolls (indices 4,7,11,12,14,15)
+s_snare = gen_score("....x..x...x.xx.",
+  [{note: :c4, amp: 1.0},
+   {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.9},
+   {note: :c4, amp: 1.0},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.5}])
 
-# Relentless, erratic 16th hats with random amplitude manipulation.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.1}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.1}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.1}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.1}, {:note => :c4, :amp => 0.3})
+# Erratic hats – all 16 steps with amplitude variation
+hat_amps = [0.2, 0.4, 0.1, 0.3, 0.4, 0.2, 0.3, 0.1,
+            0.4, 0.2, 0.1, 0.3, 0.4, 0.2, 0.1, 0.3]
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# Distorted, rolling Reese Bass (A Minor).
-# Plays continuous 16th notes. Extreme cutoff (120) creates a grinding, 
-# distorted wall of low-end that anchors the chaotic drums.
-s_bass  = (ring {:note => :a1, :release => 0.1, :cutoff => 120}, {:note => :a1, :release => 0.1, :cutoff => 120}, {:note => :a2, :release => 0.1, :cutoff => 120}, {:note => :a1, :release => 0.1, :cutoff => 120}, 
-           {:note => :a1, :release => 0.1, :cutoff => 120}, {:note => :a1, :release => 0.1, :cutoff => 120}, {:note => :e1, :release => 0.1, :cutoff => 120}, {:note => :e1, :release => 0.1, :cutoff => 120}, 
-           {:note => :a1, :release => 0.1, :cutoff => 120}, {:note => :a1, :release => 0.1, :cutoff => 120}, {:note => :a2, :release => 0.1, :cutoff => 120}, {:note => :a1, :release => 0.1, :cutoff => 120}, 
-           {:note => :g1, :release => 0.1, :cutoff => 120}, {:note => :g1, :release => 0.1, :cutoff => 120}, {:note => :f1, :release => 0.1, :cutoff => 120}, {:note => :e1, :release => 0.1, :cutoff => 120})
+# Distorted rolling bass – all 16 steps, extreme cutoff
+bass_notes = [:a1, :a1, :a2, :a1, :a1, :a1, :e1, :e1,
+              :a1, :a1, :a2, :a1, :g1, :g1, :f1, :e1]
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| {note: n, release: 0.1, cutoff: 120} })
 
-# Spastic, classical-sounding chord stabs (Am to G to F).
-# Hit erratically to mimic the orchestral samples used in Breakcore.
-s_chords= (ring [:a3, :c4, :e4], nil, nil, nil, nil, [:a3, :c4, :e4], nil, nil, [:g3, :bb3, :d4], nil, nil, nil, nil, [:f3, :a3, :c4], nil, nil)
+# Spastic classical chord stabs (indices 0,5,8,13)
+s_chords = gen_score("x...x...x...x...",
+  [[:a3, :c4, :e4],
+   [:a3, :c4, :e4],
+   [:g3, :bb3, :d4],
+   [:f3, :a3, :c4]])
 
-# Erratic, "Harpsichord/Classical" FM Lead (A Harmonic Minor).
-# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
-# buzzy harpsichord tone that dances frantically over the breakbeat.
-s_fm    = (ring {:note => :a5, :divisor => 2, :depth => 3, :release => 0.05}, nil, {:note => :e5, :divisor => 2, :depth => 3, :release => 0.05}, {:note => :a5, :divisor => 2, :depth => 3, :release => 0.05}, nil, {:note => :c6, :divisor => 2, :depth => 3, :release => 0.05}, nil, {:note => :b5, :divisor => 2, :depth => 3, :release => 0.05}, {:note => :a5, :divisor => 2, :depth => 3, :release => 0.05}, nil, {:note => :g5, :divisor => 2, :depth => 3, :release => 0.05}, nil, {:note => :e5, :divisor => 2, :depth => 3, :release => 0.05}, {:note => :f5, :divisor => 2, :depth => 3, :release => 0.05}, nil, {:note => :e5, :divisor => 2, :depth => 3, :release => 0.05})
+# Harpsichord‑style FM lead – erratic (indices 0,2,3,5,7,8,10,12,13,15)
+fm_data = [
+  {note: :a5, divisor: 2, depth: 3, release: 0.05},
+  {note: :e5, divisor: 2, depth: 3, release: 0.05},
+  {note: :a5, divisor: 2, depth: 3, release: 0.05},
+  {note: :c6, divisor: 2, depth: 3, release: 0.05},
+  {note: :b5, divisor: 2, depth: 3, release: 0.05},
+  {note: :a5, divisor: 2, depth: 3, release: 0.05},
+  {note: :g5, divisor: 2, depth: 3, release: 0.05},
+  {note: :e5, divisor: 2, depth: 3, release: 0.05},
+  {note: :f5, divisor: 2, depth: 3, release: 0.05},
+  {note: :e5, divisor: 2, depth: 3, release: 0.05}
+]
+s_fm = gen_score("x.xx.x.xx.x.xx.x", fm_data)
 
-# Sliced, glitchy vocal "Skip" (Granular Synth).
-# High density, tiny size = a microscopic, rhythmic vocal glitch.
-s_vocal = (ring {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.02, :amp => 0.6}, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.5}, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.02, :amp => 0.6}, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.02, :amp => 0.4}, {:note => :d5, :buffer => :ambi_choir, :pos => 0.6, :density => 3, :size => 0.02, :amp => 0.6}, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.5}, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.02, :amp => 0.7}, nil, nil)
+# Sliced vocal glitch – microscopic grains (indices 0,2,4,6,7,10,13)
+vocal_data = [
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.02, amp: 0.6},
+  {note: :c5, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.02, amp: 0.5},
+  {note: :e4, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.02, amp: 0.6},
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.02, amp: 0.4},
+  {note: :d5, buffer: :ambi_choir, pos: 0.6, density: 3, size: 0.02, amp: 0.6},
+  {note: :c5, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.02, amp: 0.5},
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.02, amp: 0.7}
+]
+s_vocal = gen_score("x.x.x.xx..x..x..", vocal_data)
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Chaos - Just the shattered breakbeat and distorted bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: The Tension - Add the spastic classical chord stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Meltdown - The frantic harpsichord and vocal glitches drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
-    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Chaos – Shattered Drums + Distorted Bass
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Tension – Add Spastic Chords
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Meltdown – Add Harpsichord and Vocal Glitches
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CONTROLLED CHAOS]
-# 
-# 1. The Shattered Amen: Look at `s_kick` and `s_snare`. They completely 
-#    avoid landing on the same beats. The engine's strict master clock 
-#    ensures these complex, overlapping hits land with the precision of a 
-#    hardware sampler block, creating that signature Breakcore "chatter" 
-#    that feels like a live drummer having a seizure.
-#
-# 2. Distorted Rolling Bass: Look at `s_bass`. It plays on EVERY single 
-#    16th step at 180 BPM. By using an extreme `cutoff` (120), the engine 
-#    forces the `:dsaw` synth into overdrive, creating a grinding, 
-#    distorted wall of low-end that perfectly anchors the frantic drums.
-#
-# 3. FM as a Harpsichord: The `s_fm` sequence uses `divisor: 2` and 
-#    `depth: 3`. This narrows the harmonic ratio to produce a sharp, buzzy 
-#    square wave that perfectly mimics the classical harpsichord samples 
-#    used by artists like Igorrr and Venetian Snares. The engine's strict 
-#    clock ensures these erratic notes fire with absolute mathematical 
-#    precision, turning the 16-step grid into a beautiful, controlled glitch.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The shattered Amen: kick and snare avoid landing on the
+#   same beats – the engine's grid precision creates the
+#   signature Breakcore "chatter."
+# - Distorted rolling bass: extreme cutoff (120) pushes dsaw
+#   into overdrive, creating a grinding low‑end anchor.
+# - FM as harpsichord: divisor 2 and depth 3 produce a sharp,
+#   buzzy square wave – the engine's clock turns the grid
+#   into a beautiful, controlled glitch.
+# - Vocal glitches: microscopic grains (size 0.02, density 3)
+#   chop the voice into rhythmic shards.
 # ==========================================================
