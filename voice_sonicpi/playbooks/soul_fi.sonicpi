@@ -1,40 +1,65 @@
+# ==========================================================
+# PLAYBOOK: JAZZ FUNK GROOVE (Cm7 – Fm7 – Dm7b5 – G7)
+# ==========================================================
+# [WHY THIS GENRE?]
+# A laid‑back, mellow jazz‑funk progression with a 4‑on‑the‑floor
+# beat, walking bass, and lush chord swells. The arrangement
+# builds from a simple groove to a full band, then strips back
+# to bass and chords for a cool‑down.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 78 BPM
+# Key: C minor (with passing chords)
+# Rhythm: Straight 4/4 with syncopated bass and hats.
+# Timbre: Warm piano chords, round sub‑bass, crisp drums.
+# Arrangement: Groove (2 bars) → Add bass (4 bars) → Breakdown (2 bars)
+# ==========================================================
+
 use_bpm 78
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (Jazzy Cm7 - Fm7 - Dm7b5 - G7)
-# ==========================================================
-# Chords are just arrays of notes placed inside the ring!
-s_chords = (ring [:c3, :eb4, :g4, :bb4], nil, nil, nil, nil, nil, nil, nil, 
-            [:f3, :ab4, :c5, :eb5], nil, nil, nil, nil, nil, nil, nil)
-            
-s_bass   = (ring :c2, nil, nil, nil, nil, nil, :c2, nil, :f2, nil, nil, nil, nil, nil, :g2, nil)
-s_kick   = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
-s_snare  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
-s_hats   = (ring :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4)
+# Scores
+s_chords = gen_score("x.......x.......", [
+  [:c3, :eb4, :g4, :bb4],
+  [:f3, :ab4, :c5, :eb5]
+])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+s_bass   = gen_score("x.....x.x.....x.", [
+  :c2,
+  :c2,
+  :f2,
+  :g2
+])
+
+s_kick   = gen_score("x...x...x...x...", [:c4])
+s_snare  = gen_score("....x.......x...", [:c4])
+s_hats   = gen_score("xxxxxxxxxxxxxxxx", [:c4])
+
+# Playbook
 playbook = (ring
   # Scene 1: Just the groove (2 bars)
-  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2], 
+  [ [:play_kick, s_kick, 2], [:play_snare, s_snare, 2],
     [:play_hats, s_hats, 2], [:play_chords, s_chords, 2] ],
     
   # Scene 2: Add the bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], 
-    [:play_hats, s_hats, 4], [:play_chords, s_chords, 4], 
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4], [:play_chords, s_chords, 4],
     [:play_sub, s_bass, 4] ],
     
-  # Scene 3: Mellow out - drums drop, bass and chords remain (2 bars)
+  # Scene 3: Mellow out – drums drop, bass and chords remain (2 bars)
   [ [:play_chords, s_chords, 2], [:play_sub, s_bass, 2] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The bass walks C–C–F–G over the 16‑step grid, adding
+#   motion while the chords breathe on downbeats.
+# - The hats play continuous 16ths at low amplitude, providing
+#   a steady cushion for the sparse groove.
+# - The arrangement uses short scenes to quickly build and
+#   release tension, perfect for a mellow jazz‑funk vibe.
+# ==========================================================

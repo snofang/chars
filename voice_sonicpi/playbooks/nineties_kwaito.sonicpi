@@ -4,105 +4,99 @@
 # ========================================================== 
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 90s Kwaito.
-# We have explored Afro House (which is lush and jazzy) and Gqom 
-# (which is dark and minimal). Kwaito is the Godfather of South 
-# African electronic music. Emerging in the 90s, it slowed house 
-# music down to a swaggering 105 BPM. It relies on deep, round 
-# reggae-style basslines, a specific "Sembhi" syncopated kick, and 
-# raw, repetitive vocal chants.
-#
-# This playbook perfectly demonstrates how to use the Parameter 
-# Hashes to create a warm, muffled bassline that feels like a 90s 
-# Yamaha groovebox. By using a low `cutoff` and medium `release`, 
-# the engine creates a nostalgic, deep, and distinctly South African 
-# street groove.
+# Kwaito is the Godfather of South African electronic music.
+# It slows house down to 105 BPM with deep reggae‑style bass,
+# syncopated "Sembhi" kicks, and raw vocal chants.
+# This playbook uses low‑cutoff bass and muffled chords to
+# recreate the warm, nostalgic 90s groovebox sound.
 # ==========================================================
 
 use_bpm 105
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Deep, Nostalgic, & Bouncy)
-# ==========================================================
+# Scores
+s_kick  = gen_score("x..x..x.x.....x.", [
+  {note: :c4, amp: 1.0},
+  {note: :c4, amp: 0.8},
+  {note: :c4, amp: 0.9},
+  {note: :c4, amp: 1.0},
+  {note: :c4, amp: 0.5}
+])
 
-# The "Sembhi" Kick. 
-# Syncopated 3-3-2 feel. Hits on step 0, the 'a' of 1 (step 3), 
-# the 'and' of 2 (step 6), and beat 3 (step 8), with a ghost on 15.
-s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+s_clap  = gen_score("....x.......x...", [
+  {note: :c4, amp: 0.8},
+  {note: :c4, amp: 0.8}
+])
 
-# Crisp, organic clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+s_hats  = gen_score("x.xxx.xxx.xxx.xx", [
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.15},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.15},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.15},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.15}
+])
 
-# Swung, organic shaker. 
-# Notice the gaps (nil) and amplitude manipulation to create a human feel.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15})
+s_bass  = gen_score("x..x.x..x..x.x.x", [
+  {note: :a1, release: 0.3, cutoff: 70},
+  {note: :a1, release: 0.3, cutoff: 70},
+  {note: :c2, release: 0.3, cutoff: 70},
+  {note: :e2, release: 0.3, cutoff: 70},
+  {note: :e2, release: 0.3, cutoff: 70},
+  {note: :d2, release: 0.3, cutoff: 70},
+  {note: :c2, release: 0.3, cutoff: 70}
+])
 
-# The "Deep Kwaito" Bass (A Minor).
-# Walks a melodic line. Very low cutoff (70) and medium release (0.3) 
-# to create a warm, muffled, 90s groovebox undercurrent.
-s_bass  = (ring {:note => :a1, :release => 0.3, :cutoff => 70}, nil, nil, {:note => :a1, :release => 0.3, :cutoff => 70}, nil, {:note => :c2, :release => 0.3, :cutoff => 70}, nil, nil, {:note => :e2, :release => 0.3, :cutoff => 70}, nil, nil, {:note => :e2, :release => 0.3, :cutoff => 70}, nil, {:note => :d2, :release => 0.3, :cutoff => 70}, nil, {:note => :c2, :release => 0.3, :cutoff => 70})
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4], cutoff: 85, release: 0.5, amp: 0.6},
+  {note: [:e3, :g3, :b3], cutoff: 85, release: 0.5, amp: 0.6}
+])
 
-# Lush, warm minor chord stabs (Am to Em).
-# Hit on the downbeats. The low cutoff (85) gives them that classic 
-# "played through a wall" muffled feel.
-s_chords= (ring {:note => [:a3, :c4, :e4], :cutoff => 85, :release => 0.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:e3, :g3, :b3], :cutoff => 85, :release => 0.5, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_fm    = gen_score(".x...x.x.x...x..", [
+  {note: :a5, amp: 0.6, divisor: 3, depth: 2, release: 0.3},
+  {note: :c5, amp: 0.5, divisor: 3, depth: 2, release: 0.3},
+  {note: :e5, amp: 0.6, divisor: 3, depth: 2, release: 0.3},
+  {note: :a5, amp: 0.7, divisor: 3, depth: 2, release: 0.3},
+  {note: :e5, amp: 0.5, divisor: 3, depth: 2, release: 0.3}
+])
 
-# Bright, echoing "Marimba/Choral" Melody (A Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) and depth (2) to create a 
-# hollow, organic African marimba tone.
-s_fm    = (ring nil, {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, {:note => :c5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :e5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :a5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil)
+s_vocal = gen_score("x.......x.......", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.1, amp: 0.6},
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.1, amp: 0.6}
+])
 
-# Repetitive, pitched-down "Street" vocal chant (Granular Synth).
-# Low density, medium size = a raw, repetitive vocal hit.
-s_vocal = (ring {:note => :a3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
-
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Groove - Just the syncopated drums and deep bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
+  # Scene 1: The Groove – syncopated drums and deep bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4],
     [:play_sub, s_bass, 4] ],
   
-  # Scene 2: The Vibe - Add the warm, muffled chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+  # Scene 2: The Vibe – add muffled chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8],
     [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
     
-  # Scene 3: The Street - The marimba melody and vocal chants drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+  # Scene 3: The Street – marimba melody and vocal chants drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8],
     [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SOUTH AFRICAN GROOVE]
-# 
-# 1. The Sembhi Syncopation: Look at `s_kick`. It hits on steps 0, 3, 6, 
-#    8, and 15. By avoiding the standard 4/4 pulse and hitting on the "a" 
-#    of beat 1 and the "and" of beat 2, the engine creates a lopsided, 
-#    staggering groove that feels distinctly South African. The engine's 
-#    strict master clock ensures this complex rhythm lands with absolute 
-#    precision.
-#
-# 2. The 90s Groovebox Bass: Look at `s_bass`. The `:play_sub` synth is 
-#    given a `cutoff` of `70` and a `release` of `0.3`. This filters out 
-#    all the harsh high frequencies, leaving only a deep, warm, muffled 
-#    low-end that perfectly mimics the raw, 90s Yamaha RM1X basslines 
-#    used to produce early Kwaito tracks.
-#
-# 3. Raw Vocal Chants: Kwaito vocals are rarely melodic; they are raw, 
-#    repetitive, and percussive. The `s_vocal` sequence uses the granular 
-#    engine to chop a vocal into a raw, rhythmic hit. By pitching it down 
-#    to `:a3` and placing it on the downbeats, the engine creates the 
-#    perfect call-and-response structure for a street chant.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The "Sembhi" kick syncopation (steps 0,3,6,8,14) creates
+#   a lopsided, distinctly South African groove.
+# - Bass uses cutoff 70 and release 0.3 for a warm, muffled
+#   low‑end that mimics 90s Yamaha groovebox basslines.
+# - The granulated vocal (density 1, size 0.1) produces a raw,
+#   rhythmic chant that locks with the off‑beat percussion.
 # ==========================================================

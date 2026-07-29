@@ -1,104 +1,101 @@
 # ==========================================================
 # PLAYBOOK: 90s NEW ORLEANS BOUNCE
 # (Pioneered by DJ Jimi, Magnolia Shorty, and Katey Red)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 90s New Orleans Bounce.
-# We have explored Memphis Rap and Atlanta Snap, but Bounce is the absolute 
-# origin of deep Southern hip-hop. It is famous for the "Triggerman" beat—a 
-# highly syncopated, relentless 16-step drum pattern. It relies on massive, 
-# booming 808 bass, call-and-response vocal chants, and a fast, party-ready 
-# energy designed to make a crowd move.
-#
-# This playbook perfectly demonstrates how to use extreme syncopation and 
-# rapid-fire vocal chops. By filling the 16-step grid with interlocking kick 
-# and snare hits, and scattering pitched vocal grains, the engine creates a 
-# raw, high-energy NOLA block party atmosphere.
+# New Orleans Bounce is the origin of deep Southern hip‑hop,
+# featuring the syncopated “Triggerman” beat, booming 808 bass,
+# call‑and‑response vocal chants, and relentless party energy.
+# This playbook uses interlocking kicks, pitched vocal grains,
+# and a bright synth whistle to recreate a raw NOLA block party.
 # ==========================================================
 
 use_bpm 100
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (F# Minor - Raw, Bouncy, & Relentless)
-# ==========================================================
+# Scores
+s_kick  = gen_score("x.x...x.x..x....", [
+  :c4,
+  :c4,
+  {note: :c4, amp: 0.8},
+  {note: :c4, amp: 1.0},
+  {note: :c4, amp: 0.7}
+])
 
-# The "Triggerman" Kick. 
-# Highly syncopated. Hits on step 0, step 2, the 'and' of 2 (step 6), 
-# beat 3 (step 8), and step 11.
-s_kick  = (ring :c4, nil, :c4, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil)
+s_snare = gen_score("....x.......x.x.", [
+  {note: :c4, amp: 0.9},
+  {note: :c4, amp: 0.9},
+  {note: :c4, amp: 0.3}
+])
 
-# Marching band-style snare. 
-# Hits on beats 2 and 4 (steps 4 and 12), with a ghost on the 'and' of 4.
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.3}, nil)
+s_hats  = gen_score("x.xxx.xxx.xxx.xx", [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4}
+])
 
-# Fast, rolling 16th hats.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4})
+s_bass  = gen_score("x.....x.x...x...", [
+  {note: :fs1, release: 0.5, cutoff: 70, amp: 1.2},
+  {note: :fs1, release: 0.5, cutoff: 70, amp: 1.0},
+  {note: :a1,  release: 0.5, cutoff: 70, amp: 1.2},
+  {note: :a1,  release: 0.5, cutoff: 70, amp: 1.0}
+])
 
-# Deep, booming 808 Bass (F# Minor).
-# Hits a syncopated melody. Massive release (0.5) allows the bass to ring out 
-# and provide immense weight.
-s_bass  = (ring {:note => :fs1, :release => 0.5, :cutoff => 70, :amp => 1.2}, nil, nil, nil, nil, nil, {:note => :fs1, :release => 0.5, :cutoff => 70, :amp => 1.0}, nil, {:note => :a1, :release => 0.5, :cutoff => 70, :amp => 1.2}, nil, nil, nil, {:note => :a1, :release => 0.5, :cutoff => 70, :amp => 1.0}, nil, nil, nil)
+s_chords = gen_score("....x.......x...", [
+  [:fs3, :a3, :c4],
+  [:a3,  :c4, :e4]
+])
 
-# Stark, brass/organ stabs (F#m to Am).
-# Hit sparingly on the downbeats. High cutoff (100) gives them a sharp, 
-# festival-sized wall of sound.
-s_chords= (ring nil, nil, nil, nil, [:fs3, :a3, :c4], nil, nil, nil, nil, nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil)
+s_fm    = gen_score("x...x.x.x...x...", [
+  {note: :fs5, amp: 0.6, divisor: 3, depth: 2, release: 0.2},
+  {note: :a5,  amp: 0.5, divisor: 3, depth: 2, release: 0.2},
+  {note: :c6,  amp: 0.6, divisor: 3, depth: 2, release: 0.2},
+  {note: :fs5, amp: 0.5, divisor: 3, depth: 2, release: 0.2},
+  {note: :e5,  amp: 0.6, divisor: 3, depth: 2, release: 0.2}
+])
 
-# Bright, "Whistle/Whine" Synth (F# Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) and low depth (2) to create a piercing, 
-# sugary sine wave that dances over the heavy 808s.
-s_fm    = (ring {:note => :fs5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :c6, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :fs5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, {:note => :e5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil)
+s_vocal = gen_score("....x.....x...x.", [
+  {note: :fs4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.6},
+  {note: :a4,  buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.04, amp: 0.6},
+  {note: :fs4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04, amp: 0.6}
+])
 
-# Call-and-response "Bounce" vocal chants (Granular Synth).
-# Pitched and scattered. High density, small size = a sharp, repetitive vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :fs4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, {:note => :fs4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.04, :amp => 0.6}, nil)
-
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Block - Just the syncopated drums and booming 808 (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+  # Scene 1: The Block – syncopated drums and booming 808 (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4],
     [:play_sub, s_bass, 4] ],
   
-  # Scene 2: The Party - Add the brass stabs and vocal chants (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 2: The Party – add brass stabs and vocal chants (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ],
     
-  # Scene 3: The Drop - The whistling synth melody drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
+  # Scene 3: The Drop – whistling synth melody drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8],
     [:play_lead, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SOUTHERN BOUNCE]
-# 
-# 1. The Triggerman Syncopation: Look at `s_kick`. It hits on steps 0, 2, 6, 
-#    8, and 11. This specific, highly syncopated pattern is the absolute 
-#    genetic code of New Orleans Bounce. By avoiding the standard 4/4 pulse, 
-#    the engine creates a relentless, lopsided groove that forces the dancer 
-#    to move, perfectly mimicking the legendary "Triggerman" sample.
-#
-# 2. Booming 808 Weight: Look at `s_bass`. The `:play_sub` synth is given a 
-#    `release` of `0.5` and a low `cutoff` of `70`. Because the BPM is 100, 
-#    that low F# note rings out for half a second, creating a massive, 
-#    booming low-end that carries the dark melody and provides immense weight.
-#
-# 3. Call-and-Response Vocals: Bounce relies heavily on repetitive, 
-#    percussive vocal chants. The `s_vocal` sequence uses the granular engine 
-#    to chop a vocal into a sharp, sugary stutter. By scattering it on the 
-#    off-beats, the engine creates the perfect call-and-response structure 
-#    for a NOLA block party.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The “Triggerman” kick syncopation (steps 0,2,6,8,11) creates
+#   a relentless, lopsided groove that defines NOLA Bounce.
+# - The 808 bass uses release 0.5 and cutoff 70 to boom and ring
+#   out, providing massive weight against the fast drums.
+# - Granulated vocal chants (density 3, size 0.04) are scattered
+#   on off‑beats to mimic call‑and‑response party energy.
 # ==========================================================

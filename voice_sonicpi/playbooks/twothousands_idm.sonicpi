@@ -4,102 +4,86 @@
 # ========================================================== 
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Nostalgic Electronica.
-# We have explored heavy bass music (Brostep) and rigid minimalism (Microhouse).
-# Nostalgic Electronica is the sound of warm, analog childhood memories. 
-# It takes the hip-hop drum grid, slows it down to 85 BPM, and pairs it 
-# with massive, tape-warbled synth pads, deep round bass, and wobbly, 
-# organic FM melodies.
-#
-# This playbook perfectly demonstrates how to use the Parameter Hashes to 
-# simulate tape saturation and analog warmth. By using low `cutoff` values, 
-# slow `attack` times, and long granular `size` values, the engine creates 
-# a hazy, nostalgic atmosphere that feels like watching an old VHS tape.
+# Nostalgic Electronica is the sound of warm, analog childhood
+# memories – a slowed‑down hip‑hop grid at 85 BPM, tape‑warbled
+# pads, deep round bass, and wobbly FM melodies. This playbook
+# uses low cutoffs, slow attacks, and long granular sizes to
+# create a hazy, VHS‑like, dreamlike atmosphere.
 # ==========================================================
 
 use_bpm 85
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (D Major - Warm, Hazy, & Nostalgic)
-# ==========================================================
+# Scores
+s_kick  = gen_score("x......x..x.....", [
+  :c4,
+  {note: :c4, amp: 0.7},
+  {note: :c4, amp: 1.0}
+])
 
-# The "Laid-Back" Kick. 
-# Hits on step 0, the 'a' of 2 (step 7), and the 'e' of 3 (step 10).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil)
+s_snare = gen_score("....x.......x...", [
+  {note: :c4, amp: 0.7},
+  {note: :c4, amp: 0.7}
+])
 
-# Crisp, dusty snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil)
+s_hats  = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.15},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.15},
+  {note: :c4, amp: 0.3}
+])
 
-# Swung, lazy 16th hats. 
-# Notice the heavy amplitude manipulation (0.2 to 0.4) to simulate a 
-# human drummer playing with brushes.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.3}, nil)
+s_bass  = gen_score("x.......x.......", [
+  {note: :d2, release: 0.5, cutoff: 60},
+  {note: :a1, release: 0.5, cutoff: 60}
+])
 
-# Deep, round analog bass (D Major).
-# Walks a slow, melodic line. Very low cutoff (60) and long release (0.5) 
-# to create a warm, muffled undercurrent.
-s_bass  = (ring {:note => :d2, :release => 0.5, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil, {:note => :a1, :release => 0.5, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil)
+s_chords = gen_score("x.......x.......", [
+  {note: [:d3, :fs3, :a3, :e4], cutoff: 75, attack: 0.5, release: 2.0, amp: 0.6},
+  {note: [:g2, :b2, :d3, :a3], cutoff: 75, attack: 0.5, release: 2.0, amp: 0.6}
+])
 
-# Lush, sweeping "Tape Warped" Chords (Dmaj9 to Gmaj7).
-# Hit on the downbeats. The low cutoff (75) and slow 0.5-beat attack make 
-# them slowly fade in like a warm, analog memory.
-s_chords= (ring {:note => [:d3, :fs3, :a3, :e4], :cutoff => 75, :attack => 0.5, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:g2, :b2, :d3, :a3], :cutoff => 75, :attack => 0.5, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_fm    = gen_score("....x...x...x...", [
+  {note: :d5,  amp: 0.5, divisor: 2, depth: 1, release: 0.8},
+  {note: :fs5, amp: 0.4, divisor: 2, depth: 1, release: 0.8},
+  {note: :a5,  amp: 0.5, divisor: 2, depth: 1, release: 0.8}
+])
 
-# Wobbly, "Analog" Melody (D Major Pentatonic).
-# Uses :play_fm with a low divisor (2) and low depth (1) to create a soft, 
-# sine-like wave. Routed through the engine's tape echo for a smear.
-s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 1, :release => 0.8}, nil, nil, nil, {:note => :fs5, :amp => 0.4, :divisor => 2, :depth => 1, :release => 0.8}, nil, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 1, :release => 0.8}, nil, nil, nil)
+s_grain = gen_score("x.......x.......", [
+  {note: :d4, buffer: :ambi_choir, pos: 0.3, density: 1, size: 0.3, amp: 0.5},
+  {note: :a4, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.3, amp: 0.5}
+])
 
-# Ethereal, "VHS/Childhood" vocal drone (Granular Synth).
-# Long size (0.3) and low density (1) creates a slow, evolving background 
-# texture that sounds like a distant, forgotten memory.
-s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.3, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
-
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Memory - Just the sweeping chords, bass, and vocal drone (4 bars)
+  # Scene 1: The Memory – sweeping chords, bass, and vocal drone (4 bars)
   [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: The Groove - Add the swung, laid-back drums (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
+  # Scene 2: The Groove – add swung, laid‑back drums (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8],
     [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Vibe - The wobbly analog melody drops (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 3: The Vibe – wobbly analog melody drops (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_lead, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN NOSTALGIA]
-# 
-# 1. Data-Driven Saturation: Look at `s_chords` and `s_bass`. Both 
-#    sequences use very low `cutoff` values (60 and 75). In Sonic Pi, 
-#    pushing the filter down this hard on a `:dsaw` or `:blade` synth 
-#    strips away all the high-frequency harshness, leaving only a warm, 
-#    muffled mid-range. This makes the track sound like it is playing 
-#    from a worn-out VHS tape.
-#
-# 2. Swelling Waves: Look at `s_chords`. The Hashes specify an `attack` 
-#    of `0.5` and a `release` of `2.0`. Because the engine reads these 
-#    Hashes, the chords don't just hit; they slowly swell into the mix and 
-#    fade away, creating a continuous, blurred wave of warmth.
-#
-# 3. Soft FM Bells: The `s_fm` sequence uses `divisor: 2` and `depth: 1`. 
-#    This gentle ratio produces a soft, sine-like wave that mimics an 
-#    old analog synth. Routed through the tape echo, the sparse notes 
-#    cascade across the empty space, perfectly anchoring the track's 
-#    nostalgic, dreamlike atmosphere.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Data‑driven saturation: low cutoffs (60, 75) strip high
+#   frequencies, creating a warm, VHS‑like, muffled tone.
+# - Swelling waves: attack 0.5 and release 2.0 on chords make
+#   them slowly fade in and out, like a blurred memory.
+# - Soft FM bells: divisor 2, depth 1 produce a sine‑like
+#   analog tone; tape echo spreads the sparse notes into a
+#   dreamy, cascading texture.
 # ==========================================================

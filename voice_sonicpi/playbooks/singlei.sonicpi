@@ -4,103 +4,100 @@
 # ========================================================== 
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Singeli.
-# We have explored South African genres (Gqom, Amapiano, Kwaito)
-# and fast electronic genres (Gabber, DnB). Singeli is a massive 
-# cultural phenomenon originating from Tanzania. It operates at 
-# a frantic 180-200 BPM and is famous for relentless, manic 
-# tambourine loops, syncopated "log drum" basslines, and raw, 
-# high-energy MC vocal chants.
-#
-# This playbook perfectly demonstrates how to push the 16-step 
-# grid to its absolute perceptual limit. At 190 BPM, the engine 
-# fires 16th notes at breakneck speed, creating a chaotic, 
-# celebratory wall of rhythm that feels like a street party 
-# in Dar es Salaam.
+# Singeli is a Tanzanian phenomenon at 180‑200 BPM with manic
+# tambourine loops, syncopated "log drum" basslines, and raw
+# MC chants. At 190 BPM, the 16‑step grid fires 16th notes at
+# breakneck speed, creating a chaotic, celebratory street‑party
+# energy.
 # ==========================================================
 
 use_bpm 190
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Frantic, Raw, & Celebratory)
-# ==========================================================
+# Scores
 
-# The "Singeli" Kick. 
-# Highly syncopated. Hits on step 0, the 'a' of 2 (step 7), beat 3 (step 8), 
-# the 'e' of 4 (step 11), and the 'a' of 4 (step 14).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, {:note => :c4, :amp => 0.8}, nil)
+# Syncopated kick – hits on 0, 7, 8, 11, 14
+s_kick = gen_score("x......xx..x..x.", [
+  :c4,
+  {note: :c4, amp: 0.7},
+  {note: :c4, amp: 1.0},
+  {note: :c4, amp: 0.6},
+  {note: :c4, amp: 0.8}
+])
 
-# Heavy, dry snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+# Snare on beats 2 and 4 (steps 4, 12)
+s_snare = gen_score("....x.......x...", [
+  {note: :c4, amp: 0.9},
+  {note: :c4, amp: 0.9}
+])
 
-# The "Manic Tambourine". 
-# Plays on EVERY SINGLE 16th step at 190 BPM. The alternating amplitudes 
-# (0.3 vs 0.15) create a buzzing, 32nd-note illusion.
-s_tamb  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15})
+# Manic tambourine – every 16th step with alternating dynamics
+s_tamb = gen_score("xxxxxxxxxxxxxxxx", [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.15}
+])
 
-# The "Log Drum" Bass (A Minor).
-# Syncopated, melodic. Very short release (0.15) makes it punchy and percussive.
-s_bass  = (ring {:note => :a1, :release => 0.15}, nil, nil, {:note => :a1, :release => 0.15}, nil, {:note => :a1, :release => 0.15}, nil, {:note => :g1, :release => 0.15}, nil, {:note => :a1, :release => 0.15}, nil, nil, {:note => :a1, :release => 0.15}, nil, {:note => :g1, :release => 0.15}, nil)
+# "Log drum" bass – syncopated, very short release
+s_bass = gen_score("x..x.x.x.x..x.x.", [
+  {note: :a1, release: 0.15},
+  {note: :a1, release: 0.15},
+  {note: :a1, release: 0.15},
+  {note: :g1, release: 0.15},
+  {note: :a1, release: 0.15},
+  {note: :a1, release: 0.15},
+  {note: :g1, release: 0.15}
+])
 
-# Dark, sparse minor chord stabs (Am to Gm).
-# Hit sparingly on the downbeats to anchor the frantic percussion.
-s_chords= (ring {:note => [:a3, :c4, :e4], :cutoff => 90, :release => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => [:g3, :bb3, :d4], :cutoff => 90, :release => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Dark chord stabs on the downbeats
+s_chords = gen_score("x.......x.......", [
+  {note: [:a3, :c4, :e4], cutoff: 90, release: 0.2, amp: 0.5},
+  {note: [:g3, :bb3, :d4], cutoff: 90, release: 0.2, amp: 0.5}
+])
 
-# High-pitched, frantic "Marimba" Melody (A Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) and depth (2) to create a hollow, 
-# woody African marimba tone that dances over the manic tambourine.
-s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :c6, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :e6, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :a5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :c6, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, nil)
+# Frantic marimba melody – every other step
+s_fm = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :a5, amp: 0.6, divisor: 3, depth: 2, release: 0.1},
+  {note: :c6, amp: 0.5, divisor: 3, depth: 2, release: 0.1},
+  {note: :e6, amp: 0.6, divisor: 3, depth: 2, release: 0.1},
+  {note: :a5, amp: 0.5, divisor: 3, depth: 2, release: 0.1},
+  {note: :g5, amp: 0.6, divisor: 3, depth: 2, release: 0.1},
+  {note: :e5, amp: 0.5, divisor: 3, depth: 2, release: 0.1},
+  {note: :a5, amp: 0.7, divisor: 3, depth: 2, release: 0.1},
+  {note: :c6, amp: 0.5, divisor: 3, depth: 2, release: 0.1}
+])
 
-# Pitched-up, raw "MC" vocal chant (Granular Synth).
-# High density, tiny size = a sharp, percussive vocal skip at 190 BPM.
-s_vocal = (ring nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.02, :amp => 0.7}, nil, nil, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.02, :amp => 0.7}, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.5, :density => 3, :size => 0.02, :amp => 0.7}, nil)
+# MC vocal chants – sparse, sharp stutter
+s_vocal = gen_score(".....x....x...x.", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.02, amp: 0.7},
+  {note: :c5, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.02, amp: 0.7},
+  {note: :e4, buffer: :ambi_choir, pos: 0.5, density: 3, size: 0.02, amp: 0.7}
+])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Street - Just the manic tambourine and log drum (4 bars)
+  # Scene 1: The Street – manic tambourine and log drum (4 bars)
   [ [:play_hats, s_tamb, 4], [:play_sub, s_bass, 4] ],
   
-  # Scene 2: The Party - Add the syncopated kick, snare, and chords (8 bars)
-  [ [:play_hats, s_tamb, 8], [:play_sub, s_bass, 8], 
+  # Scene 2: The Party – add syncopated kick, snare, and chords (8 bars)
+  [ [:play_hats, s_tamb, 8], [:play_sub, s_bass, 8],
     [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_chords, s_chords, 8] ],
     
-  # Scene 3: The Climax - The frantic marimba melody and MC chants drop (8 bars)
-  [ [:play_hats, s_tamb, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_chords, s_chords, 8], 
+  # Scene 3: The Climax – marimba melody and MC chants drop (8 bars)
+  [ [:play_hats, s_tamb, 8], [:play_sub, s_bass, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_chords, s_chords, 8],
     [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EXTREME TEMPO]
-# 
-# 1. The Manic Tambourine: Look at `s_tamb`. It plays on EVERY SINGLE 
-#    16th step at 190 BPM. The alternating amplitudes (0.3 vs 0.15) create 
-#    a buzzing, 32nd-note illusion. Because the engine's strict master 
-#    clock fires these with absolute precision, the tambourine becomes a 
-#    continuous wall of high-frequency energy that is the absolute genetic 
-#    code of Singeli music.
-#
-# 2. The Log Drum: Look at `s_bass`. The `:play_sub` synth is given a 
-#    `release` of `0.15`. This cuts the note off almost instantly, turning 
-#    the detuned sawtooth into a sharp, percussive "thwack" that mimics 
-#    the wooden log drums used in traditional Tanzanian music. The engine's 
-#    strict clock ensures this syncopated bassline locks perfectly with 
-#    the manic tambourine.
-#
-# 3. Frantic Marimba: The `s_fm` sequence uses `divisor: 3` and `depth: 2` 
-#    to create a hollow, woody marimba tone. At 190 BPM, the sparse notes 
-#    dance over the relentless tambourine, creating a chaotic, celebratory 
-#    energy that feels like a street party spinning out of control.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The tambourine plays every 16th step with alternating
+#   amplitudes (0.3 vs 0.15), creating a continuous buzz.
+# - The bass uses release 0.15 to mimic a sharp, wooden log
+#   drum “thwack” that locks with the syncopated rhythm.
+# - FM with divisor 3 and depth 2 produces a hollow marimba
+#   tone that dances over the relentless percussion at 190 BPM.
 # ==========================================================

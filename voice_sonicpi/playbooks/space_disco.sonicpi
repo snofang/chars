@@ -4,114 +4,89 @@
 # ========================================================== 
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Space Disco.
-# We have explored standard 70s Disco and Italo Disco. Space Disco 
-# is the cosmic, psychedelic extension of those genres. It takes the 
-# 4/4 grid but stretches it out, relying on relentless, rolling 16th-
-# note analog basslines that slowly evolve via filter sweeps, and 
-# sparse, echoing arpeggios that sound like flying through a nebula.
-#
-# This playbook perfectly demonstrates how to use the Parameter Hashes 
-# (`cutoff`) to create a continuous, 16-step filter sweep on a rolling 
-# bassline. By alternating the filter values on every single step, the 
-# engine creates a hypnotic, breathing pulse that drives the track 
-# forward unstoppably.
+# Space Disco stretches the 4/4 grid with relentless rolling
+# 16th‑note analog basslines, evolving filter sweeps, and
+# echoing arpeggios. This playbook uses parameter hashes
+# (cutoff) to create a hypnotic, breathing pulse that drives
+# the track forward like a journey through a nebula.
 # ==========================================================
 
 use_bpm 115
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (G Dorian - Hypnotic, Cosmic, & Driving)
-# ==========================================================
+# Scores
+s_kick  = gen_score("x...x...x...x...", [:c4])
 
-# Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_clap  = gen_score("....x.......x...", [:c4])
 
-# Crisp, organic clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_hats  = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4}
+])
 
-# Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil)
+s_bass  = gen_score("xxxxxxxxxxxxxxxx", [
+  {note: :g2, cutoff: 60},
+  {note: :g3, cutoff: 70},
+  {note: :g2, cutoff: 80},
+  {note: :g3, cutoff: 90},
+  {note: :g2, cutoff: 100},
+  {note: :g3, cutoff: 110},
+  {note: :g2, cutoff: 120},
+  {note: :g3, cutoff: 130},
+  {note: :g2, cutoff: 120},
+  {note: :g3, cutoff: 110},
+  {note: :g2, cutoff: 100},
+  {note: :g3, cutoff: 90},
+  {note: :c3, cutoff: 80},
+  {note: :c4, cutoff: 70},
+  {note: :c3, cutoff: 60},
+  {note: :c4, cutoff: 60}
+])
 
-# The "Cosmic" Rolling Bass (G Dorian).
-# Plays on EVERY SINGLE 16th step. The 'cutoff' Hash slowly opens from 60 
-# to 130 and closes back down over the 16 steps, simulating a long, 
-# hypnotic filter sweep on an analog synthesizer.
-s_bass  = (ring {:note => :g2, :cutoff => 60}, {:note => :g3, :cutoff => 70}, {:note => :g2, :cutoff => 80}, {:note => :g3, :cutoff => 90}, 
-           {:note => :g2, :cutoff => 100}, {:note => :g3, :cutoff => 110}, {:note => :g2, :cutoff => 120}, {:note => :g3, :cutoff => 130}, 
-           {:note => :g2, :cutoff => 120}, {:note => :g3, :cutoff => 110}, {:note => :g2, :cutoff => 100}, {:note => :g3, :cutoff => 90}, 
-           {:note => :c3, :cutoff => 80}, {:note => :c4, :cutoff => 70}, {:note => :c3, :cutoff => 60}, {:note => :c4, :cutoff => 60})
+s_chords = gen_score("x.......x.......", [
+  {note: [:g3, :bb3, :d4, :f4], cutoff: 100, release: 1.0, amp: 0.6},
+  {note: [:c3, :eb3, :g3, :bb3], cutoff: 100, release: 1.0, amp: 0.6}
+])
 
-# Lush, wide minor 9th chords (Gm9 to Cm9).
-# Hit sparingly on the downbeats. The long release (1.0) lets them wash 
-# over the relentless bassline like a cosmic wave.
-s_chords= (ring {:note => [:g3, :bb3, :d4, :f4], :cutoff => 100, :release => 1.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => [:c3, :eb3, :g3, :bb3], :cutoff => 100, :release => 1.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_fm    = gen_score("x...x...x...x...", [
+  {note: :g5, amp: 0.6, divisor: 3, depth: 2, release: 0.3},
+  {note: :d5, amp: 0.5, divisor: 3, depth: 2, release: 0.3},
+  {note: :f5, amp: 0.6, divisor: 3, depth: 2, release: 0.3},
+  {note: :g5, amp: 0.5, divisor: 3, depth: 2, release: 0.3}
+])
 
-# The "Nebula" Arpeggio (G Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) to create a sharp, organic pluck.
-# Notice the massive gaps (`nil`) between the notes. Routed through the 
-# engine's tape echo, these empty spaces are filled by delay tails, 
-# creating a cascading, spacey soundscape.
-s_fm    = (ring {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, 
-           {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, 
-           {:note => :f5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, 
-           {:note => :g5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil)
+s_grain = gen_score("x.......x.......", [
+  {note: :g4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5},
+  {note: :c4, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.4, amp: 0.5}
+])
 
-# Ethereal, granular cosmic drone (using :ambi_choir).
-# Long size (0.4) and low density (1) creates a slow, evolving celestial 
-# texture that drifts in the background like a distant galaxy.
-s_grain = (ring {:note => :g4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :c4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
-
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Orbit - Just the cosmic drone and sweeping bass (4 bars)
+  # Scene 1: The Orbit – cosmic drone and sweeping bass (4 bars)
   [ [:play_grain, s_grain, 4], [:play_sub, s_bass, 4] ],
   
-  # Scene 2: The Flight - Add the relentless 4/4 drums and lush chords (8 bars)
-  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+  # Scene 2: The Flight – relentless 4/4 drums and lush chords (8 bars)
+  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8],
     [:play_chords, s_chords, 8] ],
     
-  # Scene 3: The Stars - The echoing nebula arpeggio drops (8 bars)
-  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+  # Scene 3: The Stars – echoing nebula arpeggio drops (8 bars)
+  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8],
     [:play_chords, s_chords, 8], [:play_lead, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HYPNOTIC MOMENTUM]
-# 
-# 1. The 16-Step Filter Sweep: Look at `s_bass`. It plays on EVERY single 
-#    16th step, but the `cutoff` Hash changes on every hit. It starts at 
-#    60 (muffled), slowly opens to 130 (bright and piercing) by step 7, 
-#    and then closes back down to 60. Because the engine loops this 16-step 
-#    grid, the bassline constantly "breathes", creating immense hypnotic 
-#    tension without ever changing the actual notes.
-#
-# 2. The Rolling Pulse: By alternating between the low octave (:g2) and the 
-#    high octave (:g3) on every 16th step, the engine creates a relentless, 
-#    rolling "gallop". This is the exact sequencer technique used by 
-#    Giorgio Moroder and Lindstrøm to keep space disco tracks feeling 
-#    unstoppably forward-moving.
-#
-# 3. Echoing Space: The `s_fm` arpeggio leaves massive gaps (`nil`)—12 out 
-#    of 16 steps are silent. Because the engine routes the `:play_fm` synth 
-#    through a tape echo, those empty spaces are filled by cascading delay 
-#    tails. The engine's strict master clock ensures the original notes hit 
-#    with absolute precision, allowing the echo to create a massive, 
-#    shimmering wall of sound.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The 16‑step filter sweep in s_bass opens and closes the
+#   cutoff from 60 to 130 and back, creating hypnotic breath.
+# - Alternating octaves (:g2/:g3) on every 16th builds a
+#   relentless rolling pulse (the Moroder gallop).
+# - The FM arpeggio uses sparse hits (4 per 16) with long
+#   release and tape echo – the empty steps let the delay
+#   tails create a massive, shimmering soundscape.
 # ==========================================================

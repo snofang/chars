@@ -4,101 +4,95 @@
 # ========================================================== 
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 70s Salsa Dura.
-# We have explored Bossa Nova and Latin Jazz, but Salsa Dura is the 
-# sound of 1970s New York City's Fania Records. It is built on intensely 
-# complex, interlocking Afro-Cuban percussion (Clave, Congas, Cowbell) 
-# and a highly syncopated piano pattern called a "Montuno."
-#
-# This playbook perfectly demonstrates how to use the `:play_fm` synth 
-# to simulate live Latin percussion (Congas and Cowbell). By mapping the 
-# 3-2 Son Clave to the 16-step grid and pairing it with a syncopated 
-# Montuno piano, the engine creates a relentless, high-energy Latin dance 
-# groove that feels like a packed club in 1970s Spanish Harlem.
+# Salsa Dura is built on interlocking Afro‑Cuban percussion
+# (Clave, Congas, Cowbell) and a syncopated piano “Montuno”.
+# This playbook uses FM synthesis to simulate live cowbell
+# and congas, maps the 3‑2 Son Clave to the 16‑step grid,
+# and pairs it with a Tumbao bass to create a relentless,
+# high‑energy Latin dance groove.
 # ==========================================================
 
 use_bpm 100
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (C Minor - Syncopated, Driving, & Latin)
-# ==========================================================
+# Scores
 
-# The "Tumbao" Bass. 
-# Hits on the 'and' of 2 (step 6) and beat 4 (step 12).
-s_bass  = (ring nil, nil, nil, nil, nil, nil, {:note => :c2, :release => 0.2, :cutoff => 70, :amp => 0.9}, nil, nil, nil, nil, nil, {:note => :g1, :release => 0.2, :cutoff => 70, :amp => 0.9}, nil, nil, nil)
+# Tumbao Bass – hits on the 'and' of 2 (step 6) and beat 4 (step 12)
+s_bass = gen_score("......x.....x...", [
+  {note: :c2, release: 0.2, cutoff: 70, amp: 0.9},
+  {note: :g1, release: 0.2, cutoff: 70, amp: 0.9}
+])
 
-# The "Campana" (Cowbell).
-# FIXED: Exactly 16 steps. Uses :play_fm with a high divisor (4) and tiny 
-# release (0.05) to create a sharp, metallic cowbell. Plays a steady 8th-note pattern.
-s_fm    = (ring {:note => :c5, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, nil, 
-           {:note => :c5, :amp => 0.3, :divisor => 4, :depth => 1, :release => 0.05}, nil, 
-           {:note => :c5, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, nil, 
-           {:note => :c5, :amp => 0.3, :divisor => 4, :depth => 1, :release => 0.05}, nil, 
-           {:note => :c5, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, nil, 
-           {:note => :c5, :amp => 0.3, :divisor => 4, :depth => 1, :release => 0.05}, nil, 
-           {:note => :c5, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, nil, 
-           {:note => :c5, :amp => 0.3, :divisor => 4, :depth => 1, :release => 0.05}, nil)
+# Campana (Cowbell) – steady 8th‑note pattern with dynamic accents
+s_cowbell = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c5, amp: 0.5, divisor: 4, depth: 1, release: 0.05},
+  {note: :c5, amp: 0.3, divisor: 4, depth: 1, release: 0.05},
+  {note: :c5, amp: 0.5, divisor: 4, depth: 1, release: 0.05},
+  {note: :c5, amp: 0.3, divisor: 4, depth: 1, release: 0.05},
+  {note: :c5, amp: 0.5, divisor: 4, depth: 1, release: 0.05},
+  {note: :c5, amp: 0.3, divisor: 4, depth: 1, release: 0.05},
+  {note: :c5, amp: 0.5, divisor: 4, depth: 1, release: 0.05},
+  {note: :c5, amp: 0.3, divisor: 4, depth: 1, release: 0.05}
+])
 
-# The "Congas" Loop.
-# Uses :play_fm with a high divisor (4) to create hollow, woody conga hits.
-s_congas= (ring {:note => :c4, :amp => 0.6, :divisor => 4, :depth => 2, :release => 0.1}, nil, nil, nil, {:note => :e4, :amp => 0.5, :divisor => 4, :depth => 2, :release => 0.1}, nil, nil, nil, {:note => :g4, :amp => 0.7, :divisor => 4, :depth => 2, :release => 0.1}, nil, nil, nil, {:note => :e4, :amp => 0.5, :divisor => 4, :depth => 2, :release => 0.1}, nil, nil, nil)
+# Congas – woody hits on the downbeats of each group of 4
+s_congas = gen_score("x...x...x...x...", [
+  {note: :c4, amp: 0.6, divisor: 4, depth: 2, release: 0.1},
+  {note: :e4, amp: 0.5, divisor: 4, depth: 2, release: 0.1},
+  {note: :g4, amp: 0.7, divisor: 4, depth: 2, release: 0.1},
+  {note: :e4, amp: 0.5, divisor: 4, depth: 2, release: 0.1}
+])
 
-# The "Maracas/Güiro".
-# Uses play_hats to simulate the continuous, shaking rhythm.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil)
+# Maracas/Güiro – continuous shaking rhythm with varying dynamics
+s_shaker = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.3}
+])
 
-# The "Montuno" Piano (Cm to Fm to Gm).
-# Uses :play_chords. Hit strictly on the off-beats and syncopated 'e' and 'a'.
-s_chords= (ring nil, [:c3, :eb3, :g3], nil, nil, [:c3, :eb3, :g3], nil, nil, nil, nil, [:f3, :ab3, :c4], nil, nil, [:f3, :ab3, :c4], nil, nil, nil)
+# Montuno Piano – syncopated stabs (Cm, Cm, Fm, Fm)
+s_chords = gen_score(".x..x....x..x...", [
+  [:c3, :eb3, :g3],
+  [:c3, :eb3, :g3],
+  [:f3, :ab3, :c4],
+  [:f3, :ab3, :c4]
+])
 
-# The "Soneos" (Vocal Improvisation).
-# Uses granular synth to simulate the lead singer's improvised phrasing.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :eb4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.6}, nil)
+# Vocal Soneo – improvised phrasing on the off‑beats
+s_vocal = gen_score("........x.....x.", [
+  {note: :c4, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.05, amp: 0.6},
+  {note: :eb4, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.05, amp: 0.6}
+])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Descarga - Just the interlocking percussion and bass (4 bars)
-  [ [:play_sub, s_bass, 4], [:play_fm, s_fm, 4], [:play_fm, s_congas, 4], [:play_hats, s_hats, 4] ],
+  # Scene 1: The Descarga – interlocking percussion and bass (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_fm, s_cowbell, 4], [:play_fm, s_congas, 4], [:play_hats, s_shaker, 4] ],
   
-  # Scene 2: The Montuno - Add the syncopated piano (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], [:play_fm, s_congas, 8], [:play_hats, s_hats, 8], 
+  # Scene 2: The Montuno – add syncopated piano (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_cowbell, 8], [:play_fm, s_congas, 8], [:play_hats, s_shaker, 8],
     [:play_chords, s_chords, 8] ],
     
-  # Scene 3: The Soneo - The lead vocal improvisation drops (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], [:play_fm, s_congas, 8], [:play_hats, s_hats, 8], 
+  # Scene 3: The Soneo – lead vocal improvisation drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_fm, s_cowbell, 8], [:play_fm, s_congas, 8], [:play_hats, s_shaker, 8],
     [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN AFRO-CUBAN POLYRHYTHM]
-# 
-# 1. FM as Latin Percussion: Look at `s_fm` and `s_congas`. The `:play_fm` 
-#    synth is given a high `divisor` (4) and a tiny `release` (0.05). This 
-#    forces the FM synth to produce a sharp, metallic "ping" or a hollow, 
-#    woody "thwack" that perfectly mimics a live Campana (cowbell) and Conga 
-#    player, turning the 16-step grid into a complex, interlocking drum kit.
-#
-# 2. The Tumbao Bass: Look at `s_bass`. Instead of playing on the downbeats, 
-#    the bass only hits on the 'and' of 2 (step 6) and beat 4 (step 12). This 
-#    is the traditional Afro-Cuban "Tumbao" pattern. The engine's strict 
-#    master clock ensures this syncopated bassline locks perfectly with the 
-#    continuous cowbell, creating the undeniable "swing" of Salsa.
-#
-# 3. The Montuno: Look at `s_chords`. The piano doesn't play standard blocks; 
-#    it plays syncopated stabs on steps 1, 4, 9, and 12. This rhythmic 
-#    pattern is called a "Montuno." The engine's strict 16-step grid ensures 
-#    these chords weave perfectly between the bass and congas, creating a 
-#    relentless, high-energy wall of sound.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - FM with divisor 4 and tiny release turns the synth into a
+#   sharp, metallic cowbell and hollow, woody congas.
+# - The Tumbao bass hits only on the ‘and’ of 2 and beat 4,
+#   creating the signature syncopated swing of Salsa.
+# - The Montuno piano weaves stabs on steps 1,4,9,12 – locking
+#   with the clave and driving the relentless Afro‑Cuban groove.
 # ==========================================================

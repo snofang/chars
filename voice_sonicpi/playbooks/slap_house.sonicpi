@@ -4,105 +4,93 @@
 # ========================================================== 
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Slap House.
-# We have explored tech house (which is groovy) and deep house (which 
-# is warm). Slap House is the modern, streaming-era sound of Brazil. 
-# It takes the 4/4 grid and injects it with a massive, rolling FM 
-# "slap" bass that hits on the off-beats, creating a relentless, 
-# bouncy energy designed to dominate algorithms and festival mainstages.
-#
-# This playbook perfectly demonstrates how to push the `:play_fm` synth 
-# to act as a thick, wobbly bassline. By hitting on the off-beats with 
-# rapidly changing `divisor` and `depth` Hashes, the engine creates a 
-# "talking" bass that drives the track forward unstoppably.
+# Slap House is the modern Brazilian sound – a rolling FM
+# "slap" bass on the off‑beats, driving 4/4 kicks, and
+# staccato chords. This playbook uses rapidly changing FM
+# parameters to create a thick, wobbly "talking" bass that
+# defines the genre.
 # ==========================================================
 
 use_bpm 122
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Bouncy, Thick, & Driving)
-# ==========================================================
+# Scores
 
-# Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Heavy, modern pop clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Heavy clap on beats 2 and 4
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil)
+# Off‑beat open hats with dynamic accents
+s_hats = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4}
+])
 
-# The "Slap" Bass (A Minor).
-# Hits on the off-beats with a double-hit bounce (steps 2-3, 6-7, 10-11, 14-15).
-# The rapidly changing 'divisor' and 'depth' Hashes make the FM synth squelch 
-# and "talk" in the pockets between the kick.
-s_bass  = (ring nil, nil, {:note => :a1, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, {:note => :a1, :divisor => 3, :depth => 5, :release => 0.12, :amp => 0.8}, nil, nil, {:note => :c2, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, {:note => :c2, :divisor => 4, :depth => 6, :release => 0.12, :amp => 0.8}, nil, nil, {:note => :e2, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, {:note => :e2, :divisor => 3, :depth => 5, :release => 0.12, :amp => 0.8}, nil, nil, {:note => :g2, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, {:note => :g2, :divisor => 4, :depth => 6, :release => 0.12, :amp => 0.8})
+# "Slap" FM bass – double hits with changing divisor/depth
+s_bass = gen_score("..xx..xx..xx..xx", [
+  {note: :a1, divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :a1, divisor: 3, depth: 5, release: 0.12, amp: 0.8},
+  {note: :c2, divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :c2, divisor: 4, depth: 6, release: 0.12, amp: 0.8},
+  {note: :e2, divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :e2, divisor: 3, depth: 5, release: 0.12, amp: 0.8},
+  {note: :g2, divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :g2, divisor: 4, depth: 6, release: 0.12, amp: 0.8}
+])
 
-# Staccato, minor chord stabs (Am to C to E).
-# Hit sparingly on the off-beats to leave maximum room for the slap bass.
-s_chords= (ring nil, nil, nil, nil, 
-           {:note => [:a3, :c4, :e4], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil, nil, nil, 
-           nil, {:note => [:c4, :e4, :g4], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil, nil, 
-           nil, nil, {:note => [:e3, :g3, :b3], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil)
+# Staccato chord stabs on the off‑beats
+s_chords = gen_score("....x....x....x.", [
+  {note: [:a3, :c4, :e4], cutoff: 100, release: 0.15, amp: 0.6},
+  {note: [:c4, :e4, :g4], cutoff: 100, release: 0.15, amp: 0.6},
+  {note: [:e3, :g3, :b3], cutoff: 100, release: 0.15, amp: 0.6}
+])
 
-# High-pitched, echoing "Pluck" melody (A Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) to create a sharp, organic pluck.
-# Routed through the engine's tape echo for a cascading, stadium smear.
-s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :c6, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, {:note => :b5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, {:note => :a5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, nil)
+# High‑pitched pluck melody with tape echo
+s_fm = gen_score("x..x.x..x..x....", [
+  {note: :a5, amp: 0.6, divisor: 3, depth: 2, release: 0.2},
+  {note: :e5, amp: 0.5, divisor: 3, depth: 2, release: 0.2},
+  {note: :c6, amp: 0.6, divisor: 3, depth: 2, release: 0.2},
+  {note: :b5, amp: 0.5, divisor: 3, depth: 2, release: 0.2},
+  {note: :a5, amp: 0.7, divisor: 3, depth: 2, release: 0.2}
+])
 
-# Choppy, repetitive "Pop" vocal stutter (Granular Synth).
-# FIXED: Exactly 16 steps. High density, tiny size = a sharp, sugary vocal skip.
-s_vocal = (ring nil, nil, nil, nil, 
-           {:note => :a4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
-           nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.03, :amp => 0.6}, nil, 
-           nil, nil, nil, nil)
+# Sugary vocal stutter
+s_vocal = gen_score("....x.....x....", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.03, amp: 0.6},
+  {note: :c5, buffer: :ambi_choir, pos: 0.4, density: 2, size: 0.03, amp: 0.6}
+])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Groove - Just the kick, off-beat hats, and slap bass (4 bars)
+  # Scene 1: The Groove – kick, hats, slap bass (4 bars)
   [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_fm, s_bass, 4] ],
   
-  # Scene 2: The Vibe - Add the heavy claps and sparse chord stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8], 
+  # Scene 2: The Vibe – add claps and chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8],
     [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
     
-  # Scene 3: The Drop - The echoing pluck and vocal chops drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
+  # Scene 3: The Drop – pluck melody and vocal chops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8],
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8],
     [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE MODERN BOUNCE]
-# 
-# 1. The "Slap" FM Bass: Look at `s_bass`. The `:play_fm` synth hits on the 
-#    off-beats with a double-hit bounce (steps 2-3, 6-7, etc.). By rapidly 
-#    changing the `divisor` and `depth` Hashes on every hit, the FM 
-#    modulator radically reshapes the carrier wave, creating the thick, 
-#    squelching "slap" sound that defines Brazilian Bass and Slap House.
-#
-# 2. The Off-Beat Pocket: Look at `s_bass`, `s_hats`, and `s_chords`. They 
-#    ALL hit strictly on steps 2, 6, 10, and 14. In a 16-step grid, these 
-#    are the exact midpoints between the kicks. The engine's strict master 
-#    clock locks these together perfectly, creating a massive, bouncing 
-#    "boom-cha" momentum that forces you to dance.
-#
-# 3. Pristine Pop Mix: Slap House is designed for streaming. The `s_fm` 
-#    melody uses a high `divisor` to cut through the heavy bass, while the 
-#    `s_vocal` uses the granular engine to chop a vocal into pristine, 
-#    sugary shards. The engine's strict clock ensures these dense elements 
-#    fire with absolute mathematical precision, keeping the mix clean and 
-#    punchy.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The "slap" FM bass uses rapid divisor/depth changes on
+#   off‑beat double hits to create a thick, wobbly "talking"
+#   sound that defines Brazilian Bass.
+# - Bass, hats, and chords lock on steps 2,6,10,14 – the
+#   exact midpoints between kicks – for a relentless bounce.
+# - The pluck melody (divisor 3) cuts through the mix, while
+#   the granular vocal stutter adds a pristine pop quality
+#   perfect for streaming.
 # ==========================================================

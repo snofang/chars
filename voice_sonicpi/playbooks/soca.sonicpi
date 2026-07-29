@@ -4,102 +4,89 @@
 # ========================================================== 
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Soca / Power Soca.
-# We have explored Reggae, Dancehall, and Latin genres, but Soca is the 
-# sound of Trinidad and Tobago's Carnival. It is fast (160 BPM), highly 
-# energetic, and relies on a specific "wine and jam" rhythm. The kick 
-# hits on the off-beats (steps 2, 6, 10, 14), creating a relentless, 
-# bouncing groove that forces you to move.
-#
-# This playbook perfectly demonstrates how to use the 16-step grid to 
-# create a fast, syncopated Caribbean groove. By using the `:play_fm` 
-# synth to simulate steel drums and a deep, round sub-bass, the engine 
-# creates a festive, high-energy atmosphere.
+# Soca is the sound of Trinidad and Tobago's Carnival – fast
+# (160 BPM), off‑beat kicks, steel drums, and bouncing energy.
+# This playbook uses FM synthesis for steel drum melodies and
+# a deep, round sub‑bass to create a festive, high‑energy
+# Caribbean groove.
 # ==========================================================
 
 use_bpm 160
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Festive, Bouncy, & Fast)
-# ==========================================================
+# Scores
 
-# The "Wine and Jam" Kick. 
-# Hits strictly on the off-beats (steps 2, 6, 10, 14) to create a relentless bounce.
-s_kick  = (ring nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil)
+# Off‑beat kick (steps 2,6,10,14)
+s_kick = gen_score("..x...x...x...x.", [:c4])
 
-# Heavy, dry snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+# Snare on beats 2 and 4 (steps 4,12)
+s_snare = gen_score("....x.......x...", [{note: :c4, amp: 0.9}])
 
-# Fast, rolling 16th hats to drive the momentum.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil)
+# Fast 16th hats with dynamic accents
+s_hats = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2}
+])
 
-# Deep, round sub-bass (A Minor).
-# Hits on the downbeats. Low cutoff (70) and short release (0.15) to create a 
-# warm, bouncy undercurrent.
-s_bass  = (ring {:note => :a1, :release => 0.15, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :a1, :release => 0.15, :cutoff => 70}, nil, nil, nil, {:note => :c2, :release => 0.15, :cutoff => 70}, nil, nil, nil, {:note => :g1, :release => 0.15, :cutoff => 70}, nil)
+# Deep sub‑bass on downbeats (steps 0,6,10,14)
+s_bass = gen_score("x.....x...x...x.", [
+  {note: :a1, release: 0.15, cutoff: 70},
+  {note: :a1, release: 0.15, cutoff: 70},
+  {note: :c2, release: 0.15, cutoff: 70},
+  {note: :g1, release: 0.15, cutoff: 70}
+])
 
-# Bright, "Steel Drum" Melody (A Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and depth (2) to create a warm, 
-# organic steel drum tone. Routed through the engine's tape echo for a smear.
-s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, 
-           {:note => :e5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, 
-           {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, 
-           {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil)
+# Steel drum melody (even steps)
+s_fm = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :a5, amp: 0.6, divisor: 2, depth: 2, release: 0.1},
+  {note: :c5, amp: 0.5, divisor: 2, depth: 2, release: 0.1},
+  {note: :e5, amp: 0.6, divisor: 2, depth: 2, release: 0.1},
+  {note: :a5, amp: 0.5, divisor: 2, depth: 2, release: 0.1},
+  {note: :g5, amp: 0.6, divisor: 2, depth: 2, release: 0.1},
+  {note: :e5, amp: 0.5, divisor: 2, depth: 2, release: 0.1},
+  {note: :d5, amp: 0.6, divisor: 2, depth: 2, release: 0.1},
+  {note: :c5, amp: 0.5, divisor: 2, depth: 2, release: 0.1}
+])
 
-# Lush, wide minor chord stabs (Am to C to G).
-# Hit strictly on the off-beats (steps 2, 6, 10, 14) in sync with the kick.
-s_chords= (ring nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:c3, :e3, :g3], nil, nil, nil, [:g3, :b3, :d4], nil)
+# Minor chord stabs on off‑beats (steps 2,6,10,14)
+s_chords = gen_score("..x...x...x...x.", [
+  [:a3, :c4, :e4],
+  [:a3, :c4, :e4],
+  [:c3, :e3, :g3],
+  [:g3, :b3, :d4]
+])
 
-# Rhythmic, pitched-up "Carnival" vocal chant (Granular Synth).
-# FIXED: Exactly 16 steps. High density, small size = a sharp, sugary vocal skip.
-s_vocal = (ring nil, nil, nil, nil, 
-           {:note => :a4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
-           nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.04, :amp => 0.6}, nil, 
-           nil, nil, nil, nil)
+# Carnival vocal chant (steps 4,10)
+s_vocal = gen_score("....x.....x....", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.04, amp: 0.6},
+  {note: :c5, buffer: :ambi_choir, pos: 0.4, density: 2, size: 0.04, amp: 0.6}
+])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Carnival - Just the off-beat kick, bass, and steel drums (4 bars)
+  # Scene 1: The Carnival – off‑beat kick, bass, steel drums (4 bars)
   [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_fm, s_fm, 4] ],
   
-  # Scene 2: The Groove - Add the snares, hats, and chord stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], 
+  # Scene 2: The Groove – add snares, hats, and chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8],
     [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
     
-  # Scene 3: The Drop - The vocal chants drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], 
-    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+  # Scene 3: The Drop – vocal chants drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8],
     [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN CARIBBEAN ENERGY]
-# 
-# 1. The "Wine and Jam" Bounce: Look at `s_kick`. It hits strictly on 
-#    steps 2, 6, 10, and 14—the exact midpoints between the beats. 
-#    Because the engine's master clock is rigid, this creates a relentless, 
-#    bouncing "boom-cha" groove that forces you to move, which is the 
-#    absolute genetic code of Soca music.
-#
-# 2. FM as a Steel Drum: The `s_fm` sequence uses `divisor: 2` and 
-#    `depth: 2`. This creates a warm, organic pluck that perfectly mimics 
-#    a Trinidadian steel drum. The engine's strict 16-step grid ensures 
-#    this fast, melodic line locks perfectly with the off-beat kick.
-#
-# 3. Deep Harmonic Warmth: The `s_bass` sequence uses a very low `cutoff` 
-#    (70) to keep it round and warm. The `s_chords` hit strictly on the 
-#    off-beats in sync with the kick, creating a massive, bouncing wall 
-#    of sound that perfectly anchors the fast, festive steel drum melody.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The kick hits strictly on off‑beats (steps 2,6,10,14) to
+#   create the signature Soca “wine and jam” bounce.
+# - FM with divisor 2 and depth 2 produces a warm, organic
+#   steel drum tone that dances over the relentless rhythm.
+# - The sub‑bass uses cutoff 70 and a short release for a
+#   round, bouncy low‑end that anchors the fast tempo.
 # ==========================================================

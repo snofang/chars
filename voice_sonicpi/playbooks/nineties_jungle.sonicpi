@@ -1,51 +1,94 @@
+# ==========================================================
+# PLAYBOOK: 90s JUNGLE / RAGGA JUNGLE
+# (Pioneered by Goldie, Shy FX, and Congo Natty)
+# ========================================================== 
+# 
+# [WHY THIS GENRE?]
+# Jungle takes the frantic Amen break, layers it with deep
+# reggae sub‑bass, and adds chopped ragga vocals. This playbook
+# demonstrates syncopated breakbeats at 165 BPM with a round,
+# long‑release bass anchoring the chaos.
+# ==========================================================
+
 use_bpm 165
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Deep Reggae / Frantic Breaks)
-# ==========================================================
+# Scores
+s_kick  = gen_score("x.x...x.x.....x.", [
+  :c4,
+  {note: :c4, amp: 0.6},
+  {note: :c4, amp: 0.8},
+  {note: :c4, amp: 1.0},
+  {note: :c4, amp: 0.7}
+])
 
-# The "Amen" Kick. Highly syncopated, hits on the 'e' and 'a' of beats.
-s_kick  = (ring :c4, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil)
+s_snare = gen_score("....x..x...xx.xx", [
+  {note: :c4, amp: 1.0},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.8},
+  {note: :c4, amp: 0.5},
+  {note: :c4, amp: 0.3}
+])
 
-# The "Amen" Snare. Heavy hits on 2 and 4, with frantic ghost rolls in between.
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.3})
+s_hats  = gen_score("xxxxxxxxxxxxxxxx", [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.5},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}
+])
 
-# Rolling, fast 16th hats
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2})
+s_bass  = gen_score("x.......x.......", [
+  {note: :a1, release: 1.5},
+  {note: :e1, release: 1.5}
+])
 
-# Massive, round Reggae Sub-Bass. 
-# Long release to anchor the frantic drums.
-s_bass  = (ring {:note => :a1, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e1, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil)
+s_chords = gen_score(".x.......x......", [
+  [:a3, :c4, :e4],
+  [:e3, :g3, :b3]
+])
 
-# Deep, echoing minor chord stabs (A Minor)
-s_chords= (ring nil, [:a3, :c4, :e4], nil, nil, nil, nil, nil, nil, nil, [:e3, :g3, :b3], nil, nil, nil, nil, nil, nil)
+s_vocal = gen_score("....x.....x.....", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04},
+  {note: :c5, buffer: :ambi_choir, pos: 0.5, density: 3, size: 0.04}
+])
 
-# Chopped Ragga Vocal (Granular Synth)
-# High density, small size = rhythmic stutter
-s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04}, nil, nil, nil, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.5, :density => 3, :size => 0.04}, nil, nil, nil, nil, nil)
-
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
   # Scene 1: Just the frantic Amen drums (4 bars)
   [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
   
-  # Scene 2: Add the massive reggae sub-bass and chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 2: Add deep reggae sub‑bass and chords (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
     
-  # Scene 3: The chopped ragga vocals drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 3: Chopped ragga vocals drop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The Amen kick syncopation (steps 0,2,6,8,14) and snare
+#   rolls (ghosts on 7,11,14,15) create a frantic breakbeat.
+# - The sub‑bass holds notes for 1.5 beats, anchoring the
+#   rapid drums with a deep reggae foundation.
+# - The granulated vocal (density 3, size 0.04) produces a
+#   sharp, rhythmic stutter that mimics chopped ragga samples.
+# ==========================================================
