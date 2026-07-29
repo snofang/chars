@@ -2,274 +2,101 @@
 # PLAYBOOK: TRIP HOP
 # A Smoky, Downtempo, Beat‑Driven Atmosphere
 # ==========================================================
+# [WHY THIS GENRE?]
+# Trip hop (Massive Attack, Portishead) fuses hip‑hop beats, jazz
+# harmony, cinematic samples, and nocturnal mood. This playbook
+# captures that essence – dusty, hypnotic, deeply textured.
 #
-# WHAT IS TRIP HOP?
-# Born in Bristol in the 90s (Massive Attack, Portishead,
-# Tricky). It's hip‑hop beats slowed down, drenched in
-# atmosphere, with jazz chords, cinematic samples, and
-# a moody, nocturnal feel. This playbook captures that
-# essence – dusty, hypnotic, and deeply textured.
-#
-# DNA:
-#   1. Tempo: 82 BPM – the classic trip‑hop pocket.
-#   2. Harmonic Center: E minor – dark, bluesy, with a
-#      Dorian inflection (F# instead of F).
-#   3. Rhythmic Skeleton:
-#      - Kick: heavy, on 1 and the "and" of 3, with ghost hits.
-#      - Snare: on 2 and 4, but with swing and flams.
-#      - Hats: laid‑back 8th notes, sometimes skipping.
-#   4. Timbral Palette:
-#      - Bass: a deep, round sine‑saw hybrid – subby and warm.
-#      - Lead: a Rhodes‑like electric piano – nostalgic and jazzy.
-#      - Chords: warm, sustained pads with a touch of vinyl noise.
-#      - Pluck: a vibraphone‑like sound – bright and melancholic.
-#      - Grain: dusty vocal samples, pitched down, with reverb.
-#      - Drums: dry kick, snappy snare with reverb, crisp hats.
-#   5. Arrangement:
-#      - Scene 1 (Intro): Bass + Chords + Pluck (4 bars) – "the vibe"
-#      - Scene 2 (Verse): Drums enter (8 bars) – "the groove"
-#      - Scene 3 (Drop): Lead + Grain (8 bars) – "the peak"
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 82 BPM
+# Key: E minor (Dorian inflection)
+# Rhythm: Heavy kick on 1 and ghost on the "and" of 3; snare on 2/4
+# with swing; laid‑back 8th hats with shuffle.
+# Timbre: Subby bass (dsaw), Rhodes‑like lead (prophet+echo), warm
+# pads (blade), vibraphone‑like pluck, dusty vocal grains (ambi_choir).
+# Arrangement: Intro (bass+chords+pluck) → Verse (drums enter) →
+# Drop (lead+grain).
 # ==========================================================
 
 use_bpm 82
 
-# ---------- ENGINE (inline – unchanged) ----------
-define :gen_score do |pattern, data|
-  data = [nil] if data.nil? || data.empty?
-  idx = 0
-  p_str = pattern.to_s.ljust(16, '.')[0...16]
-  p_str.chars.map do |char|
-    if char == 'x' || char == 'X'
-      val = data[idx % data.length]
-      idx += 1
-      val
-    else
-      nil
-    end
-  end.ring
-end
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-define :parse_step do |step, defaults|
-  return nil, nil unless step
-  if step.is_a?(Hash)
-    note = step[:note]
-    opts = defaults.merge(step)
-    opts.delete(:note)
-  else
-    note = step
-    opts = defaults
-  end
-  if note.is_a?(Array)
-    note = note.compact
-    return nil, opts if note.empty?
-  end
-  return note, opts
-end
-
-define :play_sub do |n|
-  use_synth :dsaw
-  note, opts = parse_step(n, {release: 0.4, amp: 1.2, cutoff: 60})
-  play note, **opts if note
-end
-
-define :play_lead do |n|
-  use_synth :prophet
-  note, opts = parse_step(n, {release: 0.6, amp: 0.7, cutoff: rrand(70,90)})
-  with_fx :echo, phase: 0.5, decay: 4, mix: 0.3 do
-    play note, **opts if note
-  end
-end
-
-define :play_chords do |n|
-  use_synth :blade
-  note, opts = parse_step(n, {release: 2.0, amp: 0.4, attack: 0.4, cutoff: 70})
-  play note, **opts if note
-end
-
-define :play_grain do |n|
-  return unless n
-  note, opts = parse_step(n, {amp: 0.3})
-  density = (opts[:density] || 4).to_i
-  pos     = opts[:pos] || rrand(0.2,0.5)
-  size    = opts[:size] || 0.05
-  buffer  = opts[:buffer] || :ambi_choir
-  opts.delete(:density); opts.delete(:pos); opts.delete(:size); opts.delete(:buffer)
-  pitch_shift = note(note) - note(:c4)
-  interval = 0.25 / density
-  at density.times.map { |i| i * interval } do
-    grain_start = pos + rrand(-0.01,0.01)
-    grain_finish = grain_start + size
-    sample buffer, pitch: pitch_shift, start: grain_start, finish: grain_finish,
-      pan: rrand(-0.6,0.6), attack: size/2, release: size/2, **opts
-  end
-end
-
-define :play_fm do |n|
-  use_synth :fm
-  note, opts = parse_step(n, {release: 0.4, amp: 0.5, divisor: 2, depth: 2})
-  play note, **opts if note
-end
-
-define :play_pluck do |n|
-  use_synth :pluck
-  note, opts = parse_step(n, {release: 0.5, amp: 0.6, coef: rrand(0.3,0.5)})
-  play note, **opts if note
-end
-
-define :play_pad do |n|
-  use_synth :dark_ambience
-  note, opts = parse_step(n, {release: 2.5, amp: 0.3, attack: 0.5})
-  play note, **opts if note
-end
-
-define :play_kick do |n|
-  note, opts = parse_step(n, {amp: 1.5})
-  sample :bd_haus, pitch: (note(note) - note(:c4)), **opts if note
-end
-
-define :play_snare do |n|
-  note, opts = parse_step(n, {amp: 0.7})
-  with_fx :reverb, room: 0.6, mix: 0.4 do
-    sample :sn_dolf, pitch: (note(note) - note(:c4)), **opts if note
-  end
-end
-
-define :play_hats do |n|
-  note, opts = parse_step(n, {amp: 0.2})
-  if note
-    # laid‑back swing: only two hits per 16th, with shuffle
-    at [0, 0.15, 0.5, 0.65] do
-      sample :drum_cymbal_closed, rate: 0.9 + rrand(-0.05,0.05), pan: rrand(-0.3,0.3), **opts
-    end
-  end
-end
-
-define :start_engine do |playbook|
-  playbook.to_a.flatten(1).each do |task|
-    inst, score, bars = task
-    unless score.length == 16
-      raise ArgumentError, "#{inst} score must have exactly 16 steps, but got #{score.length}."
-    end
-  end
-  live_loop :conductor do
-    scene = playbook.tick(:conductor)
-    max_bars = scene.map { |task| task[2] }.max || 1
-    total_steps = max_bars * 16
-    total_steps.times do |step|
-      scene.each do |task|
-        inst, score, bars = task
-        if step < (bars * 16)
-          send(inst, score[step % 16])
-        end
-      end
-      sleep 0.25
-    end
-  end
-end
-# ---------- ENGINE (end) ----------
-
-# ---------- SCORES (TRIP HOP) ----------
-# Kick: heavy accent on 1, ghost on the "and" of 3, plus a skip
-s_kick = gen_score("x...x..x...x..x.", 
+# Scores
+s_kick = gen_score("x...x..x...x..x.",
   [{note: :e2, amp: 1.5}, {note: :e2, amp: 0.7}, {note: :e2, amp: 0.9}])
 
-# Snare: on 2 and 4, but with a flam before the 4
-s_snare = gen_score("...x...x..x..x...", 
+s_snare = gen_score("...x...x..x..x...",
   [{note: :b2, amp: 0.7}, {note: :b2, amp: 0.4}, {note: :b2, amp: 0.9}])
 
-# Hats: relaxed 8ths with swing – not 16th constant
-hat_notes = 16.times.map { |i| 
-  amp = (i % 2 == 0) ? 0.2 : 0.08
-  {note: :e3, amp: amp}
-}
-s_hats = gen_score("x.x...x.x...x.x.", hat_notes)
+hat_amps = 16.times.map { |i| {note: :e3, amp: (i % 2 == 0) ? 0.2 : 0.08} }
+s_hats = gen_score("x.x...x.x...x.x.", hat_amps)
 
-# Bass: deep and warm, following the chord roots
-bass_data = 16.times.map { |i| 
-  cutoff_val = 55 + (i % 8) * 3
-  {note: :e2, cutoff: cutoff_val, release: 0.5, amp: 1.2}
-}
+bass_data = 16.times.map { |i| {note: :e2, cutoff: 55 + (i % 8) * 3, release: 0.5, amp: 1.2} }
 s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# Chords: Em9 – Am9 – G6 – F#m7b5 (jazzy and dark)
-chords = [
-  [:e3, :g3, :b3, :d4],  # Em9
-  [:e3, :g3, :b3, :d4],
-  [:a3, :c4, :e4, :g4],  # Am9
-  [:a3, :c4, :e4, :g4],
-  [:g3, :b3, :d4, :e4],  # G6
-  [:g3, :b3, :d4, :e4],
-  [:f3, :a3, :c4, :e4],  # F#m7b5
-  [:f3, :a3, :c4, :e4],
-  [:e3, :g3, :b3, :d4],
-  [:e3, :g3, :b3, :d4],
-  [:a3, :c4, :e4, :g4],
-  [:a3, :c4, :e4, :g4],
-  [:g3, :b3, :d4, :e4],
-  [:g3, :b3, :d4, :e4],
-  [:f3, :a3, :c4, :e4],
-  [:f3, :a3, :c4, :e4]
+chord_seq = [
+  [:e3, :g3, :b3, :d4], [:e3, :g3, :b3, :d4],
+  [:a3, :c4, :e4, :g4], [:a3, :c4, :e4, :g4],
+  [:g3, :b3, :d4, :e4], [:g3, :b3, :d4, :e4],
+  [:f3, :a3, :c4, :e4], [:f3, :a3, :c4, :e4],
+  [:e3, :g3, :b3, :d4], [:e3, :g3, :b3, :d4],
+  [:a3, :c4, :e4, :g4], [:a3, :c4, :e4, :g4],
+  [:g3, :b3, :d4, :e4], [:g3, :b3, :d4, :e4],
+  [:f3, :a3, :c4, :e4], [:f3, :a3, :c4, :e4]
 ]
-s_chords = gen_score("xxxxxxxxxxxxxxxx", chords.map { |ch| {note: ch, cutoff: 70, release: 2.0, amp: 0.35} })
+s_chords = gen_score("xxxxxxxxxxxxxxxx",
+  chord_seq.map { |ch| {note: ch, cutoff: 70, release: 2.0, amp: 0.35} })
 
-# Lead: Rhodes‑like electric piano – melancholic and jazzy
-lead_notes = [
-  :e4, :g4, :b4, :d5,
-  :e4, :g4, :b4, :d5,
-  :c5, :b4, :a4, :g4,
-  :c5, :b4, :a4, :g4
-]
-s_lead = gen_score("x...x...x...x...", lead_notes.map { |n| {note: n, amp: 0.6, cutoff: rrand(70,90)} })
+lead_notes = [:e4, :g4, :b4, :d5, :e4, :g4, :b4, :d5,
+              :c5, :b4, :a4, :g4, :c5, :b4, :a4, :g4]
+s_lead = gen_score("x...x...x...x...",
+  lead_notes.map { |n| {note: n, amp: 0.6, cutoff: rrand(70,90)} })
 
-# Pluck: vibraphone‑like countermelody – bright and wistful
-pluck_notes = [
-  :b4, :g4, :e4, :d4,
-  :b4, :g4, :e4, :d4,
-  :a4, :g4, :e4, :c4,
-  :a4, :g4, :e4, :c4
-]
-s_pluck = gen_score("x...x...x...x...", pluck_notes.map { |n| {note: n, amp: 0.4, coef: rrand(0.4,0.6)} })
+pluck_notes = [:b4, :g4, :e4, :d4, :b4, :g4, :e4, :d4,
+               :a4, :g4, :e4, :c4, :a4, :g4, :e4, :c4]
+s_pluck = gen_score("x...x...x...x...",
+  pluck_notes.map { |n| {note: n, amp: 0.4, coef: rrand(0.4,0.6)} })
 
-# Grain: dusty vocal samples – pitched down and reverbed
-grain_data = 16.times.map { |i| 
-  pos = 0.1 + (i % 8) * 0.07
-  {note: :c5, buffer: :ambi_choir, pos: pos, density: 3 + (i % 3), size: 0.06 + (i % 4) * 0.005, amp: 0.2}
+grain_data = 16.times.map { |i|
+  {note: :c5, buffer: :ambi_choir, pos: 0.1 + (i % 8) * 0.07,
+   density: 3 + (i % 3), size: 0.06 + (i % 4) * 0.005, amp: 0.2}
 }
 s_grain = gen_score("x..x..x..x..x...", grain_data)
 
-# Pad: a soft, evolving drone to fill the space
 s_pad = gen_score("x...............", [{note: :e2, amp: 0.15, release: 5}])
 
-# ---------- PLAYBOOK (TRIP HOP ARC) ----------
+# Playbook
 playbook = (ring
-  # Scene 1: Intro – Bass + Chords + Pluck (4 bars) – "the vibe"
-  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], 
+  # Scene 1: Intro
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4],
     [:play_pluck, s_pluck, 4], [:play_pad, s_pad, 4] ],
-  
-  # Scene 2: Verse – Drums enter (8 bars) – "the groove"
-  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+
+  # Scene 2: Verse
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8],
     [:play_pluck, s_pluck, 8], [:play_pad, s_pad, 8],
     [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
     [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: Drop – Lead + Grain (8 bars) – "the peak"
-  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
+
+  # Scene 3: Drop
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8],
     [:play_pluck, s_pluck, 8], [:play_pad, s_pad, 8],
     [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
     [:play_hats, s_hats, 8], [:play_lead, s_lead, 8],
     [:play_grain, s_grain, 8] ]
 )
 
-# ---------- RUN ----------
 start_engine(playbook)
 
 # ==========================================================
-# WHAT MAKES THIS TRIP HOP?
-# - Slow, heavy beat (82 BPM) – classic trip‑hop pocket.
-# - Em9, Am9, G6, F#m7b5 chords – jazzy and melancholic.
-# - Rhodes‑like electric piano – nostalgic and smoky.
-# - Dusty, reverbed vocal grains – sampled textures.
-# - Swung, laid‑back hi‑hats – the signature shuffle.
-# - Deep, subby bass – the foundation of the groove.
-# - Three‑scene arc: vibe → groove → peak.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The swing in s_hats: only two hits per 16th (with offset)
+#   creates the signature laid‑back shuffle.
+# - The chord progression (Em9 – Am9 – G6 – F#m7b5) uses
+#   extended jazz harmony to evoke that melancholic, smoky
+#   Bristol night vibe.
+# - Grain on `:ambi_choir` with varying pos and density gives
+#   a dusty, sampled‑vocal texture that fills space without
+#   overpowering the beat.
 # ==========================================================
