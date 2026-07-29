@@ -1,95 +1,96 @@
 # ==========================================================
 # PLAYBOOK: 90s AMBIENT TECHNO / IDM
-# (Pioneered by Global Communication, Aphex Twin, and Black Dog)
-# ========================================================== 
+# Lush, Deep, Melancholic, Hypnotic Textures
+# ==========================================================
+# [WHY THIS GENRE?]
+# Ambient Techno / IDM (Global Communication, Aphex Twin) fuses
+# soft, gentle rhythms with evolving filter sweeps, lush chords,
+# and ethereal textures. This playbook captures that warm,
+# introspective, hypnotic atmosphere – music for deep listening.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 110 BPM
+# Key: A minor (melancholic, warm)
+# Rhythm: Soft 4/4 kick, sparse metallic percussion on off‑beats,
+# slow 8th hats, continuous rolling bass with filter sweep,
+# lush chords on downbeats.
+# Timbre: Gentle kick (bd_haus, low amp), metallic snare
+# (sn_dolf, sparse), soft hats (cymbal_closed), evolving bass
+# (dsaw with gradual cutoff sweep), warm chords (blade, long
+# attack/release), Rhodes‑like FM (divisor 3, depth 1), ethereal
+# granular vocal pad (ambi_choir, long size).
+# Arrangement: Void (chords+grain) → Pulse (add drums+bass)
+# → Journey (add Rhodes melody).
+# ==========================================================
 
 use_bpm 110
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Lush, Deep, & Melancholic)
-# ==========================================================
+# Scores
 
-# Soft, driving 4/4 kick. Lower amplitude for a gentle pulse.
-s_kick  = (ring {:note => :c4, :amp => 0.7}, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+# Soft driving 4/4 kick with gentle amplitude variation
+s_kick = gen_score("x...x...x...x...",
+  [{note: :c4, amp: 0.7}, {note: :c4, amp: 0.8}])
 
-# Very sparse, metallic percussion on the 'and' of 2 (step 6) and beat 4 (step 12).
-s_snare = (ring nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil)
+# Sparse metallic percussion on off‑beats (steps 6 and 12)
+s_snare = gen_score("......x...x.....",
+  [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
 
-# Slow, echoing 8th hats.
-s_hats  = (ring {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.2}, nil)
+# Slow echoing 8th hats
+s_hats = gen_score("x.x.x.x.x.x.x.x.",
+  [{note: :c4, amp: 0.15}, {note: :c4, amp: 0.2}])
 
-# The "Evolving" Filter Sweep Bass (A Minor).
-# Plays continuous 16th notes. The 'cutoff' Hash slowly opens from 60 to 110 
-# and closes back down, creating a 1-bar filter sweep that gives the loop 
-# constant, hypnotic motion.
-s_bass  = (ring {:note => :a1, :cutoff => 60}, {:note => :a1, :cutoff => 65}, {:note => :a2, :cutoff => 70}, {:note => :a1, :cutoff => 75}, 
-           {:note => :a1, :cutoff => 80}, {:note => :a1, :cutoff => 85}, {:note => :a2, :cutoff => 90}, {:note => :a1, :cutoff => 95}, 
-           {:note => :a1, :cutoff => 100}, {:note => :a1, :cutoff => 110}, {:note => :a2, :cutoff => 105}, {:note => :a1, :cutoff => 100}, 
-           {:note => :g1, :cutoff => 95}, {:note => :g1, :cutoff => 90}, {:note => :g2, :cutoff => 85}, {:note => :g1, :cutoff => 80})
+# Evolving filter sweep bass – cutoff opens and closes across 16 steps
+bass_cutoffs = [60, 65, 70, 75, 80, 85, 90, 95, 100, 110, 105, 100, 95, 90, 85, 80]
+bass_notes = [:a1, :a1, :a2, :a1, :a1, :a1, :a2, :a1,
+              :a1, :a1, :a2, :a1, :g1, :g1, :g2, :g1]
+bass_data = 16.times.map do |i|
+  {note: bass_notes[i], cutoff: bass_cutoffs[i]}
+end
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# Lush, wide minor 9th chords (Am9 to Gmaj7).
-# Hit on the downbeats. The slow 0.5-beat attack and 2.0-beat release 
-# blur the chords together into a continuous, warm wave.
-s_chords= (ring {:note => [:a3, :c4, :e4, :g4], :cutoff => 90, :release => 2.0, :attack => 0.5, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => [:g3, :b3, :d4, :fs4], :cutoff => 90, :release => 2.0, :attack => 0.5, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Lush minor 9th chords – slow attack and release for blur
+s_chords = gen_score("x.......x.......",
+  [{note: [:a3, :c4, :e4, :g4], cutoff: 90, release: 2.0, attack: 0.5, amp: 0.5},
+   {note: [:g3, :b3, :d4, :fs4], cutoff: 90, release: 2.0, attack: 0.5, amp: 0.5}])
 
-# Soft, echoing "Rhodes" Melody (A Minor Pentatonic).
-# Uses :play_fm with a low divisor (3) and depth (1) to create a soft, 
-# organic electric piano tone. Routed through the engine's tape echo.
-s_fm    = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :e5, :amp => 0.4, :divisor => 3, :depth => 1, :release => 1.5}, nil, nil, nil, 
-           nil, nil, {:note => :c5, :amp => 0.3, :divisor => 3, :depth => 1, :release => 1.5}, nil)
+# Soft Rhodes‑like FM melody – routed through tape echo
+s_fm = gen_score("........x......x",
+  [{note: :e5, amp: 0.4, divisor: 3, depth: 1, release: 1.5},
+   {note: :c5, amp: 0.3, divisor: 3, depth: 1, release: 1.5}])
 
-# Ethereal, granular vocal pad (using :ambi_choir).
-# Long size (0.4) and low density (1) creates a slow, evolving celestial texture.
-s_grain = (ring {:note => :a4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :g4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Ethereal granular vocal pad – long size for drifting texture
+s_grain = gen_score("x.......x.......",
+  [{note: :a4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5},
+   {note: :g4, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.4, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Void - Just the lush chords and granular pad (4 bars)
+  # Scene 1: Void – Chords + Grain
   [ [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
-  
-  # Scene 2: The Pulse - Add the soft drums and sweeping bass (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: The Journey - The echoing Rhodes melody drops (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8] ]
+
+  # Scene 2: Pulse – Add Drums and Bass
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8] ],
+
+  # Scene 3: Journey – Add Rhodes Melody
+  [ [:play_chords, s_chords, 8], [:play_grain, s_grain, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_fm, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN WARMTH]
-# 
-# 1. The 16-Step Filter Sweep: Look at `s_bass`. It plays on every 16th 
-#    step, but the `cutoff` Hash slowly opens from 60 to 110 and closes 
-#    back down. Because the engine reads these Hashes, a completely static 
-#    bassline constantly evolves and breathes, creating immense hypnotic 
-#    tension without adding any new notes to the grid.
-#
-# 2. Swelling Chords: Look at `s_chords`. The Hashes specify an `attack` 
-#    of `0.5` and a `release` of `2.0`. Because the engine reads these, 
-#    the chords don't just hit; they slowly swell into the mix and fade 
-#    away, creating a continuous, blurred wave of warmth.
-#
-# 3. Soft FM Bells: The `s_fm` sequence uses `divisor: 3` and `depth: 1`. 
-#    This gentle ratio produces a soft, sine-like wave that mimics a Rhodes 
-#    electric piano. Routed through the tape echo, the sparse notes cascade 
-#    across the empty space, perfectly anchoring the track's melancholic 
-#    atmosphere.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The 16‑step filter sweep: cutoff opens from 60 to 110 and
+#   closes back down, giving a static bassline constant evolution.
+# - Swelling chords: attack 0.5 and release 2.0 blur chords into
+#   a warm, continuous wave of sound.
+# - Soft FM bells: divisor 3 and depth 1 produce a Rhodes‑like
+#   tone – sparse notes cascade through the tape echo.
 # ==========================================================

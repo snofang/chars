@@ -1,102 +1,103 @@
 # ==========================================================
 # PLAYBOOK: PLUGG / OPIUM
-# (Pioneered by Playboi Carti, Ken Carson, and Lucki)
-# ========================================================== 
-# 
+# Dark, Atmospheric, Distorted Modern Trap
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Plugg / Opium.
-# We have explored classic 808 trap and heavy bass music (Brostep, Riddim).
-# Plugg (and the "Opium" sound) is the modern, underground face of trap 
-# music. It takes the half-time 140 BPM grid but replaces the bouncy 
-# 808s with massive, distorted, rumbling basses, and pairs them with 
-# airy, dark synth plucks and relentless, fast hi-hat rolls.
+# Plugg / Opium (Playboi Carti, Ken Carson) takes the half‑time
+# 140 BPM trap grid and replaces bouncy 808s with massive,
+# distorted rumbling basses, paired with airy synth plucks
+# and relentless hi‑hat rolls. This is the underground,
+# modern face of trap.
 #
-# This playbook perfectly demonstrates how to use the Parameter Hashes 
-# to push the `:play_sub` synth into heavy, distorted 808 territory. 
-# By using a high `cutoff` (110) and long `release` (1.5), the engine 
-# creates a roaring, continuous low-end that anchors the frantic hats.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 140 BPM
+# Key: C# minor (dark, atmospheric)
+# Rhythm: Half‑time syncopated kick, snare on beat 3,
+# fast trap hats with rolls, sparse bass hits.
+# Timbre: Distorted 808 bass (dsaw, high cutoff, long release),
+# dark FM plucks (divisor 2, depth 2), ethereal pad
+# (dark_ambience, long attack/release), granular vocal drone.
+# Arrangement: Vibe (pad+plucks+bass) → Groove (add drums)
+# → Drop (add granular vocal).
 # ==========================================================
 
 use_bpm 140
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (C# Minor - Dark, Atmospheric, & Distorted)
-# ==========================================================
+# Scores
 
-# Half-time, syncopated kick. 
-# Hits on step 0, and a heavy ghost kick on the 'a' of 3 (step 14).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil)
+# Half‑time syncopated kick – hits on step 0 and step 14
+s_kick = gen_score("x.............x.",
+  [:c4, {note: :c4, amp: 0.7}])
 
-# Heavy, metallic snare strictly on beat 3 (step 8).
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
+# Heavy metallic snare on beat 3 (step 8)
+s_snare = gen_score("........x.......", [:c4])
 
-# Fast, relentless Trap hats with rising amplitude rolls.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.3})
+# Fast trap hats with rising amplitude rolls
+hat_data = [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}
+]
+s_hats = gen_score("x.xxx..x.x.xxx.x", hat_data)
 
-# The "Distorted 808" Bass (C# Minor).
-# Massive release (1.5) and high cutoff (110) to create a roaring, 
-# distorted rumble that carries the dark melody.
-s_bass  = (ring {:note => :cs1, :release => 1.5, :cutoff => 110, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :e1, :release => 1.5, :cutoff => 110, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+# Distorted 808 bass – long release, high cutoff for rumble
+s_bass = gen_score("x.......x.......",
+  [{note: :cs1, release: 1.5, cutoff: 110, amp: 1.0},
+   {note: :e1,  release: 1.5, cutoff: 110, amp: 1.0}])
 
-# Dark, airy "Plugg" Synth Plucks (C# Minor).
-# Uses :play_fm with a low divisor (2) and depth (2) to create a soft, 
-# haunting arpeggio that floats over the heavy 808s.
-s_plucks= (ring {:note => :cs4, :divisor => 2, :depth => 2, :release => 0.3, :amp => 0.6}, nil, nil, {:note => :e4, :divisor => 2, :depth => 2, :release => 0.3, :amp => 0.5}, nil, {:note => :fs4, :divisor => 2, :depth => 2, :release => 0.3, :amp => 0.6}, nil, {:note => :gs4, :divisor => 2, :depth => 2, :release => 0.3, :amp => 0.5}, nil, nil, {:note => :e4, :divisor => 2, :depth => 2, :release => 0.3, :amp => 0.6}, nil, {:note => :cs4, :divisor => 2, :depth => 2, :release => 0.3, :amp => 0.5}, nil, nil, nil)
+# Dark airy FM plucks – haunting arpeggio
+pluck_data = [
+  {note: :cs4, divisor: 2, depth: 2, release: 0.3, amp: 0.6},
+  {note: :e4,  divisor: 2, depth: 2, release: 0.3, amp: 0.5},
+  {note: :fs4, divisor: 2, depth: 2, release: 0.3, amp: 0.6},
+  {note: :gs4, divisor: 2, depth: 2, release: 0.3, amp: 0.5},
+  {note: :e4,  divisor: 2, depth: 2, release: 0.3, amp: 0.6},
+  {note: :cs4, divisor: 2, depth: 2, release: 0.3, amp: 0.5}
+]
+s_plucks = gen_score("x..x.x.x..x.x...", pluck_data)
 
-# Ethereal, dark pad (C# Minor).
-# Massive attack (1.0) and release (3.0) to create a slow, evolving drone.
-s_pad   = (ring {:note => :cs5, :amp => 0.5, :attack => 1.0, :release => 3.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :e5, :amp => 0.5, :attack => 1.0, :release => 3.0}, nil, nil, nil, nil, nil, nil, nil)
+# Ethereal dark pad – long attack/release for drone
+s_pad = gen_score("x.......x.......",
+  [{note: :cs5, amp: 0.5, attack: 1.0, release: 3.0},
+   {note: :e5,  amp: 0.5, attack: 1.0, release: 3.0}])
 
-# Pitched-down, ambient vocal drone (Granular Synth).
-# Long size (0.1) and low density (1) creates a slow, haunting texture.
-s_vocal = (ring nil, nil, nil, nil, {:note => :cs4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil)
+# Haunting granular vocal drone
+s_vocal = gen_score("....x.......x...",
+  [{note: :cs4, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.1, amp: 0.5},
+   {note: :e4,  buffer: :ambi_choir, pos: 0.5, density: 2, size: 0.1, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Vibe - Just the dark pad, plucks, and distorted 808 (4 bars)
-  [ [:play_pad, s_pad, 4], [:play_fm, s_plucks, 4], [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: The Groove - Add the half-time drums and fast hats (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_fm, s_plucks, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: The Drop - The haunting granular vocals drop (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_fm, s_plucks, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 1: Vibe – Pad, Plucks, Bass
+  [ [:play_pad, s_pad, 4], [:play_fm, s_plucks, 4],
+    [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Groove – Add Drums
+  [ [:play_pad, s_pad, 8], [:play_fm, s_plucks, 8],
+    [:play_sub, s_bass, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+
+  # Scene 3: Drop – Add Granular Vocal
+  [ [:play_pad, s_pad, 8], [:play_fm, s_plucks, 8],
+    [:play_sub, s_bass, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MODERN TRAP]
-# 
-# 1. The Distorted 808: Look at `s_bass`. The `:play_sub` synth is given a 
-#    `cutoff` of `110` and a `release` of `1.5`. By pushing the filter 
-#    wide open on a detuned sawtooth, the engine lets all the harsh, high-
-#    frequency harmonics through, creating a roaring, distorted 808 that 
-#    rings out for a bar and a half. This is the absolute signature sound 
-#    of the Opium genre.
-#
-# 2. Airy FM Plucks: The `s_plucks` sequence uses `divisor: 2` and 
-#    `depth: 2`. This creates a soft, sine-like wave that perfectly mimics 
-#    the dark, atmospheric synth plucks used by producers like Outtatown 
-#    and F1lthy. The engine's strict master clock ensures these sparse 
-#    notes land perfectly between the relentless hi-hat rolls.
-#
-# 3. Extreme Contrast: The track relies on the contrast between the fast, 
-#    frantic hi-hats (16th notes at 140 BPM) and the slow, massive 808 
-#    bass. The engine's strict 16-step grid ensures these elements lock 
-#    together with absolute mathematical precision, creating a heavy, 
-#    hypnotic, and aggressive atmosphere.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Distorted 808: cutoff 110 and release 1.5 on dsaw lets
+#   harsh harmonics through, creating a roaring, distorted
+#   bass that rings for a bar and a half – the Opium signature.
+# - Airy FM plucks: divisor 2 and depth 2 create soft, sine‑like
+#   waves that float over the heavy 808s.
+# - Extreme contrast: fast 16th hats at 140 BPM against slow,
+#   massive bass – the grid locks them together with precision.
 # ==========================================================

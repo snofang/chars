@@ -1,28 +1,28 @@
 # ==========================================================
 # PLAYBOOK: PSYBIENT / PSYCHILL
-# (Pioneered by Shpongle, Ott, and Younger Brother)
+# Mystical, Organic, Psychedelic Soundscapes
 # ==========================================================
-# 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Psybient 
-# (Psychill). We have explored fast, rhythmic genres (Gabber, DnB) and 
-# slow, atmospheric genres (Witch House, Ambient). Psybient is the 
-# sound of psychedelic festivals. It blends organic, tribal percussion 
-# with massive, time-stretched granular textures, squelchy FM synths, 
-# and deep, hypnotic basslines.
+# Psybient (Shpongle, Ott) blends tribal percussion, massive
+# time‑stretched granular textures, squelchy FM synths, and
+# hypnotic basslines. This playbook captures that festival‑
+# ready, psychedelic, meditative atmosphere.
 #
-# This playbook perfectly demonstrates how to push the Granular 
-# Synthesizer to its ambient limit. By using a massive grain `size` 
-# (0.4s) and low `density`, the engine turns an electric piano into 
-# a massive, evolving cosmic drone. It also showcases how the 16-step 
-# grid can be used to create organic, tribal polyrhythms.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 95 BPM
+# Key: D Phrygian (mystical, exotic – D, Eb, F, G, A, Bb, C)
+# Rhythm: Tribal kick with ghost hits, tabla‑style snare with
+# syncopation, swung shakers, rolling hypnotic bass.
+# Timbre: Organic drums (kick, snare, shaker), deep bass with
+# long release, lush swelling minor chords, liquid FM blips,
+# cosmic granular drone (elec_piano time‑stretched), echoing
+# pluck (sitar‑like).
+# Arrangement: Void (drone+bass) → Ritual (add drums+chords)
+# → Trip (add FM blips+pluck).
 # ==========================================================
 
 use_bpm 95
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
@@ -31,37 +31,71 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # Organic, tribal kick. 
 # Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+s_kick = (
+  ring :c4, nil, nil, nil, nil, nil, {note: :c4, amp: 0.7}, nil,
+       {note: :c4, amp: 1.0}, nil, nil, nil, nil, nil, nil, nil
+)
 
 # Tabla-style snare/woodblock. 
 # Heavy hits on 2 and 4, with syncopated ghost notes in between.
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil)
+s_snare = (
+  ring nil, nil, nil, nil, {note: :c4, amp: 0.5}, nil, nil, nil,
+       nil, nil, {note: :c4, amp: 0.3}, nil, {note: :c4, amp: 0.6}, nil, nil, nil
+)
 
 # Swung, organic shaker. Notice the triplet-feel emphasis on the off-beats.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+s_hats = (
+  ring {note: :c4, amp: 0.2}, nil, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+       {note: :c4, amp: 0.2}, nil, {note: :c4, amp: 0.3}, nil,
+       {note: :c4, amp: 0.2}, nil, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+       {note: :c4, amp: 0.2}, nil, {note: :c4, amp: 0.3}, nil
+)
 
 # Deep, rolling hypnotic bass (D Phrygian).
 # Long release to create a continuous, meditative undercurrent.
-s_bass  = (ring {:note => :d1, :release => 0.5}, nil, nil, nil, nil, nil, {:note => :d1, :release => 0.5}, nil, {:note => :eb1, :release => 0.5}, nil, nil, nil, nil, nil, {:note => :c1, :release => 0.5}, nil)
+s_bass = (
+  ring {note: :d1, release: 0.5}, nil, nil, nil, nil, nil, {note: :d1, release: 0.5}, nil,
+       {note: :eb1, release: 0.5}, nil, nil, nil, nil, nil, {note: :c1, release: 0.5}, nil
+)
 
 # Lush, mystical minor chords (Dm to Ebmaj7).
 # Hit on the downbeats. The 0.5-beat attack makes them slowly swell 
 # into the mix like a breathing organism.
-s_chords= (ring nil, nil, nil, nil, {:note => [:d3, :f3, :a3, :c4], :attack => 0.5, :release => 1.5, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => [:eb3, :g3, :bb3, :d4], :attack => 0.5, :release => 1.5, :amp => 0.7}, nil)
+s_chords = (
+  ring nil, nil, nil, nil,
+       {note: [:d3, :f3, :a3, :c4], attack: 0.5, release: 1.5, amp: 0.7},
+       nil, nil, nil, nil, nil, nil, nil, nil, nil,
+       {note: [:eb3, :g3, :bb3, :d4], attack: 0.5, release: 1.5, amp: 0.7},
+       nil
+)
 
 # Squelchy, "liquid" FM blips (D Phrygian).
 # Uses :play_fm with a high depth (5) and long release to create 
 # a organic, dripping, psychedelic effect.
-s_fm    = (ring nil, nil, {:note => :a4, :amp => 0.6, :depth => 5, :divisor => 3, :release => 0.3}, nil, nil, nil, {:note => :d5, :amp => 0.5, :depth => 5, :divisor => 3, :release => 0.3}, nil, nil, {:note => :eb5, :amp => 0.7, :depth => 5, :divisor => 3, :release => 0.3}, nil, nil, nil, nil, {:note => :d5, :amp => 0.5, :depth => 5, :divisor => 3, :release => 0.3}, nil)
+s_fm = (
+  ring nil, nil, {note: :a4, amp: 0.6, depth: 5, divisor: 3, release: 0.3}, nil,
+       nil, nil, {note: :d5, amp: 0.5, depth: 5, divisor: 3, release: 0.3}, nil,
+       nil, {note: :eb5, amp: 0.7, depth: 5, divisor: 3, release: 0.3}, nil, nil, nil,
+       nil, {note: :d5, amp: 0.5, depth: 5, divisor: 3, release: 0.3}, nil
+)
 
 # The "Cosmic" Granular Drone (using :elec_piano).
 # Massive size (0.4s) and low density (2) time-stretches the sample 
 # into a massive, evolving, psychedelic texture.
-s_grain = (ring {:note => :d3, :buffer => :elec_piano, :pos => 0.2, :density => 2, :size => 0.4, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :c3, :buffer => :elec_piano, :pos => 0.5, :density => 2, :size => 0.4, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_grain = (
+  ring {note: :d3, buffer: :elec_piano, pos: 0.2, density: 2, size: 0.4, amp: 0.6},
+       nil, nil, nil, nil, nil, nil, nil,
+       {note: :c3, buffer: :elec_piano, pos: 0.5, density: 2, size: 0.4, amp: 0.6},
+       nil, nil, nil, nil, nil, nil, nil
+)
 
 # Distant, echoing sitar/plucked melody (D Phrygian).
 # Routed through the engine's tape echo for a cavernous, mystical smear.
-s_pluck = (ring nil, nil, nil, nil, nil, nil, {:note => :d5, :amp => 0.5, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :eb5, :amp => 0.4, :release => 1.0})
+s_pluck = (
+  ring nil, nil, nil, nil, nil, nil, {note: :d5, amp: 0.5, release: 1.0}, nil,
+       nil, nil, nil, nil, nil, nil, nil, {note: :eb5, amp: 0.4, release: 1.0}
+)
+
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
@@ -70,14 +104,15 @@ playbook = (ring
   [ [:play_grain, s_grain, 4], [:play_sub, s_bass, 4] ],
   
   # Scene 2: The Ritual - Add the tribal drums and swelling chords (8 bars)
-  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8] ],
+  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
     
   # Scene 3: The Trip - The liquid FM blips and echoing sitar drop (8 bars)
-  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8], [:play_fm, s_fm, 8], [:play_pluck, s_pluck, 8] ]
+  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_chords, s_chords, 8],
+    [:play_fm, s_fm, 8], [:play_pluck, s_pluck, 8] ]
 )
 
 # ==========================================================
@@ -86,23 +121,14 @@ playbook = (ring
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN PSYCHEDELIC TEXTURES]
-# 
-# 1. Granular Time-Stretching: Look at `s_grain`. The granular engine 
-#    is given a `size` of `0.4` (400 milliseconds) and a `density` of `2`.
-#    This is 10x longer than the glitchy stutters we used in Hyperpop.
-#    By using massive grains, the engine time-stretches the electric piano 
-#    into a massive, formless cosmic drone that constantly evolves.
-#
-# 2. FM as Liquid: The `s_fm` sequence uses `depth: 5` and `divisor: 3`. 
-#    This extreme harmonic ratio forces the FM synth to produce a 
-#    dissonant, squelchy "drip" that sounds like liquid bubbling in a 
-#    cave. The engine's strict master clock ensures these unpredictable 
-#    sounds land perfectly on the 16-step grid.
-#
-# 3. Organic Swells: Look at `s_chords`. The Hashes specify an `attack` 
-#    of `0.5` and a `release` of `1.5`. Because the engine reads these 
-#    Hashes, the chords don't just hit; they slowly swell into the mix 
-#    and fade away, creating a breathing, organic atmosphere that 
-#    contrasts heavily with the rigid grid.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Granular time‑stretching: size 0.4 and density 2 on
+#   s_grain turn the electric piano into a massive, evolving
+#   cosmic drone – 10x longer than glitchy stutters.
+# - FM as liquid: depth 5 and divisor 3 produce dissonant,
+#   squelchy "drips" that sound organic and psychedelic.
+# - Organic swells: attack 0.5 and release 1.5 on chords
+#   create a breathing, swelling atmosphere that contrasts
+#   with the rigid grid.
 # ==========================================================

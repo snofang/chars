@@ -1,43 +1,85 @@
+# ==========================================================
+# PLAYBOOK: DARK TRIP / GHOSTED BEATS
+# Moody, Atmospheric, Uneasy Groove
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook captures a dark, cinematic mood – broken
+# kick patterns, metallic snare hits, relentless hats,
+# deep sub‑bass, a lush pad, and ghostly granular vocals.
+# It's the sound of late‑night city streets and uneasy
+# introspection.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 140 BPM
+# Key: C# minor (dark, brooding)
+# Rhythm: Broken kick (1, 'a' of 2? actually step6 and 10),
+# snare on step5 and 13, relentless 8th hats, sparse sub‑bass,
+# pad on downbeats, granular vocal on step8.
+# Timbre: Punchy kick (bd_haus with accents), metallic snare
+# (sn_dolf), rusty hats (cymbal_closed with velocity layers),
+# deep sub‑bass (dsaw), lush pad (dark_ambience), ghostly
+# granular vocal (ambi_choir, medium size).
+# Arrangement: Intro (pad+drums) → Weight (add sub‑bass)
+# → Ghost (add granular vocal).
+# ==========================================================
+
 use_bpm 140
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (C# Minor - Moody & Atmospheric)
-# ==========================================================
-# Broken, uneasy kick pattern
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil)
-# Crisp, metallic snare on the heavy off-beats
-s_snare = (ring nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil)
-# Rusty, relentless hats
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil)
-# Deep, sporadic sub-bass
-s_bass  = (ring :cs2, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, :fs2, nil, nil, nil)
-# Lush, massive dark pad
-s_pad   = (ring :cs3, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-# Ghostly granular vocal (using :ambi_choir, long size for ambient drone feel)
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :cs4, :buffer => :ambi_choir, :pos => 0.7, :density => 3, :size => 0.12}, nil, nil, nil, nil, nil, nil, nil)
+# Scores
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Broken kick: hits on step 0, step 6 (amp 0.7), and step 10 (amp 0.9)
+s_kick = gen_score("x.....x...x.....",
+  [:c4, {note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}])
+
+# Metallic snare on step 5 (amp 1.0) and step 13 (amp 0.8)
+s_snare = gen_score(".....x.......x..",
+  [{note: :c4, amp: 1.0}, {note: :c4, amp: 0.8}])
+
+# Relentless 8th hats with alternating velocity layers
+s_hats = gen_score("x.x.x.x.x.x.x.x.",
+  [{note: :c4, amp: 0.2}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}])
+
+# Deep sub‑bass: hits on step 0 (:cs2) and step 12 (:fs2)
+s_bass = gen_score("x...........x...", [:cs2, :fs2])
+
+# Lush dark pad – sustained on step 0
+s_pad = gen_score("x...............", [:cs3])
+
+# Ghostly granular vocal – pitched up, short grains, on step 8
+s_vocal = gen_score("........x.......",
+  [{note: :cs4, buffer: :ambi_choir, pos: 0.7, density: 3, size: 0.12}])
+
+# Playbook
 playbook = (ring
-  # Scene 1: Moody intro, just pad and broken drums (4 bars)
-  [ [:play_pad, s_pad, 4], [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
-  
-  # Scene 2: Sub-bass drops, adding weight (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 1: Intro – Pad + Drums
+  [ [:play_pad, s_pad, 4], [:play_kick, s_kick, 4],
+    [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+
+  # Scene 2: Weight – Add Sub‑Bass
+  [ [:play_pad, s_pad, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: The ghost in the machine - granular vocals enter (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+
+  # Scene 3: Ghost – Add Granular Vocal
+  [ [:play_pad, s_pad, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The broken kick: hits on 0, 6, and 10 create a lopsided,
+#   uneasy rhythm that defies the typical 4/4 grid.
+# - The metallic snare on step 5 and 13 adds a tense,
+#   syncopated off‑beat snap.
+# - The relentless 8th hats with velocity variation keep the
+#   momentum while maintaining a gritty, texture‑heavy feel.
+# - The ghostly granular vocal on step 8 emerges from the
+#   mix like a distant echo, adding a haunting atmosphere.
+# ==========================================================

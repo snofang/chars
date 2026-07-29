@@ -1,59 +1,91 @@
+# ==========================================================
+# PLAYBOOK: DRILL / UK DRILL
+# Melancholic, Aggressive, Syncopated Trap
+# ==========================================================
+# [WHY THIS GENRE?]
+# Drill (UK Drill, Brooklyn Drill) is built on half‑time
+# syncopated kicks, metallic snares, fast hi‑hat rolls,
+# sliding 808 bass, and melancholic minor chords. This
+# playbook captures that dark, aggressive, street‑level energy.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 140 BPM
+# Key: F minor (melancholic, dark)
+# Rhythm: Half‑time kick (1, 'a' of 2, beat 3), snare on
+# beat 3 with ghost on 'a' of 4, signature hi‑hat rolls
+# (steps 3‑5 and 11‑13 with rising amplitudes), sliding
+# 808 bass on downbeats, off‑beat minor 7th chords.
+# Timbre: Punchy kick (bd_haus with accents), metallic
+# snare (sn_dolf with dynamics), fast hats (cymbal_closed
+# with velocity rolls), sliding 808 bass (dsaw, long release),
+# melancholic minor 7th chords (blade), dark granular vocal
+# whisper (ambi_choir).
+# Arrangement: Chords+Bass (foundation) → Drums (add half‑time
+# beat + hats) → Vocal (add granular whisper).
+# ==========================================================
+
 use_bpm 140
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Melancholy & Aggressive)
-# ==========================================================
+# Scores
 
-# Half-time, syncopated kick. Hits on step 0, the 'a' of 2 (step 7), and beat 3 (step 8).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+# Half‑time syncopated kick: hits on 1, 'a' of 2, beat 3
+s_kick = gen_score("x......xx.......",
+  [:c4, {note: :c4, amp: 0.8}, {note: :c4, amp: 1.0}])
 
-# Heavy, metallic snare strictly on beat 3 (step 8), with a ghost snare on the 'a' of 4.
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Snare on beat 3 with ghost on 'a' of 4
+s_snare = gen_score("........x......x",
+  [{note: :c4, amp: 1.0}, {note: :c4, amp: 0.5}])
 
-# The signature Drill Hi-Hat Rolls.
-# Notice steps 3,4,5 and 11,12,13. By using rapidly rising amplitudes, 
-# we simulate a 16th-note trill/roll that accelerates into the next beat.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, nil, nil, 
-           {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, nil)
+# Signature hi‑hat rolls: rising amplitudes on steps 3‑5 and 11‑13
+hat_data = [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}
+]
+s_hats = gen_score("x..xxx..x..xxxx.",
+  hat_data) # pattern: step0, 3,4,5, 8, 11,12,13,14
 
-# The "Sliding 808" Bass. 
-# Long releases make it ring out and carry the melancholic melody.
-s_bass  = (ring {:note => :f2, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :ab2, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil)
+# Sliding 808 bass – long release, hits on downbeats
+s_bass = gen_score("x.......x.......",
+  [{note: :f2, release: 1.5}, {note: :ab2, release: 1.5}])
 
-# Melancholic minor 7th piano chords (Fm7 to Abm7).
-# Hit on the off-beats to leave room for the sliding 808s.
-s_chords= (ring nil, nil, [:f3, :ab3, :eb4, :g4], nil, nil, nil, nil, nil, 
-           nil, nil, [:ab3, :cb4, :gb4, :bb4], nil, nil, nil, nil, nil)
+# Melancholic minor 7th chords on off‑beats (steps 2 and 10)
+s_chords = gen_score("..x......x.....",
+  [[:f3, :ab3, :eb4, :g4], [:ab3, :cb4, :gb4, :bb4]])
 
-# High-pitched, dark granular vocal whisper (Granular Synth)
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :f4, :buffer => :ambi_choir, :pos => 0.6, :density => 2, :size => 0.1, :amp => 0.4}, nil, nil, nil, 
-           nil, nil, nil, nil)
+# Dark granular vocal whisper – one hit on step 8
+s_vocal = gen_score("........x.......",
+  [{note: :f4, buffer: :ambi_choir, pos: 0.6, density: 2, size: 0.1, amp: 0.4}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the melancholic chords and 808 bass (4 bars)
+  # Scene 1: Foundation – Chords + Bass
   [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: Add the half-time drums and rolling hats (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: Add the dark granular vocal chops (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_grain, s_vocal, 8] ]
+
+  # Scene 2: Rhythm – Add Drums
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8] ],
+
+  # Scene 3: Vocal – Add Granular Whisper
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Sliding 808: long release (1.5) creates a rumbling,
+#   melodic bass that carries the melancholic harmony.
+# - Drill hi‑hat rolls: rising amplitudes on steps 3‑5 and
+#   11‑13 simulate a trill/roll that accelerates into the beat.
+# - Half‑time syncopation: kick on 1, 'a' of 2, and beat 3
+#   creates a lopsided groove that defines drill's signature feel.
+# - Off‑beat minor 7th chords leave space for the 808 and vocals.
+# ==========================================================

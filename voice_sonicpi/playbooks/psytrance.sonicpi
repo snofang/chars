@@ -1,58 +1,94 @@
+# ==========================================================
+# PLAYBOOK: PSYTRANCE / GOA TRANCE
+# Hypnotic, Alien, High‑Energy 140 BPM Journey
+# ==========================================================
+# [WHY THIS GENRE?]
+# Psytrance (Infected Mushroom, Astral Projection) is built on
+# relentless 4‑on‑the‑floor kicks, rolling 16th‑note basslines,
+# squelchy FM leads, and cosmic ambient textures. This playbook
+# captures that trance‑inducing, otherworldly energy.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 140 BPM
+# Key: E Phrygian (dark, alien – E, F, G, A, B, C, D)
+# Rhythm: 4/4 kick, open hats on off‑beats, rolling 16th bass
+# with octave jumps, erratic FM lead, sparse grain/pad drones.
+# Timbre: Deep drone pad (dark_ambience, long attack/release),
+# rolling bass (dsaw, octave alternation), squelchy FM lead
+# (fm with varying depth), cosmic grain (ambi_choir, density 2),
+# crisp hats (cymbal, varying amp).
+# Arrangement: Cosmic Drone (kick+pad+grain) → Roll (add hats+bass)
+# → Squelch (add FM lead).
+# ==========================================================
+
 use_bpm 140
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (E Phrygian - Alien & Hypnotic)
-# ==========================================================
+# Scores
 
-# Relentless 4-on-the-floor
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Relentless 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Open hats strictly on the off-beats (steps 2, 6, 10, 14)
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, 
-           nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Open hats strictly on off‑beats (steps 2,6,10,14)
+s_hats = gen_score("..x..x..x..x....",
+  [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5},
+   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
 
-# The classic Psytrance "Rolling Bass". 
-# Plays on every 16th note, but alternates octaves to create a bouncing pulse.
-s_bass  = (ring :e2, :e2, :e3, :e2, :e2, :e2, :e3, :e2, 
-           :e2, :e2, :e3, :e2, :f2, :f2, :f3, :f2)
+# Rolling 16th‑note bass – octave jumps create bounce
+bass_notes = [:e2, :e2, :e3, :e2, :e2, :e2, :e3, :e2,
+              :e2, :e2, :e3, :e2, :f2, :f2, :f3, :f2]
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| {note: n} })  # wrap in hash for consistency
 
-# Erratic, squelchy FM lead (E Phrygian)
-# Uses Hashes to dynamically change the FM depth, creating a "talking" synth.
-s_fm    = (ring nil, nil, {:note => :e5, :amp => 0.7, :depth => 3}, nil, 
-           nil, {:note => :f5, :amp => 0.5, :depth => 1}, nil, {:note => :g5, :amp => 0.8, :depth => 4}, 
-           nil, {:note => :e5, :amp => 0.6, :depth => 2}, nil, nil, 
-           nil, {:note => :b4, :amp => 0.7, :depth => 3}, nil, nil)
+# Erratic FM lead – varying depth creates "talking" synth
+fm_data = [
+  {note: :e5, amp: 0.7, depth: 3},
+  {note: :f5, amp: 0.5, depth: 1},
+  {note: :g5, amp: 0.8, depth: 4},
+  {note: :e5, amp: 0.6, depth: 2},
+  {note: :b4, amp: 0.7, depth: 3}
+]
+s_fm = gen_score("..x..x.x.x....x..", fm_data)
 
-# Drifting, cosmic granular pad (using :ambi_choir)
-s_grain = (ring {:note => :e3, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :f3, :buffer => :ambi_choir, :pos => 0.6, :density => 2, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Cosmic granular pad – drifting texture
+s_grain = gen_score("x.......x.......",
+  [{note: :e3, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.2, amp: 0.6},
+   {note: :f3, buffer: :ambi_choir, pos: 0.6, density: 2, size: 0.2, amp: 0.5}])
 
-# Massive dark drone underneath
-s_pad   = (ring {:note => :e2, :release => 4.0, :attack => 2.0}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :f2, :release => 4.0, :attack => 2.0}, nil, nil, nil, nil, nil, nil, nil)
+# Massive dark drone – long attack and release
+s_pad = gen_score("x.......x.......",
+  [{note: :e2, release: 4.0, attack: 2.0},
+   {note: :f2, release: 4.0, attack: 2.0}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the cosmic drone and relentless kick (4 bars)
-  [ [:play_pad, s_pad, 4], [:play_grain, s_grain, 4], [:play_kick, s_kick, 4] ],
-  
-  # Scene 2: Add the rolling 16th-note bass (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], 
-    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: The erratic FM lead drops in (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_grain, s_grain, 8], [:play_kick, s_kick, 8], 
-    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8] ]
+  # Scene 1: Cosmic Drone – Kick, Pad, Grain
+  [ [:play_kick, s_kick, 4], [:play_pad, s_pad, 4],
+    [:play_grain, s_grain, 4] ],
+
+  # Scene 2: Roll – Add Hats and Bass
+  [ [:play_kick, s_kick, 8], [:play_pad, s_pad, 8],
+    [:play_grain, s_grain, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8] ],
+
+  # Scene 3: Squelch – Add FM Lead
+  [ [:play_kick, s_kick, 8], [:play_pad, s_pad, 8],
+    [:play_grain, s_grain, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The rolling bass alternates octaves (e2, e3) to create the
+#   classic psytrance bounce – engine locks every 16th note.
+# - The FM lead uses varying `depth` to morph timbre in real
+#   time, simulating a squelchy, talking synth.
+# - The drone pad with long attack/release provides a static
+#   harmonic foundation, while the grain adds cosmic texture.
+# - Hats on the off‑beats (steps 2,6,10,14) create the
+#   signature rolling hi‑hat pulse against the 4/4 kick.
+# ==========================================================

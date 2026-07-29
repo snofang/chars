@@ -1,107 +1,107 @@
 # ==========================================================
 # PLAYBOOK: PURPLE MUSIC / WONKY BASS
-# (Pioneered by Joker, Gemmy, and Guido)
-# ========================================================== 
-# 
+# Retro-Futuristic Fusion: 16‑Bit FM Chords + Wobbling Analog Bass
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Purple Music 
-# (or Wonky Bass). We have explored heavy dubstep and bright synthwave. 
-# Purple Music is a highly distinct offshoot of dubstep that emerged from 
-# Bristol. It fuses the heavy, half-time 808 bounce of dubstep with bright, 
-# synthetic 16-bit video game chords (reminiscent of the Sega Genesis 
-# sound chip) and massive, wobbling analog basslines.
+# Purple Music (Joker, Gemmy) fuses heavy half‑time dubstep with
+# bright Sega Genesis‑style FM chords and deep, LFO‑wobbled bass.
+# This playbook captures that retro‑futuristic contrast.
 #
-# This playbook perfectly demonstrates how to use the `:play_fm` synth 
-# to simulate a 16-bit video game sound chip. By passing arrays of notes 
-# (chords) to the FM synth with specific `divisor` and `depth` Hashes, 
-# the engine creates glassy, retro chords that contrast heavily with 
-# a deep, data-driven LFO wobble bass.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 85 BPM
+# Key: G minor
+# Rhythm: Half‑time kick with ghost hits, snare on beat 3,
+# syncopated trap hats.
+# Timbre: Deep sub‑bass with filter wobble (dsaw, alternating cutoff),
+# glassy FM chords (divisor 3, depth 2), buzzy FM lead (divisor 2,
+# depth 3), granular vocal stutter.
+# Arrangement: Wobble (drums+bass) → 16‑Bit Vibe (add FM chords)
+# → Drop (add lead + vocal chops).
 # ==========================================================
 
 use_bpm 85
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (G Minor - Deep, Wobbly, & 16-Bit)
-# ==========================================================
+# Scores
 
-# Half-time, heavy 808 kick. 
-# Hits on step 0, a ghost on the 'a' of 2 (step 7), and beat 3 (step 10).
-s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil)
+# Half‑time kick with ghost on the 'a' of 2 and beat 3
+s_kick = gen_score("x......x..x.....",
+  [{note: :c4, amp: 1.0}, {note: :c4, amp: 0.6}, {note: :c4, amp: 1.0}])
 
-# Crisp, metallic snare strictly on beat 3 (step 10).
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil)
+# Snare strictly on beat 3
+s_snare = gen_score("..........x.....",
+  [{note: :c4, amp: 1.0}])
 
-# Syncopated, bouncing Trap hats.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, nil)
+# Syncopated trap hats with velocity accents
+hat_data = [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.5}, {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}
+]
+s_hats = gen_score("x.x.xxx.x.x.xxx.", hat_data)
 
-# The "Purple" Wobble Bass (G Minor).
-# Plays a syncopated rhythm. The 'cutoff' Hash rapidly alternates between 
-# 60 (muffled) and 130 (bright) on every hit, simulating a fast LFO filter 
-# wobble locked perfectly to the 85 BPM master clock.
-s_bass  = (ring {:note => :g1, :cutoff => 60, :release => 0.3}, nil, nil, {:note => :g1, :cutoff => 130, :release => 0.3}, nil, nil, {:note => :bb1, :cutoff => 70, :release => 0.3}, nil, {:note => :g1, :cutoff => 60, :release => 0.3}, nil, nil, {:note => :d2, :cutoff => 120, :release => 0.3}, nil, nil, {:note => :eb1, :cutoff => 80, :release => 0.3}, nil)
+# Wobble bass – cutoff alternates between 60 and 130 for LFO effect
+bass_data = [
+  {note: :g1, cutoff: 60, release: 0.3},
+  {note: :g1, cutoff: 130, release: 0.3},
+  {note: :bb1, cutoff: 70, release: 0.3},
+  {note: :g1, cutoff: 60, release: 0.3},
+  {note: :d2, cutoff: 120, release: 0.3},
+  {note: :eb1, cutoff: 80, release: 0.3}
+]
+s_bass = gen_score("x..x..x.x..x..x.", bass_data)
 
-# The "16-Bit" FM Chords (Gm9 to Bbmaj7).
-# Uses :play_fm with a high divisor (3) and depth (2) to create glassy, 
-# digital chords. Passing arrays of notes to the FM synth perfectly mimics 
-# the Yamaha YM2612 sound chip found in the Sega Genesis.
-s_chords= (ring {:note => [:g3, :bb3, :d4, :f4], :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.4}, nil, nil, nil, nil, nil, nil, nil, {:note => [:bb3, :d4, :f4, :a4], :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.4}, nil, nil, nil, nil, nil, nil, nil)
+# 16‑Bit FM chords – glassy, retro video game sound
+chord_data = [
+  {note: [:g3, :bb3, :d4, :f4], amp: 0.6, divisor: 3, depth: 2, release: 0.4},
+  {note: [:bb3, :d4, :f4, :a4], amp: 0.6, divisor: 3, depth: 2, release: 0.4}
+]
+s_chords = gen_score("x.......x.......", chord_data)
 
-# Bright, echoing "Video Game" Lead (G Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
-# buzzy square wave. Routed through the engine's tape echo for a cascading smear.
-s_lead  = (ring {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.2}, nil, nil, {:note => :bb5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.2}, nil, nil, nil, {:note => :d6, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.2}, nil, nil, nil, nil, {:note => :c6, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.2}, nil, nil, nil)
+# Buzzy square‑wave lead – routed through tape echo
+lead_data = [
+  {note: :g5, amp: 0.6, divisor: 2, depth: 3, release: 0.2},
+  {note: :bb5, amp: 0.5, divisor: 2, depth: 3, release: 0.2},
+  {note: :d6, amp: 0.6, divisor: 2, depth: 3, release: 0.2},
+  {note: :c6, amp: 0.5, divisor: 2, depth: 3, release: 0.2}
+]
+s_lead = gen_score("x..x...x....x...", lead_data)
 
-# Rhythmic, pitched-up "R&B" vocal stutter (Granular Synth).
-# High density, tiny size = a sharp, sugary vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.04, :amp => 0.5}, nil, nil, nil, nil, nil, {:note => :bb4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.04, :amp => 0.5}, nil, nil, nil, nil, nil)
+# Sugary vocal stutter – granular chop
+s_vocal = gen_score("....x.....x.....",
+  [{note: :g4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.04, amp: 0.5},
+   {note: :bb4, buffer: :ambi_choir, pos: 0.4, density: 2, size: 0.04, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Wobble - Just the half-time drums and LFO bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: The 16-Bit Vibe - Add the glassy FM chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8] ],
-    
-  # Scene 3: The Drop - The video game lead and vocal chops drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_chords, 8], 
-    [:play_fm, s_lead, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Wobble – Drums + Bass
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: 16‑Bit Vibe – Add FM Chords
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_fm, s_chords, 8] ],
+
+  # Scene 3: Drop – Add Lead and Vocal Chops
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_fm, s_chords, 8], [:play_fm, s_lead, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RETRO FUSION]
-# 
-# 1. FM as a Sound Chip: Look at `s_chords`. The `:play_fm` synth is given 
-#    arrays of notes (chords) and a `divisor` of `3` and `depth` of `2`. 
-#    In Sonic Pi, the `:fm` synth natively accepts arrays, playing multiple 
-#    oscillators at once. By tuning the harmonic ratio, the engine perfectly 
-#    mimics the glassy, digital chords of the Yamaha YM2612 chip used in 
-#    the Sega Genesis, which is the absolute signature of Purple Music.
-#
-# 2. Data-Driven LFO Wobble: Look at `s_bass`. It plays a syncopated rhythm, 
-#    but the `cutoff` Hash rapidly alternates between `60` (muffled) and `130` 
-#    (bright). Because the engine reads these Hashes independently on every 
-#    step, the filter opens and closes frantically, simulating a fast LFO 
-#    filter wobble without needing a dedicated LFO oscillator.
-#
-# 3. Analog/Digital Contrast: Purple Music relies on the stark contrast 
-#    between the deep, warm, wobbling analog sub-bass and the bright, 
-#    pristine, digital FM chords. The engine's strict 16-step grid ensures 
-#    these vastly different sound design elements lock together with absolute 
-#    mathematical precision, creating a retro-futuristic wall of sound.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - FM as a sound chip: divisor 3 and depth 2 on s_chords
+#   create the glassy, digital chords of the Sega Genesis.
+# - LFO wobble without an LFO: alternating cutoff values
+#   (60 ↔ 130) on s_bass simulate a fast filter wobble.
+# - Contrast: deep analog sub‑bass vs. bright digital FM
+#   chords – the engine locks them together with precision.
 # ==========================================================

@@ -1,45 +1,75 @@
+# ==========================================================
+# PLAYBOOK: RAVE / 4x4 BOUNCE
+# Relentless Kick, Bouncing Bass, Off‑Beat Stabs
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook captures the raw energy of 90s rave and
+# early UK garage – a driving 4/4 kick, swung hats,
+# a bouncing octave‑jumping bass, and FM stabs on the
+# off‑beats. Simple, effective, and built for the floor.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 135 BPM
+# Key: F minor (dark, ravey)
+# Rhythm: 4/4 kick, clap on 2/4, heavily swung 16th hats,
+# off‑beat bass (bouncing octaves), sparse FM stabs.
+# Timbre: Punchy kick (bd_haus), tight clap (sn_dolf),
+# swung hats (cymbal_closed with velocity layers),
+# bouncing sub‑bass (dsaw, octave jumps), FM stabs
+# (fm, high amp).
+# Arrangement: Beat (drums only) → Bass (add bassline)
+# → Stabs (add FM stabs).
+# ==========================================================
+
 use_bpm 135
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Rave Energy)
-# ==========================================================
-# Relentless 4-on-the-floor
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
-# Clap on the 2 and 4
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
-# Heavily swung 16th hats
-s_hats  = (ring {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
-           {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
-           {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
-           {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5})
-# Bouncing, octave-jumping reggae-style bass
-s_bass  = (ring :f2, nil, :f2, nil, :f3, nil, :f2, nil, :ab2, nil, :ab2, nil, :ab3, nil, :ab2, nil)
-# Rave stabs on the off-beats
-s_fm    = (ring nil, nil, nil, nil, nil, nil, {:note => :f4, :amp => 0.7}, nil, 
-           nil, nil, nil, nil, nil, nil, {:note => :ab4, :amp => 0.7}, nil)
+# Scores
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Relentless 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Clap on beats 2 and 4 (steps 4 and 12)
+s_clap = gen_score("....x.......x...", [:c4])
+
+# Heavily swung 16th hats with alternating velocity layers
+hat_amps = [0.4, 0.2, 0.5, 0.4, 0.2, 0.5, 0.4, 0.2, 0.5, 0.4, 0.2, 0.5]
+s_hats = gen_score("x.xxx.x.xxx.x.xxx", hat_amps.map { |a| {note: :c4, amp: a} })
+
+# Bouncing octave‑jumping bass – off‑beat feel
+bass_notes = [:f2, :f2, :f3, :f2, :ab2, :ab2, :ab3, :ab2]
+s_bass = gen_score("x.x.x.x.x.x.x.x.", bass_notes)
+
+# FM rave stabs on off‑beats (steps 6 and 14)
+s_fm = gen_score("......x.......x.",
+  [{note: :f4, amp: 0.7}, {note: :ab4, amp: 0.7}])
+
+# Playbook
 playbook = (ring
-  # Scene 1: Just the relentless beat (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4] ],
-  
-  # Scene 2: Add the bouncing bassline (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: Add the FM rave stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8] ]
+  # Scene 1: Beat – Kick, Clap, Hats
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4],
+    [:play_hats, s_hats, 4] ],
+
+  # Scene 2: Bass – Add Bouncing Bass
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8] ],
+
+  # Scene 3: Stabs – Add FM Stabs
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_fm, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The swung hats: pattern "x.xxx..." with velocity layers
+#   creates a lopsided, groove‑heavy feel at 135 BPM.
+# - The bouncing bass: octave jumps (f2 → f3) mimic the
+#   classic rave bassline – the grid locks it tightly.
+# - FM stabs on steps 6 and 14 cut through the mix on the
+#   off‑beats, adding tension and release.
+# ==========================================================

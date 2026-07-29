@@ -1,55 +1,94 @@
+# ==========================================================
+# PLAYBOOK: UK GARAGE / 2-STEP
+# Shuffled, Swing, Deep Late‑Night Groove
+# ==========================================================
+# [WHY THIS GENRE?]
+# UK Garage (2-Step) is built on a swung, syncopated drum
+# pattern – kick on 1 and the 'a' of 2, snare on the 'and'
+# of 2 and 4 – with shuffled hats, wandering bass, and
+# chopped vocal stutters. This playbook captures that
+# deep, late‑night, head‑nodding vibe.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 130 BPM
+# Key: F minor (deep, late‑night)
+# Rhythm: 2‑step kick (1, 'a' of 2, ghost on 'a' of 3),
+# snare on 'and' of 2 and 'and' of 4, shuffled 16th hats
+# with alternating amplitudes, wandering syncopated bass,
+# off‑beat chord stabs, rhythmic vocal chops.
+# Timbre: Punchy kick (bd_haus with accents), tight snare
+# (sn_dolf with dynamics), shuffled hats (cymbal_closed
+# with velocity layers), deep sub‑bass (dsaw, syncopated),
+# deep house chords (blade), granular vocal chops
+# (ambi_choir, short grains).
+# Arrangement: Groove (drums only) → Harmony (add bass+chords)
+# → Vocal Chops (add granular vocals).
+# ==========================================================
+
 use_bpm 130
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Deep Late-Night Vibe)
-# ==========================================================
+# Scores
 
-# The classic 2-Step drum pattern. Kicks on 1 and the 'a' of 2. Snares on the 'and' of 2.
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil)
-s_snare = (ring nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil)
+# 2‑Step kick: hits on 1, 'a' of 2, and ghost on 'a' of 3
+s_kick = gen_score("x......x...x....",
+  [:c4, {note: :c4, amp: 0.8}, {note: :c4, amp: 0.6}])
 
-# Shuffled, swinging 16th hats. Notice the alternating amplitudes for the bounce.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15})
+# Snare on 'and' of 2 and 'and' of 4
+s_snare = gen_score(".....x.......x..",
+  [{note: :c4, amp: 1.0}, {note: :c4, amp: 0.7}])
 
-# Wandering, syncopated sub-bass
-s_bass  = (ring :f2, nil, nil, :f2, nil, nil, :ab2, nil, nil, :c3, nil, nil, nil, nil, :ab2, nil)
+# Shuffled 16th hats with alternating amplitudes for swing
+hat_data = [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15},
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.15}
+]
+s_hats = gen_score("x.x.x.x.x.x.x.x.", hat_data)
 
-# Deep house chord stabs on the off-beats
-s_chords= (ring nil, nil, nil, nil, [:f3, :ab3, :c4], nil, nil, nil, 
-           nil, nil, nil, nil, [:ab3, :c4, :eb4], nil, nil, nil)
+# Wandering syncopated sub‑bass
+bass_notes = [:f2, :f2, :ab2, :c3, :ab2]
+s_bass = gen_score("x..x..x..x....x.", bass_notes)
 
-# Rhythmic Vocal Chops using the Granular Synth!
-# We use :ambi_choir (vocal sample), small grain size, and pitch it to F minor.
-s_vocal = (ring nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.05}, nil, 
-           nil, nil, nil, nil, 
-           {:note => :ab4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.05}, nil, nil, nil, 
-           {:note => :c5, :buffer => :ambi_choir, :pos => 0.6, :density => 2, :size => 0.05}, nil, nil, nil)
+# Deep chord stabs on off‑beats (steps 4 and 12)
+s_chords = gen_score("....x.......x...",
+  [[:f3, :ab3, :c4], [:ab3, :c4, :eb4]])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Rhythmic vocal chops – granular stutters on steps 2,8,11
+s_vocal = gen_score("..x.....x..x....",
+  [{note: :f4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.05},
+   {note: :ab4, buffer: :ambi_choir, pos: 0.4, density: 2, size: 0.05},
+   {note: :c5, buffer: :ambi_choir, pos: 0.6, density: 2, size: 0.05}])
+
+# Playbook
 playbook = (ring
-  # Scene 1: Just the bouncing 2-step groove (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
-  
-  # Scene 2: Add the wandering bass and chord stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The vocal chops drop in (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Groove – Drums only
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4] ],
+
+  # Scene 2: Harmony – Add Bass and Chords
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Vocal Chops – Add Granular Vocals
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The 2‑step shuffle: kick on 1 and 'a' of 2, snare on
+#   'and' of 2 and 'and' of 4 – the engine's grid locks
+#   this syncopated pattern with precision.
+# - Shuffled hats: alternating amplitudes (0.3/0.15/0.4)
+#   create the signature swung 16th feel.
+# - The wandering bass: syncopated hits on off‑grid positions
+#   (steps 3,6,9,14) give the track a fluid, jazz‑like feel.
+# - Granular vocal chops: short grains (size 0.05) on steps
+#   2, 8, and 11 act as rhythmic stutters, adding texture.
+# ==========================================================

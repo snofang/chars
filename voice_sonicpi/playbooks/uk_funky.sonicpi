@@ -1,99 +1,102 @@
 # ==========================================================
 # PLAYBOOK: UK FUNKY
-# (Pioneered by Crazy Cousinz, Donae'O, and Geeneus)
-# ========================================================== 
-# 
+# Rhythmic, Bouncy, Tribal Syncopation
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose UK Funky.
-# We have explored heavy bass music (Brostep, Bassline) and rigid 
-# techno (Minimal, Peak-Time). UK Funky is a highly rhythmic, vibrant 
-# genre that emerged in late 2000s London. It fuses the bouncy 4/4 grid 
-# of house music with the heavy syncopation of Soca, Dancehall, and 
-# West African percussion.
+# UK Funky (Crazy Cousinz, Donae'O) fuses the bouncy 4/4 grid
+# of house music with heavy syncopation from Soca, Dancehall,
+# and West African percussion. This playbook captures that
+# vibrant, rhythmic, tribal energy.
 #
-# This playbook perfectly demonstrates how to push the `:play_fm` synth 
-# to act as an organic percussion instrument. By using a high `divisor` 
-# and short `release`, the engine turns the FM synth into a syncopated 
-# "Bongo" loop. It also showcases how to simulate an LFO wobble bass 
-# purely via data (rapidly alternating `cutoff` Hashes).
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 130 BPM
+# Key: A minor (rhythmic, vibrant)
+# Rhythm: Broken 2‑step kick (1, beat 3, 'a' of 3), syncopated
+# FM bongos, bouncing 16th hats, wobble bass on every 16th,
+# syncopated vocal chants.
+# Timbre: Punchy kick (bd_haus with accents), FM bongos
+# (divisor 4, short release), bouncing hats (cymbal_closed
+# with velocity layers), wobble bass (dsaw, alternating cutoff
+# for LFO sim), granular vocal chants (ambi_choir, short grains).
+# Arrangement: Groove (drums+bongos) → Vibe (add wobble bass)
+# → Drop (add vocal chants).
 # ==========================================================
 
 use_bpm 130
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Rhythmic, Bouncy, & Tribal)
-# ==========================================================
+# Scores
 
-# The "Funky" Kick. 
-# Broken 2-step feel. Hits on step 0, beat 3 (step 8), and the 'a' of 3 (step 11).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil)
+# Funky broken kick: hits on 1, beat 3, and 'a' of 3
+s_kick = gen_score("x........x..x...",
+  [:c4, {note: :c4, amp: 1.0}, {note: :c4, amp: 0.7}])
 
-# The "Bongo Funk" Percussion Loop (A Minor).
-# Uses :play_fm with a high divisor (4) and short release (0.05) to create 
-# a hollow, organic woodblock/conga sound that weaves between the kick.
-s_bongos= (ring nil, {:note => :e4, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :a4, :amp => 0.7, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :e4, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05}, {:note => :a4, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :e4, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :a4, :amp => 0.7, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :e4, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05}, {:note => :c5, :amp => 0.8, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :a4, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05})
+# FM bongos – hollow woodblock/conga sound
+bongo_data = [
+  {note: :e4, amp: 0.6, divisor: 4, depth: 1, release: 0.05},
+  {note: :a4, amp: 0.7, divisor: 4, depth: 1, release: 0.05},
+  {note: :e4, amp: 0.6, divisor: 4, depth: 1, release: 0.05},
+  {note: :a4, amp: 0.5, divisor: 4, depth: 1, release: 0.05},
+  {note: :e4, amp: 0.6, divisor: 4, depth: 1, release: 0.05},
+  {note: :a4, amp: 0.7, divisor: 4, depth: 1, release: 0.05},
+  {note: :e4, amp: 0.6, divisor: 4, depth: 1, release: 0.05},
+  {note: :c5, amp: 0.8, divisor: 4, depth: 1, release: 0.05},
+  {note: :a4, amp: 0.6, divisor: 4, depth: 1, release: 0.05}
+]
+s_bongos = gen_score("x.x.x.xx.x.x.xx.x", bongo_data)
 
-# Bouncing, syncopated 16th hats.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil)
+# Bouncing syncopated 16th hats
+s_hats = gen_score("x.x.x.x.x.x.x.x.",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}])
 
-# The "Wobble" Sub-Bass (A Minor).
-# Plays continuous 16th notes. The 'cutoff' Hash rapidly alternates 
-# between 70 (muffled) and 120 (bright) on every step, simulating a 
-# fast LFO filter wobble that defines UK Funky.
-s_bass  = (ring {:note => :a1, :cutoff => 70}, {:note => :a1, :cutoff => 120}, {:note => :a1, :cutoff => 70}, {:note => :a1, :cutoff => 120}, 
-           {:note => :a1, :cutoff => 70}, {:note => :a1, :cutoff => 120}, {:note => :a1, :cutoff => 70}, {:note => :a1, :cutoff => 120}, 
-           {:note => :g1, :cutoff => 70}, {:note => :g1, :cutoff => 120}, {:note => :g1, :cutoff => 70}, {:note => :g1, :cutoff => 120}, 
-           {:note => :c2, :cutoff => 70}, {:note => :c2, :cutoff => 120}, {:note => :c2, :cutoff => 70}, {:note => :c2, :cutoff => 120})
+# Wobble bass – cutoff alternates 70/120 on every step (LFO sim)
+bass_data = [
+  {note: :a1, cutoff: 70}, {note: :a1, cutoff: 120},
+  {note: :a1, cutoff: 70}, {note: :a1, cutoff: 120},
+  {note: :a1, cutoff: 70}, {note: :a1, cutoff: 120},
+  {note: :a1, cutoff: 70}, {note: :a1, cutoff: 120},
+  {note: :g1, cutoff: 70}, {note: :g1, cutoff: 120},
+  {note: :g1, cutoff: 70}, {note: :g1, cutoff: 120},
+  {note: :c2, cutoff: 70}, {note: :c2, cutoff: 120},
+  {note: :c2, cutoff: 70}, {note: :c2, cutoff: 120}
+]
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# Syncopated "Ay" vocal chants (Granular Synth).
-# Pitched and scattered across the off-beats.
-s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.04, :amp => 0.6}, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.04, :amp => 0.6}, nil)
+# Syncopated vocal chants – pitched vocal stutters
+s_vocal = gen_score("....x.....x...x.",
+  [{note: :a4, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.04, amp: 0.6},
+   {note: :c5, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.04, amp: 0.6},
+   {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.04, amp: 0.6}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Groove - Just the syncopated drums and bongos (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_fm, s_bongos, 4] ],
-  
-  # Scene 2: The Vibe - Add the heavy wobble bass (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bongos, 8], 
-    [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: The Drop - The syncopated vocal chants drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bongos, 8], 
-    [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Groove – Kick, Hats, Bongos
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4],
+    [:play_fm, s_bongos, 4] ],
+
+  # Scene 2: Vibe – Add Wobble Bass
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8],
+    [:play_fm, s_bongos, 8], [:play_sub, s_bass, 8] ],
+
+  # Scene 3: Drop – Add Vocal Chants
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8],
+    [:play_fm, s_bongos, 8], [:play_sub, s_bass, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN TRIBAL SYNCOPATION]
-# 
-# 1. FM as Bongos: Look at `s_bongos`. The `:play_fm` synth is given a 
-#    `divisor` of `4` and a `release` of `0.05`. This extreme harmonic 
-#    ratio and short decay force the FM synth to produce a hollow, 
-#    woody "thwack" that perfectly mimics a live conga or bongo player. 
-#    The engine's strict master clock ensures this complex loop locks 
-#    perfectly with the broken kick drum.
-#
-# 2. Data-Driven LFO Wobble: Look at `s_bass`. It plays on every 16th 
-#    step, but the `cutoff` Hash rapidly alternates between `70` and `120`. 
-#    Because the engine reads these Hashes independently on every step, 
-#    the filter opens and closes frantically, simulating a fast LFO filter 
-#    wobble without needing a dedicated LFO oscillator.
-#
-# 3. The Funky Bounce: UK Funky relies on a lopsided, bouncy energy. The 
-#    `s_kick` hits on steps 0, 8, and 11. By avoiding the standard 4/4 
-#    pulse, the engine creates a staggering, syncopated groove that feels 
-#    distinctly West African and Caribbean, pushing the dancer to move 
-#    their hips rather than just jump up and down.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - FM as bongos: divisor 4 and release 0.05 create a hollow,
+#   woody "thwack" – the engine turns FM into organic percussion.
+# - Data‑driven LFO wobble: alternating cutoff (70/120) on
+#   every 16th step simulates a fast filter wobble without
+#   needing a dedicated LFO oscillator.
+# - The Funky bounce: kick on steps 0, 8, 11 creates a
+#   staggered, syncopated groove that pushes hips rather
+#   than jumps – the engine's grid locks it with precision.
 # ==========================================================

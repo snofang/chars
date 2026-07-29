@@ -1,56 +1,93 @@
+# ==========================================================
+# PLAYBOOK: WONKY / LO‑FI HIP‑HOP
+# Syncopated, Jazzy, Glitchy Beat Science
+# ==========================================================
+# [WHY THIS GENRE?]
+# Wonky beats (Flying Lotus, Teebs) push hip‑hop rhythms
+# into asymmetrical, off‑grid territory, pairing them with
+# jazz chords, deep subs, and granular piano stutters.
+# This playbook captures that head‑nodding, experimental,
+# lo‑fi aesthetic – music for late‑night headphone sessions.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 85 BPM
+# Key: F minor (deep, jazzy, melancholic)
+# Rhythm: Syncopated kick on 1, 'a' of 2, and 'e' of 3;
+# snare on 'and' of 2 and 'and' of 4; swung triplet‑feel hats
+# with velocity layers; sparse bass and chords.
+# Timbre: Dynamic kick (bd_haus with accents), snare with
+# velocity variation, swung hats (cymbal_closed), deep sub‑bass
+# (dsaw), jazzy 7th chords (blade), granular piano glitch
+# (elec_piano, high density, tiny size).
+# Arrangement: Groove (drums only) → Bass+Chords (add harmony)
+# → Glitch (add granular stutters).
+# ==========================================================
+
 use_bpm 85
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Deep & Jazzy)
-# ==========================================================
+# Scores
 
-# Highly syncopated "Wonky" kick. Hits on step 0, the 'a' of 2 (step 7), 
-# and the 'e' of 3 (step 10). Notice the dynamic accents.
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil)
+# Wonky kick – hits on step 0, 7 (amp 0.9), 10 (amp 1.2)
+s_kick = gen_score("x......x..x.....",
+  [:c4, {note: :c4, amp: 0.9}, {note: :c4, amp: 1.2}])
 
-# Snare hits late, on the 'and' of 2 (step 5) and 'and' of 4 (step 13)
-s_snare = (ring nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil)
+# Snare on 'and' of 2 (step 5) and 'and' of 4 (step 13)
+s_snare = gen_score(".....x.......x..",
+  [{note: :c4, amp: 1.0}, {note: :c4, amp: 0.8}])
 
-# Swung, triplet-feel hats with heavy velocity manipulation
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.2}, nil)
+# Swung hats with triplet‑feel velocity layers
+hat_data = [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.5}, {note: :c4, amp: 0.2}
+]
+s_hats = gen_score("x.xx.x.xx.x.xx.xx.", hat_data) # pattern: 0,2,3,4,6,7,8,10,11,12,13,14
 
-# Deep, sporadic sub-bass
-s_bass  = (ring :f2, nil, nil, nil, nil, nil, nil, nil, {:note => :ab2, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil)
+# Deep sporadic sub‑bass – hits on step 0 and 8
+s_bass = gen_score("x.......x.......",
+  [:f2, {note: :ab2, amp: 0.8}])
 
-# Jazzy 7th chords (Arrays) on the off-beats
-s_chords= (ring [:f3, :ab4, :c5, :eb5], nil, nil, nil, nil, nil, nil, nil, 
-           [:eb3, :g4, :bb4, :db5], nil, nil, nil, nil, nil, nil, nil)
+# Jazzy 7th chords – on downbeats (step 0 and 8)
+s_chords = gen_score("x.......x.......",
+  [[:f3, :ab4, :c5, :eb5], [:eb3, :g4, :bb4, :db5]])
 
-# Granular piano glitch (using :elec_piano buffer)
-# Short size (0.04) and high density (8) creates a rhythmic stutter
-s_grain = (ring nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :elec_piano, :pos => 0.4, :density => 8, :size => 0.04}, nil, 
-           nil, nil, nil, nil, nil, nil, {:note => :ab4, :buffer => :elec_piano, :pos => 0.6, :density => 8, :size => 0.04}, nil)
+# Granular piano glitch – high density stutters on steps 6 and 14
+s_grain = gen_score("......x.......x.",
+  [{note: :f4, buffer: :elec_piano, pos: 0.4, density: 8, size: 0.04},
+   {note: :ab4, buffer: :elec_piano, pos: 0.6, density: 8, size: 0.04}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the wonky groove (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
-  
-  # Scene 2: Add the deep bass and lo-fi chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8], [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: Granular piano stutters drop in (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 1: Groove – Drums only
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4] ],
+
+  # Scene 2: Harmony – Add Bass and Chords
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Glitch – Add Granular Piano Stutters (4 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
     [:play_chords, s_chords, 8], [:play_grain, s_grain, 4] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Wonky syncopation: kicks and snare land on asymmetric
+#   grid positions (step 7, 10, 5, 13) – the engine's 16‑step
+#   precision handles these off‑grid hits with ease.
+# - Swung hats: triplet‑feel velocity layers create a human,
+#   organic groove against the rigid grid.
+# - Granular piano glitch: density 8 and size 0.04 turn a
+#   piano sample into rhythmic, glitchy stutters.
+# - Jazzy 7th chords: arrays of extended harmony pass directly
+#   into `play_chords`, adding rich, melancholic colour.
+# ==========================================================

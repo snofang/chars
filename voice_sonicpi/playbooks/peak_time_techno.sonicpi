@@ -1,56 +1,86 @@
+# ==========================================================
+# PLAYBOOK: INDUSTRIAL TECHNO
+# Dark, Relentless, Metallic Club Energy
+# ==========================================================
+# [WHY THIS GENRE?]
+# Industrial Techno (Ancient Methods, Paula Temple) fuses
+# driving 4/4 kicks, hypnotic modular bass, metallic textures,
+# and eerie synth stabs. This playbook captures that bleak,
+# relentless, machine‑like energy – perfect for dark warehouses.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 135 BPM
+# Key: A minor (dark, brooding)
+# Rhythm: 4/4 kick, clap on 2/4, off‑beat rides with an extra
+# hat on the "and" of 4, rolling 16th bass with alternating
+# amplitudes, stabs on off‑beats for tension.
+# Timbre: Punchy kick (bd_haus), metallic snare (sn_dolf),
+# off‑beat rides (cymbal_closed), modular bass (dsaw, amp
+# pumping), dark lead (prophet), industrial granular static
+# (elec_piano, high density, tiny size).
+# Arrangement: Kick + Bass (foundation) → Add Drums (clap+hats)
+# → Add Lead + Granular Static.
+# ==========================================================
+
 use_bpm 135
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Relentless & Dark)
-# ==========================================================
+# Scores
 
-# Massive, driving 4-on-the-floor kick.
-s_kick  = (ring {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil)
+# Massive 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [{note: :c4, amp: 1.5}])
 
-# Sharp, metallic clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+# Sharp metallic clap on beats 2 and 4
+s_clap = gen_score("....x.......x...", [{note: :c4, amp: 0.8}])
 
-# Rides on the off-beats, with an open hat on the 'and' of 4.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2})
+# Off‑beat rides with extra hat on step 14 and 15
+s_hats = gen_score("..x..x..x..x..xx",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.2}])
 
-# The "Rolling" Modular Bass.
-# Plays on every 16th step, but the alternating amplitudes create a hypnotic "pump".
-s_bass  = (ring {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, 
-           {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, 
-           {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, {:note => :a1, :amp => 0.8}, {:note => :a1, :amp => 0.4}, 
-           {:note => :g1, :amp => 0.8}, {:note => :g1, :amp => 0.4}, {:note => :g1, :amp => 0.8}, {:note => :g1, :amp => 0.4})
+# Rolling modular bass – every 16th with alternating amplitudes
+bass_data = 16.times.map do |i|
+  note = (i < 12) ? :a1 : :g1
+  amp = (i.even?) ? 0.8 : 0.4
+  {note: note, amp: amp}
+end
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# Dark, echoing synth stabs (A Minor).
-# Hits on the 'and' of 2 (step 5) and the 'and' of 4 (step 13) to create tension.
-s_lead  = (ring nil, nil, nil, nil, nil, {:note => :a3, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :g3, :amp => 0.6}, nil, nil)
+# Dark echoing synth stabs – on off‑beats (steps 5 and 13)
+s_lead = gen_score(".....x.......x..",
+  [{note: :a3, amp: 0.7}, {note: :g3, amp: 0.6}])
 
-# Sinister, metallic granular texture (using :elec_piano buffer).
-# High density, tiny size = industrial machine static.
-s_grain = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil)
+# Industrial granular static – metallic texture
+s_grain = gen_score("........x.......",
+  [{note: :a3, buffer: :elec_piano, pos: 0.8, density: 6, size: 0.02, amp: 0.4}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the relentless kick and rolling bass (4 bars)
+  # Scene 1: Foundation – Kick + Bass
   [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: Add the metallic claps and rides (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+
+  # Scene 2: Rhythm – Add Clap and Hats
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8],
     [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: Add the dark echoing stabs and granular static (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+
+  # Scene 3: Texture – Add Lead and Granular Static
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8],
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8],
     [:play_lead, s_lead, 8], [:play_grain, s_grain, 4] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The rolling bass alternates amplitudes (0.8/0.4) on every
+#   16th step, creating a hypnotic pump that drives the groove.
+# - The extra hat on steps 14 and 15 adds syncopated tension
+#   before the kick lands on 1.
+# - Granular static with density 6 and size 0.02 turns the
+#   electric piano into a metallic, industrial texture.
+# - Sparse synth stabs on off‑beats create eerie anticipation.
+# ==========================================================
