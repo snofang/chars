@@ -1,58 +1,92 @@
+# ==========================================================
+# PLAYBOOK: DUB REGGAE / STEPPERS
+# Deep, Echoing, Psychedelic Sound System Vibes
+# ==========================================================
+# [WHY THIS GENRE?]
+# Dub reggae (King Tubby, Lee Perry) is built on sparse,
+# heavy drums, deep sub‑bass, off‑beat guitar skanks, and
+# cavernous delays. This playbook captures that hypnotic,
+# smoke‑filled sound system atmosphere.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 75 BPM
+# Key: G minor (dark, grooving)
+# Rhythm: Steppers kick on every beat, snare on 2/4,
+# hats on off‑beats, bass on 1 and 3, chords on off‑beats.
+# Timbre: Deep sub‑bass (dsaw, long release), staccato
+# minor chords (blade), echoing melodica (prophet+echo),
+# dubbed vocal grains (ambi_choir, low density).
+# Arrangement: Beat (drums+bass) → Skank (chords enter)
+# → Melodica + Vocal (lead and grain enter).
+# ==========================================================
+
 use_bpm 75
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (G Minor - Cavernous & Psychedelic)
-# ==========================================================
+# Scores
 
-# The "Steppers" Kick. Hits strictly on every beat (steps 0, 4, 8, 12).
-s_kick  = (ring :c4, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, :c4, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+# Steppers kick – hit on every beat with variable velocity
+s_kick = gen_score("x...x...x...x...",
+  [:c4, {note: :c4, amp: 0.8}, :c4, {note: :c4, amp: 0.8}])
 
-# Cross-stick/Snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+# Snare on beats 2 and 4
+s_snare = gen_score("....x.......x...",
+  [{note: :c4, amp: 0.9}, {note: :c4, amp: 0.9}])
 
-# Closed hats strictly on the off-beats (the "and" of each beat).
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil)
+# Hi‑hats on off‑beats (steps 2,6,10,14)
+s_hats = gen_score("..x..x..x..x....",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.3}])
 
-# Deep, round reggae sub-bass. 
-# Long release to create a massive, rolling low-end.
-s_bass  = (ring {:note => :g1, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :bb1, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil)
+# Deep sub‑bass – long release for rolling low‑end
+s_bass = gen_score("x.......x.......",
+  [{note: :g1, release: 1.5}, {note: :bb1, release: 1.5}])
 
-# The classic Reggae "Skank". 
-# Staccato minor chords strictly on the off-beats (steps 2, 6, 10, 14).
-s_chords= (ring nil, nil, [:g3, :bb3, :d4], nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil, [:c4, :eb4, :g4], nil, nil, nil, [:c4, :eb4, :g4], nil)
+# Off‑beat skank chords – staccato minor chords
+s_chords = gen_score("..x..x..x..x....",
+  [{note: [:g3, :bb3, :d4]}, {note: [:g3, :bb3, :d4]},
+   {note: [:c4, :eb4, :g4]}, {note: [:c4, :eb4, :g4]}])
 
-# Distant, echoing melodica melody (G Minor).
-# Routed through the engine's tape echo for a psychedelic smear.
-s_lead  = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :g5, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :f5, :amp => 0.5}, nil)
+# Echoing melodica melody – routed through tape echo
+s_lead = gen_score("........x......x",
+  [{note: :g5, amp: 0.6}, {note: :f5, amp: 0.5}])
 
-# Dubbed-out, echoing vocal fragment (Granular Synth)
-# Low density, long size = a ghostly, drifting echo.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Dubbed‑out vocal fragment – ghostly grain
+s_vocal = gen_score("........x.......",
+  [{note: :g4, buffer: :ambi_choir, pos: 0.5,
+    density: 2, size: 0.1, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the massive steppers beat and sub-bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: Add the off-beat skank guitar (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The echoing melodica and vocal fragments drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
-    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Beat – Drums + Bass
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Skank – Chords enter
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Full – Melodica and Vocal enter
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_lead, s_lead, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The long release (1.5) on s_bass creates a rolling,
+#   rumbling sub‑bass that anchors the groove.
+# - Off‑beat hats and chords (steps 2,6,10,14) create the
+#   classic reggae "skank" rhythm – the engine locks them
+#   perfectly against the kick.
+# - The tape echo on s_lead smears the sparse notes into
+#   a psychedelic, echoing melodica line.
+# - The grain vocal with density 2 and size 0.1 gives a
+#   short, stuttered dub plate effect, adding texture.
+# ==========================================================
