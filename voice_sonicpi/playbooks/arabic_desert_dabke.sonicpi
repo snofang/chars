@@ -1,51 +1,96 @@
+# ==========================================================
+# PLAYBOOK: MAQSAM / MIDDLE EASTERN RHYTHM
+# Hypnotic, Exotic, Modal Drone
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook explores the Maqsum rhythm – a traditional
+# Middle Eastern drum pattern (Dum – Tek – Dum – Tek) with
+# fast 16th ornaments. A driving D Phrygian Dominant bass,
+# haunting melodic phrases, and distant vocal chants create
+# an exotic, hypnotic atmosphere.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 110 BPM
+# Key: D Phrygian Dominant (exotic, dark – D, Eb, F#, G, A, Bb, C)
+# Rhythm: Maqsum (kick on 1 and beat 3, hat/tek on 2 and off‑beats),
+# fast 16th hat ornaments, pulsing bass on root, sparse lead,
+# sustained pad, granular vocal chant.
+# Timbre: Low kick (bd_haus), bright hat (cymbal_closed),
+# sub‑bass (dsaw), lead (prophet, tape echo), dark pad
+# (dark_ambience), granular chant (ambi_choir).
+# Arrangement: Rhythm+Drone (drums+pad) → Bass (add bassline)
+# → Melody+Chant (add lead and granular vocal).
+# ==========================================================
+
 use_bpm 110
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (D Phrygian Dominant - Exotic & Hypnotic)
-# ==========================================================
+# Scores
 
-# The Maqsum Rhythm (Dum - Tek - Dum - Tek)
-# Dum = Low (Kick), Tek = High (Hat)
-s_dum   = (ring :c4, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil)
-s_tek   = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, nil)
-# Fast 16th ornaments for the teks
-s_teks  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.2})
+# Maqsum rhythm – Dum (kick) on 1 and beat 3
+s_dum = gen_score("x.......x.......",
+  [:c4, {note: :c4, amp: 0.8}])
 
-# Driving, pulsing bass on the root (D)
-s_bass  = (ring :d2, nil, nil, nil, nil, nil, nil, nil, {:note => :d2, :amp => 0.8}, nil, nil, nil, {:note => :eb2, :amp => 0.6}, nil, nil, nil)
+# Tek (hat) on 2 and the 'and' of 3? Actually step 4 and 11
+s_tek = gen_score("....x......x....",
+  [{note: :c4, amp: 0.5}, {note: :c4, amp: 0.6}])
 
-# Haunting, echoing melody (D Phrygian Dominant)
-s_lead  = (ring :d4, nil, nil, {:note => :eb4, :amp => 0.6}, nil, nil, {:note => :f4, :amp => 0.8}, nil, 
-           nil, {:note => :g4, :amp => 0.7}, nil, {:note => :f4, :amp => 0.5}, nil, {:note => :eb4, :amp => 0.6}, nil, nil)
+# Fast 16th ornaments – teks on various off‑beats with dynamics
+s_teks = gen_score("x.x.x.x.x.x.x.xx",
+  [{note: :c4, amp: 0.2}, {note: :c4, amp: 0.15},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.15},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15},
+   {note: :c4, amp: 0.2}]) # 9 elements
 
-# Sustained drone pad to anchor the scale
-s_pad   = (ring :d3, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Pulsing bass – root D, with an accent and a step to Eb
+s_bass = gen_score("x.......x...x...",
+  [:d2, {note: :d2, amp: 0.8}, {note: :eb2, amp: 0.6}])
 
-# Distant granular vocal chant (using :ambi_choir buffer)
-s_chant = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :d4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.1}, nil, nil, nil, nil, nil, nil, nil)
+# Haunting melodic phrases – D Phrygian Dominant with tape echo
+s_lead = gen_score("x..x..x..x.x.x.",
+  [:d4, {note: :eb4, amp: 0.6}, {note: :f4, amp: 0.8},
+   {note: :g4, amp: 0.7}, {note: :f4, amp: 0.5},
+   {note: :eb4, amp: 0.6}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Sustained drone – anchors the scale
+s_pad = gen_score("x...............", [:d3])
+
+# Distant granular vocal chant
+s_chant = gen_score("........x.......",
+  [{note: :d4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.1}])
+
+# Playbook
 playbook = (ring
-  # Scene 1: The Maqsum rhythm and drone (4 bars)
-  [ [:play_pad, s_pad, 4], [:play_kick, s_dum, 4], [:play_hats, s_tek, 4], [:play_hats, s_teks, 4] ],
-  
-  # Scene 2: Add the driving bassline (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_kick, s_dum, 8], [:play_hats, s_tek, 8], [:play_hats, s_teks, 8], 
+  # Scene 1: Rhythm and Drone
+  [ [:play_pad, s_pad, 4], [:play_kick, s_dum, 4],
+    [:play_hats, s_tek, 4], [:play_hats, s_teks, 4] ],
+
+  # Scene 2: Add Bass
+  [ [:play_pad, s_pad, 8], [:play_kick, s_dum, 8],
+    [:play_hats, s_tek, 8], [:play_hats, s_teks, 8],
     [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: The Oud melody and distant chants enter (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_kick, s_dum, 8], [:play_hats, s_tek, 8], [:play_hats, s_teks, 8], 
-    [:play_sub, s_bass, 8], [:play_lead, s_lead, 8], [:play_grain, s_chant, 8] ]
+
+  # Scene 3: Add Melody and Chant
+  [ [:play_pad, s_pad, 8], [:play_kick, s_dum, 8],
+    [:play_hats, s_tek, 8], [:play_hats, s_teks, 8],
+    [:play_sub, s_bass, 8], [:play_lead, s_lead, 8],
+    [:play_grain, s_chant, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The Maqsum rhythm: kick on 1 and beat 3, teks on 2 and off‑beats
+#   – the engine's grid locks this ancient groove with precision.
+# - Fast ornaments: the s_teks pattern (9 triggers) adds a frantic,
+#   intricate layer that mimics traditional frame drum technique.
+# - Phrygian Dominant scale: D – Eb – F# – G – A – Bb – C gives a
+#   dark, exotic, Middle Eastern flavour – the bass and lead explore
+#   this modal colour.
+# - Layered arrangement: each scene adds a new element, building
+#   tension from a simple rhythm+drone to a full hypnotic texture.
+# ==========================================================

@@ -1,54 +1,89 @@
+# ==========================================================
+# PLAYBOOK: AFROBEAT / AFRO HOUSE
+# Hypnotic, Interlocking, Polycentric Groove
+# ==========================================================
+# [WHY THIS GENRE?]
+# Afrobeat (Fela Kuti, Tony Allen) is built on syncopated
+# interlocking rhythms, driving shakers, conversational bass,
+# off‑beat chord stabs, and distant horn accents. This playbook
+# captures that hypnotic, dance‑oriented, sun‑drenched energy.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 115 BPM
+# Key: F minor (deep, hypnotic)
+# Rhythm: Syncopated kick (1, 'and' of 2, beat 4), snare/clap
+# on off‑beats (2 and 4), continuous 16th shaker with accents,
+# syncopated bass, off‑beat chord stabs, sparse horn stabs.
+# Timbre: Dynamic kick (bd_haus with accents), snare/clap
+# (sn_dolf), accented shaker (cymbal_closed with velocity
+# layers), syncopated sub‑bass (dsaw), off‑beat chords (blade),
+# distant horn stabs (fm, tape echo).
+# Arrangement: Drums (kick+snare+shaker) → Harmony (add bass+
+# chords) → Horns (add FM stabs).
+# ==========================================================
+
 use_bpm 115
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Hypnotic & Interlocking)
-# ==========================================================
+# Scores
 
-# Syncopated kick. Hits on beat 1, the 'and' of 2, and beat 4.
-s_kick  = (ring :c4, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+# Syncopated kick: hits on 1, 'and' of 2, and beat 4
+s_kick = gen_score("x....x......x...",
+  [:c4, {note: :c4, amp: 0.8}, {note: :c4, amp: 0.9}])
 
-# Snare/clap on the heavy off-beats (steps 4 and 12)
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+# Snare/clap on heavy off‑beats (steps 4 and 12)
+s_snare = gen_score("....x.......x...",
+  [{note: :c4, amp: 0.7}, {note: :c4, amp: 0.8}])
 
-# Continuous 16th-note shaker, but with accents on the off-beats
-s_hats  = (ring {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
-           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
-           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
-           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5})
+# Continuous 16th shaker with accents on off‑beats
+shaker_data = 16.times.map do |i|
+  amp = (i % 2 == 0) ? 0.2 : ((i % 4 == 1) ? 0.4 : 0.5)
+  {note: :c4, amp: amp}
+end
+s_hats = gen_score("xxxxxxxxxxxxxxxx", shaker_data)
 
-# Conversational, syncopated bassline
-s_bass  = (ring :f2, nil, nil, :f2, nil, nil, :f2, nil, {:note => :ab2, :amp => 0.8}, nil, nil, :ab2, nil, nil, :c3, nil)
+# Syncopated conversational bass
+s_bass = gen_score("x..x..x.x..x..x.",
+  [:f2, :f2, :f2, {note: :ab2, amp: 0.8}, :ab2, :c3])
 
-# The classic Afrobeat "Skank". Off-beat chord stabs on steps 2, 6, 10, 14.
-s_chords= (ring nil, nil, [:f3, :ab3, :c4], nil, nil, nil, [:f3, :ab3, :c4], nil, 
-           nil, nil, [:eb3, :g3, :bb3], nil, nil, nil, [:eb3, :g3, :bb3], nil)
+# Off‑beat chord stabs (steps 2,6,10,14)
+s_chords = gen_score("..x...x...x...x.",
+  [[:f3, :ab3, :c4], [:f3, :ab3, :c4],
+   [:eb3, :g3, :bb3], [:eb3, :g3, :bb3]])
 
-# Distant, echoing horn stabs (F Minor Pentatonic)
-s_fm    = (ring nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :amp => 0.6}, 
-           nil, nil, nil, nil, nil, nil, nil, {:note => :eb4, :amp => 0.7})
+# Distant echoing horn stabs (steps 7 and 15)
+s_fm = gen_score(".......x.......x",
+  [{note: :f4, amp: 0.6}, {note: :eb4, amp: 0.7}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the interlocking drums and shaker (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
-  
-  # Scene 2: Add the syncopated bass and off-beat chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: Add the distant horn stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_fm, s_fm, 8] ]
+  # Scene 1: Drums – Kick, Snare, Shaker
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4] ],
+
+  # Scene 2: Harmony – Add Bass and Chords
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Horns – Add FM Stabs
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_fm, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Syncopated kick: hits on 1, 'and' of 2, and beat 4 create
+#   a lopsided, polycentric pulse that drives the dance.
+# - Accented shaker: continuous 16ths with varying amplitudes
+#   (0.2/0.4/0.5) mimic a human hand, adding organic swing.
+# - Off‑beat chords: hitting on steps 2,6,10,14 leave room for
+#   the kick and bass to breathe, creating harmonic space.
+# - Distant horn stabs: sparse FM notes on the off‑beats add
+#   a cinematic, echoing texture that floats above the rhythm.
+# ==========================================================

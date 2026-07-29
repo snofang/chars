@@ -1,50 +1,77 @@
+# ==========================================================
+# PLAYBOOK: AMBIENT DRONE / CELESTIAL TEXTURES
+# Vast, Evolving, Shimmering Soundscapes
+# ==========================================================
+# [WHY THIS GENRE?]
+# Ambient Drone is built on massive, slow‑attacking pads,
+# shimmering granular clouds, distant echoing bells, and
+# sparse starlight plucks. This playbook captures that
+# vast, celestial, meditative atmosphere – music for deep
+# listening and cosmic contemplation.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 60 BPM (very slow)
+# Key: D Major (bright, vast) with F# minor touches
+# Rhythm: Extremely sparse – drones, grains, and sparse
+# melodic accents across a wide grid.
+# Timbre: Massive pad (dark_ambience, 4s attack, 8s release),
+# granular vocal cloud (ambi_choir, long size, low density),
+# distant FM bells (fm, long release), high starlight plucks
+# (pluck, long release).
+# Arrangement: Drone+Cloud (foundation) → Bells (add FM)
+# → Starlight (add plucks).
+# ==========================================================
+
 use_bpm 60
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (D Major - Vast & Celestial)
-# ==========================================================
+# Scores
 
-# Massive, slow-attacking drone. 
-# Notice the 4-beat attack and 8-beat release. It takes a whole bar just to fade in!
-s_pad   = (ring {:note => :d2, :attack => 4.0, :release => 8.0, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :a2, :attack => 4.0, :release => 8.0, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+# Massive drone – 4‑beat attack, 8‑beat release, slow fade
+s_pad = gen_score("x.......x.......",
+  [{note: :d2, attack: 4.0, release: 8.0, amp: 0.8},
+   {note: :a2, attack: 4.0, release: 8.0, amp: 0.7}])
 
-# Shimmering granular vocal drone. 
-# Using :ambi_choir, very long size (0.2s) and low density (2) = smooth, evolving cloud.
-# The 'pos' shifts slightly to create movement.
-s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :a4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Shimmering granular vocal cloud – evolving, smooth
+s_grain = gen_score("x.......x.......",
+  [{note: :d4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.2, amp: 0.6},
+   {note: :a4, buffer: :ambi_choir, pos: 0.5, density: 2, size: 0.2, amp: 0.5}])
 
-# Distant, echoing FM bells (D Major)
-s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.4, :release => 3.0}, nil, nil, nil, 
-           nil, nil, nil, nil, nil, nil, {:note => :a4, :amp => 0.3, :release => 3.0}, nil)
+# Distant FM bells – sparse, long release
+s_fm = gen_score("....x.......x..",
+  [{note: :d5, amp: 0.4, release: 3.0},
+   {note: :a4, amp: 0.3, release: 3.0}])
 
-# Sparse, high "starlight" plucks (F# Minor pentatonic for a touch of tension)
-s_pluck = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :d6, :amp => 0.3, :release => 2.0}, nil, nil, nil, nil, nil, nil, nil)
+# High starlight plucks – sparse, bright, with tension
+s_pluck = gen_score("........x.......",
+  [{note: :d6, amp: 0.3, release: 2.0}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the vast drone and granular cloud (4 bars)
+  # Scene 1: Foundation – Drone + Cloud
   [ [:play_pad, s_pad, 4], [:play_grain, s_grain, 4] ],
-  
-  # Scene 2: Add distant FM bells (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_grain, s_grain, 8], 
+
+  # Scene 2: Bells – Add Distant FM
+  [ [:play_pad, s_pad, 8], [:play_grain, s_grain, 8],
     [:play_fm, s_fm, 8] ],
-    
-  # Scene 3: Add the high starlight plucks (8 bars)
-  [ [:play_pad, s_pad, 8], [:play_grain, s_grain, 8], 
+
+  # Scene 3: Starlight – Add High Plucks
+  [ [:play_pad, s_pad, 8], [:play_grain, s_grain, 8],
     [:play_fm, s_fm, 8], [:play_pluck, s_pluck, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The massive drone: attack 4.0 and release 8.0 create a
+#   slow, swelling fade – a full bar just to appear.
+# - Granular cloud: long grain size (0.2s) and low density (2)
+#   create a smooth, evolving vocal texture that drifts.
+# - Distant bells: sparse FM notes with long release (3.0s)
+#   ring out into the void, adding harmonic colour.
+# - Starlight plucks: high‑register (d6) notes with 2.0s
+#   release add a delicate, shimmering top layer.
+# ==========================================================

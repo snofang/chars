@@ -1,107 +1,120 @@
 # ==========================================================
 # PLAYBOOK: BALLROOM / VOGUE HOUSE
-# (Pioneered by MikeQ, Vjuan Allure, and Kevin JZ Prodigy)
-# ========================================================== 
-# 
+# Fierce, Bouncy, Runway‑Ready Energy
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Ballroom / Vogue House.
-# We have explored Chicago Deep House and Modern Tech House, but Ballroom 
-# is the sound of the New York underground runway. It takes the 4/4 grid 
-# and injects it with extreme, fierce energy. It is famous for relentless, 
-# bouncing 16th-note hi-hats, massive claps on beats 2 and 4, and 
-# chopped, repetitive "Ha" vocal stabs that act as a secondary percussion 
-# instrument.
+# Ballroom / Vogue House (MikeQ, Vjuan Allure) takes the 4/4 grid
+# and injects extreme energy – relentless 16th hats, massive claps
+# on 2 and 4, syncopated bass, and chopped "Ha" vocal stabs as
+# percussion. This playbook captures that fierce, underground
+# New York runway vibe.
 #
-# This playbook perfectly demonstrates how to push the Granular Synthesizer 
-# to its rhythmic limit. By scattering tiny, high-pitched vocal grains 
-# across the 16-step grid, the engine turns a vocal sample into a fierce, 
-# syncopated "Ha" stab that drives the runway walk.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 128 BPM
+# Key: A minor (dark, fierce)
+# Rhythm: 4/4 kick with syncopated hit on 'a' of 4, massive clap
+# on 2/4, relentless 16th hats with alternating amplitudes for a
+# 32nd‑note buzz, syncopated bass, off‑beat minor 9th chords,
+# sharp FM lead, percussive granular vocal stabs.
+# Timbre: Driving kick (bd_haus with accent), heavy runway clap
+# (sn_dolf), buzzing hats (cymbal_closed with amp layers), round
+# sub‑bass (dsaw, low cutoff, short release), lush minor chords
+# (blade), piercing FM lead (divisor 3, tape echo), percussive
+# "Ha" vocal stabs (ambi_choir, high density, tiny size).
+# Arrangement: Groove (drums+bass+chords) → Runway (add FM lead)
+# → Performance (add vocal chops).
 # ==========================================================
 
 use_bpm 128
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Fierce, Bouncy, & Runway-Ready)
-# ==========================================================
+# Scores
 
-# Driving 4/4 kick with a syncopated 16th hit on the 'a' of 4 (step 14).
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, {:note => :c4, :amp => 0.7}, nil)
+# Driving kick with a syncopated 16th hit on the 'a' of 4 (step 14)
+s_kick = gen_score("x...x...x...x.x.",
+  [:c4, :c4, :c4, :c4, {note: :c4, amp: 0.7}])
 
-# Massive, heavy "Runway" clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil)
+# Massive runway clap on beats 2 and 4 (steps 4 and 12)
+s_clap = gen_score("....x.......x...",
+  [{note: :c4, amp: 1.1}, {note: :c4, amp: 1.1}])
 
-# Relentless, bouncing 16th hats. 
-# Notice the alternating amplitudes (0.3 vs 0.15) that create a 32nd-note buzz.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15})
+# Relentless 16th hats – alternating amplitudes create a 32nd‑note buzz
+hat_data = 16.times.map do |i|
+  amp = (i.even?) ? 0.3 : 0.15
+  # Make the 2nd and 6th? Actually pattern: 0.3,0.15,0.4,0.15 repeat
+  # Original: 0.3,0.15,0.4,0.15... so we can create a cycle of 4
+  cycle = (i % 4)
+  amp = case cycle
+        when 0 then 0.3
+        when 1 then 0.15
+        when 2 then 0.4
+        when 3 then 0.15
+        end
+  {note: :c4, amp: amp}
+end
+s_hats = gen_score("xxxxxxxxxxxxxxxx", hat_data)
 
-# Deep, round sub-bass (A Minor).
-# Syncopated to weave perfectly between the kicks and claps.
-s_bass  = (ring {:note => :a1, :release => 0.2, :cutoff => 70}, nil, nil, {:note => :a1, :release => 0.2, :cutoff => 70}, nil, nil, {:note => :c2, :release => 0.2, :cutoff => 70}, nil, {:note => :e2, :release => 0.2, :cutoff => 70}, nil, nil, {:note => :e2, :release => 0.2, :cutoff => 70}, nil, nil, {:note => :g1, :release => 0.2, :cutoff => 70}, nil)
+# Syncopated sub‑bass – weaves between kick and clap
+s_bass = gen_score("x..x..x.x..x..x.",
+  [{note: :a1, release: 0.2, cutoff: 70},
+   {note: :a1, release: 0.2, cutoff: 70},
+   {note: :c2, release: 0.2, cutoff: 70},
+   {note: :e2, release: 0.2, cutoff: 70},
+   {note: :e2, release: 0.2, cutoff: 70},
+   {note: :g1, release: 0.2, cutoff: 70}])
 
-# Lush, minor 9th chord stabs (Am9 to Gm9).
-# Hit on the off-beats to leave maximum room for the vocals and bass.
-s_chords= (ring nil, nil, [:a3, :c4, :e4, :g4], nil, nil, nil, [:a3, :c4, :e4, :g4], nil, nil, nil, [:g3, :bb3, :d4, :f4], nil, nil, nil, [:g3, :bb3, :d4, :f4], nil)
+# Lush minor 9th chord stabs on off‑beats (steps 2,6,10,14)
+s_chords = gen_score("..x..x..x..x....",
+  [[:a3, :c4, :e4, :g4],
+   [:a3, :c4, :e4, :g4],
+   [:g3, :bb3, :d4, :f4],
+   [:g3, :bb3, :d4, :f4]])
 
-# High-pitched, dramatic "Vogue" Synth Lead (A Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) to create a sharp, piercing pluck.
-# Routed through the engine's tape echo for a dramatic, cascading smear.
-s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :c6, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, nil, nil, {:note => :a5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil)
+# Piercing FM lead – Vogue synth, routed through tape echo
+s_fm = gen_score("x...x.x.....x...",
+  [{note: :a5, amp: 0.6, divisor: 3, depth: 2, release: 0.2},
+   {note: :e5, amp: 0.5, divisor: 3, depth: 2, release: 0.2},
+   {note: :c6, amp: 0.6, divisor: 3, depth: 2, release: 0.2},
+   {note: :a5, amp: 0.7, divisor: 3, depth: 2, release: 0.2}])
 
-# The "Ha" Vocal Chops (Granular Synth).
-# FIXED: Exactly 16 steps. Pitched and scattered across the off-beats. 
-# High density, tiny size = a sharp, percussive vocal stab.
-s_vocal = (ring {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.03, :amp => 0.7}, nil, nil, 
-           {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.03, :amp => 0.5}, nil, nil, nil, 
-           {:note => :c5, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.03, :amp => 0.7}, nil, nil, 
-           {:note => :a4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.03, :amp => 0.5}, nil, nil, 
-           {:note => :e4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.03, :amp => 0.7}, nil, nil)
+# Percussive "Ha" vocal stabs – granular as raw percussion
+s_vocal = gen_score("x..x...x..x..x..",
+  [{note: :a4, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.03, amp: 0.7},
+   {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.03, amp: 0.5},
+   {note: :c5, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.03, amp: 0.7},
+   {note: :a4, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.03, amp: 0.5},
+   {note: :e4, buffer: :ambi_choir, pos: 0.5, density: 2, size: 0.03, amp: 0.7}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Groove - Just the relentless drums, bass, and chords (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4], [:play_chords, s_chords, 4] ],
-  
-  # Scene 2: The Runway - Add the dramatic FM lead melody (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_lead, s_fm, 8] ],
-    
-  # Scene 3: The Performance - The "Ha" vocal chops drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_lead, s_fm, 8], 
+  # Scene 1: Groove – Drums, Bass, Chords
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4],
+    [:play_chords, s_chords, 4] ],
+
+  # Scene 2: Runway – Add FM Lead
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8] ],
+
+  # Scene 3: Performance – Add Vocal Chops
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8],
     [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RUNWAY ENERGY]
-# 
-# 1. Percussive Vocals: Look at `s_vocal`. The granular engine is used not 
-#    for ambient drones, but as a raw percussion instrument. By pitching 
-#    different grains (:a4, :c5, :e4) and scattering them on the off-beats, 
-#    the engine simulates the legendary Ballroom "Ha" stab, adding massive 
-#    human energy to the rigid 4/4 grid.
-#
-# 2. The 32nd-Note Buzz: Look at `s_hats`. The hats play on EVERY single 
-#    16th step, but the amplitudes alternate frantically between 0.15 and 
-#    0.4. Because the engine's strict master clock fires these with absolute 
-#    precision, the hi-hats create a buzzing, 32nd-note illusion that drives 
-#    the track forward unstoppably.
-#
-# 3. The Syncopated Pocket: The `s_bass` sequence weaves perfectly between 
-#    the kicks and claps. By using a low `cutoff` (70), the engine keeps 
-#    the bass round and warm, ensuring it locks tightly with the massive 
-#    claps on beats 2 and 4, creating that fierce, head-nodding "pocket" 
-#    that defines Vogue House.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Percussive vocals: granular stabs (size 0.03, density 2) act
+#   as a raw "Ha" percussion – the engine turns vocal samples into
+#   rhythmic runway energy.
+# - 32nd‑note buzz: alternating hat amplitudes (0.3/0.15/0.4/0.15)
+#   create a furious buzzing texture that drives the track.
+# - Syncopated pocket: bass weaves between kick and clap, with low
+#   cutoff (70) and short release (0.2) for a round, punchy feel.
 # ==========================================================

@@ -1,87 +1,110 @@
 # ==========================================================
-# PLAYBOOK: 2000s UPLIFTING TRANCE (Refactored)
+# PLAYBOOK: 2000s UPLIFTING TRANCE
+# Euphoric, Driving, Stadium‑Filling Anthems
+# ==========================================================
+# [WHY THIS GENRE?]
+# Uplifting Trance (early 2000s) is built on relentless 4/4
+# kicks, off‑beat bass and supersaw chords, epic synth risers,
+# echoing pluck leads, and ethereal vocal pads. This playbook
+# captures that massive, emotional, festival‑ready energy.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 138 BPM
+# Key: A minor (euphoric, driving)
+# Rhythm: 4/4 kick, clap on 2/4, off‑beat hats and bass
+# and chords, epic snare rush riser (ascending notes with
+# amplitude increase), echoing lead with gaps.
+# Timbre: Punchy kick (bd_haus), organic clap (sn_dolf),
+# open hats (cymbal_closed), off‑beat sub (dsaw, low cutoff),
+# epic riser (fm, ascending pitches, increasing amp),
+# supersaw chords (blade, high cutoff, long release),
+# Pryda pluck lead (fm, tape echo), granular vocal pad
+# (ambi_choir, long size).
+# Arrangement: Build (kick+sub+riser) → Drive (add claps+
+# hats+vocal pad) → Anthem (add chords+lead pluck).
 # ==========================================================
 
 use_bpm 138
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Euphoric, Driving, & Massive)
-# ==========================================================
+# Scores
 
-# Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Relentless 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Heavy, organic clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Heavy organic clap on beats 2 and 4
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Off‑beat open hats (steps 2,6,10,14) with alternating amp
+s_hats = gen_score("..x..x..x..x....",
+  [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
 
-# The "Off-Beat" Sub Bass (Refactored).
-# Uses play_sub with a low cutoff (70). Hits strictly on the off-beats. Very short 
-# release (0.15) provides a pristine, distortion-free "pump" that drives the track.
-s_sub   = (ring nil, nil, {:note => :a1, :release => 0.15, :amp => 1.0, :cutoff => 70}, nil, 
-           nil, nil, {:note => :a1, :release => 0.15, :amp => 1.0, :cutoff => 70}, nil, 
-           nil, nil, {:note => :e1, :release => 0.15, :amp => 1.0, :cutoff => 70}, nil, 
-           nil, nil, {:note => :g1, :release => 0.15, :amp => 1.0, :cutoff => 70}, nil)
+# Off‑beat sub bass – pristine pump, low cutoff
+s_sub = gen_score("..x..x..x..x....",
+  [{note: :a1, release: 0.15, amp: 1.0, cutoff: 70},
+   {note: :a1, release: 0.15, amp: 1.0, cutoff: 70},
+   {note: :e1, release: 0.15, amp: 1.0, cutoff: 70},
+   {note: :g1, release: 0.15, amp: 1.0, cutoff: 70}])
 
-# The "Epic Snare Rush" / Riser (Refactored).
-# Uses :play_fm with a high divisor (3). The notes ascend over 16 steps while 
-# the amplitudes rapidly increase, creating a massive, hydraulic synth riser.
-s_rush  = (ring {:note => :a4, :amp => 0.2, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :b4, :amp => 0.3, :divisor => 3, :depth => 2, :release => 0.1}, 
-           {:note => :c5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, 
-           {:note => :e5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :f5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.1}, 
-           {:note => :g5, :amp => 0.8, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :a5, :amp => 0.9, :divisor => 3, :depth => 2, :release => 0.1}, 
-           {:note => :b5, :amp => 1.0, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :c6, :amp => 1.0, :divisor => 3, :depth => 2, :release => 0.1}, 
-           {:note => :d6, :amp => 1.0, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :e6, :amp => 1.0, :divisor => 3, :depth => 2, :release => 0.1}, 
-           {:note => :f6, :amp => 1.0, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :g6, :amp => 1.0, :divisor => 3, :depth => 2, :release => 0.1}, 
-           {:note => :a6, :amp => 1.0, :divisor => 3, :depth => 2, :release => 0.1}, {:note => :b6, :amp => 1.0, :divisor => 3, :depth => 2, :release => 0.1})
+# Epic snare rush – ascending pitch and amplitude over 16 steps
+rush_data = 16.times.map do |i|
+  note_name = [:a4, :b4, :c5, :d5, :e5, :f5, :g5, :a5,
+               :b5, :c6, :d6, :e6, :f6, :g6, :a6, :b6][i]
+  amp = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
+         1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0][i]
+  {note: note_name, amp: amp, divisor: 3, depth: 2, release: 0.1}
+end
+s_rush = gen_score("xxxxxxxxxxxxxxxx", rush_data)
 
-# Massive, emotional off-beat supersaw chords (Am to F to G).
-# Hit strictly on the off-beats (steps 2, 6, 10, 14). High cutoff (110) 
-# and long release (1.0) create a soaring, stadium-sized wall of sound.
-s_chords= (ring nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 110, :release => 1.0, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 110, :release => 1.0, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:f3, :a3, :c4], :cutoff => 110, :release => 1.0, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:g3, :bb3, :d4], :cutoff => 110, :release => 1.0, :amp => 0.6}, nil)
+# Supersaw chords on off‑beats – soaring brightness
+s_chords = gen_score("..x..x..x..x....",
+  [{note: [:a3, :c4, :e4], cutoff: 110, release: 1.0, amp: 0.6},
+   {note: [:a3, :c4, :e4], cutoff: 110, release: 1.0, amp: 0.6},
+   {note: [:f3, :a3, :c4], cutoff: 110, release: 1.0, amp: 0.6},
+   {note: [:g3, :bb3, :d4], cutoff: 110, release: 1.0, amp: 0.6}])
 
-# High-pitched, echoing "Pryda Pluck" Lead (A Minor Pentatonic).
-# Uses :play_fm with a high divisor (3). Notice the massive gaps (`nil`) 
-# between the notes. Routed through the global echo bus, these empty spaces 
-# are filled by delay tails, creating a cascading, stadium soundscape.
-s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, nil, 
-           {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, nil, 
-           {:note => :c6, :amp => 0.6, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, nil, 
-           {:note => :d6, :amp => 0.7, :divisor => 3, :depth => 2, :release => 1.0}, nil, nil, nil)
+# Pryda pluck lead – sparse, routed through tape echo
+s_fm = gen_score("x...x...x...x...",
+  [{note: :a5, amp: 0.6, divisor: 3, depth: 2, release: 1.0},
+   {note: :e5, amp: 0.5, divisor: 3, depth: 2, release: 1.0},
+   {note: :c6, amp: 0.6, divisor: 3, depth: 2, release: 1.0},
+   {note: :d6, amp: 0.7, divisor: 3, depth: 2, release: 1.0}])
 
-# Ethereal, granular vocal pad (using :ambi_choir).
-# Long size (0.2) and low density (1) creates a slow, evolving celestial 
-# texture that drifts behind the massive beat.
-s_grain = (ring {:note => :a4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.5, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Ethereal granular vocal pad – slow evolving texture
+s_grain = gen_score("x.......x.......",
+  [{note: :a4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.2, amp: 0.5},
+   {note: :f4, buffer: :ambi_choir, pos: 0.5, density: 1, size: 0.2, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Build - Just the kick, off-beat sub, and synth riser (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_sub, s_sub, 4], [:play_fm, s_rush, 4] ],
-  
-  # Scene 2: The Drive - Add the claps, hats, and sweeping vocal pad (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_sub, 8], [:play_fm, s_rush, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_grain, s_grain, 8] ],
-    
-  # Scene 3: The Anthem - The massive supersaw chords and echoing pluck drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_sub, 8], [:play_fm, s_rush, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_grain, s_grain, 8], 
+  # Scene 1: Build – Kick, Sub, Riser
+  [ [:play_kick, s_kick, 4], [:play_sub, s_sub, 4],
+    [:play_fm, s_rush, 4] ],
+
+  # Scene 2: Drive – Add Claps, Hats, Vocal Pad
+  [ [:play_kick, s_kick, 8], [:play_sub, s_sub, 8],
+    [:play_fm, s_rush, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_grain, s_grain, 8] ],
+
+  # Scene 3: Anthem – Add Supersaw Chords and Pluck
+  [ [:play_kick, s_kick, 8], [:play_sub, s_sub, 8],
+    [:play_fm, s_rush, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_grain, s_grain, 8],
     [:play_chords, s_chords, 8], [:play_lead, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Off‑beat pump: sub, hats, and chords all hit on steps
+#   2,6,10,14 – the engine locks them for a massive bounce.
+# - Epic snare rush: ascending notes with increasing amplitude
+#   create a hydraulic riser that builds tension.
+# - Pryda pluck illusion: sparse notes leave gaps for tape
+#   echo to cascade, filling the stadium with sound.
+# - Granular vocal pad: low density and long size create a
+#   celestial drift behind the driving rhythm.
+# ==========================================================

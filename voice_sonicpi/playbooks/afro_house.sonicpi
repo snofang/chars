@@ -1,99 +1,100 @@
 # ==========================================================
 # PLAYBOOK: AFRO HOUSE / TRIBAL HOUSE
-# (Pioneered by Black Coffee, Keinemusik, and &ME)
+# Deep, Warm, Soulful, Polyrhythmic
 # ==========================================================
-# 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Afro House.
-# We have explored aggressive, high-energy genres (Hardstyle, EDM) and
-# rigid techno. Afro House is the sound of deep, hypnotic, sun-drenched
-# dancefloors. It takes the 4/4 grid but softens it, focusing on warm
-# sub-bass, organic polyrhythmic shakers, and soulful, jazzy chords.
+# Afro House (Black Coffee, Keinemusik) softens the 4/4 grid
+# with warm sub‑bass, organic polyrhythmic shakers, soulful
+# jazzy chords, and kalimba/marimba melodies. This playbook
+# captures that hypnotic, sun‑drenched dancefloor vibe.
 #
-# This playbook perfectly demonstrates how to use the Parameter Hashes
-# to create a continuous, dynamic shaker groove, and how the `:play_fm`
-# synth can be tuned to sound like an organic Kalimba or Marimba.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 120 BPM
+# Key: F minor (deep, soulful)
+# Rhythm: Soft 4/4 kick, clap on 2/4, polyrhythmic shaker
+# with dynamic amplitudes, melodic sub‑bass, off‑beat
+# minor 9th chords, kalimba/marimba arpeggios, ambient
+# vocal chop.
+# Timbre: Warm kick (bd_haus), organic clap (sn_dolf),
+# dynamic shaker (cymbal_closed with varying amp),
+# round sub‑bass (dsaw, long release), soulful chords
+# (blade), FM kalimba (divisor 3, depth 2), granular
+# vocal smear (ambi_choir, low density, medium size).
+# Arrangement: Foundation (kick+shaker+bass) → Groove
+# (add clap+chords) → Texture (add kalimba+vocal).
 # ==========================================================
 
 use_bpm 120
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Deep, Warm, & Soulful)
-# ==========================================================
+# Scores
 
-# Soft, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Soft 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Deep, organic clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Organic clap on beats 2 and 4
+s_clap = gen_score("....x.......x...", [:c4])
 
-# The "Polyrhythmic" Shaker.
-# Plays on almost every 16th step, but the alternating amplitudes 
-# create a bouncing, triplet-like swing that drives the groove.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, nil)
+# Polyrhythmic shaker – dynamic amplitudes for human swing
+s_hats = gen_score("x.x.xx.xx.xx.xx.",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.5},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.5},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4}])
 
-# Deep, round sub-bass. 
-# Acts as a melodic anchor. Long release to create a warm undercurrent.
-s_bass  = (ring {:note => :f1, :release => 0.5}, nil, nil, nil, nil, nil, nil, {:note => :f1, :release => 0.5}, {:note => :ab1, :release => 0.5}, nil, nil, {:note => :c2, :release => 0.5}, nil, nil, nil, nil)
+# Round sub‑bass – melodic anchor with long release
+s_bass = gen_score("x......xx..x....",
+  [{note: :f1, release: 0.5}, {note: :f1, release: 0.5},
+   {note: :ab1, release: 0.5}, {note: :c2, release: 0.5}])
 
-# Warm, soulful minor 9th chords (Fm9 to Abm9).
-# Hit on the off-beats (steps 2, 6, 10, 14) to leave room for the kick.
-s_chords= (ring nil, nil, [:f3, :ab3, :c4, :eb4], nil, nil, nil, [:f3, :ab3, :c4, :eb4], nil, nil, nil, [:ab3, :c4, :eb4, :gb4], nil, nil, nil, [:eb3, :g3, :bb3, :db4], nil)
+# Soulful minor 9th chords on off‑beats (steps 2,6,10,14)
+s_chords = gen_score("..x...x...x...x.",
+  [[:f3, :ab3, :c4, :eb4], [:f3, :ab3, :c4, :eb4],
+   [:ab3, :c4, :eb4, :gb4], [:eb3, :g3, :bb3, :db4]])
 
-# The "Kalimba/Marimba" Melody (F Minor Pentatonic).
-# Uses :play_fm with specific Hashes (divisor: 3, depth: 2) to create 
-# a hollow, wooden, organic bell tone.
-s_fm    = (ring {:note => :f5, :amp => 0.6, :depth => 2, :divisor => 3, :release => 0.5}, nil, nil, {:note => :ab5, :amp => 0.5, :depth => 2, :divisor => 3, :release => 0.5}, nil, {:note => :c6, :amp => 0.7, :depth => 2, :divisor => 3, :release => 0.5}, nil, nil, nil, {:note => :ab5, :amp => 0.5, :depth => 2, :divisor => 3, :release => 0.5}, nil, {:note => :f5, :amp => 0.6, :depth => 2, :divisor => 3, :release => 0.5}, nil, nil, nil, nil)
+# Kalimba/marimba melody – hollow, wooden bell tone
+s_fm = gen_score("x..x.x...x.x....",
+  [{note: :f5, amp: 0.6, depth: 2, divisor: 3, release: 0.5},
+   {note: :ab5, amp: 0.5, depth: 2, divisor: 3, release: 0.5},
+   {note: :c6, amp: 0.7, depth: 2, divisor: 3, release: 0.5},
+   {note: :ab5, amp: 0.5, depth: 2, divisor: 3, release: 0.5},
+   {note: :f5, amp: 0.6, depth: 2, divisor: 3, release: 0.5}])
 
-# Distant, echoing vocal chop (Granular Synth)
-# Low density, long size = a smooth, ambient vocal smear.
-s_vocal = (ring nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Ambient vocal smear – smooth, distant chop
+s_vocal = gen_score("....x...........",
+  [{note: :f4, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.1, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the deep kick, shaker, and sub-bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: Add the deep claps and warm chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Kalimba melody and vocal chops drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
-    [:play_fm, s_fm, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Foundation – Kick, Shaker, Bass
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4],
+    [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Groove – Add Clap and Chords
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8], [:play_snare, s_clap, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Texture – Add Kalimba and Vocal
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8], [:play_snare, s_clap, 8],
+    [:play_chords, s_chords, 8], [:play_fm, s_fm, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ORGANIC GROOVE]
-# 
-# 1. The Dynamic Shaker: Look at `s_hats`. It plays on 12 of the 16 steps,
-#    but the `amp` values bounce wildly between 0.2, 0.3, 0.4, and 0.5.
-#    Because the engine's master clock locks these dynamic hits perfectly,
-#    the shaker doesn't sound like a machine; it sounds like a human 
-#    physically shaking a percussion instrument with natural swing.
-#
-# 2. FM Synthesis as Wood: The `:play_fm` synth is incredibly versatile.
-#    By passing `divisor: 3` and `depth: 2` in the Hashes, we change the 
-#    harmonic ratio so that the sine waves cancel out their digital 
-#    overtones, leaving a hollow, woody thunk that perfectly mimics an
-#    African Kalimba or Marimba.
-#
-# 3. Warm Harmonic Space: Afro House relies on leaving the low-mids clear.
-#    The `s_bass` and `s_chords` hit on completely different steps of the 
-#    grid. The engine's strict separation ensures the deep sub-bass and 
-#    the lush 9th chords never clash, creating a massive, warm wall of 
-#    sound that feels like the sun rising.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The dynamic shaker: varying amplitudes (0.2–0.5) across
+#   10 out of 16 steps creates a human, polyrhythmic swing.
+# - FM as wood: divisor 3 and depth 2 produce a hollow,
+#   woody thunk – perfect for kalimba/marimba textures.
+# - Harmonic space: bass and chords hit on separate grid
+#   steps, avoiding clash and leaving room for warmth.
+# - Granular vocal smear: low density and medium size create
+#   a distant, soulful texture that floats above the groove.
 # ==========================================================

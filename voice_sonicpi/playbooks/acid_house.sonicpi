@@ -1,58 +1,91 @@
+# ==========================================================
+# PLAYBOOK: ACID HOUSE / CLASSIC HOUSE
+# Squelchy 303 Bass, Organ Stabs, Chopped Vocals
+# ==========================================================
+# [WHY THIS GENRE?]
+# Acid House (late 80s/early 90s) is built on rigid 4/4 drums,
+# a squelchy TB‑303 bassline with filter sweeps, classic organ
+# stabs, and chopped vocal samples. This playbook captures that
+# hypnotic, warehouse‑friendly energy.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 128 BPM
+# Key: A minor (deep, squelchy)
+# Rhythm: 4/4 kick, clap on 2/4, off‑beat hats, Acid bassline
+# with syncopated notes and filter sweep, organ stabs on off‑beats,
+# chopped vocal stabs on beat 3.
+# Timbre: Punchy kick (bd_haus), sharp clap (sn_dolf), open hats
+# (cymbal_closed), Acid bass (dsaw with varying cutoff), organ
+# stabs (blade with chords), chopped vocal (granular).
+# Arrangement: Drums+Acid (foundation) → Organ Stabs (add chords)
+# → Vocal Stabs (add granular chop).
+# ==========================================================
+
 use_bpm 128
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Squelchy & Hypnotic)
-# ==========================================================
+# Scores
 
-# Rigid 4-on-the-floor with a clap on 2 and 4
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Rigid 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Open hats on the off-beats (steps 2, 6, 10, 14)
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, 
-           nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Clap on beats 2 and 4
+s_clap = gen_score("....x.......x...", [:c4])
 
-# The "Acid 303" Bassline.
-# The notes are simple A minor, but the 'cutoff' Hash slowly opens from 70 to 130 
-# and closes back down, simulating the 303 filter envelope.
-s_bass  = (ring {:note => :a2, :cutoff => 70}, {:note => :a2, :cutoff => 80}, nil, {:note => :c3, :cutoff => 90}, 
-           {:note => :a2, :cutoff => 100}, nil, {:note => :e2, :cutoff => 110}, {:note => :a2, :cutoff => 120}, 
-           {:note => :a2, :cutoff => 130}, nil, {:note => :a2, :cutoff => 120}, {:note => :g2, :cutoff => 110}, 
-           {:note => :f2, :cutoff => 100}, nil, {:note => :e2, :cutoff => 90}, {:note => :a2, :cutoff => 80})
+# Off‑beat open hats (steps 2,6,10,14) with alternating amplitudes
+s_hats = gen_score("..x..x..x..x....",
+  [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5},
+   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
 
-# Classic House organ stabs (A Minor 9th) on the off-beats
-s_chords= (ring nil, [:a3, :c4, :e4, :g4], nil, nil, nil, [:a3, :c4, :e4, :g4], nil, nil, 
-           nil, [:g3, :bb3, :d4, :f4], nil, nil, nil, [:g3, :bb3, :d4, :f4], nil, nil)
+# Acid bassline – filter sweep via varying cutoff
+bass_data = [
+  {note: :a2, cutoff: 70}, {note: :a2, cutoff: 80},
+  {note: :c3, cutoff: 90}, {note: :a2, cutoff: 100},
+  {note: :e2, cutoff: 110}, {note: :a2, cutoff: 120},
+  {note: :a2, cutoff: 130}, {note: :a2, cutoff: 120},
+  {note: :g2, cutoff: 110}, {note: :f2, cutoff: 100},
+  {note: :e2, cutoff: 90}, {note: :a2, cutoff: 80}
+]
+s_bass = gen_score("xx.xx.xxx.xxx.xx", bass_data)
 
-# Pitched-down, chopped club vocal ("Yeah!")
-# Granular synth chops :ambi_choir to create a rhythmic vocal stab.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :a3, :buffer => :ambi_choir, :pos => 0.2, :density => 4, :size => 0.03, :amp => 0.6}, nil, nil, nil, 
-           nil, nil, nil, nil)
+# Classic house organ stabs (steps 1,5,9,13)
+s_chords = gen_score(".x...x...x...x..",
+  [[:a3, :c4, :e4, :g4],
+   [:a3, :c4, :e4, :g4],
+   [:g3, :bb3, :d4, :f4],
+   [:g3, :bb3, :d4, :f4]])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Chopped vocal stab – on step 8
+s_vocal = gen_score("........x.......",
+  [{note: :a3, buffer: :ambi_choir, pos: 0.2, density: 4, size: 0.03, amp: 0.6}])
+
+# Playbook
 playbook = (ring
-  # Scene 1: Just the rigid drums and the filter-sweeping Acid bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: Add the classic house organ stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: Add the chopped vocal stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Foundation – Drums + Acid Bass
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Organ – Add Chords
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Vocal – Add Vocal Stab
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Acid filter sweep: the cutoff values slowly open from 70 to
+#   130 and close back, simulating the TB‑303 envelope.
+# - Off‑beat pocket: hats, chords, and bass syncopation all lock
+#   together for a hypnotic bounce.
+# - Granular vocal stab: a short, pitched vocal chop adds a
+#   classic rave element – the engine's precision locks it tight.
+# ==========================================================
