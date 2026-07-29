@@ -30,38 +30,54 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Relentless, heavy 909-style 4/4 kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
 # Heavy, dry 909 snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+s_snare = gen_score("....x.......x...",
+  [ {note: :c4, amp: 0.8}, {note: :c4, amp: 0.8} ])
 
-# Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil)
+# Rigid, off-beat open hats (steps 2,6,10,14) with alternating amps.
+s_hats = gen_score("..x..x..x..x....",
+  [ {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.3} ])
 
-# The "Acid 303" Bassline (A Minor).
-# Plays continuous 16th notes. The 'cutoff' Hash rapidly cycles from 80 
-# to 110 and back down, simulating the squelching filter envelope of a 
-# Roland TB-303.
-s_bass  = (ring {:note => :a1, :cutoff => 80}, {:note => :a1, :cutoff => 90}, {:note => :a2, :cutoff => 100}, {:note => :a1, :cutoff => 110}, 
-           {:note => :a1, :cutoff => 80}, {:note => :a1, :cutoff => 90}, {:note => :e1, :cutoff => 100}, {:note => :a1, :cutoff => 110}, 
-           {:note => :a1, :cutoff => 80}, {:note => :a1, :cutoff => 90}, {:note => :a2, :cutoff => 100}, {:note => :a1, :cutoff => 110}, 
-           {:note => :g1, :cutoff => 80}, {:note => :g1, :cutoff => 90}, {:note => :e1, :cutoff => 100}, {:note => :a1, :cutoff => 110})
+# Acid 303 bassline – continuous 16ths, cutoff cycles 80→110→80.
+bass_data = [
+  {note: :a1, cutoff: 80}, {note: :a1, cutoff: 90},
+  {note: :a2, cutoff: 100}, {note: :a1, cutoff: 110},
+  {note: :a1, cutoff: 80}, {note: :a1, cutoff: 90},
+  {note: :e1, cutoff: 100}, {note: :a1, cutoff: 110},
+  {note: :a1, cutoff: 80}, {note: :a1, cutoff: 90},
+  {note: :a2, cutoff: 100}, {note: :a1, cutoff: 110},
+  {note: :g1, cutoff: 80}, {note: :g1, cutoff: 90},
+  {note: :e1, cutoff: 100}, {note: :a1, cutoff: 110}
+]
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# Stark, minor chord stabs (Am to Gm).
-# Hit sparingly on the off-beats to leave maximum room for the acid bass.
-s_chords= (ring nil, nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, nil, nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil)
+# Stark minor chord stabs (steps 4 and 12).
+s_chords = gen_score("....x.......x...",
+  [ [:a3, :c4, :e4],
+    [:g3, :bb3, :d4] ])
 
-# Piercing, bleepy FM "Rave" Lead (A Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) and extreme depth (5) to create 
-# a sharp, robotic square wave that cuts through the heavy 303 bass.
-s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 5, :release => 0.05}, nil, {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 5, :release => 0.05}, nil, 
-           {:note => :c6, :amp => 0.6, :divisor => 3, :depth => 5, :release => 0.05}, nil, {:note => :e6, :amp => 0.5, :divisor => 3, :depth => 5, :release => 0.05}, nil, 
-           {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 5, :release => 0.05}, nil, {:note => :g5, :amp => 0.5, :divisor => 3, :depth => 5, :release => 0.05}, nil, 
-           {:note => :e5, :amp => 0.6, :divisor => 3, :depth => 5, :release => 0.05}, nil, {:note => :a5, :amp => 0.7, :divisor => 3, :depth => 5, :release => 0.05}, nil)
+# Piercing bleepy FM rave lead – even steps, divisor 3, depth 5.
+fm_data = [
+  {note: :a5, amp: 0.6, divisor: 3, depth: 5, release: 0.05},
+  {note: :e5, amp: 0.5, divisor: 3, depth: 5, release: 0.05},
+  {note: :c6, amp: 0.6, divisor: 3, depth: 5, release: 0.05},
+  {note: :e6, amp: 0.5, divisor: 3, depth: 5, release: 0.05},
+  {note: :a5, amp: 0.6, divisor: 3, depth: 5, release: 0.05},
+  {note: :g5, amp: 0.5, divisor: 3, depth: 5, release: 0.05},
+  {note: :e5, amp: 0.6, divisor: 3, depth: 5, release: 0.05},
+  {note: :a5, amp: 0.7, divisor: 3, depth: 5, release: 0.05}
+]
+s_fm = gen_score("x.x.x.x.x.x.x.x.", fm_data)
 
-# Metallic, granular texture (using :elec_piano).
-# High density, tiny size = industrial, machine-like static.
-s_grain = (ring {:note => :a3, :buffer => :elec_piano, :pos => 0.8, :density => 4, :size => 0.02, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :elec_piano, :pos => 0.8, :density => 4, :size => 0.02, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Metallic granular texture – steps 0 and 8.
+s_grain = gen_score("x.......x.......",
+  [ {note: :a3, buffer: :elec_piano, pos: 0.8, density: 4, size: 0.02, amp: 0.5},
+    {note: :a3, buffer: :elec_piano, pos: 0.8, density: 4, size: 0.02, amp: 0.5} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK

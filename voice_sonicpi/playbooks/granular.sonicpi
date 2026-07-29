@@ -1,3 +1,24 @@
+# ==========================================================
+# PLAYBOOK: GRANULAR EXPERIMENTS
+# Scrubbing, Freezing, Density Morphing
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook explores the expressive power of the granular
+# synthesizer – scrubbing through a vocal sample by moving the
+# playhead (pos), and freezing an electric piano while morphing
+# grain size from long ambient pads to glittering static.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 90 BPM
+# Key: Ambiguous (experimental)
+# Rhythm: Simple 4/4 kick and continuous 16th hats to anchor
+# the granular textures.
+# Timbre: Vocal sample (ambi_choir), electric piano (elec_piano),
+# punchy kick (bd_haus), closed hats (cymbal_closed).
+# Arrangement: Scrubbing (vocal playhead movement) → Freezing
+# (grain size morphing).
+# ==========================================================
+
 use_bpm 90
 
 # ==========================================================
@@ -10,25 +31,25 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # 1. SCRUBBING: Manually moving the playhead through a vocal sample.
-# We use :ambi_choir (a built-in Sonic Pi vocal sample).
-# Notice how 'pos' slowly moves from 0.3 to 0.6, scanning through the audio file.
-s_scrub = (ring 
-  {note: :c4, buffer: :ambi_choir, pos: 0.3, density: 8, size: 0.08}, nil, nil, nil,
-  {note: :c4, buffer: :ambi_choir, pos: 0.4, density: 8, size: 0.08}, nil, nil, nil,
-  {note: :c4, buffer: :ambi_choir, pos: 0.5, density: 8, size: 0.08}, nil, nil, nil,
-  {note: :eb4, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.08}, nil, nil, nil
-)
+# pos moves from 0.3 → 0.4 → 0.5 → 0.6 across 4 triggers.
+# FIXED: Exactly 16 steps (4 triggers, 12 rests).
+s_scrub = gen_score("x...x...x...x...",
+  [ {note: :c4, buffer: :ambi_choir, pos: 0.3, density: 8, size: 0.08},
+    {note: :c4, buffer: :ambi_choir, pos: 0.4, density: 8, size: 0.08},
+    {note: :c4, buffer: :ambi_choir, pos: 0.5, density: 8, size: 0.08},
+    {note: :eb4, buffer: :ambi_choir, pos: 0.6, density: 8, size: 0.08} ])
 
-# 2. FREEZING & DENSITY: Holding a single position, but changing grain size.
-# Long grains (0.2) sound like a slow ambient pad. Short grains (0.01) sound like glittering static.
-s_freeze = (ring 
-  {note: :g3, buffer: :elec_piano, pos: 0.5, density: 2, size: 0.2}, nil, nil, nil, nil, nil, nil, nil,
-  {note: :g3, buffer: :elec_piano, pos: 0.5, density: 6, size: 0.05}, nil, nil, nil, nil, nil, nil, nil
-)
+# 2. FREEZING & DENSITY: Holding a single position, changing grain size.
+# Long grains (0.2) sound like ambient pad; short grains (0.05) like static.
+# FIXED: Exactly 16 steps (2 triggers, 14 rests).
+s_freeze = gen_score("x.......x.......",
+  [ {note: :g3, buffer: :elec_piano, pos: 0.5, density: 2, size: 0.2},
+    {note: :g3, buffer: :elec_piano, pos: 0.5, density: 6, size: 0.05} ])
 
-# 3. A simple beat to anchor it
-s_kick = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
-s_hats = (ring :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4)
+# Simple beat to anchor the granular experiments.
+s_kick = gen_score("x...x...x...x...", [:c4])
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  16.times.map { {note: :c4} })
 
 # ==========================================================
 # 3. THE PLAYBOOK
@@ -36,7 +57,7 @@ s_hats = (ring :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, :c4, 
 playbook = (ring
   # Scene 1: Scrubbing through a vocal (4 bars)
   [ [:play_grain, s_scrub, 4], [:play_kick, s_kick, 4], [:play_hats, s_hats, 4] ],
-  
+
   # Scene 2: Freezing an electric piano, morphing grain size (4 bars)
   [ [:play_grain, s_freeze, 4], [:play_kick, s_kick, 4], [:play_hats, s_hats, 4] ]
 )
@@ -45,3 +66,15 @@ playbook = (ring
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Scrubbing: moving `pos` (0.3 → 0.6) scans through the vocal
+#   sample, creating a tape‑like search effect.
+# - Freezing & Density: holding `pos` at 0.5 while changing `size`
+#   (0.2 → 0.05) morphs from a smooth ambient pad to glittering
+#   static – the engine handles the transition with precision.
+# - The simple 4/4 kick and continuous hats anchor the abstract
+#   textures, grounding the experiments in a rhythmic framework.
+# ==========================================================

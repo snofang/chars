@@ -1,3 +1,29 @@
+# ==========================================================
+# PLAYBOOK: GRIME / UK GARAGE GRIME
+# Cold, Tense, Syncopated Energy
+# ==========================================================
+# [WHY THIS GENRE?]
+# Grime (Wiley, Dizzee Rascal) is built on syncopated kicks,
+# heavy snare on beat 3, rolling hi‑hats, staccato bass,
+# tense minor chords, and chopped vocal hooks. This playbook
+# captures that cold, aggressive, East London energy.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 140 BPM
+# Key: F# minor (cold, tense)
+# Rhythm: Syncopated kick (1, 'a' of 2, beat 3), snare on beat 3
+# with ghost on 'a' of 4, rolling hats with dynamic layers,
+# staccato bass on off‑beats, tense chord stabs, chopped
+# vocal hook, eerie FM bells.
+# Timbre: Punchy kick (bd_haus with accents), metallic snare
+# (sn_dolf), rolling hats (cymbal_closed with amp layers),
+# square‑wave bass (dsaw, short release), staccato chords
+# (blade), granular vocal stutter (ambi_choir), FM bells
+# (fm, divisor 3).
+# Arrangement: Drums+Chords (foundation) → Bass (add staccato
+# bassline) → Vocal+Bells (add hook and eerie texture).
+# ==========================================================
+
 use_bpm 140
 
 # ==========================================================
@@ -9,59 +35,100 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (F# Minor - Cold & Tense)
 # ==========================================================
 
-# Syncopated kick. Hits on step 0, the 'a' of 2 (step 7), and beat 3 (step 8).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+# Syncopated kick – hits on steps 0, 7, 8
+s_kick = gen_score("x......xx.......",
+  [ {note: :c4, amp: 1.0},
+    {note: :c4, amp: 0.8},
+    {note: :c4, amp: 1.0} ])
 
-# Heavy, metallic snare strictly on beat 3 (step 8). 
-# In Grime, the snare often hits on beat 3 instead of 2 and 4.
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil)
+# Heavy metallic snare – hits on steps 8 and 14
+s_snare = gen_score("........x.....x.",
+  [ {note: :c4, amp: 1.0},
+    {note: :c4, amp: 0.6} ])
 
-# Fast, relentless, rolling hats
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, 
-           nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, 
-           nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2})
+# Rolling hi‑hats – pattern with 10 triggers (steps 0,2,3,5,7,8,10,11,13,15)
+# Each trigger must include :note => :c4 for play_hats to fire.
+hat_data = [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.5},
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+]
+s_hats = gen_score("x.xx.x.xx.xx.x.x", hat_data)
 
-# Sharp, bouncing "Square Wave" style bass. 
-# Short releases make it punchy and staccato.
-s_bass  = (ring {:note => :fs2, :release => 0.15}, nil, nil, nil, {:note => :fs2, :release => 0.15, :amp => 0.8}, nil, nil, nil, 
-           {:note => :a2, :release => 0.15}, nil, {:note => :a2, :release => 0.15, :amp => 0.6}, nil, 
-           {:note => :b2, :release => 0.15}, nil, nil, nil)
+# Staccato square‑wave bass – hits on steps 0,4,8,10,12
+bass_base = {release: 0.15}
+bass_notes = [
+  {note: :fs2},
+  {note: :fs2, amp: 0.8},
+  {note: :a2},
+  {note: :a2, amp: 0.6},
+  {note: :b2}
+]
+s_bass = gen_score("x...x...x.x..x...", bass_notes.map { |h| bass_base.merge(h) })
 
-# Tense, staccato minor chord stabs (F# Minor)
-# Hits on the off-beats to leave space for the bass.
-s_chords= (ring nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:fs3, :a3, :c4], nil, 
-           nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:b3, :d4, :fs4], nil)
+# Tense staccato minor chords – hits on steps 2,6,10,14
+s_chords = gen_score("..x...x...x...x.",
+  [ [:fs3, :a3, :c4],
+    [:fs3, :a3, :c4],
+    [:a3, :c4, :e4],
+    [:b3, :d4, :fs4] ])
 
-# Chopped, rhythmic alien vocal hook (Granular Synth)
-# High density, small size = glitchy, rhythmic stutter
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :fs4, :buffer => :ambi_choir, :pos => 0.2, :density => 4, :size => 0.03}, nil, nil, nil, 
-           nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.4, :density => 4, :size => 0.03}, nil)
+# Chopped rhythmic vocal hook – hits on steps 8 and 14
+vocal_base = {buffer: :ambi_choir, density: 4, size: 0.03}
+vocal_data = [
+  {note: :fs4, pos: 0.2},
+  {note: :a4, pos: 0.4}
+]
+s_vocal = gen_score("........x.....x.", vocal_data.map { |h| vocal_base.merge(h) })
 
-# Distant, eerie FM bell melody (F# Minor)
-s_fm    = (ring nil, nil, nil, {:note => :fs5, :amp => 0.6}, nil, nil, nil, nil, 
-           nil, nil, nil, {:note => :e5, :amp => 0.5}, nil, nil, nil, nil)
+# Distant eerie FM bells – hits on steps 3 and 11
+fm_base = {divisor: 2, depth: 1, release: 0.2}
+fm_data = [
+  {note: :fs5, amp: 0.6},
+  {note: :e5, amp: 0.5}
+]
+s_fm = gen_score("...x.......x....", fm_data.map { |h| fm_base.merge(h) })
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: Just the tense drums and stabs (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_chords, s_chords, 4] ],
-  
-  # Scene 2: Add the bouncing, staccato bassline (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8], [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: The chopped vocal hook and distant bells drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], 
-    [:play_grain, s_vocal, 8], [:play_fm, s_fm, 4] ]
+  # Scene 1: Drums + Chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4], [:play_chords, s_chords, 4] ],
+
+  # Scene 2: Add Staccato Bass (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_chords, s_chords, 8],
+    [:play_sub, s_bass, 8] ],
+
+  # Scene 3: Vocal Hook + Eerie Bells (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_chords, s_chords, 8],
+    [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8],
+    [:play_fm, s_fm, 4] ]
 )
 
 # ==========================================================
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Syncopated kick: hits on 0, 7, 8 create a lopsided groove
+#   that defines Grime's tension.
+# - Snare on beat 3 (step 8) with a ghost on step 14 – a Grime
+#   signature.
+# - Rolling hats: 10 triggers with dynamic accents create a
+#   relentless, syncopated drive.
+# - Staccato bass: short release (0.15) and off‑beat placement
+#   (steps 4,8,10,12) give a punchy, rhythmic feel.
+# - Granular vocal hook: short grains (0.03) chop the vocal
+#   into rhythmic stutters.
+# - Eerie FM bells: distant notes on steps 3 and 11 add a cold,
+#   atmospheric layer.
+# ==========================================================

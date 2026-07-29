@@ -1,3 +1,26 @@
+# ==========================================================
+# PLAYBOOK: GLITCHY BREAKS / CHAOTIC DNB
+# Syncopated, Erratic, High‑Energy Grid
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook captures a manic, glitch‑heavy breakbeat style
+# with syncopated kicks, stuttering hats, angular FM stabs,
+# plucked arpeggios, and fast bass clusters. It's built for
+# 135 BPM and a locked‑in but unpredictable groove.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 135 BPM
+# Key: A minor (dark, tense)
+# Rhythm: Syncopated kicks on 0,4,6,10,12; rolling hats with
+# stutters; FM stabs on off‑beats; plucked arpeggios on even
+# steps; bass clusters with syncopation.
+# Timbre: Punchy kick (bd_haus), stuttering hats (cymbal_closed
+# with amp layers), FM stabs (fm, divisor 2, depth 1), pluck
+# (pluck), sub‑bass (dsaw).
+# Arrangement: Drums (erratic) → Add bass+pluck → Full glitch
+# meltdown with FM.
+# ==========================================================
+
 use_bpm 135
 
 # ==========================================================
@@ -6,13 +29,46 @@ use_bpm 135
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # ==========================================================
-# 2. THE SCORES (Chaotic but locked A Minor)
+# 2. THE SCORES (A Minor - Chaotic but Locked)
 # ==========================================================
-s_kick   = (ring :c4, nil, nil, nil, :c4, nil, :c4, nil, nil, nil, :c4, nil, :c4, nil, nil, nil)
-s_hats   = (ring :c4, :c4, nil, :c4, nil, :c4, :c4, nil, :c4, nil, :c4, :c4, nil, :c4, nil, :c4)
-s_fm     = (ring nil, :a5, nil, :c6, nil, nil, :e5, nil, :a5, nil, nil, :g5, nil, :e5, nil, nil)
-s_pluck  = (ring :a3, nil, :a3, nil, :e3, nil, :e3, nil, :g3, nil, :g3, nil, :a3, nil, :c4, nil)
-s_bass   = (ring :a1, :a1, nil, :a1, nil, nil, :a1, :a1, nil, :a1, nil, nil, :g1, nil, nil, :g1)
+
+# Syncopated kick – positions 0,4,6,10,12
+s_kick = gen_score("x...x.x...x.x...", [:c4, :c4, :c4, :c4, :c4])
+
+# Rolling, stuttering hats – positions 0,1,3,5,6,8,10,11,13,15
+hat_data = [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.5}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.5}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}
+]
+s_hats = gen_score("xx.x.xx.x.xx.x.x", hat_data)
+
+# Angular FM stabs – positions 1,3,6,8,11,13
+fm_base = {divisor: 2, depth: 1}
+fm_data = [
+  {note: :a5, amp: 0.6},
+  {note: :c6, amp: 0.5},
+  {note: :e5, amp: 0.6},
+  {note: :a5, amp: 0.6},
+  {note: :g5, amp: 0.5},
+  {note: :e5, amp: 0.6}
+]
+s_fm = gen_score(".x.x..x.x..x.x..", fm_data.map { |h| fm_base.merge(h) })
+
+# Plucked arpeggio – even steps 0,2,4,6,8,10,12,14
+pluck_data = [:a3, :a3, :e3, :e3, :g3, :g3, :a3, :c4]
+s_pluck = gen_score("x.x.x.x.x.x.x.x.", pluck_data)
+
+# Syncopated bass clusters – positions 0,1,3,6,7,9,12,15
+bass_data = [
+  {note: :a1}, {note: :a1}, {note: :a1},
+  {note: :a1}, {note: :a1},
+  {note: :a1},
+  {note: :g1},
+  {note: :g1}
+]
+s_bass = gen_score("xx.x..xx.x..x..x", bass_data)
 
 # ==========================================================
 # 3. THE PLAYBOOK
@@ -20,14 +76,14 @@ s_bass   = (ring :a1, :a1, nil, :a1, nil, nil, :a1, :a1, nil, :a1, nil, nil, :g1
 playbook = (ring
   # Scene 1: Erratic percussion (2 bars)
   [ [:play_kick, s_kick, 2], [:play_hats, s_hats, 2] ],
-  
+
   # Scene 2: Add manic bass and plucks (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], 
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4],
     [:play_pluck, s_pluck, 4], [:play_sub, s_bass, 4] ],
-    
+
   # Scene 3: Full glitch meltdown (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], 
-    [:play_pluck, s_pluck, 4], [:play_sub, s_bass, 4], 
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4],
+    [:play_pluck, s_pluck, 4], [:play_sub, s_bass, 4],
     [:play_fm, s_fm, 4] ]
 )
 
@@ -35,3 +91,17 @@ playbook = (ring
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Syncopated kicks: hits on 0,4,6,10,12 create a lopsided,
+#   frantic pulse that defies the 4/4 grid.
+# - Stuttering hats: 12 triggers with dynamic amps (0.2–0.5)
+#   produce a rolling, glitchy texture.
+# - FM stabs: sparse, angular notes on off‑beats add tension.
+# - Plucked arpeggio: even‑step pattern (0,2,4,6,8,10,12,14)
+#   provides a constant, hypnotic pulse.
+# - Bass clusters: fast, syncopated hits reinforce the rhythmic
+#   chaos without muddying the low end.
+# ==========================================================
