@@ -30,36 +30,49 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
 # Stark, dry 808 snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil)
+s_snare = gen_score("....x.......x...",
+  [ {note: :c4, amp: 1.0}, {note: :c4, amp: 1.0} ])
 
-# Rigid, alternating 16th hats. 
-# Notice the stark amplitude difference (0.4 vs 0.2) that creates a robotic march.
-s_hats  = (ring {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2})
+# Rigid, alternating 16th hats with stark amplitude difference.
+hat_amps = [0.4, 0.2, 0.4, 0.2, 0.4, 0.2, 0.4, 0.2,
+            0.4, 0.2, 0.4, 0.2, 0.4, 0.2, 0.4, 0.2]
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
 # The "Dirty" Analog Pulse Bass (D Minor).
 # Plays continuous 16th notes, alternating octaves (:d2, :d3). 
 # High cutoff (100) and short release (0.1) create a relentless, buzzing churn.
-s_bass  = (ring {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, 
-           {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, 
-           {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a3, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a3, :cutoff => 100, :release => 0.1}, 
-           {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1})
+bass_notes = [:d2, :d3, :d2, :d3, :d2, :d3, :d2, :d3,
+              :a2, :a3, :a2, :a3, :d2, :d3, :g2, :a2]
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1} })
 
-# Stark, staccato minor chord stabs (Dm to Am to Gm).
-# Hit strictly on the off-beats (steps 2, 6, 10, 14) in sync with the hats.
-s_chords= (ring nil, nil, [:d3, :f3, :a3], nil, nil, nil, [:d3, :f3, :a3], nil, 
-           nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:g3, :bb3, :d4], nil)
+# Stark, staccato minor chord stabs (steps 2,6,10,14).
+s_chords = gen_score("..x..x..x..x....",
+  [ [:d3, :f3, :a3],
+    [:d3, :f3, :a3],
+    [:a3, :c4, :e4],
+    [:g3, :bb3, :d4] ])
 
 # Piercing, bleepy "8-Bit / Rave" FM Lead (D Minor Pentatonic).
-# Uses :play_fm with a high divisor (4) and extreme depth (4) to create 
-# a sharp, robotic, video-game styled blip that cuts through the heavy bass.
-s_fm    = (ring {:note => :d5, :amp => 0.6, :divisor => 4, :depth => 4, :release => 0.1}, nil, nil, {:note => :f5, :amp => 0.5, :divisor => 4, :depth => 4, :release => 0.1}, nil, {:note => :a5, :amp => 0.7, :divisor => 4, :depth => 4, :release => 0.1}, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 4, :depth => 4, :release => 0.1}, nil, nil, {:note => :c5, :amp => 0.5, :divisor => 4, :depth => 4, :release => 0.1}, nil, {:note => :a4, :amp => 0.6, :divisor => 4, :depth => 4, :release => 0.1}, nil, nil)
+fm_data = [
+  {note: :d5, amp: 0.6},
+  {note: :f5, amp: 0.5},
+  {note: :a5, amp: 0.7},
+  {note: :d5, amp: 0.6},
+  {note: :c5, amp: 0.5},
+  {note: :a4, amp: 0.6}
+]
+fm_base = {divisor: 4, depth: 4, release: 0.1}
+s_fm = gen_score("x..x.x..x..x.x..", fm_data.map { |h| fm_base.merge(h) })
 
-# Deadpan, pitched-down "MC" Vocal Stutter (Granular Synth).
-# Pitched DOWN to :d3. High density, small size = a sharp, deadpan vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :d3, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :d3, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.8}, nil, nil, nil)
+# Deadpan, pitched-down "MC" Vocal Stutter (steps 4 and 12).
+s_vocal = gen_score("....x.......x...",
+  [ {note: :d3, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.8},
+    {note: :d3, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.8} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK

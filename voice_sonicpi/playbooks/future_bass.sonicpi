@@ -1,3 +1,29 @@
+# ==========================================================
+# PLAYBOOK: FUTURE BASS / FESTIVAL TRAP
+# Lush, Euphoric, Half‑Time Energy
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook captures the euphoric, swelling sound of
+# Future Bass and Festival Trap – half‑time trap drums, lush
+# major chords, deep sub‑bass, angelic vocal chops, and bright
+# arpeggios. It's the sound of massive festival drops.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 150 BPM
+# Key: Eb Major (lush, euphoric)
+# Rhythm: Half‑time kick (0,12), snare on beat 3 (step 8),
+# rolling trap hats with rising amplitudes, deep sub‑bass on
+# downbeats, lush chords on downbeats, chopped angelic vocals,
+# bright arpeggio.
+# Timbre: Punchy kick (bd_haus with accents), heavy snare
+# (sn_dolf), trap hats (cymbal_closed with rolls), deep sub‑bass
+# (dsaw, short release), lush major 9th chords (blade, long
+# release), granular angelic vocals (ambi_choir), bright FM
+# arpeggio (divisor 2, depth 2).
+# Arrangement: Chords+Drums (foundation) → Bass (add sub) →
+# Vocals+Lead (add chops and arpeggio).
+# ==========================================================
+
 use_bpm 150
 
 # ==========================================================
@@ -9,53 +35,86 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (Eb Major - Lush & Euphoric)
 # ==========================================================
 
-# Half-time Trap kick. Hits on step 0, and a syncopated hit on step 12.
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+# Half-time kick – hits on step 0 and step 12
+s_kick = gen_score("x...........x...",
+  [ :c4, {note: :c4, amp: 0.8} ])
 
-# Heavy snare strictly on beat 3 (step 8).
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
+# Heavy snare strictly on beat 3 (step 8)
+s_snare = gen_score("........x.......", [:c4])
 
-# Rolling Trap hi-hats with rising amplitudes to simulate the "roll"
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, 
-           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6})
+# Rolling trap hats – positions 0,2,4,5,6,7,8,10,12,13,14,15
+hat_data = [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.5},
+  {note: :c4, amp: 0.6},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.5},
+  {note: :c4, amp: 0.6}
+]
+s_hats = gen_score("x.x.xxxx.x.xxxx", hat_data)
 
-# Deep, round sub-bass. Short release to make it punchy.
-s_bass  = (ring {:note => :eb2, :release => 0.3}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :bb2, :release => 0.3}, nil, nil, nil, nil, nil, nil, nil)
+# Deep sub‑bass – hits on steps 0 and 8
+s_bass = gen_score("x.......x.......",
+  [ {note: :eb2, release: 0.3},
+    {note: :bb2, release: 0.3} ])
 
-# Massive, lush Major 9th chords (Eb Maj 9 to Bb Maj 9).
-# Long release creates that euphoric, swelling Future Bass wash.
-s_chords= (ring [:eb3, :g3, :bb3, :d4], nil, nil, nil, nil, nil, nil, nil, 
-           [:bb3, :d4, :f4, :a4], nil, nil, nil, nil, nil, nil, nil)
+# Lush major 9th chords – hits on steps 0 and 8
+s_chords = gen_score("x.......x.......",
+  [ [:eb3, :g3, :bb3, :d4],
+    [:bb3, :d4, :f4, :a4] ])
 
-# High-pitched, chopped angelic vocal (Granular Synth)
-# High density, small size = euphoric stutter
-s_vocal = (ring nil, nil, nil, nil, {:note => :eb4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.04}, nil, nil, nil, 
-           nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.04}, nil, nil, nil)
+# Chopped angelic vocal – hits on steps 4 and 12
+s_vocal = gen_score("....x.......x...",
+  [ {note: :eb4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.04},
+    {note: :g4, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.04} ])
 
-# Bright, echoing arpeggio (Eb Major Pentatonic)
-s_lead  = (ring nil, nil, {:note => :eb5, :amp => 0.6}, nil, nil, {:note => :g5, :amp => 0.5}, nil, {:note => :bb5, :amp => 0.7}, 
-           nil, nil, {:note => :ab5, :amp => 0.5}, nil, nil, {:note => :f5, :amp => 0.6}, nil, nil)
+# Bright echoing arpeggio – hits on steps 2,5,7,10,13
+s_lead = gen_score("..x..x.x..x..x..",
+  [ {note: :eb5, amp: 0.6},
+    {note: :g5, amp: 0.5},
+    {note: :bb5, amp: 0.7},
+    {note: :ab5, amp: 0.5},
+    {note: :f5, amp: 0.6} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: Just the lush chords and half-time drums (4 bars)
-  [ [:play_chords, s_chords, 4], [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
-  
-  # Scene 2: Add the deep sub-bass (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 1: Chords + Drums (4 bars)
+  [ [:play_chords, s_chords, 4], [:play_kick, s_kick, 4],
+    [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
+
+  # Scene 2: Add Sub‑Bass (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: The vocal chops and bright lead drop (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], [:play_lead, s_lead, 8] ]
+
+  # Scene 3: Add Vocal Chops and Lead Arpeggio (8 bars)
+  [ [:play_chords, s_chords, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8],
+    [:play_lead, s_lead, 8] ]
 )
 
 # ==========================================================
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Half‑time illusion: kick on 0 and 12, snare on 8 at 150 BPM
+#   creates a slow 75 BPM feel; rolling hats fill the gaps.
+# - Lush major 9th chords: long release creates euphoric swells.
+# - Granular angelic vocals: short grain (size 0.04) and density 3
+#   chops the vocal into a euphoric stutter.
+# - Bright arpeggio: sparse notes (2,5,7,10,13) with tape echo
+#   add a cascading, sparkling texture.
+# ==========================================================

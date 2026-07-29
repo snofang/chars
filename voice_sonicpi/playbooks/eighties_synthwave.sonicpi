@@ -1,37 +1,66 @@
+# ==========================================================
+# PLAYBOOK: HORROR ROCK / TENSION ARPEGGIO
+# Driving, Creeping, Dark Atmosphere
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook captures a dark, horror‑rock tension – a driving
+# 16th‑note bass arpeggio, a heavy rock backbeat, and a slow,
+# creeping synth lead that emerges like a stalker in the shadows.
+# Minimal, repetitive, and deeply unsettling.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 95 BPM
+# Key: D minor (dark, tense)
+# Rhythm: 16th‑note bass arpeggio on even steps, 4/4 rock backbeat,
+# sparse creeping lead on downbeats.
+# Timbre: Driving bass (dsaw), heavy kick (bd_haus), rock snare
+# (sn_dolf), creeping lead (prophet).
+# Arrangement: Arpeggio (foundation) → Drums (add rock backbeat)
+# → Lead (add creeping melody).
+# ==========================================================
+
 use_bpm 95
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (D Minor Tension)
-# ==========================================================
-# Driving 16th-note bass arpeggio
-s_bass  = (ring :d2, nil, :d2, nil, :f2, nil, :d2, nil, :a2, nil, :d2, nil, :f2, nil, :a2, nil)
-# Simple horror-rock backbeat
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
-s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
-# A slow, creeping synth lead
-s_lead  = (ring :d4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
+# Scores
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Driving 16th‑note bass arpeggio (even steps)
+s_bass = gen_score("x.x.x.x.x.x.x.x.",
+  [:d2, :d2, :f2, :d2, :a2, :d2, :f2, :a2])
+
+# Heavy rock backbeat – kick on all downbeats
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Snare on beats 2 and 4
+s_snare = gen_score("....x.......x...", [:c4])
+
+# Slow, creeping synth lead (steps 0 and 8)
+s_lead = gen_score("x.......x.......", [:d4, :c4])
+
+# Playbook
 playbook = (ring
-  # Scene 1: Just the driving arpeggio (2 bars)
+  # Scene 1: Arpeggio – just the driving bass (2 bars)
   [ [:play_sub, s_bass, 2] ],
-  
-  # Scene 2: Add the heavy rock drums (4 bars)
-  [ [:play_sub, s_bass, 4], [:play_kick, s_kick, 4], [:play_snare, s_snare, 4] ],
-    
-  # Scene 3: The stalk - add the creeping lead (4 bars)
-  [ [:play_sub, s_bass, 4], [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], 
-    [:play_lead, s_lead, 4] ]
+
+  # Scene 2: Drums – add heavy rock backbeat (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_kick, s_kick, 4],
+    [:play_snare, s_snare, 4] ],
+
+  # Scene 3: Stalk – add creeping lead (4 bars)
+  [ [:play_sub, s_bass, 4], [:play_kick, s_kick, 4],
+    [:play_snare, s_snare, 4], [:play_lead, s_lead, 4] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The driving arpeggio: 16th‑note bass on even steps creates
+#   relentless forward motion – the engine locks it with precision.
+# - Minimal arrangement: each scene adds a single element,
+#   building tension gradually.
+# - Creeping lead: sparse notes on steps 0 and 8 create a sense
+#   of looming dread, emerging from the shadows.
+# ==========================================================

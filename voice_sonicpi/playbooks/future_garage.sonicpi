@@ -28,33 +28,53 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (F Minor - Moody, Nocturnal, & Swung)
 # ==========================================================
 
-# The "Swung 2-Step" Kick. 
-# Hits on step 0, then stutters on the 'a' of 2 (step 7) and beat 3 (step 8).
-s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil)
+# Swung 2‑step kick – hits on 0, 7, 8
+s_kick = gen_score("x......xx.......",
+  [ {note: :c4, amp: 1.0},
+    {note: :c4, amp: 0.7},
+    {note: :c4, amp: 0.9} ])
 
-# Tight, metallic snare strictly on beat 2 (step 4), with a ghost on the 'a' of 4.
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.3})
+# Tight metallic snare – hits on 4 and 15
+s_snare = gen_score("....x........x.",
+  [ {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.3} ])
 
-# Erratic, swung shaker. Notice the gaps that create a "lagging" feel.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil)
+# Erratic swung shaker – hits on 0,2,5,8,10,13
+hat_data = [
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4}
+]
+s_hats = gen_score("x.x..x..x.x....", hat_data)
 
-# Deep, moody Reese Sub-Bass (F Minor).
-# Massive release (2.0) and low cutoff (60) to create a dark, rumbling undercurrent.
-s_bass  = (ring {:note => :f1, :release => 2.0, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil, {:note => :ab1, :release => 2.0, :cutoff => 60}, nil, nil, nil, nil, nil, nil, nil)
+# Moody Reese sub‑bass (steps 0 and 8)
+bass_base = {release: 2.0, cutoff: 60}
+bass_notes = [:f1, :ab1]
+s_bass = gen_score("x.......x.......",
+  bass_notes.map { |n| bass_base.merge(note: n) })
 
-# Lush, nocturnal minor chords (Fm9 to Abm9).
-# Hit on the downbeats. The 1-beat attack makes them slowly fade in like fog.
-s_chords= (ring {:note => [:f3, :ab3, :c4, :eb4], :attack => 1.0, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:ab3, :cb4, :eb4, :gb4], :attack => 1.0, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# Nocturnal minor chords (steps 0 and 8)
+chord_base = {attack: 1.0, release: 2.0, amp: 0.6}
+chord_notes = [
+  [:f3, :ab3, :c4, :eb4],
+  [:ab3, :cb4, :eb4, :gb4]
+]
+s_chords = gen_score("x.......x.......",
+  chord_notes.map { |ch| chord_base.merge(note: ch) })
 
-# Distant, echoing FM raindrops (F Minor Pentatonic).
-# Uses :play_fm with a high divisor to create a soft, organic bell tone.
-# Routed through the engine's tape echo for a cascading, nocturnal smear.
-s_fm    = (ring nil, {:note => :f5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :eb5, :amp => 0.3, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil, nil, nil, nil)
+# Distant FM raindrops (steps 1 and 9)
+fm_data = [
+  {note: :f5, amp: 0.4, divisor: 3, depth: 2, release: 0.5},
+  {note: :eb5, amp: 0.3, divisor: 3, depth: 2, release: 0.5}
+]
+s_fm = gen_score(".x......x.......", fm_data)
 
-# The "Ghostly" Vocal Drone (Granular Synth).
-# Pitched DOWN to :f3. Long size (0.15) and low density (1).
-# This time-stretches the vocal into a mournful, unrecognizable memory.
-s_vocal = (ring {:note => :f3, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.15, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :ab3, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.15, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# Ghostly vocal drone – time‑stretched, mournful (steps 0 and 8)
+vocal_data = [
+  {note: :f3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.15, amp: 0.6},
+  {note: :ab3, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.15, amp: 0.6}
+]
+s_vocal = gen_score("x.......x.......", vocal_data)
 
 # ==========================================================
 # 3. THE PLAYBOOK

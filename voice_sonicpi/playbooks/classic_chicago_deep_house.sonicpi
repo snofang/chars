@@ -30,34 +30,48 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Classic, driving 4/4 kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
 # Thick, vinyl-crackle clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_clap = gen_score("....x.......x...", [:c4])
 
-# 909 Swung Hi-Hats.
-# Notice the alternating amplitudes (0.4 vs 0.2) and gaps to create 
-# the classic Chicago "shuffle" feel without breaking the grid.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4})
+# 909 Swung Hi-Hats – alternating amplitudes to create shuffle.
+# Define a sequence of amplitudes for each trigger; map to hashes.
+hat_amps = [0.3, 0.15, 0.4, 0.2, 0.15, 0.4, 0.3, 0.15, 0.4, 0.2, 0.15, 0.4]
+s_hats = gen_score("x.xxx.xxx.xxx.xx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# The "Korg M1" Deep Organ Bass (F Minor).
-# Walks a soulful melody. Low cutoff (70) and medium release (0.3) 
-# give it that classic warm, rounded analog house sound.
-s_bass  = (ring {:note => :f2, :release => 0.3, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :f2, :release => 0.3, :cutoff => 70}, nil, {:note => :ab2, :release => 0.3, :cutoff => 70}, nil, nil, nil, nil, nil, {:note => :c3, :release => 0.3, :cutoff => 70}, nil)
+# The "Korg M1" Deep Organ Bass (F Minor) – walks a soulful melody.
+# Define notes and common params; use base hash + note.
+bass_notes = [:f2, :f2, :ab2, :c3]
+bass_base = {release: 0.3, cutoff: 70}
+s_bass = gen_score("x.....x.x.....x.",
+  bass_notes.map { |n| bass_base.merge(note: n) })
 
-# Lush, warm minor 9th chords (Fm9 to Abm9).
-# Hit on the off-beats (steps 2, 6, 10, 14). The low cutoff (85) 
-# gives them that classic "played through a wall" muffled feel.
-s_chords= (ring nil, nil, [:f3, :ab3, :c4, :eb4], nil, nil, nil, [:f3, :ab3, :c4, :eb4], nil, nil, nil, [:ab3, :cb4, :eb4, :gb4], nil, nil, nil, [:eb3, :g3, :bb3, :db4], nil)
+# Lush, warm minor 9th chords (Fm9 to Abm9) on off-beats.
+chord_voicings = [
+  [:f3, :ab3, :c4, :eb4],
+  [:f3, :ab3, :c4, :eb4],
+  [:ab3, :cb4, :eb4, :gb4],
+  [:eb3, :g3, :bb3, :db4]
+]
+s_chords = gen_score("..x...x...x...x.", chord_voicings)
 
-# Warm, echoing "Rhodes" melody (F Minor Pentatonic).
-# Uses :play_fm with a low divisor (3) and depth (2) to create a soft, 
-# organic electric piano tone. Routed through the engine's tape echo.
-s_fm    = (ring nil, nil, nil, nil, {:note => :f5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, {:note => :c5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil, nil, nil, {:note => :eb5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, {:note => :c5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.5}, nil)
+# Warm, echoing "Rhodes" melody (F Minor Pentatonic) – tape echo.
+# Define note/amp pairs, merge with FM base.
+fm_notes = [
+  {note: :f5, amp: 0.5},
+  {note: :c5, amp: 0.4},
+  {note: :eb5, amp: 0.5},
+  {note: :c5, amp: 0.4}
+]
+fm_base = {divisor: 3, depth: 2, release: 0.5}
+s_fm = gen_score("....x.x.....x.x.",
+  fm_notes.map { |h| fm_base.merge(h) })
 
-# Soulful, pitched-down "Diva" vocal hit (Granular Synth).
-# Long size (0.1) and low density (1) creates a smooth, ambient vocal smear.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.1, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Soulful, pitched-down "Diva" vocal hit – ambient smear.
+s_vocal = gen_score("........x.......",
+  [{note: :f4, buffer: :ambi_choir, pos: 0.4, density: 2, size: 0.1, amp: 0.5}])
 
 # ==========================================================
 # 3. THE PLAYBOOK

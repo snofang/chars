@@ -1,3 +1,27 @@
+# ==========================================================
+# PLAYBOOK: FRENCH HOUSE / DISCO HOUSE
+# Pumping Bass, Funky Vocal Chops, Classic Disco Stabs
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook captures the essence of French House / Disco
+# House – a rigid 4/4 kick, pumping sidechained bass, off‑beat
+# hats, classic disco chord stabs, and chopped funky vocal hooks.
+# The bass amplitude dips on kick hits and swells between them,
+# simulating sidechain compression purely via data.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 120 BPM
+# Key: C minor (funky, driving)
+# Rhythm: 4/4 kick, clap on 2/4, off‑beat open hats, pumping
+# bass on every 16th with amplitude variation, off‑beat minor
+# 9th chords, chopped vocal stutter.
+# Timbre: Punchy kick (bd_haus), tight clap (sn_dolf), open hats
+# (cymbal_closed), pumping bass (dsaw with amp modulation),
+# disco chords (blade), granular vocal hook (ambi_choir).
+# Arrangement: Beat (drums+bass) → Chords (add disco stabs)
+# → Vocal (add funky chop).
+# ==========================================================
+
 use_bpm 120
 
 # ==========================================================
@@ -9,53 +33,78 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (C Minor - Disco Groove)
 # ==========================================================
 
-# Rigid 4-on-the-floor
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Rigid 4‑on‑the‑floor kick (steps 0,4,8,12)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Clap on the 2 and 4 (steps 4 and 12)
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Clap on beats 2 and 4 (steps 4 and 12)
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Open hats on the off-beats
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, 
-           nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Open hats on off‑beats (steps 2,6,10,14) with alternating amplitudes
+hat_data = [
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.5}
+]
+s_hats = gen_score("..x..x..x..x....", hat_data)
 
-# The "Pumping" French House Bass. 
-# It plays on every 16th step, but notice the 'amp' values in the Hashes!
-# The volume dips when the kick hits (steps 0, 4, 8, 12) and swells in between.
-# This simulates sidechain compression purely via data!
-s_bass  = (ring {:note => :c2, :amp => 0.2}, {:note => :c2, :amp => 0.6}, {:note => :c2, :amp => 1.0}, {:note => :c2, :amp => 0.8}, 
-           {:note => :c2, :amp => 0.2}, {:note => :c2, :amp => 0.6}, {:note => :eb2, :amp => 1.0}, {:note => :eb2, :amp => 0.8}, 
-           {:note => :eb2, :amp => 0.2}, {:note => :eb2, :amp => 0.6}, {:note => :g2, :amp => 1.0}, {:note => :g2, :amp => 0.8}, 
-           {:note => :g2, :amp => 0.2}, {:note => :g2, :amp => 0.6}, {:note => :eb2, :amp => 1.0}, {:note => :eb2, :amp => 0.8})
+# Pumping French House bass – amp dips on kick hits (steps 0,4,8,12)
+bass_data = [
+  {note: :c2, amp: 0.2}, {note: :c2, amp: 0.6},
+  {note: :c2, amp: 1.0}, {note: :c2, amp: 0.8},
+  {note: :c2, amp: 0.2}, {note: :c2, amp: 0.6},
+  {note: :eb2, amp: 1.0}, {note: :eb2, amp: 0.8},
+  {note: :eb2, amp: 0.2}, {note: :eb2, amp: 0.6},
+  {note: :g2, amp: 1.0}, {note: :g2, amp: 0.8},
+  {note: :g2, amp: 0.2}, {note: :g2, amp: 0.6},
+  {note: :eb2, amp: 1.0}, {note: :eb2, amp: 0.8}
+]
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# Classic disco minor 9th chord stabs on the off-beats
-s_chords= (ring nil, nil, nil, nil, [:c3, :eb4, :g4, :bb4], nil, nil, nil, 
-           nil, nil, nil, nil, [:f3, :ab4, :c5, :eb5], nil, nil, nil)
+# Classic disco minor 9th chord stabs (steps 4 and 12)
+chord_data = [
+  [:c3, :eb4, :g4, :bb4],
+  [:f3, :ab4, :c5, :eb5]
+]
+s_chords = gen_score("....x.......x...", chord_data)
 
-# Chopped, funky vocal hook (Granular Synth)
-# Using :ambi_choir, short size, high density = funky stutter
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :c5, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04}, nil, nil, nil, 
-           nil, nil, {:note => :eb5, :buffer => :ambi_choir, :pos => 0.5, :density => 3, :size => 0.04}, nil)
+# Chopped funky vocal hook (steps 8 and 14)
+s_vocal = gen_score("........x.....x.",
+  [ {note: :c5, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04},
+    {note: :eb5, buffer: :ambi_choir, pos: 0.5, density: 3, size: 0.04} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: Just the drums and the pumping bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: Add the disco chord stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The vocal chop drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Beat – Drums + Pumping Bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Chords – Add Disco Stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Vocal – Add Funky Chop (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
 )
 
 # ==========================================================
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Pumping bass: amplitude dips on kick steps (0,4,8,12) and
+#   swells between, simulating sidechain compression entirely
+#   via data – the engine's precision locks it to the grid.
+# - Disco chords: classic minor 9th voicings on off‑beats
+#   (steps 4 and 12) leave room for the pumping bass.
+# - Granular vocal hook: short grain (size 0.04) and density 3
+#   chops the vocal into a funky, rhythmic stutter.
+# - The 4/4 kick and off‑beat hats create an unstoppable disco
+#   groove that anchors the entire track.
+# ==========================================================

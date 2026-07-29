@@ -28,36 +28,38 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (D Minor - Stark & Melancholic)
 # ==========================================================
 
-# Stark, mechanical drum machine kick. 
-# Hits on step 0, beat 3 (step 8), and a ghost hit on the 'a' of 4 (step 15).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Stark, mechanical drum machine kick (steps 0, 8, 15).
+s_kick = gen_score("x.......x......x.",
+  [:c4,
+   {note: :c4, amp: 1.0},
+   {note: :c4, amp: 0.5}])
 
 # Tight, dry snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_snare = gen_score("....x.......x...", [:c4])
 
-# Rigid, relentless 8th-note closed hats.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.3}, nil)
+# Rigid, relentless 8th-note closed hats (all even steps).
+s_hats = gen_score("x.x.x.x.x.x.x.x.",
+  [{note: :c4, amp: 0.3}])
 
-# The "Picked" Driving Bass (D Minor).
-# Plays continuous 16th notes. The high cutoff (100) and short release (0.15) 
-# mimic the aggressive, repetitive sound of a picked electric bass.
-s_bass  = (ring {:note => :d2, :release => 0.15, :cutoff => 100}, {:note => :d2, :release => 0.15, :cutoff => 100}, {:note => :d3, :release => 0.15, :cutoff => 100}, {:note => :d2, :release => 0.15, :cutoff => 100}, 
-           {:note => :d2, :release => 0.15, :cutoff => 100}, {:note => :d2, :release => 0.15, :cutoff => 100}, {:note => :f2, :release => 0.15, :cutoff => 100}, {:note => :d2, :release => 0.15, :cutoff => 100}, 
-           {:note => :a2, :release => 0.15, :cutoff => 100}, {:note => :a2, :release => 0.15, :cutoff => 100}, {:note => :a3, :release => 0.15, :cutoff => 100}, {:note => :a2, :release => 0.15, :cutoff => 100}, 
-           {:note => :g2, :release => 0.15, :cutoff => 100}, {:note => :g2, :release => 0.15, :cutoff => 100}, {:note => :f2, :release => 0.15, :cutoff => 100}, {:note => :e2, :release => 0.15, :cutoff => 100})
+# "Picked" driving bass – continuous 16ths, high cutoff, short release.
+bass_notes = [:d2, :d2, :d3, :d2, :d2, :d2, :f2, :d2,
+              :a2, :a2, :a3, :a2, :g2, :g2, :f2, :e2]
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| {note: n, release: 0.15, cutoff: 100} })
 
-# Cold, atmospheric minor chord stabs (Dm to Gm).
-# Hit sparingly on the downbeats to create a sense of dread.
-s_chords= (ring [:d3, :f3, :a3], nil, nil, nil, nil, nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil, nil, nil, nil, nil)
+# Cold, atmospheric minor chord stabs (steps 0 and 8).
+s_chords = gen_score("x.......x.......",
+  [[:d3, :f3, :a3],
+   [:g3, :bb3, :d4]])
 
-# Angular, echoing guitar/synth melody (D Harmonic Minor).
-# Uses :play_fm with a low divisor to create a sharp, organic pluck.
-# Routed through the engine's tape echo for a cavernous, gothic smear.
-s_fm    = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 1, :depth => 2, :release => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Angular, echoing guitar/synth melody (step 8).
+s_fm = gen_score("........x.......",
+  [{note: :d5, amp: 0.6, divisor: 1, depth: 2, release: 0.5}])
 
-# Dark, swirling analog drone (Granular Synth).
-# Long size (0.3) and low density (1) creates a slow, evolving coldwave texture.
-s_grain = (ring {:note => :d3, :buffer => :ambi_choir, :pos => 0.1, :density => 1, :size => 0.3, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil, {:note => :a3, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.3, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil)
+# Dark, swirling analog drone (steps 0 and 8).
+s_grain = gen_score("x.......x.......",
+  [{note: :d3, buffer: :ambi_choir, pos: 0.1, density: 1, size: 0.3, amp: 0.4},
+   {note: :a3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.3, amp: 0.4}])
 
 # ==========================================================
 # 3. THE PLAYBOOK

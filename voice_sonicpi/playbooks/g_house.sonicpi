@@ -30,30 +30,53 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
 # Heavy, dry, organic clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Rigid, off-beat open hats (steps 2,6,10,14) with alternating amps.
+s_hats = gen_score("..x..x..x..x....",
+  [ {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.5},
+    {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.5} ])
 
-# The "Rolling" G-House Bass (G Minor).
-# Uses :play_fm with a low divisor (2) and depth (4) to create a thick, 
-# dark, wobbling bassline that syncopates around the kick.
-s_bass  = (ring {:note => :g1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 1.0}, nil, nil, {:note => :g1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 0.8}, nil, {:note => :bb1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 1.0}, nil, {:note => :d2, :divisor => 2, :depth => 4, :release => 0.15, :amp => 0.8}, nil, nil, {:note => :g1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 1.0}, nil, nil, {:note => :f1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 0.8}, nil, {:note => :g1, :divisor => 2, :depth => 4, :release => 0.15, :amp => 1.0})
+# Rolling G-House FM bass – thick, dark, syncopated.
+bass_data = [
+  {note: :g1, divisor: 2, depth: 4, release: 0.15, amp: 1.0},
+  {note: :g1, divisor: 2, depth: 4, release: 0.15, amp: 0.8},
+  {note: :bb1, divisor: 2, depth: 4, release: 0.15, amp: 1.0},
+  {note: :d2, divisor: 2, depth: 4, release: 0.15, amp: 0.8},
+  {note: :g1, divisor: 2, depth: 4, release: 0.15, amp: 1.0},
+  {note: :f1, divisor: 2, depth: 4, release: 0.15, amp: 0.8},
+  {note: :g1, divisor: 2, depth: 4, release: 0.15, amp: 1.0}
+]
+s_bass = gen_score("x..x.x.x..x..x.x", bass_data)
 
-# Dark, sparse minor chord stabs (Gm to Fm).
-# Hit sparingly on the off-beats to leave maximum room for the bassline.
-s_chords= (ring nil, nil, nil, nil, {:note => [:g3, :bb3, :d4], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:f3, :a3, :c4], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil, nil, nil)
+# Dark, sparse minor chord stabs (steps 4 and 12).
+s_chords = gen_score("....x.......x...",
+  [ {note: [:g3, :bb3, :d4], cutoff: 100, release: 0.15, amp: 0.6},
+    {note: [:f3, :a3, :c4], cutoff: 100, release: 0.15, amp: 0.6} ])
 
-# High-pitched, bleepy "Siren" Synth (G Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) to create a sharp, robotic pluck.
-s_fm    = (ring nil, nil, nil, nil, {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, nil, nil, {:note => :bb5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.2}, nil, {:note => :g5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.2}, nil)
+# High-pitched bleepy siren synth (steps 4,6,10,12,14).
+fm_data = [
+  {note: :g5, amp: 0.6},
+  {note: :d5, amp: 0.5},
+  {note: :bb5, amp: 0.6},
+  {note: :a5, amp: 0.5},
+  {note: :g5, amp: 0.7}
+]
+fm_base = {divisor: 3, depth: 2, release: 0.2}
+s_fm = gen_score("....x.x..x.x.x.x", fm_data.map { |h| fm_base.merge(h) })
 
-# Pitched-down "Gangster" Rap Vocal Chops (Granular Synth).
-# Pitched DOWN to :g3. High density, small size = a dark, percussive rap skip.
-s_vocal = (ring nil, nil, nil, {:note => :g3, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil, {:note => :d3, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil, nil, {:note => :g3, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.7}, nil, nil, nil)
+# Pitched-down gangster rap vocal chops – dark, percussive (steps 3,7,12).
+vocal_data = [
+  {note: :g3, pos: 0.1},
+  {note: :d3, pos: 0.3},
+  {note: :g3, pos: 0.1}
+].map { |h| h.merge(buffer: :ambi_choir, density: 2, size: 0.05, amp: 0.7) }
+s_vocal = gen_score("...x...x....x...", vocal_data)
 
 # ==========================================================
 # 3. THE PLAYBOOK

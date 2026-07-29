@@ -29,32 +29,54 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Driving 4/4 kick with a syncopated 16th hit on the 'a' of 4 (step 15).
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, {:note => :c4, :amp => 0.6})
+s_kick = gen_score("x...x...x...x..x",
+  [:c4, :c4, :c4, :c4, {note: :c4, amp: 0.6}])
 
-# Crisp, vintage snare strictly on beats 2 and 4 (steps 4 and 12), 
-# with a ghost snare on the 'a' of 2 (step 7) and 'a' of 4 (step 15).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3})
+# Crisp, vintage snare with ghosts on step 7 and 15.
+s_snare = gen_score("....x..x....x..x",
+  [ {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.3} ])
 
-# Swung, bouncy 16th hats. Alternating amplitudes simulate a jazz ride cymbal.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.15})
+# Swung, bouncy 16th hats – alternating amplitudes simulate jazz ride.
+hat_amps = [0.3, 0.15, 0.4, 0.15].cycle.take(16)
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# The "Walking" Upright Bass (D Minor).
-# Plays a continuous, melodic 16th-note line. The high cutoff (90) and 
-# short release (0.2) mimic a plucked upright bass.
-s_bass  = (ring {:note => :d2, :cutoff => 90, :release => 0.2}, nil, {:note => :d2, :cutoff => 90, :release => 0.2}, {:note => :e2, :cutoff => 90, :release => 0.2}, {:note => :f2, :cutoff => 90, :release => 0.2}, nil, {:note => :f2, :cutoff => 90, :release => 0.2}, {:note => :e2, :cutoff => 90, :release => 0.2}, {:note => :g2, :cutoff => 90, :release => 0.2}, nil, {:note => :g2, :cutoff => 90, :release => 0.2}, {:note => :a2, :cutoff => 90, :release => 0.2}, {:note => :bb2, :cutoff => 90, :release => 0.2}, nil, {:note => :a2, :cutoff => 90, :release => 0.2}, {:note => :f2, :cutoff => 90, :release => 0.2})
+# Walking upright bass – continuous melodic 16ths with high cutoff.
+bass_data = [
+  {note: :d2}, {note: :d2}, {note: :e2}, {note: :f2},
+  {note: :f2}, {note: :e2}, {note: :g2}, {note: :g2},
+  {note: :a2}, {note: :bb2}, {note: :a2}, {note: :f2}
+].map { |h| h.merge(cutoff: 90, release: 0.2) }
+s_bass = gen_score("x.xxx.xxx.xxx.xx", bass_data)
 
-# Vintage, staccato jazz chord stabs (Dm7 to G7).
-# Hit on the off-beats to leave room for the walking bass.
-s_chords= (ring nil, [:d3, :f3, :a3, :c4], nil, nil, nil, [:g3, :b3, :d4, :f4], nil, nil, nil, [:d3, :f3, :a3, :c4], nil, nil, nil, [:g3, :b3, :d4, :f4], nil, nil)
+# Vintage jazz chord stabs (Dm7 and G7) on off‑beats (steps 1,5,9,13).
+s_chords = gen_score(".x...x...x...x..",
+  [ [:d3, :f3, :a3, :c4],
+    [:g3, :b3, :d4, :f4],
+    [:d3, :f3, :a3, :c4],
+    [:g3, :b3, :d4, :f4] ])
 
-# Bright, "Clarinet/Brass" Melody (D Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and depth (2) to create a warm, 
-# brassy staccato riff that cuts through the mix.
-s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.3}, nil, {:note => :f5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.3}, nil, nil, nil, {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.3}, nil, nil, nil, {:note => :g5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.3}, nil)
+# Bright clarinet/brass melody (D minor pentatonic) – staccato, tape echo.
+fm_base = {divisor: 2, depth: 2, release: 0.3}
+fm_notes = [
+  {note: :d5, amp: 0.6},
+  {note: :f5, amp: 0.5},
+  {note: :a5, amp: 0.6},
+  {note: :g5, amp: 0.5}
+]
+s_fm = gen_score("....x.x...x...x.", fm_notes.map { |h| fm_base.merge(h) })
 
-# Chopped, vintage "vocal" brass hit (Granular Synth).
-# High density, small size = a sharp, percussive vintage skip.
-s_vocal = (ring {:note => :f4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil, nil, nil, {:note => :d4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.5}, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.7, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil)
+# Chopped vintage vocal brass hits – percussive granular stabs.
+vocal_data = [
+  {note: :f4, pos: 0.1},
+  {note: :d4, pos: 0.3},
+  {note: :f4, pos: 0.5},
+  {note: :a4, pos: 0.7}
+].map { |h| h.merge(buffer: :ambi_choir, density: 2, size: 0.05, amp: 0.5) }
+s_vocal = gen_score("x.....x.x...x...", vocal_data)
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -28,44 +28,55 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (G Minor - Pumping, Filtered, & Funky)
 # ==========================================================
 
-# Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Relentless, driving 4‑on‑the‑floor kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Heavy, organic disco clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Heavy, organic disco clap strictly on beats 2 and 4.
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Off‑beat open hats (steps 2,6,10,14) with alternating amp.
+s_hats = gen_score("..x..x..x..x....",
+  [ {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.5},
+    {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.5} ])
 
-# The "Sidechained" Pumping Bass (G Minor).
-# Plays continuous 16th notes. The 'amp' Hashes dip the volume to 0.2 when 
-# the kick hits (steps 0, 4, 8, 12) and spike it to 1.0 in between.
-# The 'cutoff' Hash also sweeps, simulating a filter moving with the pump.
-s_bass  = (ring {:note => :g1, :amp => 0.2, :cutoff => 80}, {:note => :g1, :amp => 0.9, :cutoff => 90}, {:note => :g1, :amp => 1.0, :cutoff => 100}, {:note => :g1, :amp => 0.8, :cutoff => 110}, 
-           {:note => :g1, :amp => 0.2, :cutoff => 80}, {:note => :g1, :amp => 0.9, :cutoff => 90}, {:note => :bb1, :amp => 1.0, :cutoff => 100}, {:note => :bb1, :amp => 0.8, :cutoff => 110}, 
-           {:note => :bb1, :amp => 0.2, :cutoff => 80}, {:note => :bb1, :amp => 0.9, :cutoff => 90}, {:note => :d2, :amp => 1.0, :cutoff => 100}, {:note => :d2, :amp => 0.8, :cutoff => 110}, 
-           {:note => :d2, :amp => 0.2, :cutoff => 80}, {:note => :d2, :amp => 0.9, :cutoff => 90}, {:note => :g1, :amp => 1.0, :cutoff => 100}, {:note => :g1, :amp => 0.8, :cutoff => 110})
+# Sidechained pumping bass – continuous 16ths, amp dips on kick hits.
+bass_data = [
+  {note: :g1, amp: 0.2, cutoff: 80}, {note: :g1, amp: 0.9, cutoff: 90},
+  {note: :g1, amp: 1.0, cutoff: 100}, {note: :g1, amp: 0.8, cutoff: 110},
+  {note: :g1, amp: 0.2, cutoff: 80}, {note: :g1, amp: 0.9, cutoff: 90},
+  {note: :bb1, amp: 1.0, cutoff: 100}, {note: :bb1, amp: 0.8, cutoff: 110},
+  {note: :bb1, amp: 0.2, cutoff: 80}, {note: :bb1, amp: 0.9, cutoff: 90},
+  {note: :d2, amp: 1.0, cutoff: 100}, {note: :d2, amp: 0.8, cutoff: 110},
+  {note: :d2, amp: 0.2, cutoff: 80}, {note: :d2, amp: 0.9, cutoff: 90},
+  {note: :g1, amp: 1.0, cutoff: 100}, {note: :g1, amp: 0.8, cutoff: 110}
+]
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# The "Filtered Disco" Chords (Gm9 to Cm9).
-# Hit strictly on the off-beats (steps 2, 6, 10, 14). The 'cutoff' Hash 
-# alternates between 70 (muffled) and 100 (bright), simulating a DJ 
-# slowly opening and closing a filter on a disco sample.
-s_chords= (ring nil, nil, {:note => [:g3, :bb3, :d4, :f4], :cutoff => 70, :release => 0.3, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:g3, :bb3, :d4, :f4], :cutoff => 90, :release => 0.3, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:c4, :eb4, :g4, :bb4], :cutoff => 70, :release => 0.3, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:c4, :eb4, :g4, :bb4], :cutoff => 90, :release => 0.3, :amp => 0.6}, nil)
+# Filtered disco chords – off‑beats, cutoff alternates 70 ↔ 90.
+s_chords = gen_score("..x..x..x..x....",
+  [ {note: [:g3, :bb3, :d4, :f4], cutoff: 70, release: 0.3, amp: 0.6},
+    {note: [:g3, :bb3, :d4, :f4], cutoff: 90, release: 0.3, amp: 0.6},
+    {note: [:c4, :eb4, :g4, :bb4], cutoff: 70, release: 0.3, amp: 0.6},
+    {note: [:c4, :eb4, :g4, :bb4], cutoff: 90, release: 0.3, amp: 0.6} ])
 
-# Bright, echoing "Brass" Riff (G Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and depth (2) to create a sharp, 
-# funky brass stab. Routed through the engine's tape echo for a smear.
-s_fm    = (ring {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :bb5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :d6, :amp => 0.7, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :c6, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.1}, nil, {:note => :bb5, :amp => 0.7, :divisor => 2, :depth => 2, :release => 0.1}, nil, nil, nil)
+# Bright echoing brass riff – even steps, tape echo.
+fm_data = [
+  {note: :g5, amp: 0.6}, {note: :d5, amp: 0.5},
+  {note: :bb5, amp: 0.6}, {note: :d6, amp: 0.7},
+  {note: :g5, amp: 0.6}, {note: :c6, amp: 0.5},
+  {note: :bb5, amp: 0.7}
+]
+fm_base = {divisor: 2, depth: 2, release: 0.1}
+s_fm = gen_score("x.x.x.x.x.x.x.x.",
+  fm_data.map { |h| fm_base.merge(h) })
 
-# Choppy, "Diva" vocal stutter (Granular Synth).
-# High density, tiny size = a sharp, percussive vocal skip.
-s_vocal = (ring nil, nil, nil, nil, 
-           {:note => :g4, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
-           {:note => :bb4, :buffer => :ambi_choir, :pos => 0.3, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
-           {:note => :d5, :buffer => :ambi_choir, :pos => 0.5, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil)
+# Choppy "Diva" vocal stutter – steps 4,8,12.
+s_vocal = gen_score("....x...x...x...",
+  [ {note: :g4, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6},
+    {note: :bb4, buffer: :ambi_choir, pos: 0.3, density: 3, size: 0.04, amp: 0.6},
+    {note: :d5, buffer: :ambi_choir, pos: 0.5, density: 3, size: 0.04, amp: 0.6} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK

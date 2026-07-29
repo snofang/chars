@@ -1,3 +1,29 @@
+# ==========================================================
+# PLAYBOOK: UNCONVENTIONAL DNB / EXPERIMENTAL BREAKS
+# Frantic, Syncopated, Machine‑Gun Energy
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook pushes the 16‑step grid to its rhythmic limit
+# with syncopated kick patterns, rapid snare rolls, erratic
+# hi‑hats, sparse sub‑bass, chopped vocal stutters, and
+# jagged FM melodies. It captures a frantic, machine‑gun
+# energy that defies conventional dance music structures.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 160 BPM
+# Key: F minor (dark, frantic)
+# Rhythm: Syncopated kicks, rapid snare rolls, machine‑gun
+# hi‑hats, sparse sub‑bass, chopped vocal stutters, jagged
+# FM blips.
+# Timbre: Punchy kick (bd_haus with accents), rapid snare
+# (sn_dolf with rolls), erratic hats (cymbal_closed with
+# amp layers), sparse sub‑bass (dsaw, long release),
+# granular vocal stutter (ambi_choir), jagged FM lead
+# (fm, tape echo).
+# Arrangement: Drums (interlocking rhythm) → Bass (add sub)
+# → Melody (add vocal + FM).
+# ==========================================================
+
 use_bpm 160
 
 # ==========================================================
@@ -9,55 +35,86 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (F Minor - Frantic & Bouncy)
 # ==========================================================
 
-# Unconventional kick. Hits on step 0, skips the downbeat of beat 3, 
-# and stutters on the off-beats.
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, 
-           {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.6}, nil, 
-           nil, nil, {:note => :c4, :amp => 0.7}, nil)
+# Unconventional kick (steps 0, 6, 8, 10, 14)
+s_kick = gen_score("x.....x.x.x...x.",
+  [ :c4,
+    {note: :c4, amp: 0.8},
+    {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.6},
+    {note: :c4, amp: 0.7} ])
 
-# Rapid snare hits and rolls, heavily syncopated
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.5}, nil, 
-           nil, nil, {:note => :c4, :amp => 0.8}, nil, 
-           nil, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.9}, {:note => :c4, :amp => 0.4})
+# Rapid snare rolls (steps 4, 6, 10, 13, 14, 15)
+s_snare = gen_score("....x.x..x..xxx.",
+  [ {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.5},
+    {note: :c4, amp: 0.8},
+    {note: :c4, amp: 0.6},
+    {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.4} ])
 
-# Erratic, machine-gun hi-hats
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, 
-           nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, nil, 
-           {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.5}, nil, {:note => :c4, :amp => 0.3}, nil)
+# Erratic, machine‑gun hats (steps 0, 2, 3, 5, 6, 8, 9, 11, 12, 14)
+s_hats = gen_score("x.xx.xx.x.xx.xx.",
+  [ {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.2},
+    {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.2},
+    {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.2},
+    {note: :c4, amp: 0.5},
+    {note: :c4, amp: 0.3} ])
 
-# Deep, sparse sub-bass. Long release to anchor the frantic drums.
-s_bass  = (ring {:note => :f2, :release => 0.5}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :ab2, :release => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Deep, sparse sub‑bass (steps 0 and 8)
+s_bass = gen_score("x.......x.......",
+  [ {note: :f2, release: 0.5},
+    {note: :ab2, release: 0.5} ])
 
-# Chopped, stuttering vocal melody (Granular Synth)
-# Using :ambi_choir, short size (0.04), high density (4) = rhythmic stutter
-s_vocal = (ring nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.3, :density => 4, :size => 0.04}, nil, 
-           nil, {:note => :ab4, :buffer => :ambi_choir, :pos => 0.5, :density => 4, :size => 0.04}, nil, nil, 
-           nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.7, :density => 4, :size => 0.04}, nil, 
-           nil, nil, nil, nil)
+# Chopped, stuttering vocal melody (steps 2, 5, 10)
+s_vocal = gen_score("..x..x....x.....",
+  [ {note: :f4, buffer: :ambi_choir, pos: 0.3, density: 4, size: 0.04},
+    {note: :ab4, buffer: :ambi_choir, pos: 0.5, density: 4, size: 0.04},
+    {note: :c5, buffer: :ambi_choir, pos: 0.7, density: 4, size: 0.04} ])
 
-# Distant, jagged FM melody
-s_fm    = (ring nil, nil, nil, {:note => :f5, :amp => 0.6}, nil, nil, {:note => :eb5, :amp => 0.5}, nil, 
-           nil, {:note => :c5, :amp => 0.7}, nil, nil, nil, {:note => :ab5, :amp => 0.5}, nil, nil)
+# Distant, jagged FM melody (steps 3, 6, 9, 13)
+s_fm = gen_score("...x..x..x...x..",
+  [ {note: :f5, amp: 0.6},
+    {note: :eb5, amp: 0.5},
+    {note: :c5, amp: 0.7},
+    {note: :ab5, amp: 0.5} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: Just the frantic, interlocking drums (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
-  
-  # Scene 2: Add the deep sub-bass (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: Add the chopped vocal stutters and FM blips (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], [:play_fm, s_fm, 4] ]
+  # Scene 1: Drums – Frantic interlocking rhythm (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4] ],
+
+  # Scene 2: Bass – Add deep sub (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8] ],
+
+  # Scene 3: Melody – Add vocal stutters and FM blips (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_grain, s_vocal, 8], [:play_fm, s_fm, 4] ]
 )
 
 # ==========================================================
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Unconventional kick: syncopated hits on steps 0,6,8,10,14
+#   create a lopsided, frantic rhythm that defies the grid.
+# - Rapid snare rolls: clustered hits on steps 13,14,15 simulate
+#   a machine‑gun roll at 160 BPM – the engine locks them tight.
+# - Granular vocal stutter: short grains (size 0.04, density 4)
+#   chop the vocal into rhythmic shards.
+# - Jagged FM melody: sparse notes on off‑beats create a distant,
+#   glitchy texture that contrasts with the dense rhythm.
+# ==========================================================

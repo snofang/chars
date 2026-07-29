@@ -1,3 +1,29 @@
+# ==========================================================
+# PLAYBOOK: G‑FUNK / WEST COAST HIP‑HOP
+# Laid‑Back, Bouncy, Cinematic Lowrider Vibe
+# ==========================================================
+# [WHY THIS GENRE?]
+# G‑Funk (Dr. Dre, Snoop Dogg) is defined by laid‑back,
+# syncopated drums, deep Moog‑style bass, lush minor chords,
+# high‑pitched synth leads with tape echo, and distant granular
+# vocal wails. This playbook captures that West Coast,
+# lowrider, cinematic atmosphere.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 95 BPM
+# Key: F minor (deep, groovy)
+# Rhythm: Laid‑back kick (0, 'and' of 2? actually 5, beat 4?),
+# heavy clap on 2/4, swung hats with triplet feel, melodic
+# Moog bass, high‑pitched G‑Funk lead, sustained minor 9th
+# chords, granular vocal wail.
+# Timbre: Punchy kick (bd_haus with accents), heavy clap
+# (sn_dolf), swung hats (cymbal_closed with amp layers),
+# Moog bass (dsaw), G‑Funk lead (fm, tape echo), lush chords
+# (blade), granular vocal (ambi_choir).
+# Arrangement: Drums+Chords (foundation) → Bass (add Moog)
+# → Lead+Vocal (add synth lead and wail).
+# ==========================================================
+
 use_bpm 95
 
 # ==========================================================
@@ -9,58 +35,92 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (F Major - Bouncy & Laid Back)
 # ==========================================================
 
-# "Laid back" kick. Hits on step 0, the 'and' of 2 (step 5), and beat 4 (step 12).
-# Notice the slight delays compared to a rigid grid.
-s_kick  = (ring :c4, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+# Laid‑back kick – hits on steps 0, 5, 12
+s_kick = gen_score("x....x......x...",
+  [ :c4,
+    {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.8} ])
 
-# Heavy clap strictly on beats 2 and 4 (steps 4 and 12)
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Heavy clap – hits on steps 4 and 12
+s_clap = gen_score("....x.......x...", [:c4, :c4])
 
-# Swung, bouncing hats. Notice the triplet-feel emphasis on the off-beats.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
-           {:note => :c4, :amp => 0.4}, nil, nil, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
-           {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil)
+# Swung hats – triplet‑feel with gaps
+hat_data = [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}
+]
+s_hats = gen_score("x.x.x..xx.x.x.x.", hat_data)
 
-# Deep, melodic Moog-style bass. 
-# Plays a bouncy countermelody to the lead.
-s_bass  = (ring :f2, nil, nil, :f2, nil, nil, {:note => :a2, :amp => 0.8}, nil, 
-           {:note => :c3, :amp => 0.9}, nil, nil, nil, {:note => :bb2, :amp => 0.8}, nil, nil, nil)
+# Deep Moog‑style bass – bouncy countermelody
+bass_data = [
+  :f2,
+  :f2,
+  {note: :a2, amp: 0.8},
+  {note: :c3, amp: 0.9},
+  {note: :bb2, amp: 0.8}
+]
+s_bass = gen_score("x..x..x.x...x...", bass_data)
 
-# The iconic high-pitched G-Funk Lead (F Minor Pentatonic).
-# Routed through the tape echo in the engine for that classic cinematic smear.
-s_lead  = (ring nil, nil, nil, nil, {:note => :f5, :amp => 0.7}, nil, nil, nil, 
-           {:note => :ab5, :amp => 0.8}, nil, {:note => :c6, :amp => 0.6}, nil, 
-           nil, nil, {:note => :bb5, :amp => 0.7}, nil)
+# High‑pitched G‑Funk lead – tape echo
+lead_data = [
+  {note: :f5, amp: 0.7},
+  {note: :ab5, amp: 0.8},
+  {note: :c6, amp: 0.6},
+  {note: :bb5, amp: 0.7}
+]
+s_lead = gen_score("....x...x.x...x.", lead_data)
 
-# Lush, sustained minor 9th chords for that West Coast lowrider feel.
-s_chords= (ring [:f3, :ab3, :c4, :eb4], nil, nil, nil, nil, nil, nil, nil, 
-           [:bb3, :db4, :f4, :ab4], nil, nil, nil, nil, nil, nil, nil)
+# Lush minor 9th chords – sustained, on downbeats
+s_chords = gen_score("x.......x.......",
+  [ [:f3, :ab3, :c4, :eb4],
+    [:bb3, :db4, :f4, :ab4] ])
 
-# Distant granular "siren" or vocal wail (using :ambi_choir buffer)
-s_grain = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :f4, :buffer => :ambi_choir, :pos => 0.8, :density => 2, :size => 0.12}, nil, nil, nil, 
-           nil, nil, nil, nil)
+# Distant granular vocal wail – on step 8
+s_grain = gen_score("........x.......",
+  [ {note: :f4, buffer: :ambi_choir, pos: 0.8, density: 2, size: 0.12} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: Just the laid-back drums and chords (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
-    [:play_chords, s_chords, 4] ],
-  
-  # Scene 2: Add the deep, bouncing bassline (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8], [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: The high-pitched G-Funk lead drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], 
-    [:play_lead, s_lead, 8], [:play_grain, s_grain, 4] ]
+  # Scene 1: Foundation – Laid‑back drums + chords (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4],
+    [:play_hats, s_hats, 4], [:play_chords, s_chords, 4] ],
+
+  # Scene 2: Bass – Add Moog countermelody (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_chords, s_chords, 8],
+    [:play_sub, s_bass, 8] ],
+
+  # Scene 3: Lead – Add high‑pitched synth and vocal wail (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_chords, s_chords, 8],
+    [:play_sub, s_bass, 8], [:play_lead, s_lead, 8],
+    [:play_grain, s_grain, 4] ]
 )
 
 # ==========================================================
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Laid‑back kick: hits on 0,5,12 create a syncopated, relaxed
+#   groove – the engine's grid locks it with precision.
+# - Swung hats: triplet‑feel emphasis with gaps and dynamic
+#   amplitudes (0.2–0.4) adds a human, bouncy feel.
+# - Moog bass: bouncy countermelody walking between f2, a2, c3, bb2
+#   provides a melodic foundation.
+# - G‑Funk lead: high‑pitched FM with tape echo creates the
+#   signature cinematic, soaring sound.
+# - Granular vocal wail: long grain (size 0.12) and low density
+#   (2) produces a distant, eerie texture.
+# ==========================================================

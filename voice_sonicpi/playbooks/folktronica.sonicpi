@@ -28,35 +28,57 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (D Major - Warm, Organic, & Melodic)
 # ==========================================================
 
-# Soft, syncopated acoustic-style kick. 
-# Hits on step 0, the 'and' of 2 (step 6), and beat 3 (step 8).
-s_kick  = (ring {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil)
+# Soft, syncopated acoustic-style kick (steps 0, 6, 8).
+s_kick = gen_score("x.....x.x.......",
+  [ :c4,
+    {note: :c4, amp: 0.6},
+    {note: :c4, amp: 0.9} ])
 
-# Crisp, organic rimshot/snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 0.4}, nil)
+# Crisp, organic rimshot/snare with ghosts (steps 4, 7, 12, 14).
+s_snare = gen_score("....x..x....x.x.",
+  [ {note: :c4, amp: 0.8},
+    {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.8},
+    {note: :c4, amp: 0.4} ])
 
-# Intricate, swinging organic shaker.
-# Notice the heavy amplitude manipulation to simulate a human shaker pattern.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2})
+# Intricate, swinging organic shaker (steps 0,2,3,4,5,7,8,10,11,12,13,15).
+hat_amps = [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}
+]
+s_hats = gen_score("x.xx.xx.x.x.xx.x", hat_amps)
 
-# Warm, round sub-bass (D Major).
-# Walking bassline. Low cutoff (75) and medium release to create a warm undercurrent.
-s_bass  = (ring {:note => :d2, :release => 0.4, :cutoff => 75}, nil, nil, nil, nil, nil, {:note => :f2, :release => 0.4, :cutoff => 75}, nil, {:note => :a2, :release => 0.4, :cutoff => 75}, nil, nil, nil, {:note => :g2, :release => 0.4, :cutoff => 75}, nil, nil, nil)
+# Warm, round sub-bass walking (steps 0,6,8,12).
+bass_data = [
+  {note: :d2, release: 0.4, cutoff: 75},
+  {note: :f2, release: 0.4, cutoff: 75},
+  {note: :a2, release: 0.4, cutoff: 75},
+  {note: :g2, release: 0.4, cutoff: 75}
+]
+s_bass = gen_score("x.....x.x...x...", bass_data)
 
-# Lush, warm Major 9th chords (Dmaj9 to Amaj7).
-# Hit on the downbeats. The 0.2-beat attack makes them slowly fade in 
-# like a warm Rhodes piano.
-s_chords= (ring {:note => [:d3, :fs3, :a3, :e4], :cutoff => 90, :release => 1.0, :attack => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:a2, :cs3, :e3, :b3], :cutoff => 90, :release => 1.0, :attack => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# Lush Major 9th chords (steps 0 and 8).
+s_chords = gen_score("x.......x.......",
+  [ {note: [:d3, :fs3, :a3, :e4], cutoff: 90, release: 1.0, attack: 0.2, amp: 0.6},
+    {note: [:a2, :cs3, :e3, :b3], cutoff: 90, release: 1.0, attack: 0.2, amp: 0.6} ])
 
-# The "Kalimba/Marimba" Melody (D Major Pentatonic).
-# Uses :play_fm with a specific divisor (3) and depth (2) to create 
-# a hollow, wooden, organic bell tone.
-s_fm    = (ring nil, {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, {:note => :a4, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, {:note => :fs5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, {:note => :e5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.5}, nil, nil, nil)
+# Kalimba/Marimba melody (steps 1,4,6,9,12).
+fm_notes = [
+  {note: :d5, amp: 0.6, divisor: 3, depth: 2, release: 0.5},
+  {note: :a4, amp: 0.5, divisor: 3, depth: 2, release: 0.5},
+  {note: :fs5, amp: 0.6, divisor: 3, depth: 2, release: 0.5},
+  {note: :a5, amp: 0.5, divisor: 3, depth: 2, release: 0.5},
+  {note: :e5, amp: 0.6, divisor: 3, depth: 2, release: 0.5}
+]
+s_fm = gen_score(".x..x.x..x..x...", fm_notes)
 
-# The "Chopped Acoustic Guitar" Loop (Granular Synth).
-# Uses the :guit_harmonics buffer. High density, small size = a rhythmic, 
-# organic skip that weaves between the drums and the Kalimba.
-s_vocal = (ring nil, nil, nil, nil, {:note => :d4, :buffer => :guit_harmonics, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, {:note => :a4, :buffer => :guit_harmonics, :pos => 0.4, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, {:note => :fs4, :buffer => :guit_harmonics, :pos => 0.6, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil)
+# Chopped acoustic guitar loop (steps 4,9,12).
+s_vocal = gen_score("....x....x..x...",
+  [ {note: :d4, buffer: :guit_harmonics, pos: 0.2, density: 2, size: 0.05, amp: 0.6},
+    {note: :a4, buffer: :guit_harmonics, pos: 0.4, density: 2, size: 0.05, amp: 0.6},
+    {note: :fs4, buffer: :guit_harmonics, pos: 0.6, density: 2, size: 0.05, amp: 0.6} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK

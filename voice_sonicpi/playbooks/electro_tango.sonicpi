@@ -29,39 +29,52 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (A Minor - Dramatic, Melancholic, & Swaggering)
 # ==========================================================
 
-# The "Habanera" Kick. 
-# A 3-3-2 syncopated pulse. Hits on step 0, the 'a' of 1 (step 3), 
-# the 'and' of 2 (step 6), beat 3 (step 8), and the 'a' of 3 (step 11).
-# FIXED: Exactly 16 steps.
-s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, {:note => :c4, :amp => 1.0}, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil)
+# The "Habanera" Kick. A 3-3-2 syncopated pulse (steps 0,3,6,8,11).
+s_kick = gen_score("x..x..x.x..x....",
+  [ {note: :c4, amp: 1.0},
+    {note: :c4, amp: 0.7},
+    {note: :c4, amp: 1.0},
+    {note: :c4, amp: 1.0},
+    {note: :c4, amp: 0.8} ])
 
 # Crisp, modern electronic snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+s_snare = gen_score("....x.......x...",
+  [ {note: :c4, amp: 0.8}, {note: :c4, amp: 0.8} ])
 
-# Swung, organic shaker. 
-# Notice the gaps (nil) and amplitude manipulation to create a human, swagger feel.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+# Swung, organic shaker – gaps and amplitude manipulation for human feel.
+hat_amps = [0.2, 0.3, 0.2, 0.3, 0.2, 0.3, 0.2, 0.3]
+s_hats = gen_score("x.x.x.x.x.x.x.x.",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# The "Walking Double Bass" (A Minor).
-# Plays a staccato, melodic line. High cutoff (90) and very short release 
-# (0.15) mimic a plucked upright double bass.
-s_bass  = (ring {:note => :a2, :release => 0.15, :cutoff => 90}, nil, nil, {:note => :a2, :release => 0.15, :cutoff => 90}, nil, {:note => :c3, :release => 0.15, :cutoff => 90}, nil, {:note => :e3, :release => 0.15, :cutoff => 90}, nil, {:note => :e3, :release => 0.15, :cutoff => 90}, nil, {:note => :a2, :release => 0.15, :cutoff => 90}, nil, {:note => :g2, :release => 0.15, :cutoff => 90}, nil, nil)
+# Walking double bass – staccato, melodic line, high cutoff.
+bass_base = {release: 0.15, cutoff: 90}
+bass_notes = [:a2, :a2, :c3, :e3, :e3, :a2, :g2]
+s_bass = gen_score("x..x.x.x.x.x.x..",
+  bass_notes.map { |n| bass_base.merge(note: n) })
 
-# The "Bandoneon" Chords (Am to E).
-# Uses :play_fm with a low divisor (2) and depth (3) to create a rich, 
-# reedy, acoustic timbre. Passing arrays of notes to the FM synth perfectly 
-# mimics the traditional Argentine concertina.
-s_chords= (ring nil, nil, {:note => [:a3, :c4, :e4], :divisor => 2, :depth => 3, :release => 0.2, :amp => 0.6}, nil, nil, nil, {:note => [:a3, :c4, :e4], :divisor => 2, :depth => 3, :release => 0.2, :amp => 0.6}, nil, nil, nil, {:note => [:e3, :g3, :b3], :divisor => 2, :depth => 3, :release => 0.2, :amp => 0.6}, nil, nil, nil, {:note => [:e3, :g3, :b3], :divisor => 2, :depth => 3, :release => 0.2, :amp => 0.6}, nil)
+# Bandoneon chords (Am to E) – rich, reedy acoustic timbre.
+bandoneon_base = {divisor: 2, depth: 3, release: 0.2, amp: 0.6}
+chord_notes = [[:a3, :c4, :e4], [:a3, :c4, :e4], [:e3, :g3, :b3], [:e3, :g3, :b3]]
+s_chords = gen_score("..x..x..x..x....",
+  chord_notes.map { |ch| bandoneon_base.merge(note: ch) })
 
-# Melancholic, soaring "Bandoneon" Lead (A Harmonic Minor).
-# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
-# reedy melody that cuts through the mix. Routed through the tape echo.
-s_fm    = (ring {:note => :a4, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.3}, nil, nil, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.3}, nil, {:note => :b4, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.3}, nil, {:note => :a4, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.3}, nil, nil, {:note => :e5, :amp => 0.7, :divisor => 2, :depth => 3, :release => 0.3}, nil, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.3}, nil, {:note => :c5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.3}, nil)
+# Soaring Bandoneon lead (A Harmonic Minor) – routed through tape echo.
+lead_base = {divisor: 2, depth: 3, release: 0.3}
+lead_notes = [
+  {note: :a4, amp: 0.6},
+  {note: :c5, amp: 0.5},
+  {note: :b4, amp: 0.6},
+  {note: :a4, amp: 0.5},
+  {note: :e5, amp: 0.7},
+  {note: :d5, amp: 0.5},
+  {note: :c5, amp: 0.6}
+]
+s_fm = gen_score("x..x.x.x..x.x.x.",
+  lead_notes.map { |h| lead_base.merge(h) })
 
-# Dramatic, ambient string/vocal "Sigh" (Granular Synth).
-# Long size (0.3) and low density (1) creates a slow, evolving background 
-# texture that sounds like a distant singer in a smoky Buenos Aires café.
-s_grain = (ring {:note => :a3, :buffer => :ambi_choir, :pos => 0.1, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Dramatic ambient string/vocal sigh – slow evolving texture (step 0).
+s_grain = gen_score("x...............",
+  [ {note: :a3, buffer: :ambi_choir, pos: 0.1, density: 1, size: 0.3, amp: 0.5} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK

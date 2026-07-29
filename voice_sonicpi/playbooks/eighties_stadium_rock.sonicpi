@@ -1,4 +1,4 @@
-# ==========================================================
+# ========================================================== 
 # PLAYBOOK: 80s STADIUM ROCK / ARENA METAL
 # (Pioneered by Europe, Survivor, and Scorpions)
 # ========================================================== 
@@ -28,38 +28,51 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (A Minor - Heavy, Theatrical, & Driving)
 # ==========================================================
 
-# Heavy, marching 4/4 kick. 
-# Hits on step 0, beat 2 (step 4), beat 3 (step 8), and beat 4 (step 12).
-s_kick  = (ring {:note => :c4, :amp => 1.2}, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, {:note => :c4, :amp => 1.2}, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil)
+# Heavy, marching 4/4 kick.
+s_kick = gen_score("x...x...x...x...",
+  [ {note: :c4, amp: 1.2},
+    {note: :c4, amp: 1.0},
+    {note: :c4, amp: 1.2},
+    {note: :c4, amp: 1.0} ])
 
-# Massive, gated stadium snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil)
+# Massive, gated stadium snare on beats 2 and 4.
+s_snare = gen_score("....x.......x...",
+  [ {note: :c4, amp: 1.1}, {note: :c4, amp: 1.1} ])
 
-# Rigid, driving 8th hats. 
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+# Rigid, driving 8th hats (every even step) with alternating amplitudes.
+hat_amps = [0.2, 0.3, 0.2, 0.3, 0.2, 0.3, 0.2, 0.3]
+s_hats = gen_score("x.x.x.x.x.x.x.x.",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# The "Picked" Electric Bass (A Minor).
-# Plays continuous, driving 8th notes. High cutoff (100) and short release 
-# (0.15) mimic an aggressive, picked electric bass driving the rhythm.
-s_bass  = (ring {:note => :a1, :cutoff => 100, :release => 0.15}, nil, {:note => :a1, :cutoff => 100, :release => 0.15}, nil, {:note => :a1, :cutoff => 100, :release => 0.15}, nil, {:note => :g1, :cutoff => 100, :release => 0.15}, nil, {:note => :f1, :cutoff => 100, :release => 0.15}, nil, {:note => :f1, :cutoff => 100, :release => 0.15}, nil, {:note => :e1, :cutoff => 100, :release => 0.15}, nil, {:note => :e1, :cutoff => 100, :release => 0.15}, nil)
+# "Picked" electric bass – driving 8th notes, high cutoff, short release.
+bass_notes = [:a1, :a1, :a1, :g1, :f1, :f1, :e1, :e1]
+bass_base = {cutoff: 100, release: 0.15}
+s_bass = gen_score("x.x.x.x.x.x.x.x.",
+  bass_notes.map { |n| bass_base.merge(note: n) })
 
-# Massive, slow-attacking "Brass/String" Chords (Am to F to G).
-# Hit on the downbeats. The slow 0.5-beat attack and massive release (2.0) 
-# create a soaring, theatrical wall of sound.
-s_chords= (ring {:note => [:a3, :c4, :e4], :cutoff => 100, :attack => 0.5, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:f3, :a3, :c4], :cutoff => 100, :attack => 0.5, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# Massive, slow-attacking brass/string chords (Am to F) on downbeats.
+chord_data = [
+  {note: [:a3, :c4, :e4], cutoff: 100, attack: 0.5, release: 2.0, amp: 0.6},
+  {note: [:f3, :a3, :c4], cutoff: 100, attack: 0.5, release: 2.0, amp: 0.6}
+]
+s_chords = gen_score("x.......x.......", chord_data)
 
-# Piercing, "Electric Guitar" Solo (A Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and extreme depth (5) to create a 
-# sharp, buzzy square wave. Routed through the engine's tape echo for a 
-# cavernous, stadium-sized smear.
-s_fm    = (ring nil, nil, nil, nil, {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 5, :release => 0.3}, nil, {:note => :c6, :amp => 0.5, :divisor => 2, :depth => 5, :release => 0.3}, nil, 
-           {:note => :e6, :amp => 0.7, :divisor => 2, :depth => 5, :release => 0.3}, nil, {:note => :c6, :amp => 0.5, :divisor => 2, :depth => 5, :release => 0.3}, nil, 
-           {:note => :d6, :amp => 0.6, :divisor => 2, :depth => 5, :release => 0.3}, nil, {:note => :e6, :amp => 0.7, :divisor => 2, :depth => 5, :release => 0.3}, nil)
+# Piercing electric guitar solo (A minor pentatonic) – sparse, tape echo.
+fm_notes = [
+  {note: :a5, amp: 0.6},
+  {note: :c6, amp: 0.5},
+  {note: :e6, amp: 0.7},
+  {note: :c6, amp: 0.5},
+  {note: :d6, amp: 0.6},
+  {note: :e6, amp: 0.7}
+]
+fm_base = {divisor: 2, depth: 5, release: 0.3}
+s_fm = gen_score("....x.x.x.x.x.x.", fm_notes.map { |h| fm_base.merge(h) })
 
-# Ethereal, "Arena Crowd" texture (Granular Synth).
-# Long size (0.4) and low density (1) creates a slow, evolving background 
-# texture that sounds like a distant crowd roaring in a massive stadium.
-s_grain = (ring {:note => :a3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e3, :buffer => :ambi_choir, :pos => 0.5, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Ethereal arena crowd texture (granular) on downbeats.
+s_grain = gen_score("x.......x.......",
+  [ {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5},
+    {note: :e3, buffer: :ambi_choir, pos: 0.5, density: 1, size: 0.4, amp: 0.5} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK
