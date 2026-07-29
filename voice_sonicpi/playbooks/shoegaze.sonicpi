@@ -1,107 +1,92 @@
 # ==========================================================
 # PLAYBOOK: 90s SHOEGAZE / DREAM POP
-# (Pioneered by My Bloody Valentine, Slowdive, and Cocteau Twins)
-# ========================================================== 
-# 
+# Ethereal Walls of Sound, Driving Motorik Beats
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 90s Shoegaze.
-# We have explored rigid electronic genres and acoustic genres. Shoegaze 
-# is the sound of a band playing in a massive, echoing cavern. It relies 
-# on a driving, motorik drum beat, a continuous 16th-note bassline, and 
-# massive, sustained walls of distorted guitars that blur into an 
-# ethereal, dreamlike wash.
+# Shoegaze (My Bloody Valentine, Slowdive) blends massive,
+# sustained guitar distortion with rigid, repetitive rhythms.
+# This playbook captures that cavernous, dreamlike wash.
 #
-# This playbook perfectly demonstrates how to simulate a "Wall of Sound" 
-# using the Parameter Hashes. By using massive chord arrays, long attacks 
-# and releases, and high cutoffs, the engine turns the `:play_chords` 
-# synth into a sweeping, distorted guitar wave that washes over the rigid 
-# 16-step grid.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 120 BPM
+# Key: C# Major (bright, ethereal)
+# Rhythm: Motorik 4/4 kick, snare on 2/4, relentless 16th hats,
+# continuous 16th bass.
+# Timbre: Swelling chords (blade, long attack/release), picked
+# bass (dsaw, high cutoff), clean guitar (fm, divisor 2),
+# vocal drone (grain, long size).
+# Arrangement: Dream (chords+bass+grain) → Drive (drums enter)
+# → Melody (clean guitar enters).
 # ==========================================================
 
 use_bpm 120
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (C# Major - Ethereal, Loud, & Dreamy)
-# ==========================================================
+# Scores
 
-# Driving, motorik 4/4 kick (like a Krautrock beat).
-s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, nil, :c4, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, :c4, nil, nil, nil)
+# Motorik 4/4 kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Heavy, reverberated snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+# Heavy snare on beats 2 and 4
+s_snare = gen_score("....x.......x...", [:c4])
 
-# Rigid, relentless 16th hats to drive the momentum.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.25}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.25}, nil, {:note => :c4, :amp => 0.15}, nil)
+# Relentless 16th hats with velocity accents
+s_hats = gen_score("x.x.x.x.x.x.x.x.",
+  [{note: :c4, amp: 0.2}, {note: :c4, amp: 0.15},
+   {note: :c4, amp: 0.25}, {note: :c4, amp: 0.15}])
 
-# The "Picked" Driving Bass (C# Major).
-# Plays continuous 16th notes. The high cutoff (100) and short release (0.1) 
-# mimic an aggressive, picked electric bass driving the rhythm.
-s_bass  = (ring {:note => :cs2, :cutoff => 100, :release => 0.1}, {:note => :cs2, :cutoff => 100, :release => 0.1}, {:note => :cs3, :cutoff => 100, :release => 0.1}, {:note => :cs2, :cutoff => 100, :release => 0.1}, 
-           {:note => :cs2, :cutoff => 100, :release => 0.1}, {:note => :cs2, :cutoff => 100, :release => 0.1}, {:note => :e2, :cutoff => 100, :release => 0.1}, {:note => :cs2, :cutoff => 100, :release => 0.1}, 
-           {:note => :a1, :cutoff => 100, :release => 0.1}, {:note => :a1, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a1, :cutoff => 100, :release => 0.1}, 
-           {:note => :b1, :cutoff => 100, :release => 0.1}, {:note => :b1, :cutoff => 100, :release => 0.1}, {:note => :e2, :cutoff => 100, :release => 0.1}, {:note => :b1, :cutoff => 100, :release => 0.1})
+# Driving picked bass – 16th notes, high cutoff for attack
+bass_notes = [:cs2, :cs2, :cs3, :cs2, :cs2, :cs2, :e2, :cs2,
+              :a1, :a1, :a2, :a1, :b1, :b1, :e2, :b1]
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1} })
 
-# The "Wall of Sound" Guitars (C#maj9 to Amaj9).
-# Massive 4-note chords. The slow attack (0.5) and massive release (2.0) 
-# blur the chords together into a continuous, sweeping wave.
-s_chords= (ring {:note => [:cs3, :e3, :gs3, :b3], :attack => 0.5, :release => 2.0, :cutoff => 110, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => [:a2, :cs3, :e3, :gs3], :attack => 0.5, :release => 2.0, :cutoff => 110, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil)
+# Wall of sound chords – only two trigger positions, data has two elements
+chord_data = [
+  {note: [:cs3, :e3, :gs3, :b3], attack: 0.5, release: 2.0, cutoff: 110, amp: 0.7},
+  {note: [:a2, :cs3, :e3, :gs3], attack: 0.5, release: 2.0, cutoff: 110, amp: 0.7}
+]
+s_chords = gen_score("x.......x.......", chord_data)
 
-# Ethereal, echoing "Clean Guitar" Melody (C# Major Pentatonic).
-# Uses :play_fm with a low divisor (2) to create a soft, organic pluck.
-# Routed through the engine's tape echo for a cavernous, dreamlike smear.
-s_fm    = (ring nil, nil, nil, nil, nil, nil, {:note => :gs4, :amp => 0.5, :divisor => 2, :depth => 1, :release => 1.0}, nil, 
-           nil, nil, nil, nil, nil, nil, {:note => :e4, :amp => 0.4, :divisor => 2, :depth => 1, :release => 1.0}, nil)
+# Clean guitar melody – FM with low divisor, routed through echo
+s_fm = gen_score("......x......x.",
+  [{note: :gs4, amp: 0.5, divisor: 2, depth: 1, release: 1.0},
+   {note: :e4, amp: 0.4, divisor: 2, depth: 1, release: 1.0}])
 
-# Distant, ambient "Vocal/Air" texture (Granular Synth).
-# Long size (0.4) and low density (1) creates a slow, evolving celestial 
-# drone that sounds like a choir singing in the distance.
-s_grain = (ring {:note => :cs4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Vocal drone – long grain, slow evolution
+s_grain = gen_score("x.......x.......",
+  [{note: :cs4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5},
+   {note: :a4, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.4, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Dream - Just the Wall of Sound, bass, and vocal drone (4 bars)
-  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
-  
-  # Scene 2: The Drive - Add the motorik drums (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: The Melody - The echoing clean guitar drops (8 bars)
-  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 1: Dream – Chords, Bass, Grain
+  [ [:play_chords, s_chords, 4], [:play_sub, s_bass, 4],
+    [:play_grain, s_grain, 4] ],
+
+  # Scene 2: Drive – Drums enter
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8],
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+
+  # Scene 3: Melody – Clean guitar enters
+  [ [:play_chords, s_chords, 8], [:play_sub, s_bass, 8],
+    [:play_grain, s_grain, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_fm, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE WALL OF SOUND]
-# 
-# 1. Data-Driven Swell: Look at `s_chords`. The Hashes specify an `attack` 
-#    of `0.5` and a `release` of `2.0`. Because the engine reads these 
-#    Hashes, the chords don't just hit; they slowly swell into the mix and 
-#    fade away over two whole beats. The engine turns the `:blade` synth 
-#    into a continuous, blurred wave of distorted guitars.
-#
-# 2. The Rigid Motorik Beat: Shoegaze relies on a stark contrast between 
-#    the ethereal, blurred chords and a rigid, driving rhythm section. The 
-#    `s_kick` and `s_bass` play relentless, straight patterns. The engine's 
-#    strict master clock ensures this rhythm never wavers, anchoring the 
-#    floating textures.
-#
-# 3. Granular Air: The `s_grain` sequence uses a `density` of `1` and a 
-#    `size` of `0.4`. By time-stretching the choir sample into a massive, 
-#    slow drone, the engine simulates the ambient "air" and reverb tails 
-#    that make Shoegaze feel like it is echoing in a massive cathedral.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The long attack (0.5) and release (2.0) on s_chords blur
+#   the chords into a continuous, swelling wave – the "Wall
+#   of Sound" that defines shoegaze.
+# - The rigid 16th bass and drums anchor the ethereal textures,
+#   creating the signature motorik drive.
+# - The grain drone with density 1 and size 0.4 time‑stretches
+#   the choir into a distant, cathedral‑like ambient tail.
 # ==========================================================
