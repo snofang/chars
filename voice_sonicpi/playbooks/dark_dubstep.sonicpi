@@ -10,26 +10,33 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Classic half-time kick. Hits on step 0, with a ghost kick on step 14.
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil)
+s_kick = gen_score("x.............x.",
+  [:c4, {note: :c4, amp: 0.6}])
 
 # Heavy snare strictly on beat 3 (step 8), with a ghost snare on the 'a' of 4.
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+s_snare = gen_score("........x.....x.",
+  [:c4, {note: :c4, amp: 0.5}])
 
 # Syncopated, rolling hats to keep the 140 BPM momentum alive
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, 
-           nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, 
-           {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, 
-           nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.5}, nil)
+hat_data = [
+  {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+  {note: :c4, amp: 0.5}
+]
+s_hats = gen_score("x.xx.xx.x.xx.xx.", hat_data)
 
 # Massive, sustained sub-bass. Long releases create that iconic wobble feel.
-s_bass  = (ring {:note => :f2, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :eb2, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+s_bass = gen_score("x.......x.......",
+  [{note: :f2, release: 1.0}, {note: :eb2, release: 1.0}])
 
 # Distant, echoing 8-bit melody (F Minor Pentatonic)
-s_fm    = (ring nil, nil, nil, nil, :f5, nil, nil, nil, nil, nil, :eb5, nil, nil, nil, :c5, nil)
+s_fm = gen_score("....x.....x...x.",
+  [:f5, :eb5, :c5])
 
 # Massive dark pad to fill the empty space
-s_pad   = (ring :f3, nil, nil, nil, nil, nil, nil, nil, :eb3, nil, nil, nil, nil, nil, nil, nil)
+s_pad = gen_score("x.......x.......",
+  [:f3, :eb3])
 
 # ==========================================================
 # 3. THE PLAYBOOK

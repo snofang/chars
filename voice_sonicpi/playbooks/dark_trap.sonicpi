@@ -10,29 +10,34 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Half-time kick. Hits on step 0, and an extra syncopated hit on step 12.
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+s_kick = gen_score("x...........x...",
+  [:c4, {note: :c4, amp: 0.8}])
 
 # Heavy snare/clap strictly on beat 3 (step 8).
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
+s_snare = gen_score("........x.......", [:c4])
 
 # Rolling Trap Hi-Hats. 
 # Notice steps 5,6,7 and 12,13,14,15. By using Hashes to rapidly increase 
 # the amplitude, we simulate a 16th-note hi-hat roll without breaking the grid!
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
-           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, nil, 
-           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
-           {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5})
+s_hats = gen_score("x.x.xxx.x.x.xxxx",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.5}])
 
 # Booming, melodic 808 bass. Long releases make it ring out.
-s_bass  = (ring {:note => :fs2, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :a2, :release => 1.5}, nil, nil, nil, nil, nil, nil, nil)
+s_bass = gen_score("x.......x.......",
+  [{note: :fs2, release: 1.5}, {note: :a2, release: 1.5}])
 
 # Ominous, echoing lead melody (F# Minor)
-s_lead  = (ring :fs4, nil, nil, nil, nil, nil, nil, nil, :a4, nil, nil, nil, :c5, nil, nil, nil)
+s_lead = gen_score("x.......x...x...",
+  [:fs4, :a4, :c5])
 
 # Atmospheric granular vocal drone to fill the empty space
-s_grain = (ring {:note => :fs3, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.15}, nil, nil, nil, 
-           nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+s_grain = gen_score("x...............",
+  [{note: :fs3, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.15}])
 
 # ==========================================================
 # 3. THE PLAYBOOK

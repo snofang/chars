@@ -1,40 +1,69 @@
+# ==========================================================
+# PLAYBOOK: DUB / MINIMAL DUB
+# Sparse, Echoed, Deep Sub‑Bass Groove
+# ==========================================================
+# [WHY THIS GENRE?]
+# Minimal Dub is built on sparse, hypnotic elements – a classic
+# 4/4 kick, off‑beat hats, a deep sub‑bass heartbeat, and echoed
+# chord stabs. This playbook captures that stripped‑back,
+# meditative, sound system vibe.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 120 BPM
+# Key: G minor (dark, deep)
+# Rhythm: 4/4 kick, off‑beat hats, sub‑bass on beat 1,
+# chord stabs on beats 2 and 4 with dynamic amp.
+# Timbre: Classic kick (bd_haus), off‑beat hats (cymbal_closed),
+# deep sub‑bass (dsaw), echoed chord stabs (blade via play_lead).
+# Arrangement: Rhythm (drums) → Bass (add sub‑bass) → Chords
+# (add echoed stabs).
+# ==========================================================
+
 use_bpm 120
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (G Minor Dub)
-# ==========================================================
-# Classic 4-on-the-floor
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
-# Off-beat hi-hats
-s_hats  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
-# Sub-bass heartbeat
-s_bass  = (ring :g1, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-# Chord stabs (Gm7) routed through the Lead's Tape Echo FX
-# Using Hashes to add slight volume variations to the stabs
-s_stab  = (ring nil, nil, nil, nil, {note: [:g3, :bb3, :d4, :f4], amp: 0.6}, nil, nil, nil, 
-           nil, nil, nil, nil, {note: [:g3, :bb3, :d4, :f4], amp: 0.4}, nil, nil, nil)
+# Scores
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Classic 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
+
+# Off‑beat hi‑hats (steps 4 and 12)
+s_hats = gen_score("....x.......x...", [:c4])
+
+# Sub‑bass heartbeat (step 0 only)
+s_bass = gen_score("x...............", [:g1])
+
+# Chord stabs (Gm7) with dynamic amp variation (steps 4 and 12)
+s_stab = gen_score("....x.......x...",
+  [{note: [:g3, :bb3, :d4, :f4], amp: 0.6},
+   {note: [:g3, :bb3, :d4, :f4], amp: 0.4}])
+
+# Playbook
 playbook = (ring
-  # Scene 1: Just the rhythm (4 bars)
+  # Scene 1: Rhythm – Kick + Hats (4 bars)
   [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4] ],
-  
-  # Scene 2: Add sub-bass (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8] ],
-    
-  # Scene 3: Echoed chord stabs enter (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], 
-    [:play_sub,  s_bass, 8], [:play_lead, s_stab, 8] ]
+
+  # Scene 2: Bass – Add Sub‑bass (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8] ],
+
+  # Scene 3: Chords – Add Echoed Stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8], [:play_lead, s_stab, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Sparse arrangement: each scene adds a single element,
+#   building tension gradually.
+# - Sub‑bass heartbeat: one hit per bar creates a deep, pulsing
+#   foundation.
+# - Echoed chord stabs: routed through the lead's tape echo,
+#   the stabs ring out into the space between hits.
+# - Dynamic amp variation: the second stab is quieter (0.4 vs
+#   0.6), adding subtle human feel to the repetition.
+# ==========================================================

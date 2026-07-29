@@ -1,97 +1,109 @@
 # ==========================================================
 # PLAYBOOK: 8-BIT CHIPTUNE / NES
-# (Pioneered by Koji Kondo, Hirokazu Tanaka, and Yuzo Koshiro)
+# Frantic, Heroic, Sound‑Chip Energy
 # ==========================================================
-# 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 8-Bit Chiptune.
-# We have explored massive, stadium-sized genres (EDM, Hardstyle) and
-# deep, organic grooves (Afro House, Dub). Chiptune takes us back to
-# the absolute roots of the 16-step grid: the hardware sound chips of
-# the 80s (like the NES Ricoh 2A03 or the Game Boy).
+# 8‑Bit Chiptune (Koji Kondo, Hirokazu Tanaka) is the sound of
+# classic NES and Game Boy sound chips. It uses rapid arpeggios
+# to simulate chords, piercing square‑wave leads, and rigid,
+# reverb‑less percussion. This playbook captures that action‑
+# packed, boss‑battle energy.
 #
-# It is rigid, fast, and entirely devoid of acoustic reverb. It relies
-# on rapid, 16th-note arpeggios to simulate chords, and piercing, 
-# square-wave leads. This playbook perfectly demonstrates how the 
-# `:play_fm` synth can be tuned to sound like a classic video game
-# sound chip, and how the 16-step grid handles frantic, action-packed
-# video game music (like a boss battle).
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 140 BPM
+# Key: A minor (frantic, heroic)
+# Rhythm: Driving 8‑bit kick on 0,6,8,14; dry snare on 2/4;
+# rigid hi‑hats on off‑beats; pulse bass on even 16ths;
+# arpeggio on every 16th simulating chords; piercing lead
+# melody with sparse stabs.
+# Timbre: 8‑bit kick (bd_haus with accents), noise snare
+# (sn_dolf), high‑pitched hats (cymbal_closed), pulse bass
+# (dsaw), FM arpeggio (divisor 2, depth 1 for square‑wave),
+# boss melody (fm with square wave).
+# Arrangement: Underworld (bass+drums) → Action (add arpeggio)
+# → Boss Battle (add lead melody).
 # ==========================================================
 
 use_bpm 140
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Frantic & Heroic)
-# ==========================================================
+# Scores
 
-# Driving, rigid 8-bit kick. Hits on step 0, 6, 8, and 14.
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil)
+# Driving, rigid 8‑bit kick – hits on steps 0,6,8,14
+s_kick = gen_score("x.....x.x.....x.",
+  [:c4,
+   {note: :c4, amp: 0.8},
+   {note: :c4, amp: 1.0},
+   {note: :c4, amp: 0.8}])
 
-# Dry, noise-channel snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil)
+# Dry, noise‑channel snare – hits on steps 4 and 12
+s_snare = gen_score("....x.......x...",
+  [{note: :c4, amp: 0.7}, {note: :c4, amp: 0.7}])
 
-# Rigid, high-pitched 8-bit hi-hats.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil)
+# Rigid high‑pitched hi‑hats – hits on steps 2,6,10,14
+s_hats = gen_score("..x...x...x...x.",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.3}])
 
-# The 8-Bit Pulse Bass.
-# Fast, 16th-note triplets (emulated via grid placement) to create a driving rumble.
-s_bass  = (ring :a2, nil, :a2, nil, :a2, nil, :a2, nil, :g2, nil, :g2, nil, :e2, nil, :e2, nil)
+# 8‑bit pulse bass – continuous 16ths on even steps (0,2,4,6,8,10,12,14)
+s_bass = gen_score("x.x.x.x.x.x.x.x.",
+  [:a2, :a2, :a2, :a2, :g2, :g2, :e2, :e2])
 
-# The "Arpeggio" (Simulating a chord on a sound chip).
-# Plays rapid 16th notes (A4, E5, C5, E5) to create the illusion of a chord.
-# Uses :play_fm with a high divisor to create a hollow, square-wave tone.
-s_fm    = (ring {:note => :a4, :amp => 0.5, :divisor => 2, :depth => 1}, {:note => :e5, :amp => 0.4, :divisor => 2, :depth => 1}, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 1}, {:note => :e5, :amp => 0.4, :divisor => 2, :depth => 1}, 
-           {:note => :a4, :amp => 0.5, :divisor => 2, :depth => 1}, {:note => :e5, :amp => 0.4, :divisor => 2, :depth => 1}, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 1}, {:note => :e5, :amp => 0.4, :divisor => 2, :depth => 1}, 
-           {:note => :g4, :amp => 0.5, :divisor => 2, :depth => 1}, {:note => :d5, :amp => 0.4, :divisor => 2, :depth => 1}, {:note => :bb4, :amp => 0.5, :divisor => 2, :depth => 1}, {:note => :d5, :amp => 0.4, :divisor => 2, :depth => 1}, 
-           {:note => :e4, :amp => 0.5, :divisor => 2, :depth => 1}, {:note => :b4, :amp => 0.4, :divisor => 2, :depth => 1}, {:note => :g4, :amp => 0.5, :divisor => 2, :depth => 1}, {:note => :b4, :amp => 0.4, :divisor => 2, :depth => 1})
+# The arpeggio – simulates a chord on a single‑voice sound chip (every 16th)
+s_fm = gen_score("xxxxxxxxxxxxxxxx",
+  [{note: :a4, amp: 0.5, divisor: 2, depth: 1},
+   {note: :e5, amp: 0.4, divisor: 2, depth: 1},
+   {note: :c5, amp: 0.5, divisor: 2, depth: 1},
+   {note: :e5, amp: 0.4, divisor: 2, depth: 1},
+   {note: :a4, amp: 0.5, divisor: 2, depth: 1},
+   {note: :e5, amp: 0.4, divisor: 2, depth: 1},
+   {note: :c5, amp: 0.5, divisor: 2, depth: 1},
+   {note: :e5, amp: 0.4, divisor: 2, depth: 1},
+   {note: :g4, amp: 0.5, divisor: 2, depth: 1},
+   {note: :d5, amp: 0.4, divisor: 2, depth: 1},
+   {note: :bb4, amp: 0.5, divisor: 2, depth: 1},
+   {note: :d5, amp: 0.4, divisor: 2, depth: 1},
+   {note: :e4, amp: 0.5, divisor: 2, depth: 1},
+   {note: :b4, amp: 0.4, divisor: 2, depth: 1},
+   {note: :g4, amp: 0.5, divisor: 2, depth: 1},
+   {note: :b4, amp: 0.4, divisor: 2, depth: 1}])
 
-# The piercing, echoing Boss Battle melody (A Harmonic Minor).
-s_lead  = (ring nil, nil, nil, nil, {:note => :a5, :amp => 0.7}, nil, {:note => :b5, :amp => 0.6}, nil, {:note => :c6, :amp => 0.8}, nil, nil, nil, {:note => :b5, :amp => 0.6}, nil, {:note => :a5, :amp => 0.7}, nil)
+# Piercing boss battle melody (A Harmonic Minor) – sparse stabs
+s_lead = gen_score("....x.x.x...x.x.",
+  [{note: :a5, amp: 0.7},
+   {note: :b5, amp: 0.6},
+   {note: :c6, amp: 0.8},
+   {note: :b5, amp: 0.6},
+   {note: :a5, amp: 0.7}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Underworld - Just the driving bass and drums (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: The Action - Add the rapid arpeggio (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8] ],
-    
-  # Scene 3: The Boss Battle - The piercing lead melody drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], [:play_lead, s_lead, 8] ]
+  # Scene 1: The Underworld – Bass + Drums
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: The Action – Add Arpeggio
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_fm, s_fm, 8] ],
+
+  # Scene 3: Boss Battle – Add Lead Melody
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_fm, s_fm, 8], [:play_lead, s_lead, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN 8-BIT SEQUENCING]
-# 
-# 1. The Arpeggio Illusion: Look at `s_fm`. It plays on EVERY SINGLE 16th
-#    step, cycling through A4, E5, C5, and E5. Because early sound chips
-#    could only play one note at a time per channel, composers used rapid
-#    arpeggios to simulate chords. The engine's strict master clock
-#    ensures these 16 notes fire with robotic, sound-chip precision.
-#
-# 2. FM as a Pulse Wave: The `:play_fm` synth is given `divisor: 2` and 
-#    `depth: 1` in the Hashes. This narrows the harmonic ratio so much 
-#    that the sine waves collapse into a hollow, piercing square wave, 
-#    perfectly mimicking the Ricoh 2A03 chip found in the NES.
-#
-# 3. Rigid, Reverb-less Space: Notice that there are zero granular drones
-#    or pads in this playbook. Chiptune relies on absolute clarity and 
-#    separation. By leaving the grid sparse and using short, dry releases, 
-#    the engine makes the synths sound like they are coming straight out 
-#    of a CRT television speaker.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The arpeggio illusion: rapid cycling of A4, E5, C5, E5 on every
+#   16th creates a chord – the engine's grid locks it with robotic
+#   sound‑chip precision.
+# - FM as pulse wave: divisor 2 and depth 1 collapse the sine into
+#   a hollow, piercing square wave, mimicking the NES Ricoh 2A03.
+# - Rigid, reverb‑less space: short, dry releases and no pads keep
+#   the sound crisp and separate, like a CRT TV speaker.
 # ==========================================================

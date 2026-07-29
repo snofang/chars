@@ -1,62 +1,93 @@
+# ==========================================================
+# PLAYBOOK: PHONK / MEMPHIS UNDERGROUND
+# Menacing, Dark, Cowbell‑Driven Energy
+# ==========================================================
+# [WHY THIS GENRE?]
+# Phonk / Memphis Underground is built on bouncing 4/4 kicks,
+# tight dry snares, relentless hats, booming 808 bass, and
+# the iconic cowbell melody. This playbook captures that
+# dark, menacing, underground energy.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 120 BPM
+# Key: C# minor (menacing, dark)
+# Rhythm: Bouncing kick with syncopated accents, snare on 2/4,
+# relentless 16th hats, booming 808 on downbeats, iconic
+# cowbell melody on even steps, sinister granular vocal.
+# Timbre: Bouncing kick (bd_haus with accents), tight dry
+# snare (sn_dolf), relentless hats (cymbal_closed with amp
+# layers), booming 808 (dsaw, long release), metallic cowbell
+# (fm, divisor 4, depth 1, tape echo), granular vocal.
+# Arrangement: Cowbell+808 (foundation) → Drums (add Memphis
+# beat) → Vocal (add sinister chops).
+# ==========================================================
+
 use_bpm 120
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (C# Minor - Menacing & Dark)
-# ==========================================================
+# Scores
 
-# Bouncing 4/4 kick with a syncopated extra hit on the 'and' of 3.
-s_kick  = (ring :c4, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil)
+# Bouncing 4/4 kick with syncopated accents (steps 0,4,8,12)
+s_kick = gen_score("x...x...x...x...",
+  [:c4, {note: :c4, amp: 0.6}, {note: :c4, amp: 0.8}, {note: :c4, amp: 0.6}])
 
-# Tight, dry Memphis snare strictly on beats 2 and 4.
-s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Tight dry Memphis snare on beats 2 and 4
+s_snare = gen_score("....x.......x...", [:c4])
 
-# Fast, relentless 16th hats
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2})
+# Fast relentless 16th hats with alternating amps
+hat_amps = [0.3, 0.2, 0.3, 0.2, 0.3, 0.2, 0.3, 0.2,
+            0.3, 0.2, 0.3, 0.2, 0.3, 0.2, 0.3, 0.2]
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# Booming, syncopated 808 bass. Long release to ring out underneath the cowbell.
-s_bass  = (ring {:note => :cs2, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :gs2, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+# Booming 808 bass – long release (steps 0 and 8)
+s_bass = gen_score("x.......x.......",
+  [{note: :cs2, release: 1.0}, {note: :gs2, release: 1.0}])
 
-# The Iconic 808 Cowbell Melody (C# Minor).
-# Using :play_fm with high divisor to create a metallic, bell-like tone.
-# Routed through the engine's tape echo for that signature Phonk smear.
-s_cowbell = (ring {:note => :cs5, :amp => 0.7, :divisor => 4.0, :depth => 1}, nil, {:note => :cs5, :amp => 0.5, :divisor => 4.0, :depth => 1}, nil, 
-             {:note => :ds5, :amp => 0.6, :divisor => 4.0, :depth => 1}, nil, {:note => :fs5, :amp => 0.8, :divisor => 4.0, :depth => 1}, nil, 
-             {:note => :gs5, :amp => 0.7, :divisor => 4.0, :depth => 1}, nil, {:note => :fs5, :amp => 0.5, :divisor => 4.0, :depth => 1}, nil, 
-             {:note => :ds5, :amp => 0.6, :divisor => 4.0, :depth => 1}, nil, {:note => :cs5, :amp => 0.7, :divisor => 4.0, :depth => 1}, nil)
+# Iconic cowbell melody – even steps, tape echo
+cowbell_data = [
+  {note: :cs5, amp: 0.7, divisor: 4.0, depth: 1},
+  {note: :cs5, amp: 0.5, divisor: 4.0, depth: 1},
+  {note: :ds5, amp: 0.6, divisor: 4.0, depth: 1},
+  {note: :fs5, amp: 0.8, divisor: 4.0, depth: 1},
+  {note: :gs5, amp: 0.7, divisor: 4.0, depth: 1},
+  {note: :fs5, amp: 0.5, divisor: 4.0, depth: 1},
+  {note: :ds5, amp: 0.6, divisor: 4.0, depth: 1},
+  {note: :cs5, amp: 0.7, divisor: 4.0, depth: 1}
+]
+s_cowbell = gen_score("x.x.x.x.x.x.x.x.", cowbell_data)
 
-# Sinister, chopped-and-screwed vocal whisper (Granular Synth)
-# Using :ambi_choir, low pitch, long size for a demonic, drifting drone.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :cs3, :buffer => :ambi_choir, :pos => 0.8, :density => 2, :size => 0.15, :amp => 0.5}, nil, nil, nil, 
-           nil, nil, nil, nil)
+# Sinister vocal whisper – chopped and screwed (step 8)
+s_vocal = gen_score("........x.......",
+  [{note: :cs3, buffer: :ambi_choir, pos: 0.8, density: 2, size: 0.15, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the booming 808 and the cowbell melody (4 bars)
+  # Scene 1: Foundation – 808 + Cowbell
   [ [:play_sub, s_bass, 4], [:play_fm, s_cowbell, 4] ],
-  
-  # Scene 2: Add the bouncing Memphis drums (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_fm, s_cowbell, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: Add the sinister granular vocal chops (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_fm, s_cowbell, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_grain, s_vocal, 8] ]
+
+  # Scene 2: Drums – Add Memphis Beat
+  [ [:play_sub, s_bass, 8], [:play_fm, s_cowbell, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8] ],
+
+  # Scene 3: Vocal – Add Sinister Chops
+  [ [:play_sub, s_bass, 8], [:play_fm, s_cowbell, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The iconic cowbell: FM with divisor 4 and depth 1 creates
+#   the classic metallic bell tone; tape echo adds Phonk smear.
+# - Booming 808: long release (1.0) carries the dark harmony.
+# - Memphis drums: bouncing kick with dynamic accents (0.6/0.8),
+#   tight snare, relentless hats with alternating amps.
+# - Sinister vocal: pitched down to :cs3 with long grain (0.15)
+#   creates a drifting, demonic texture.
+# ==========================================================

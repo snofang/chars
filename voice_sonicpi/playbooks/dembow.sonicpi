@@ -1,55 +1,90 @@
+# ==========================================================
+# PLAYBOOK: DEMBOW / REGGAETON
+# Hypnotic, Latin, 3‑3‑2 Pulse
+# ==========================================================
+# [WHY THIS GENRE?]
+# Dembow / Reggaeton is built on the iconic 3‑3‑2 rhythmic
+# pulse – a syncopated kick pattern that drives the groove.
+# This playbook captures that hypnotic, Latin, dancefloor
+# energy with sliding 808 bass, syncopated chord stabs, and
+# chopped vocal chants.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 95 BPM
+# Key: A minor (dark, hypnotic)
+# Rhythm: Dembow kick (steps 0,3,6,8,11), snare/woodblock on
+# off‑beats (2,5,7,10,13,15), steady 8th hats with roll,
+# sliding 808 bass, syncopated chord stabs, chopped vocal chants.
+# Timbre: Punchy kick (bd_haus), woodblock snare (sn_dolf),
+# steady hats (cymbal_closed with amp layers), sliding 808
+# (dsaw, long release), Latin chord stabs (blade), granular
+# vocal chants (ambi_choir).
+# Arrangement: Rhythm (drums) → Bass+Chords (add harmony)
+# → Vocal (add chants).
+# ==========================================================
+
 use_bpm 95
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Latin / Modal)
-# ==========================================================
+# Scores
 
-# The "Dembow" Kick. A 3-3-2 pulse (steps 0, 3, 6, 8, 11).
-s_kick  = (ring :c4, nil, nil, :c4, nil, nil, :c4, nil, :c4, nil, nil, :c4, nil, nil, nil, nil)
+# Dembow kick – 3‑3‑2 pulse (steps 0,3,6,8,11)
+s_kick = gen_score("x..x..x.x..x....",
+  [:c4, :c4, :c4, :c4, :c4])
 
-# The "Dembow" Snare/Woodblock. Fills the off-beats (steps 2, 5, 7, 10, 13, 15).
-s_snare = (ring nil, nil, :c4, nil, nil, :c4, nil, :c4, nil, nil, :c4, nil, nil, :c4, nil, {:note => :c4, :amp => 0.6})
+# Snare/woodblock – fills the off‑beats (steps 2,5,7,10,13,15)
+s_snare = gen_score("..x..x.x..x..x.x",
+  [:c4, :c4, :c4, :c4, :c4, {note: :c4, amp: 0.6}])
 
-# Steady 8th-note hats with a slight roll at the end of the bar
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
-           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
-           {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil)
+# Steady 8th hats with roll at the end (steps 0,2,4,6,8,10,12,13,14)
+s_hats = gen_score("x.x.x.x.x.x.xxx",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}])
 
-# Massive, sliding 808 bass. Long release to anchor the harmony.
-s_bass  = (ring {:note => :a1, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :g1, :release => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+# Massive sliding 808 bass – long release (steps 0 and 8)
+s_bass = gen_score("x.......x.......",
+  [{note: :a1, release: 1.0}, {note: :g1, release: 1.0}])
 
-# Syncopated, Latin-style chord stabs (Am and G)
-s_chords= (ring nil, [:a3, :c4, :e4], nil, nil, nil, nil, nil, [:a3, :c4, :e4], 
-           nil, [:g3, :bb3, :d4], nil, nil, nil, nil, nil, [:g3, :bb3, :d4])
+# Syncopated Latin chord stabs (steps 1,7,9,15)
+s_chords = gen_score(".x.....x.x.....x",
+  [[:a3, :c4, :e4], [:a3, :c4, :e4],
+   [:g3, :bb3, :d4], [:g3, :bb3, :d4]])
 
-# Chopped, rhythmic vocal chant (Granular Synth)
-s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.05}, nil, nil, nil, 
-           nil, nil, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.6, :density => 3, :size => 0.05}, nil, nil, nil)
+# Chopped rhythmic vocal chants (steps 4 and 12)
+s_vocal = gen_score("....x.......x...",
+  [{note: :a4, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.05},
+   {note: :c5, buffer: :ambi_choir, pos: 0.6, density: 3, size: 0.05}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the hypnotic Dembow rhythm (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ],
-  
-  # Scene 2: Add the massive 808 bass and guitar stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: Add the chopped vocal chants (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Rhythm – Drums only
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4] ],
+
+  # Scene 2: Harmony – Add Bass and Chords
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Vocal – Add Chants
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The Dembow pulse: 3‑3‑2 kick pattern (0,3,6,8,11) creates
+#   the signature Latin syncopation.
+# - Snare/woodblock: fills the off‑beats with dynamic variation
+#   (step 15 has lower amp 0.6).
+# - Steady hats: 8th‑note pattern with a roll on steps 12‑14.
+# - Sliding 808: long release (1.0) anchors the harmony.
+# - Granular chants: short grains (size 0.05) add rhythmic vocal
+#   texture on steps 4 and 12.
+# ==========================================================

@@ -1,108 +1,100 @@
 # ==========================================================
 # PLAYBOOK: 2010s EDM TRAP / FESTIVAL TRAP
-# (Pioneered by RL Grime, Flosstradamus, and Baauer)
-# ========================================================== 
-# 
+# Heavy, Festival-Ready, Bouncy Energy
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 2010s EDM Trap.
-# We have explored modern hip-hop trap, but EDM Trap is the festival-sized 
-# evolution that dominated the 2010s. It takes the 808s and hi-hat rolls 
-# of Southern hip-hop and fuses them with massive, sidechained supersaw 
-# chords and aggressive, brass-like FM stabs. 
+# EDM Trap (RL Grime, Flosstradamus) fuses 808s and hi‑hat
+# rolls with massive supersaw chords and aggressive brass‑like
+# FM stabs. This playbook captures that high‑energy, stadium‑
+# ready festival drop.
 #
-# This playbook perfectly demonstrates how to create a festival drop at 
-# 150 BPM. By using a half-time 808 bounce, rolling trap hats with rising 
-# amplitudes, and massive off-beat chords, the engine creates a high-energy,# stadium-ready atmosphere.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 150 BPM
+# Key: F minor (heavy, dark)
+# Rhythm: Half‑time kick (1, ghost on 'a' of 3), snare on beat 3,
+# trap hat roll with rising amplitudes, sliding 808 on downbeats,
+# off‑beat supersaw chords, aggressive FM stabs, vocal grunts.
+# Timbre: Heavy kick (bd_haus with accents), massive snare
+# (sn_dolf), trap hats (cymbal_closed with velocity rolls),
+# sliding 808 (dsaw, long release), supersaw chords (blade,
+# high cutoff), brass FM stabs (divisor 2, depth 4), granular
+# vocal grunt (ambi_choir).
+# Arrangement: Build (808+chords+stabs) → Groove (add drums)
+# → Drop (add vocal grunts).
 # ==========================================================
 
 use_bpm 150
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Heavy, Festival-Ready, & Bouncy)
-# ==========================================================
+# Scores
 
-# Half-time, heavy 808 kick. 
-# Hits on step 0, and a ghost kick on the 'a' of 3 (step 14).
-s_kick  = (ring {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil)
+# Half‑time kick – hits on step 0 and ghost on step 14
+s_kick = gen_score("x.............x.",
+  [{note: :c4, amp: 1.2}, {note: :c4, amp: 0.6}])
 
-# Massive, echoing snare strictly on beat 3 (step 8).
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil, nil, nil, nil, nil)
+# Massive snare – hit on step 8 only
+s_snare = gen_score("........x.......",
+  [{note: :c4, amp: 1.1}])
 
-# The "Trap Hat Roll".
-# Plays 16ths, but notice the rising amplitude Hashes (0.5 to 0.8) at the 
-# end of the bar (steps 12-15) to simulate a massive festival roll.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.7}, {:note => :c4, :amp => 0.8})
+# Trap hat roll – triggers on steps 0,3,6,7,8,10,12,13,14,15 with rising amps
+s_hats = gen_score("x..x..xxx.x.xxxx",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.5}, {note: :c4, amp: 0.6},
+   {note: :c4, amp: 0.7}, {note: :c4, amp: 0.8}])
 
-# Massive, sliding 808 Bass (F Minor).
-# Massive release (1.5) allows the bass to ring out and carry the dark melody.
-s_bass  = (ring {:note => :f1, :release => 1.5, :cutoff => 70, :amp => 1.2}, nil, nil, nil, nil, nil, nil, nil, {:note => :ab1, :release => 1.5, :cutoff => 70, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+# Sliding 808 bass – hits on steps 0 and 8
+s_bass = gen_score("x.......x.......",
+  [{note: :f1, release: 1.5, cutoff: 70, amp: 1.2},
+   {note: :ab1, release: 1.5, cutoff: 70, amp: 1.0}])
 
-# Massive, wide "Supersaw" Chords (Fm to Abm).
-# Hit strictly on the off-beats (steps 4 and 12). High cutoff (110) and 
-# medium release (0.3) create a sharp, festival-sized wall of sound.
-s_chords= (ring nil, nil, nil, nil, 
-           {:note => [:f3, :ab3, :c4, :eb4], :cutoff => 110, :release => 0.3, :amp => 0.6}, nil, nil, nil, 
-           nil, nil, nil, nil, 
-           {:note => [:ab3, :c4, :eb4, :g4], :cutoff => 110, :release => 0.3, :amp => 0.6}, nil, nil, nil)
+# Supersaw chords – hits on steps 4 and 12
+s_chords = gen_score("....x.......x...",
+  [{note: [:f3, :ab3, :c4, :eb4], cutoff: 110, release: 0.3, amp: 0.6},
+   {note: [:ab3, :c4, :eb4, :g4], cutoff: 110, release: 0.3, amp: 0.6}])
 
-# Aggressive, "Brass" FM Stabs (F Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and extreme depth (4) to create a 
-# sharp, brassy square wave that cuts through the massive mix.
-s_fm    = (ring {:note => :f4, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.1}, nil, nil, nil, 
-           {:note => :ab4, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.1}, nil, nil, nil, 
-           {:note => :c5, :amp => 0.7, :divisor => 2, :depth => 4, :release => 0.1}, nil, nil, nil, 
-           {:note => :eb4, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.1}, nil, nil, nil)
+# Aggressive brass FM stabs – hits on steps 0,4,8,12
+s_fm = gen_score("x...x...x...x...",
+  [{note: :f4, amp: 0.6, divisor: 2, depth: 4, release: 0.1},
+   {note: :ab4, amp: 0.5, divisor: 2, depth: 4, release: 0.1},
+   {note: :c5, amp: 0.7, divisor: 2, depth: 4, release: 0.1},
+   {note: :eb4, amp: 0.5, divisor: 2, depth: 4, release: 0.1}])
 
-# Pitched-down, "Hip-Hop" vocal grunt (Granular Synth).
-# Low density, small size = a dark, percussive vocal hit.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :f3, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, 
-           nil, nil, nil, nil)
+# Pitched‑down vocal grunt – hit on step 8
+s_vocal = gen_score("........x.......",
+  [{note: :f3, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.05, amp: 0.6}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Build - Just the 808, supersaw chords, and brass stabs (4 bars)
-  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_fm, s_fm, 4] ],
-  
-  # Scene 2: The Groove - Add the half-time drums and trap hats (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_fm, s_fm, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: The Drop - The vocal grunts drop (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_fm, s_fm, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 1: Build – 808, Chords, Stabs
+  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4],
+    [:play_fm, s_fm, 4] ],
+
+  # Scene 2: Groove – Add Drums
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8],
+    [:play_fm, s_fm, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
+
+  # Scene 3: Drop – Add Vocal Grunts
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8],
+    [:play_fm, s_fm, 8], [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN FESTIVAL ENERGY]
-# 
-# 1. The Trap Hat Roll: Look at `s_hats`. The amplitudes in the Hashes 
-#    rise linearly from 0.2 to 0.8 at the end of the bar (steps 12-15). 
-#    Because the engine fires these on the strict 16-step grid, it creates 
-#    a machine-gun roll that builds massive tension, perfectly mimicking 
-#    the high-energy drum fills of an EDM festival drop.
-#
-# 2. The Supersaw Wall: Look at `s_chords`. The chords hit strictly on 
-#    the off-beats (steps 4 and 12). By using a high `cutoff` (110), the 
-#    engine turns the `:blade` synth into a bright, soaring wall of sound 
-#    that contrasts heavily with the deep, rumbling 808 bass.
-#
-# 3. Rhythmic 808s: The `s_bass` sequence doesn't just hold a root note; 
-#    it plays a syncopated melody with a massive `release` (1.5). The 
-#    engine's strict master clock ensures this deep bassline locks perfectly 
-#    with the kick drum, creating the heavy, bouncing low-end that defines 
-#    modern trap productions.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The trap hat roll: rising amplitudes (0.2→0.8) on steps
+#   12‑15 create a machine‑gun roll that builds tension.
+# - The supersaw wall: off‑beat chords (steps 4 and 12) with
+#   high cutoff (110) create a soaring, festival‑sized sound.
+# - Rhythmic 808s: syncopated bass melody with long release
+#   (1.5) locks with the kick for heavy, bouncing low‑end.
+# - Brass FM stabs: divisor 2 and depth 4 produce a sharp,
+#   brassy square wave that cuts through the mix.
 # ==========================================================

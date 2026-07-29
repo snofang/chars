@@ -1,62 +1,99 @@
+# ==========================================================
+# PLAYBOOK: ELECTRO / 808 COWBELL
+# Robotic, Futuristic, Roland Groove
+# ==========================================================
+# [WHY THIS GENRE?]
+# Electro (Afrika Bambaataa, Cybotron) is built on robotic
+# 808 drums, syncopated kick patterns, rolling hats, and
+# metallic cowbell melodies. This playbook captures that
+# classic, futuristic, breakdance energy.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 115 BPM
+# Key: F minor (dark, robotic)
+# Rhythm: Syncopated kick (0,3,6,8,11), clap on 2/4 with ghost,
+# rolling 16th hats with alternating amps, bouncy bass sequence,
+# sparse chord stabs, metallic FM cowbell, robotic granular vocal.
+# Timbre: 808 kick (bd_haus), sharp clap (sn_dolf), rigid hats
+# (cymbal_closed), robotic bass (dsaw), dark chords (blade),
+# metallic FM (divisor 4, depth 1, tape echo), granular vocal.
+# Arrangement: Rhythm (drums+bass) → Chords (add stabs) →
+# Melody (add cowbell and vocal).
+# ==========================================================
+
 use_bpm 115
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Robotic & Futuristic)
-# ==========================================================
+# Scores
 
-# The classic 808 Electro Kick. 
-# Hits on step 0, the 'a' of 1 (step 3), the 'and' of 2 (step 6), and beat 3 (step 8).
-s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, {:note => :c4, :amp => 0.6}, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil)
+# Syncopated 808 kick (steps 0,3,6,8,11)
+s_kick = gen_score("x..x..x.x..x....",
+  [:c4,
+   {note: :c4, amp: 0.8},
+   {note: :c4, amp: 0.6},
+   {note: :c4, amp: 1.0},
+   {note: :c4, amp: 0.8}])
 
-# Sharp, dry clap on beats 2 and 4 (steps 4 and 12), with a ghost clap.
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, {:note => :c4, :amp => 0.4}, nil)
+# Sharp dry clap on 2/4 with ghost on step 14
+s_clap = gen_score("....x.......x.x.",
+  [:c4, :c4, {note: :c4, amp: 0.4}])
 
-# Rigid, rolling 16th hats. The alternating amps create the robotic groove.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2})
+# Rigid rolling 16th hats with alternating amps
+hat_amps = [0.3, 0.2, 0.4, 0.2, 0.3, 0.2, 0.4, 0.2,
+            0.3, 0.2, 0.4, 0.2, 0.3, 0.2, 0.4, 0.2]
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# The "Planet Rock" Robotic Bassline. 
-# Plays almost every 16th step, alternating notes to create a bouncy sequence.
-s_bass  = (ring :f2, nil, :f2, nil, :f2, nil, :ab2, nil, :c3, nil, :c3, nil, :eb2, nil, :f2, nil)
+# Robotic bass sequence (bouncing on even steps)
+s_bass = gen_score("x.x.x.x.x.x.x.x.",
+  [:f2, :f2, :f2, :ab2, :c3, :c3, :eb2, :f2])
 
-# The 808 Cowbell Melody (F Minor Pentatonic).
-# Using :play_fm with high divisor to create a metallic, bell-like tone.
-# Routed through the engine's tape echo for that classic space echo smear.
-s_fm    = (ring nil, {:note => :f5, :amp => 0.6, :divisor => 4.0, :depth => 1}, nil, nil, nil, {:note => :eb5, :amp => 0.5, :divisor => 4.0, :depth => 1}, nil, nil, nil, {:note => :c5, :amp => 0.6, :divisor => 4.0, :depth => 1}, nil, nil, nil, {:note => :f5, :amp => 0.7, :divisor => 4.0, :depth => 1}, nil, nil)
+# Metallic cowbell melody – FM, tape echo (steps 1,5,9,13)
+s_fm = gen_score(".x...x...x...x...",
+  [{note: :f5, amp: 0.6, divisor: 4.0, depth: 1},
+   {note: :eb5, amp: 0.5, divisor: 4.0, depth: 1},
+   {note: :c5, amp: 0.6, divisor: 4.0, depth: 1},
+   {note: :f5, amp: 0.7, divisor: 4.0, depth: 1}])
 
-# Dark, sparse minor synth stabs (F Minor).
-s_chords= (ring nil, nil, nil, nil, [:f3, :ab3, :c4], nil, nil, nil, nil, nil, nil, nil, [:eb3, :g3, :bb3], nil, nil, nil)
+# Dark sparse minor stabs (steps 4 and 12)
+s_chords = gen_score("....x.......x...",
+  [[:f3, :ab3, :c4], [:eb3, :g3, :bb3]])
 
-# Robotic, vocoder-style vocal stutter (Granular Synth)
-# High density, small size = percussive, robotic stutter.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.04}, nil, nil, nil, nil, nil, nil, nil)
+# Robotic vocoder‑style vocal stutter (step 8)
+s_vocal = gen_score("........x.......",
+  [{note: :f4, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.04}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: Just the robotic 808 drums and bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: Add the dark synth stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The 808 cowbell melody and vocoder vocal drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
-    [:play_fm, s_fm, 8], [:play_grain, s_vocal, 4] ]
+  # Scene 1: Rhythm – Kick, Clap, Hats, Bass
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Chords – Add Synth Stabs
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Melody – Add Cowbell and Vocal
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_fm, s_fm, 8],
+    [:play_grain, s_vocal, 4] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Syncopated kick: pattern 0,3,6,8,11 creates a broken,
+#   robotic groove – the engine locks it with precision.
+# - Alternating hat amps: 0.3/0.2/0.4/0.2 creates a rolling
+#   feel that drives the track.
+# - Robotic bass: bouncing on even steps with a simple sequence.
+# - Metallic cowbell: FM with divisor 4 and depth 1 produces
+#   a classic 808 bell tone; tape echo adds space.
+# - Granular vocal: pitched to :f4 with density 3 and size 0.04
+#   adds a robotic, vocoder‑like stutter.
+# ==========================================================
