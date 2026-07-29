@@ -1,107 +1,105 @@
 # ==========================================================
 # PLAYBOOK: DANCE-PUNK / INDIE DANCE
-# (Pioneered by LCD Soundsystem, The Rapture, and !!!)
-# ========================================================== 
-# 
+# Raw, Jagged, Relentless 16th‑Note Energy
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Dance-Punk.
-# We have explored pristine electronic genres (Melodic Techno) and 
-# aggressive bass music (Brostep). Dance-Punk is the sound of the 
-# 2000s New York underground. It fuses the raw, jagged energy of 
-# post-punk guitars with the relentless, driving 4/4 grid of house 
-# music and disco.
+# Dance-Punk (LCD Soundsystem, The Rapture) fuses the raw
+# energy of post‑punk guitars with the driving 4/4 grid of
+# house music and disco. This playbook captures that jagged,
+# relentless, New York underground vibe.
 #
-# This playbook perfectly demonstrates how to simulate a "live" bass 
-# guitar driving the 16-step grid. By using a high `cutoff` and short 
-# `release` Hashes on the `:play_sub` synth, the engine creates a 
-# punchy, aggressive picked bassline that locks perfectly with rigid 
-# drum machines.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 125 BPM
+# Key: D minor (raw, driving)
+# Rhythm: 4/4 kick with syncopated hit on step 15, snare on 2/4
+# with ghost on step 7, rigid 16th hats with disco bounce,
+# continuous picked bass on 16ths, staccato chords on off‑beats,
+# piercing FM riff, chopped vocal stutter.
+# Timbre: Driving kick (bd_haus with accent), crisp snare
+# (sn_dolf with dynamics), disco hats (cymbal_closed with amp
+# layers), picked bass (dsaw, high cutoff, short release),
+# jagged chords (blade), FM riff (divisor 2, depth 3),
+# granular vocal skip.
+# Arrangement: Groove (drums+bass) → Vibe (add chords) →
+# Drop (add FM riff+vocal).
 # ==========================================================
 
 use_bpm 125
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (D Minor - Jagged, Raw, & Driving)
-# ==========================================================
+# Scores
 
-# Driving 4/4 kick with a syncopated 16th hit on the 'a' of 4 (step 15).
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, {:note => :c4, :amp => 0.6})
+# Driving kick with syncopated hit on step 15
+s_kick = gen_score("x...x...x...x..x",
+  [:c4, :c4, :c4, :c4, {note: :c4, amp: 0.6}])
 
-# Crisp, live-style snare strictly on beats 2 and 4 (steps 4 and 12), 
-# with a ghost snare on the 'a' of 2 (step 7).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+# Crisp snare with ghost on step 7
+s_snare = gen_score("....x..x....x...",
+  [{note: :c4, amp: 0.9}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.9}])
 
-# Rigid 16th hats, alternating amplitudes for a disco bounce.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil)
+# Rigid 16th hats with disco bounce
+s_hats = gen_score("x.x.x.x.x.x.x.x.",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}])
 
-# The "Picked" Driving Bass (D Minor).
-# Plays continuous, relentless 16th notes. The high cutoff (110) and 
-# very short release (0.1) mimic an aggressive, picked electric bass.
-s_bass  = (ring {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :d3, :cutoff => 110, :release => 0.1}, {:note => :d2, :cutoff => 110, :release => 0.1}, 
-           {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :c3, :cutoff => 110, :release => 0.1}, {:note => :d2, :cutoff => 110, :release => 0.1}, 
-           {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :d3, :cutoff => 110, :release => 0.1}, {:note => :d2, :cutoff => 110, :release => 0.1}, 
-           {:note => :a2, :cutoff => 110, :release => 0.1}, {:note => :a2, :cutoff => 110, :release => 0.1}, {:note => :g2, :cutoff => 110, :release => 0.1}, {:note => :a2, :cutoff => 110, :release => 0.1})
+# Picked driving bass – continuous 16ths, high cutoff
+bass_notes = [:d2, :d2, :d3, :d2, :d2, :d2, :c3, :d2,
+              :d2, :d2, :d3, :d2, :a2, :a2, :g2, :a2]
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| {note: n, cutoff: 110, release: 0.1} })
 
-# Jagged, staccato synth stabs (Dm to Cmaj).
-# Hit on the off-beats to leave room for the relentless bass.
-s_chords= (ring nil, nil, [:d3, :f3, :a3, :c4], nil, nil, nil, [:d3, :f3, :a3, :c4], nil, 
-           nil, nil, [:c3, :e3, :g3, :b3], nil, nil, nil, [:c3, :e3, :g3, :b3], nil)
+# Jagged staccato chords on off‑beats (steps 2,6,10,14)
+s_chords = gen_score("..x..x..x..x....",
+  [[:d3, :f3, :a3, :c4],
+   [:d3, :f3, :a3, :c4],
+   [:c3, :e3, :g3, :b3],
+   [:c3, :e3, :g3, :b3]])
 
-# Piercing, jagged Synth Riff (D Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) to create a sharp, square-wave riff 
-# that cuts through the heavy bass and drums.
-s_fm    = (ring nil, {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 3}, nil, {:note => :f5, :amp => 0.5, :divisor => 2, :depth => 3}, nil, {:note => :c5, :amp => 0.6, :divisor => 2, :depth => 3}, nil, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 3}, nil, {:note => :a4, :amp => 0.6, :divisor => 2, :depth => 3}, nil, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 3}, nil, {:note => :d5, :amp => 0.7, :divisor => 2, :depth => 3}, nil, nil)
+# Piercing FM riff (steps 1,3,5,7,9,11,13,14)
+s_fm = gen_score(".x.x.x.x.x.x.xx.",
+  [{note: :d5, amp: 0.6, divisor: 2, depth: 3},
+   {note: :f5, amp: 0.5, divisor: 2, depth: 3},
+   {note: :c5, amp: 0.6, divisor: 2, depth: 3},
+   {note: :d5, amp: 0.5, divisor: 2, depth: 3},
+   {note: :a4, amp: 0.6, divisor: 2, depth: 3},
+   {note: :c5, amp: 0.5, divisor: 2, depth: 3},
+   {note: :d5, amp: 0.7, divisor: 2, depth: 3}])
 
-# Chopped, percussive vocal stutter (Granular Synth).
-# High density, tiny size = a raw, funky vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :d4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.03, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.03, :amp => 0.5}, nil, nil, nil)
+# Chopped vocal stutter – steps 4 and 12
+s_vocal = gen_score("....x.......x...",
+  [{note: :d4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.03, amp: 0.5},
+   {note: :c4, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.03, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Groove - Just the driving 4/4 beat and picked bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: The Vibe - Add the jagged synth stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Drop - The piercing synth riff and vocal chops drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
-    [:play_fm, s_fm, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Groove – Drums + Picked Bass
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Vibe – Add Jagged Chords
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Drop – Add FM Riff and Vocal Chops
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_fm, s_fm, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN LIVE ENERGY]
-# 
-# 1. The Picked Bass: Look at `s_bass`. The `:play_sub` synth is given a 
-#    `cutoff` of `110` and a `release` of `0.1`. This strips away the 
-#    sub-frequencies and cuts the note off instantly, turning the detuned 
-#    sawtooth into an aggressive, repetitive "thwack" that perfectly mimics 
-#    a picked bass guitar driving the rhythm (think LCD Soundsystem's 
-#    "Daft Punk Is Playing at My House").
-#
-# 2. Relentless 16ths: Unlike house music where the bass is syncopated, 
-#    Dance-Punk relies on continuous 16th notes to create a feeling of 
-#    forward momentum. The engine's strict master clock ensures these 16 
-#    notes fire with absolute precision, preventing the track from sounding 
-#    sloppy while maintaining raw energy.
-#
-# 3. Jagged FM: The `s_fm` sequence uses `divisor: 2` and `depth: 3`. This 
-#    narrows the harmonic ratio to produce a piercing, square-wave riff 
-#    that cuts through the heavy bass and drums, perfectly mimicking the 
-#    cheap, jagged synths used in 2000s indie dance tracks.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The picked bass: cutoff 110 and release 0.1 turn the dsaw
+#   into an aggressive, repetitive "thwack" – the engine locks
+#   it on every 16th step.
+# - Relentless 16ths: continuous bass notes create forward
+#   momentum; the grid's precision keeps it tight.
+# - Jagged FM: divisor 2 and depth 3 produce a piercing square‑wave
+#   riff that cuts through the heavy bass and drums.
 # ==========================================================

@@ -19,89 +19,72 @@
 
 use_bpm 140
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Dark, Heavy, & Wobbling)
-# ==========================================================
+# Scores
 
-# Half-time kick. Hits on step 0, with a ghost kick on the 'a' of 4 (step 14).
-s_kick  = (ring {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6}, nil)
+# Half-time kick – hits on step 0 and ghost on step 14
+s_kick = gen_score("x.............x.",
+  [{note: :c4, amp: 1.2},
+   {note: :c4, amp: 0.6}])
 
-# Massive, echoing snare strictly on beat 3 (step 8).
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil, nil, nil, nil, nil)
+# Massive echoing snare – hits on step 8 only
+s_snare = gen_score("........x.......",
+  [{note: :c4, amp: 1.1}])
 
-# Syncopated, bouncing hats.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil)
+# Syncopated bouncing hats – hits on even steps with varying amps
+s_hats = gen_score("x.x.x.x.x.x.x.x.",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.2}])
 
-# The "Wobble" Bass (F Minor).
-# Plays continuous 16th notes. The 'cutoff' Hash rapidly alternates 
-# between 60 (muffled) and 130 (bright) on every step, simulating a 
-# fast LFO filter wobble locked perfectly to the 140 BPM master clock.
-s_bass  = (ring {:note => :f1, :cutoff => 60}, {:note => :f1, :cutoff => 130}, {:note => :f1, :cutoff => 60}, {:note => :f1, :cutoff => 130}, 
-           {:note => :f1, :cutoff => 60}, {:note => :f1, :cutoff => 130}, {:note => :f1, :cutoff => 60}, {:note => :f1, :cutoff => 130}, 
-           {:note => :ab1, :cutoff => 60}, {:note => :ab1, :cutoff => 130}, {:note => :ab1, :cutoff => 60}, {:note => :ab1, :cutoff => 130}, 
-           {:note => :ab1, :cutoff => 60}, {:note => :ab1, :cutoff => 130}, {:note => :ab1, :cutoff => 60}, {:note => :ab1, :cutoff => 130})
+# Wobble bass – continuous 16ths with alternating cutoff (60 ↔ 130)
+bass_data = 16.times.map do |i|
+  {note: (i < 8 ? :f1 : :ab1), cutoff: (i.even? ? 60 : 130)}
+end
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_data)
 
-# Dark, sparse minor chord stabs (Fm).
-# Hit sparingly on the downbeats to leave maximum room for the wobble bass.
-s_chords= (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => [:f3, :ab3, :c4, :eb4], :cutoff => 90, :release => 0.5, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Dark sparse minor chord stab – hits on step 8
+s_chords = gen_score("........x.......",
+  [{note: [:f3, :ab3, :c4, :eb4], cutoff: 90, release: 0.5, amp: 0.5}])
 
-# Deep, echoing "Blip" FX (F Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and high depth (4) to create a 
-# sharp, robotic sound that cuts through the massive wobble bass.
-s_fm    = (ring nil, nil, nil, {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.3}, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.3}, nil, nil, nil)
+# Deep echoing blip – hits on steps 3 and 12
+s_fm = gen_score("...x........x...",
+  [{note: :f5, amp: 0.6, divisor: 2, depth: 4, release: 0.3},
+   {note: :c5, amp: 0.5, divisor: 2, depth: 4, release: 0.3}])
 
-# Pitched-down, demonic vocal grunt (Granular Synth).
-# Pitched DOWN to :f3. Long size (0.1) and low density (1) creates a 
-# slow, menacing grunt that anchors the heavy groove.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.1, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# Demonic vocal grunt – hit on step 8
+s_vocal = gen_score("........x.......",
+  [{note: :f3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.1, amp: 0.6}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Wobble - Just the half-time drums and LFO bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: The Vibe - Add the dark chord stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Drop - The echoing blips and vocal grunts drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
-    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Wobble – Drums + Bass
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Vibe – Add Chords
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Drop – Add Blips and Vocal Grunts
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE WOBBLE]
-# 
-# 1. Data-Driven LFO: Look at `s_bass`. It plays on every single 16th step, 
-#    but the `cutoff` Hash rapidly alternates between `60` (muffled) and 
-#    `130` (bright). Because the engine reads these Hashes independently 
-#    on every step, the filter opens and closes frantically, simulating a 
-#    fast LFO filter wobble locked perfectly to the 140 BPM master clock 
-#    without needing a dedicated LFO oscillator.
-#
-# 2. The Half-Time Illusion: The engine's master clock is ticking at 140 BPM. 
-#    But because the `s_kick` only hits on step 0, and the `s_snare` only 
-#    hits on step 8, the psychological tempo feels like 70 BPM. The 
-#    syncopated hi-hats fill in the gaps, creating that signature Dubstep 
-#    bounce of slow heaviness over fast momentum.
-#
-# 3. Demonic Granular: The `s_vocal` sequence uses a `density` of `1` and a 
-#    `size` of `0.1`. By pitching the vocal down to `:f3` and using sparse, 
-#    long grains, the engine time-stretches the sample into a formless, 
-#    monstrous grunt that perfectly anchors the aggressive, high-pitched 
-#    wobble bass.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Data-driven LFO: alternating cutoff (60/130) on every 16th
+#   step simulates a fast filter wobble without an LFO oscillator.
+# - Half-time illusion: kick on 1 and snare on beat 3 at 140 BPM
+#   create a slow 70 BPM feel; hats fill the gaps.
+# - Demonic granular: pitched down to :f3 with low density (1)
+#   and long grain (0.1) creates a monstrous, time‑stretched grunt.
 # ==========================================================

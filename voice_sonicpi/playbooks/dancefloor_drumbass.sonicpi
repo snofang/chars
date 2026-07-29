@@ -29,31 +29,49 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Tight, syncopated DnB breakbeat kick.
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+s_kick = gen_score("x.......x.......",
+  [:c4, {note: :c4, amp: 1.0}])
 
 # Massive, echoing snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+s_snare = gen_score("....x.......x...",
+  [{note: :c4, amp: 0.9}, {note: :c4, amp: 0.9}])
 
 # Fast, rolling 16th hats with a rising amplitude roll at the end.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6})
+s_hats = gen_score("x.xx.x.xx.x.x.xx",
+  [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.3}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.5},
+   {note: :c4, amp: 0.6}])
 
 # The "Off-Beat" Reese Bass (G Minor).
 # Hits strictly on the off-beats (steps 2, 6, 10, 14). The alternating 
 # 'cutoff' Hashes (70 vs 120) simulate a slow LFO filter wobble.
-s_bass  = (ring nil, nil, {:note => :g1, :cutoff => 70, :release => 0.2}, nil, nil, nil, {:note => :g1, :cutoff => 120, :release => 0.2}, nil, nil, nil, {:note => :eb1, :cutoff => 70, :release => 0.2}, nil, nil, nil, {:note => :d1, :cutoff => 120, :release => 0.2}, nil)
+s_bass = gen_score("..x...x...x...x.",
+  [{note: :g1, cutoff: 70, release: 0.2},
+   {note: :g1, cutoff: 120, release: 0.2},
+   {note: :eb1, cutoff: 70, release: 0.2},
+   {note: :d1, cutoff: 120, release: 0.2}])
 
 # Massive, euphoric Supersaw Chords (Gm to Ebmaj7).
 # Hit on the downbeats with a high cutoff (110) to create a soaring wall of sound.
-s_chords= (ring {:note => [:g3, :bb3, :d4, :f4], :cutoff => 110, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:eb3, :g3, :bb3, :db4], :cutoff => 110, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_chords = gen_score("x.......x.......",
+  [{note: [:g3, :bb3, :d4, :f4], cutoff: 110, release: 0.8, amp: 0.6},
+   {note: [:eb3, :g3, :bb3, :db4], cutoff: 110, release: 0.8, amp: 0.6}])
 
 # High-pitched, echoing Top-Line Melody (G Minor Pentatonic).
 # Uses :play_fm with a high divisor (3) to create a sharp, organic pluck.
 # Routed through the engine's tape echo for a cascading, stadium smear.
-s_fm    = (ring nil, nil, nil, {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, nil, nil, {:note => :eb5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :d5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil)
+s_fm = gen_score("...x.x.....x.x..",
+  [{note: :g5, amp: 0.6, divisor: 3, depth: 2, release: 0.3},
+   {note: :d5, amp: 0.5, divisor: 3, depth: 2, release: 0.3},
+   {note: :eb5, amp: 0.6, divisor: 3, depth: 2, release: 0.3},
+   {note: :d5, amp: 0.4, divisor: 3, depth: 2, release: 0.3}])
 
 # Ethereal, granular vocal pad (using :ambi_choir).
 # Long size (0.2) and low density (1) creates a slow, evolving celestial texture.
-s_grain = (ring {:note => :g4, :buffer => :ambi_choir, :pos => 0.3, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :eb4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_grain = gen_score("x.......x.......",
+  [{note: :g4, buffer: :ambi_choir, pos: 0.3, density: 1, size: 0.2, amp: 0.5},
+   {note: :eb4, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.2, amp: 0.5}])
 
 # ==========================================================
 # 3. THE PLAYBOOK
