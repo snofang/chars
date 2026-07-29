@@ -29,39 +29,49 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Relentless, driving 4/4 kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
 # Crisp, robotic 808 snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_snare = gen_score("....x.......x...", [:c4])
 
-# Rigid, alternating 16th hats. 
-# Notice the amplitude difference (0.3 vs 0.2) that creates a robotic march.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2})
+# Rigid, alternating 16th hats with robotic amplitude pattern.
+# Generate 16 steps alternating 0.3 and 0.2
+hat_amps = [0.3, 0.2].cycle.take(16)
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# The "Synth-Bass" (A Minor).
-# Plays continuous 16th notes, alternating octaves (:a2, :a3). 
-# High cutoff (100) and short release (0.1) create a relentless, robotic pulse.
-s_bass  = (ring {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a3, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1}, 
-           {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, 
-           {:note => :f2, :cutoff => 100, :release => 0.1}, {:note => :f2, :cutoff => 100, :release => 0.1}, {:note => :f3, :cutoff => 100, :release => 0.1}, {:note => :f2, :cutoff => 100, :release => 0.1}, 
-           {:note => :e2, :cutoff => 100, :release => 0.1}, {:note => :e2, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1})
+# The "Synth-Bass" (A Minor) – continuous 16ths, alternating octaves.
+bass_notes = [:a2, :a2, :a3, :a2, :a2, :a2, :g2, :g2,
+              :f2, :f2, :f3, :f2, :e2, :e2, :g2, :a2]
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1} })
 
-# Stark, staccato minor chord stabs (Am to F to E).
-# Hit strictly on the off-beats (steps 2, 6, 10, 14) to leave maximum room for the bass.
-s_chords= (ring nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:f3, :a3, :c4], nil, nil, nil, [:e3, :g3, :b3], nil)
+# Stark, staccato minor chord stabs (steps 2,6,10,14).
+s_chords = gen_score("..x..x..x..x....",
+  [[:a3, :c4, :e4],
+   [:a3, :c4, :e4],
+   [:f3, :a3, :c4],
+   [:e3, :g3, :b3]])
 
-# Exotic, "Eastern" FM Melody (A Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) and depth (2) to create a sharp, 
-# glassy square wave. Routed through the engine's tape echo for a smear.
-s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :c6, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, nil, 
-           {:note => :e6, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :a5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, nil, 
-           {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.1}, nil, 
-           {:note => :f5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.1}, nil, {:note => :a5, :amp => 0.7, :divisor => 3, :depth => 2, :release => 0.1}, nil)
+# Exotic, "Eastern" FM Melody – even steps with glassy tone.
+# Define base FM parameters and merge with note/amp for each step.
+fm_base = {divisor: 3, depth: 2, release: 0.1}
+fm_data = [
+  {note: :a5, amp: 0.6},
+  {note: :c6, amp: 0.5},
+  {note: :e6, amp: 0.6},
+  {note: :a5, amp: 0.5},
+  {note: :g5, amp: 0.6},
+  {note: :e5, amp: 0.5},
+  {note: :f5, amp: 0.6},
+  {note: :a5, amp: 0.7}
+].map { |h| fm_base.merge(h) }
+s_fm = gen_score("x.x.x.x.x.x.x.x.", fm_data)
 
-# Ethereal, granular "Computer" drone (using :ambi_choir).
-# Long size (0.2) and low density (1) creates a slow, evolving background 
-# texture that sounds like a supercomputer humming in the background.
-s_grain = (ring {:note => :a4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Ethereal, granular "Computer" drone – slow evolving texture.
+s_grain = gen_score("x.......x.......",
+  [{note: :a4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.2, amp: 0.5},
+   {note: :e4, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.2, amp: 0.5}])
 
 # ==========================================================
 # 3. THE PLAYBOOK

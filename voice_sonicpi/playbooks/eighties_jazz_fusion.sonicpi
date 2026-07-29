@@ -29,52 +29,64 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (E Minor - Bright, Technical, & Fast)
 # ==========================================================
 
-# The "Fusion" Kick. 
-# Highly syncopated. Hits on step 0, the 'a' of 1 (step 3), 
-# the 'and' of 2 (step 6), beat 3 (step 8), and the 'a' of 3 (step 11).
-s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, {:note => :c4, :amp => 0.7}, nil)
+# The "Fusion" Kick. Highly syncopated (steps 0,3,6,8,11,14).
+s_kick = gen_score("x..x..x.x..x..x.",
+  [ {note: :c4, amp: 1.0},
+    {note: :c4, amp: 0.6},
+    {note: :c4, amp: 0.8},
+    {note: :c4, amp: 1.0},
+    {note: :c4, amp: 0.5},
+    {note: :c4, amp: 0.7} ])
 
-# Crisp, technical snare with heavy ghost notes on the 'a' of 2 and 'a' of 4.
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.3}, nil)
+# Crisp, technical snare with heavy ghost notes (steps 4,7,12,14).
+s_snare = gen_score("....x..x....x.x.",
+  [ {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.3} ])
 
-# Rigid, driving 16th hats to maintain the high-speed momentum.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2})
+# Rigid, driving 16th hats to maintain high-speed momentum.
+hat_amps = [0.3, 0.2].cycle.take(16)
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# The "Slap Bass" (E Minor).
-# Plays continuous, melodic 16th notes. The high cutoff (110) and very 
-# short release (0.1) mimic an aggressive, picked/slapped electric bass.
-s_bass  = (ring {:note => :e2, :cutoff => 110, :release => 0.1}, {:note => :e3, :cutoff => 110, :release => 0.1}, {:note => :e2, :cutoff => 110, :release => 0.1}, {:note => :d3, :cutoff => 110, :release => 0.1}, 
-           {:note => :e2, :cutoff => 110, :release => 0.1}, {:note => :e3, :cutoff => 110, :release => 0.1}, {:note => :g2, :cutoff => 110, :release => 0.1}, {:note => :g3, :cutoff => 110, :release => 0.1}, 
-           {:note => :a2, :cutoff => 110, :release => 0.1}, {:note => :a3, :cutoff => 110, :release => 0.1}, {:note => :a2, :cutoff => 110, :release => 0.1}, {:note => :g3, :cutoff => 110, :release => 0.1}, 
-           {:note => :e2, :cutoff => 110, :release => 0.1}, {:note => :e3, :cutoff => 110, :release => 0.1}, {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :e3, :cutoff => 110, :release => 0.1})
+# The "Slap Bass" (E Minor) – continuous 16ths, melodic line.
+bass_notes = [:e2, :e3, :e2, :d3, :e2, :e3, :g2, :g3,
+              :a2, :a3, :a2, :g3, :e2, :e3, :d2, :e3]
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| {note: n, cutoff: 110, release: 0.1} })
 
-# Bright, jazzy minor 9th and major 7th chords (Em9 to Cmaj7 to D13).
-# Hit strictly on the off-beats (steps 2, 6, 10, 14) to leave room for the bass.
-s_chords= (ring nil, nil, [:e3, :g3, :b3, :d4], nil, nil, nil, [:e3, :g3, :b3, :d4], nil, nil, nil, [:c3, :e3, :g3, :b3], nil, nil, nil, [:d3, :f3, :a3, :c4], nil)
+# Bright, jazzy minor 9th and major 7th chords (Em9, Cmaj7, D13) on steps 2,6,10,14.
+s_chords = gen_score("..x..x..x..x....",
+  [[:e3, :g3, :b3, :d4],
+   [:e3, :g3, :b3, :d4],
+   [:c3, :e3, :g3, :b3],
+   [:d3, :f3, :a3, :c4]])
 
-# The "Shredding" FM Synth Lead (E Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
-# brassy DX7 tone. Plays a rapid, continuous 16th-note solo.
-s_fm    = (ring {:note => :e5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :g5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :b5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :e6, :amp => 0.7, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :b5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, 
-           nil, 
-           {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :b5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, 
-           {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1})
+# The "Shredding" FM Synth Lead (E Minor Pentatonic) – rapid solo with one rest at step7.
+fm_data = [
+  {note: :e5, amp: 0.6, divisor: 2, depth: 3, release: 0.1},
+  {note: :g5, amp: 0.5, divisor: 2, depth: 3, release: 0.1},
+  {note: :a5, amp: 0.6, divisor: 2, depth: 3, release: 0.1},
+  {note: :b5, amp: 0.5, divisor: 2, depth: 3, release: 0.1},
+  {note: :e6, amp: 0.7, divisor: 2, depth: 3, release: 0.1},
+  {note: :b5, amp: 0.5, divisor: 2, depth: 3, release: 0.1},
+  {note: :a5, amp: 0.6, divisor: 2, depth: 3, release: 0.1},
+  # step7 is nil
+  {note: :g5, amp: 0.6, divisor: 2, depth: 3, release: 0.1},
+  {note: :e5, amp: 0.5, divisor: 2, depth: 3, release: 0.1},
+  {note: :d5, amp: 0.6, divisor: 2, depth: 3, release: 0.1},
+  {note: :e5, amp: 0.5, divisor: 2, depth: 3, release: 0.1},
+  {note: :g5, amp: 0.6, divisor: 2, depth: 3, release: 0.1},
+  {note: :a5, amp: 0.5, divisor: 2, depth: 3, release: 0.1},
+  {note: :b5, amp: 0.6, divisor: 2, depth: 3, release: 0.1},
+  {note: :a5, amp: 0.5, divisor: 2, depth: 3, release: 0.1}
+]
+s_fm = gen_score("xxxxxxx.xxxxxxxx", fm_data)  # 7 x, ., 8 x
 
-# Bright, Brass "Stab" hit (Granular Synth).
-# High density, tiny size = a sharp, jazzy brass section stab.
-s_vocal = (ring {:note => :e4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.04, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Bright, Brass "Stab" hit – sharp brass section stab on step0.
+s_vocal = gen_score("x...............",
+  [ {note: :e4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.04, amp: 0.5} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK

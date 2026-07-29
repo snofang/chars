@@ -29,35 +29,45 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Pristine, punchy LinnDrum-style 4/4 kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Crisp, organic LinnDrum snare strictly on beats 2 and 4 (steps 4 and 12), 
-# with a ghost snare on the 'a' of 4 (step 14).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.3}, nil)
+# Crisp, organic LinnDrum snare with ghost on step 14.
+s_snare = gen_score("....x.......x.x.",
+  [ {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.9},
+    {note: :c4, amp: 0.3} ])
 
-# Rigid, alternating 16th hats. 
-# Notice the amplitude difference (0.3 vs 0.15) that creates a robotic march.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15})
+# Rigid, alternating 16th hats (0.3 / 0.15).
+hat_amps = [0.3, 0.15].cycle.take(16)
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# The "Fretless" Melodic Bass (D Major).
-# Plays a slow, melodic line. Mid cutoff (90) and medium release (0.3) 
-# mimic the warm, gliding tone of a fretless electric bass.
-s_bass  = (ring {:note => :d2, :release => 0.3, :cutoff => 90}, nil, nil, nil, {:note => :d2, :release => 0.3, :cutoff => 90}, nil, nil, nil, {:note => :f2, :release => 0.3, :cutoff => 90}, nil, nil, nil, {:note => :g2, :release => 0.3, :cutoff => 90}, nil, nil, nil)
+# "Fretless" melodic bass – hits on steps 0,4,8,12.
+bass_notes = [:d2, :d2, :f2, :g2]
+bass_base = {release: 0.3, cutoff: 90}
+s_bass = gen_score("x...x...x...x...",
+  bass_notes.map { |n| bass_base.merge(note: n) })
 
-# Lush, sweeping "String Synth" Chords (Dmaj7 to Gmaj7).
-# Hit on the downbeats. The slow 0.5-beat attack and massive 2.0-beat release 
-# blur the chords together into a continuous, cinematic string pad.
-s_chords= (ring {:note => [:d3, :a3, :d4, :fs4], :cutoff => 100, :attack => 0.5, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:g2, :d3, :g3, :b3], :cutoff => 100, :attack => 0.5, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# Lush string synth chords – hits on steps 0 and 8.
+s_chords = gen_score("x.......x.......",
+  [ {note: [:d3, :a3, :d4, :fs4], cutoff: 100, attack: 0.5, release: 2.0, amp: 0.6},
+    {note: [:g2, :d3, :g3, :b3], cutoff: 100, attack: 0.5, release: 2.0, amp: 0.6} ])
 
-# Bright, shimmering "Marimba/Celesta" Melody (D Major Pentatonic).
-# Uses :play_fm with a high divisor (3) and low depth (1) to create a soft, 
-# glassy, sine-like wave. Routed through the engine's tape echo for a smear.
-s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 0.3}, nil, {:note => :a4, :amp => 0.4, :divisor => 3, :depth => 1, :release => 0.3}, nil, {:note => :d5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 0.3}, nil, {:note => :g4, :amp => 0.4, :divisor => 3, :depth => 1, :release => 0.3}, nil, {:note => :a4, :amp => 0.5, :divisor => 3, :depth => 1, :release => 0.3}, nil, nil, nil)
+# Shimmering marimba/celesta melody – hits on steps 4,6,8,10,12.
+fm_base = {divisor: 3, depth: 1, release: 0.3}
+fm_notes = [
+  {note: :d5, amp: 0.5},
+  {note: :a4, amp: 0.4},
+  {note: :d5, amp: 0.5},
+  {note: :g4, amp: 0.4},
+  {note: :a4, amp: 0.5}
+]
+s_fm = gen_score("....x.x.x.x.x...", fm_notes.map { |h| fm_base.merge(h) })
 
-# Ethereal, sweeping "Choir" Pad (Granular Synth).
-# Long size (0.2) and low density (1) creates a slow, evolving background 
-# texture that sounds like a massive choir in a concert hall.
-s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.2, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.6, :density => 2, :size => 0.2, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil)
+# Ethereal choir pad – hits on steps 0 and 8.
+s_grain = gen_score("x.......x.......",
+  [ {note: :d4, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.2, amp: 0.4},
+    {note: :g4, buffer: :ambi_choir, pos: 0.6, density: 2, size: 0.2, amp: 0.4} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK

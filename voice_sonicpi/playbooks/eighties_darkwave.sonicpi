@@ -30,34 +30,55 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
 # Heavy, cavernous 4/4 kick. 
 # Hits on step 0 and beat 3 (step 8).
-s_kick  = (ring {:note => :c4, :amp => 1.1}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.1}, nil, nil, nil, nil, nil, nil, nil)
+s_kick = gen_score("x.......x.......",
+  [{note: :c4, amp: 1.1}, {note: :c4, amp: 1.1}])
 
 # Crisp, retro snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil)
+s_snare = gen_score("....x.......x...",
+  [{note: :c4, amp: 1.0}, {note: :c4, amp: 1.0}])
 
-# Rigid, driving 8th hats.
-s_hats  = (ring {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil)
+# Rigid, driving 8th hats – every even step with alternating amps.
+s_hats = gen_score("x.x.x.x.x.x.x.x.",
+  [{note: :c4, amp: 0.2}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.2}, {note: :c4, amp: 0.3}])
 
 # The "Chorus Bass" (A Minor).
 # Plays driving 8th notes. The high cutoff (90) and short release (0.2) 
 # mimic a picked, chorus-soaked electric bass guitar.
-s_bass  = (ring {:note => :a1, :release => 0.2, :cutoff => 90}, nil, {:note => :a1, :release => 0.2, :cutoff => 90}, nil, {:note => :a1, :release => 0.2, :cutoff => 90}, nil, {:note => :g1, :release => 0.2, :cutoff => 90}, nil, {:note => :f1, :release => 0.2, :cutoff => 90}, nil, {:note => :f1, :release => 0.2, :cutoff => 90}, nil, {:note => :e1, :release => 0.2, :cutoff => 90}, nil, {:note => :e1, :release => 0.2, :cutoff => 90}, nil)
+s_bass = gen_score("x.x.x.x.x.x.x.x.",
+  [{note: :a1, release: 0.2, cutoff: 90},
+   {note: :a1, release: 0.2, cutoff: 90},
+   {note: :a1, release: 0.2, cutoff: 90},
+   {note: :g1, release: 0.2, cutoff: 90},
+   {note: :f1, release: 0.2, cutoff: 90},
+   {note: :f1, release: 0.2, cutoff: 90},
+   {note: :e1, release: 0.2, cutoff: 90},
+   {note: :e1, release: 0.2, cutoff: 90}])
 
 # Cold, sweeping minor chords (Am to F to E).
 # Hit on the downbeats. The low cutoff (80) and massive release (2.0) 
 # blur the chords together into a continuous, gothic wave.
-s_chords= (ring {:note => [:a3, :c4, :e4], :cutoff => 80, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:f3, :a3, :c4], :cutoff => 80, :release => 2.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_chords = gen_score("x.......x.......",
+  [{note: [:a3, :c4, :e4], cutoff: 80, release: 2.0, amp: 0.6},
+   {note: [:f3, :a3, :c4], cutoff: 80, release: 2.0, amp: 0.6}])
 
 # Melancholic, echoing "Synth" Melody (A Minor Pentatonic).
 # Uses :play_fm with a low divisor (2) and depth (1) to create a soft, 
 # sine-like wave. Routed through the engine's tape echo for a cavernous, 
 # gothic smear.
-s_fm    = (ring nil, nil, nil, nil, {:note => :a4, :amp => 0.5, :divisor => 2, :depth => 1, :release => 0.5}, nil, nil, nil, nil, nil, {:note => :c5, :amp => 0.4, :divisor => 2, :depth => 1, :release => 0.5}, nil, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 1, :release => 0.5}, nil)
+s_fm = gen_score("....x.....x...x.",
+  [{note: :a4, amp: 0.5, divisor: 2, depth: 1, release: 0.5},
+   {note: :c5, amp: 0.4, divisor: 2, depth: 1, release: 0.5},
+   {note: :e5, amp: 0.5, divisor: 2, depth: 1, release: 0.5}])
 
 # Ethereal, ghostly vocal "Sigh" (Granular Synth).
 # Long size (0.2) and low density (1) creates a slow, evolving background 
 # texture that sounds like a choir echoing in an empty cathedral.
-s_grain = (ring {:note => :a3, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :f3, :buffer => :ambi_choir, :pos => 0.6, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_grain = gen_score("x.......x.......",
+  [{note: :a3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.2, amp: 0.5},
+   {note: :f3, buffer: :ambi_choir, pos: 0.6, density: 1, size: 0.2, amp: 0.5}])
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -28,35 +28,48 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Soft, driving 4/4 kick with a syncopated 16th hit on the 'a' of 4 (step 14).
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, {:note => :c4, :amp => 0.6}, nil)
+s_kick = gen_score("x...x...x...x..x",
+  [:c4, :c4, :c4, :c4, {note: :c4, amp: 0.6}])
 
 # Crisp, polished snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+s_snare = gen_score("....x.......x...", [:c4, :c4])
 
-# "LinnDrum Swing" Hi-Hats.
-# Notice the alternating amplitudes and gaps (`nil`) that simulate a polished 
-# 80s drum machine with a 54% swing quantize.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.4})
+# "LinnDrum Swing" Hi-Hats – alternating amplitudes and gaps.
+s_hats = gen_score("x.xxx.xx.xx.xxx.",
+  [{note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.15},
+   {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.15},
+   {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.15},
+   {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.15},
+   {note: :c4, amp: 0.4}])
 
-# The "Slap Bass" (D Major).
-# Plays continuous, syncopated 16th notes. The high cutoff (110) and very 
-# short release (0.1) mimic an aggressive, picked/slapped electric bass.
-s_bass  = (ring {:note => :d2, :cutoff => 110, :release => 0.1}, nil, {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :d3, :cutoff => 110, :release => 0.1}, nil, {:note => :a2, :cutoff => 110, :release => 0.1}, nil, {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :d3, :cutoff => 110, :release => 0.1}, nil, {:note => :d2, :cutoff => 110, :release => 0.1}, {:note => :e2, :cutoff => 110, :release => 0.1}, nil, {:note => :f2, :cutoff => 110, :release => 0.1}, nil, {:note => :e2, :cutoff => 110, :release => 0.1})
+# The "Slap Bass" (D Major) – syncopated 16ths, high cutoff, short release.
+bass_notes = [:d2, :d2, :d3, :a2, :d2, :d3, :d2, :e2, :f2, :e2]
+s_bass = gen_score("x.xx.x.xxx.xx.x.x",
+  bass_notes.map { |n| {note: n, cutoff: 110, release: 0.1} })
 
-# Warm, jazzy Major 9th chords (Dmaj9 to Em9).
-# Hit on the downbeats. The high cutoff (100) gives them a bright, pristine 
-# "Yamaha DX7" electric piano feel.
-s_chords= (ring {:note => [:d3, :f3, :a3, :e4], :cutoff => 100, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:e3, :g3, :b3, :f4], :cutoff => 100, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# Warm, jazzy Major 9th chords (Dmaj9 to Em9) – pristine electric piano feel.
+s_chords = gen_score("x.......x.......",
+  [{note: [:d3, :f3, :a3, :e4], cutoff: 100, release: 0.8, amp: 0.6},
+   {note: [:e3, :g3, :b3, :f4], cutoff: 100, release: 0.8, amp: 0.6}])
 
-# Mellow, soaring "Synth Sax" Melody (D Major Pentatonic).
-# Uses :play_fm with a low divisor (2) and depth (2) to create a warm, 
-# brassy tone. Routed through the engine's tape echo for a cascading smear.
-s_fm    = (ring nil, nil, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.5}, nil, {:note => :f5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.5}, nil, nil, nil, nil, nil, {:note => :a5, :amp => 0.7, :divisor => 2, :depth => 2, :release => 0.5}, nil, {:note => :d6, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.5}, nil)
+# Mellow, soaring "Synth Sax" Melody (D Major Pentatonic) – routed through tape echo.
+s_fm = gen_score("....x.x.....x.x.",
+  [{note: :d5, amp: 0.6, divisor: 2, depth: 2, release: 0.5},
+   {note: :f5, amp: 0.5, divisor: 2, depth: 2, release: 0.5},
+   {note: :a5, amp: 0.7, divisor: 2, depth: 2, release: 0.5},
+   {note: :d6, amp: 0.5, divisor: 2, depth: 2, release: 0.5}])
 
-# Ethereal, ambient vocal "Ahh" (Granular Synth).
-# Long size (0.2) and low density (1) creates a slow, evolving background 
-# texture that sounds like a distant voice echoing across a Tokyo skyline.
-s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Ethereal, ambient vocal "Ahh" – long, sparse grains.
+s_grain = gen_score("x.......x.......",
+  [{note: :d4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.2, amp: 0.5},
+   {note: :e4, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.2, amp: 0.5}])
 
 # ==========================================================
 # 3. THE PLAYBOOK

@@ -30,40 +30,63 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
 # Heavy, analog clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_clap = gen_score("....x.......x...", [:c4])
 
 # Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+s_hats = gen_score("..x..x..x..x....",
+  [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5},
+   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
 
 # The "SH-101" Rolling Bass (D Minor).
 # Plays continuous 16th notes, alternating octaves (:d2, :d3). 
 # High cutoff (100) and short release (0.1) create a relentless, buzzing churn.
-s_bass  = (ring {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d3, :cutoff => 100, :release => 0.1}, {:note => :d2, :cutoff => 100, :release => 0.1}, 
-           {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :d2, :cutoff => 100, :release => 0.1}, {:note => :f2, :cutoff => 100, :release => 0.1}, {:note => :f2, :cutoff => 100, :release => 0.1}, 
-           {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :g3, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, 
-           {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :f2, :cutoff => 100, :release => 0.1})
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  [{note: :d2, cutoff: 100, release: 0.1},
+   {note: :d2, cutoff: 100, release: 0.1},
+   {note: :d3, cutoff: 100, release: 0.1},
+   {note: :d2, cutoff: 100, release: 0.1},
+   {note: :d2, cutoff: 100, release: 0.1},
+   {note: :d2, cutoff: 100, release: 0.1},
+   {note: :f2, cutoff: 100, release: 0.1},
+   {note: :f2, cutoff: 100, release: 0.1},
+   {note: :g2, cutoff: 100, release: 0.1},
+   {note: :g2, cutoff: 100, release: 0.1},
+   {note: :g3, cutoff: 100, release: 0.1},
+   {note: :g2, cutoff: 100, release: 0.1},
+   {note: :a2, cutoff: 100, release: 0.1},
+   {note: :a2, cutoff: 100, release: 0.1},
+   {note: :g2, cutoff: 100, release: 0.1},
+   {note: :f2, cutoff: 100, release: 0.1}])
 
 # Massive, emotional "String Stab" Chords (Dm to G to A).
 # Hit strictly on the off-beats (steps 2, 6, 10, 14). High cutoff (110) 
 # and long release (1.5) create a soaring, stadium-sized wall of sound.
-s_chords= (ring nil, nil, {:note => [:d3, :f3, :a3], :cutoff => 110, :release => 1.5, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:d3, :f3, :a3], :cutoff => 110, :release => 1.5, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:g3, :b3, :d4], :cutoff => 110, :release => 1.5, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 110, :release => 1.5, :amp => 0.6}, nil)
+s_chords = gen_score("..x..x..x..x....",
+  [{note: [:d3, :f3, :a3], cutoff: 110, release: 1.5, amp: 0.6},
+   {note: [:d3, :f3, :a3], cutoff: 110, release: 1.5, amp: 0.6},
+   {note: [:g3, :b3, :d4], cutoff: 110, release: 1.5, amp: 0.6},
+   {note: [:a3, :c4, :e4], cutoff: 110, release: 1.5, amp: 0.6}])
 
 # High-pitched, echoing "Starlight" Melody (D Minor Pentatonic).
 # Uses :play_fm with a high divisor (3). Notice the massive gaps (`nil`) 
 # between the notes. Routed through the global echo bus, these empty spaces 
 # are filled by delay tails, creating a cascading, futuristic soundscape.
-s_fm    = (ring {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, {:note => :f5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, {:note => :g5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, nil)
+s_fm = gen_score("x...x.x...x.x...",
+  [{note: :d5, amp: 0.6, divisor: 3, depth: 2, release: 0.3},
+   {note: :f5, amp: 0.5, divisor: 3, depth: 2, release: 0.3},
+   {note: :a5, amp: 0.6, divisor: 3, depth: 2, release: 0.3},
+   {note: :g5, amp: 0.5, divisor: 3, depth: 2, release: 0.3},
+   {note: :d5, amp: 0.6, divisor: 3, depth: 2, release: 0.3}])
 
 # Ethereal, granular cosmic drone (using :ambi_choir).
 # Long size (0.3) and low density (1) creates a slow, evolving celestial 
 # texture that drifts in the background like a distant galaxy.
-s_grain = (ring {:note => :d4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.5, :density => 1, :size => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+s_grain = gen_score("x.......x.......",
+  [{note: :d4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.3, amp: 0.5},
+   {note: :a4, buffer: :ambi_choir, pos: 0.5, density: 1, size: 0.3, amp: 0.5}])
 
 # ==========================================================
 # 3. THE PLAYBOOK

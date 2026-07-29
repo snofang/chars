@@ -1,108 +1,121 @@
 # ==========================================================
 # PLAYBOOK: 80s GO-GO / WASHINGTON D.C. FUNK
-# (Pioneered by Chuck Brown, Trouble Funk, and Experience Unlimited)
-# ========================================================== 
-# 
+# Funky, Driving, Live Band Pocket
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 80s Go-Go.
-# We have explored 80s Synth-Funk and 70s Disco, but Go-Go is the 
-# sound of Washington D.C. It is a highly distinct, live-band fusion 
-# of funk, hip-hop, and early dance music. It relies on a relentless, 
-# driving 4/4 "pocket" drum beat, heavy continuous conga percussion, 
-# call-and-response vocal chants, and a melodic, syncopated bassline.
+# Go‑Go (Chuck Brown, Trouble Funk) is a distinct live‑band
+# fusion of funk, hip‑hop, and early dance music from D.C. It
+# relies on a relentless 4/4 pocket, heavy conga percussion,
+# call‑and‑response vocals, and a melodic syncopated bassline.
+# This playbook captures that unstoppable, lopsided groove.
 #
-# This playbook perfectly demonstrates how to use the `:play_fm` synth 
-# to simulate a live conga/cowbell percussion loop. By using a high 
-# `divisor` and a tiny `release`, the engine turns the FM synth into a 
-# hollow, woody "thwack" that drives the track forward unstoppably.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 112 BPM
+# Key: E Dorian (funky, driving)
+# Rhythm: Syncopated kick (0,3,4,8,11,12), snare with ghost
+# (4,7,12), driving 16th hats with alternating amps, syncopated
+# FM congas, walking bass, off‑beat horn stabs, vocal chants.
+# Timbre: Live kick (bd_haus), crisp snare (sn_dolf), robotic
+# hats (cymbal_closed), woody congas (fm, divisor 4, short
+# release), warm bass (dsaw, low cutoff), staccato chords
+# (blade), granular vocal chants (ambi_choir).
+# Arrangement: Pocket (drums+bass+congas) → Vibe (add horn
+# stabs) → Drop (add vocal chants).
 # ==========================================================
 
 use_bpm 112
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (E Dorian - Funky, Driving, & Live)
-# ==========================================================
+# Scores
 
-# The "Go-Go Pocket" Kick. 
-# Syncopated march. Hits on step 0, the 'a' of 1 (step 3), 
-# beat 2 (step 4), and the 'a' of 3 (step 11).
-s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 0.6}, :c4, nil, nil, nil, :c4, nil, nil, {:note => :c4, :amp => 0.6}, :c4, nil, nil, nil)
+# Go‑Go pocket kick – syncopated march (steps 0,3,4,8,11,12)
+s_kick = gen_score("x..xx...x..xx...",
+  [:c4,
+   {note: :c4, amp: 0.6},
+   :c4,
+   :c4,
+   {note: :c4, amp: 0.6},
+   :c4])
 
-# Crisp, live snare strictly on beats 2 and 4 (steps 4 and 12), 
-# with a ghost snare on the 'and' of 2 (step 7).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+# Crisp live snare with ghost on step 7 (steps 4,7,12)
+s_snare = gen_score("....x..x....x...",
+  [{note: :c4, amp: 0.9},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.9}])
 
-# Rigid, driving 16th hats. 
-# Notice the amplitude difference (0.3 vs 0.15) that creates a robotic march.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.15})
+# Driving 16th hats with alternating amplitudes
+hat_amps = [0.3, 0.15, 0.3, 0.15, 0.3, 0.15, 0.3, 0.15,
+            0.3, 0.15, 0.3, 0.15, 0.3, 0.15, 0.3, 0.15]
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# The "Live Conga" Loop (E Dorian).
-# Uses :play_fm with a high divisor (4) and depth (1) to create a hollow, 
-# woody conga/tom sound. The syncopated, interlocking hits create a 
-# hypnotic, polyrhythmic groove over the 4/4 grid.
-s_fm    = (ring {:note => :e4, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :e4, :amp => 0.3, :divisor => 4, :depth => 1, :release => 0.05}, {:note => :b4, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05}, {:note => :e4, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :e4, :amp => 0.3, :divisor => 4, :depth => 1, :release => 0.05}, {:note => :b4, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05}, {:note => :e4, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :e4, :amp => 0.3, :divisor => 4, :depth => 1, :release => 0.05}, {:note => :a4, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05}, {:note => :e4, :amp => 0.5, :divisor => 4, :depth => 1, :release => 0.05}, nil, {:note => :e4, :amp => 0.3, :divisor => 4, :depth => 1, :release => 0.05}, {:note => :b4, :amp => 0.6, :divisor => 4, :depth => 1, :release => 0.05})
+# Live conga loop – FM with divisor 4, woody thwack (steps 0,2,3,4,6,7,8,10,11,12,14,15)
+s_fm = gen_score("x.xxx.xxx.xxx.xx",
+  [{note: :e4, amp: 0.5, divisor: 4, depth: 1, release: 0.05},
+   {note: :e4, amp: 0.3, divisor: 4, depth: 1, release: 0.05},
+   {note: :b4, amp: 0.6, divisor: 4, depth: 1, release: 0.05},
+   {note: :e4, amp: 0.5, divisor: 4, depth: 1, release: 0.05},
+   {note: :e4, amp: 0.3, divisor: 4, depth: 1, release: 0.05},
+   {note: :b4, amp: 0.6, divisor: 4, depth: 1, release: 0.05},
+   {note: :e4, amp: 0.5, divisor: 4, depth: 1, release: 0.05},
+   {note: :e4, amp: 0.3, divisor: 4, depth: 1, release: 0.05},
+   {note: :a4, amp: 0.6, divisor: 4, depth: 1, release: 0.05},
+   {note: :e4, amp: 0.5, divisor: 4, depth: 1, release: 0.05},
+   {note: :e4, amp: 0.3, divisor: 4, depth: 1, release: 0.05},
+   {note: :b4, amp: 0.6, divisor: 4, depth: 1, release: 0.05}])
 
-# Deep, round, melodic bass (E Dorian).
-# FIXED: Exactly 16 steps. Walks a syncopated line. Low cutoff (70) and 
-# medium release (0.2) to create a warm, muffled undercurrent.
-s_bass  = (ring {:note => :e2, :release => 0.2, :cutoff => 70}, nil, nil, {:note => :e2, :release => 0.2, :cutoff => 70}, nil, {:note => :g2, :release => 0.2, :cutoff => 70}, nil, {:note => :a2, :release => 0.2, :cutoff => 70}, nil, {:note => :g2, :release => 0.2, :cutoff => 70}, nil, {:note => :e2, :release => 0.2, :cutoff => 70}, nil, {:note => :d2, :release => 0.2, :cutoff => 70}, nil, {:note => :e2, :release => 0.2, :cutoff => 70})
+# Deep melodic bass – warm, syncopated (steps 0,3,5,7,9,11,13,15)
+s_bass = gen_score("x..x.x.x.x.x.x.x",
+  [{note: :e2, release: 0.2, cutoff: 70},
+   {note: :e2, release: 0.2, cutoff: 70},
+   {note: :g2, release: 0.2, cutoff: 70},
+   {note: :a2, release: 0.2, cutoff: 70},
+   {note: :g2, release: 0.2, cutoff: 70},
+   {note: :e2, release: 0.2, cutoff: 70},
+   {note: :d2, release: 0.2, cutoff: 70},
+   {note: :e2, release: 0.2, cutoff: 70}])
 
-# Stark, staccato horn/clav stabs (Em to A to D).
-# Hit strictly on the off-beats (steps 2, 6, 10, 14). High cutoff (100) 
-# and short release (0.2) create a sharp, funky wall of sound.
-s_chords= (ring nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:e3, :g3, :b3], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:d3, :fs3, :a3], nil)
+# Staccato horn/clav stabs (steps 2,6,10,14)
+s_chords = gen_score("..x...x...x...x.",
+  [[:e3, :g3, :b3],
+   [:e3, :g3, :b3],
+   [:a3, :c4, :e4],
+   [:d3, :fs3, :a3]])
 
-# Call-and-response "Go-Go" vocal chant (Granular Synth).
-# Medium density, small size = a raw, repetitive vocal hit.
-s_vocal = (ring nil, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.1, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil)
+# Call‑and‑response vocal chants (steps 4 and 12)
+s_vocal = gen_score("....x.......x...",
+  [{note: :e4, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.05, amp: 0.6},
+   {note: :e4, buffer: :ambi_choir, pos: 0.1, density: 2, size: 0.05, amp: 0.6}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Pocket - Just the driving drums, bass, and congas (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4], [:play_fm, s_fm, 4] ],
-  
-  # Scene 2: The Vibe - Add the stark horn stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Drop - The call-and-response vocal chants drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], [:play_chords, s_chords, 8], 
+  # Scene 1: Pocket – Drums, Bass, Congas
+  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4],
+    [:play_fm, s_fm, 4] ],
+
+  # Scene 2: Vibe – Add Horn Stabs
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_fm, s_fm, 8], [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Drop – Add Vocal Chants
+  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_fm, s_fm, 8], [:play_chords, s_chords, 8],
     [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN LIVE FUNK]
-# 
-# 1. FM as Congas: Look at `s_fm`. The `:play_fm` synth is given a 
-#    `divisor` of `4` and a `release` of `0.05`. This extreme harmonic 
-#    ratio and tiny decay force the FM synth to produce a hollow, woody 
-#    "thwack" that perfectly mimics a live conga player. The engine's 
-#    strict master clock ensures this complex loop locks perfectly with 
-#    the 4/4 kick.
-#
-# 2. The Go-Go Pocket: Look at `s_kick`. It hits on steps 0, 3, 4, 8, 11, 12. 
-#    This specific, syncopated march is the absolute genetic code of Go-Go 
-#    music. By avoiding the standard 4/4 pulse, the engine creates a 
-#    relentless, lopsided groove that feels like a live band playing in 
-#    perfect sync.
-#
-# 3. Call-and-Response: Go-Go relies heavily on repetitive, percussive 
-#    vocal chants. The `s_vocal` sequence uses the granular engine to chop 
-#    a vocal into a raw, rhythmic hit. By placing it on beats 2 and 4, the 
-#    engine creates the perfect call-and-response structure for a live 
-#    Go-Go party.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - FM as congas: divisor 4 and release 0.05 create a hollow,
+#   woody thwack – the engine's grid locks the polyrhythmic loop.
+# - Go‑Go pocket: syncopated kick on 0,3,4,8,11,12 – the lopsided
+#   march drives the live band feel.
+# - Call‑and‑response: granular vocal chops on 2 and 4 create the
+#   signature repetitive chant structure.
 # ==========================================================

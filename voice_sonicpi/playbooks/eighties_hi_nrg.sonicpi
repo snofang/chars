@@ -1,109 +1,108 @@
 # ==========================================================
 # PLAYBOOK: 80s HI-NRG / EURODISCO
-# (Pioneered by Patrick Cowley, Bobby Orlando, and Dead or Alive)
-# ========================================================== 
-# 
+# Piercing, Robotic, High Energy Momentum
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 80s Hi-NRG.
-# We have explored Italo Disco and Synthwave, but Hi-NRG is faster, 
-# more aggressive, and more robotic. Operating at 138 BPM, it is defined 
-# by a relentless, octave-jumping 16th-note bassline (the "gallop"), 
-# rigid off-beat hi-hats, and piercing, synthesized orchestral stabs.
+# Hi‑NRG (Patrick Cowley, Dead or Alive) is defined by a relentless
+# octave‑jumping 16th‑note bassline (the "gallop"), rigid off‑beat
+# hi‑hats, and piercing synthesized orchestral stabs. This playbook
+# captures that unstoppable, high‑energy 80s club pulse.
 #
-# This playbook perfectly demonstrates how to use the 16-step grid to 
-# create unstoppable momentum. By pushing the `:play_sub` synth to play 
-# continuous 16th notes with a high `cutoff` and alternating octaves, 
-# the engine creates a driving, high-energy pulse that defined the 80s 
-# gay club scene and early mainstream dance pop.
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 138 BPM
+# Key: A minor (piercing, driving)
+# Rhythm: 4/4 kick, clap on 2/4, off‑beat hats, gallop bass
+# on every 16th with octave jumps, staccato chord stabs on
+# off‑beats, piercing FM lead, chopped robotic vocal stutter.
+# Timbre: Relentless kick (bd_haus), synthetic clap (sn_dolf),
+# off‑beat hats (cymbal_closed), gallop bass (dsaw, high cutoff,
+# short release), orchestral stabs (blade), FM lead (divisor 3,
+# depth 4), granular vocal stutter (ambi_choir).
+# Arrangement: Drive (kick+hats+bass) → Vibe (add clap+stabs)
+# → Drop (add lead+vocal).
 # ==========================================================
 
 use_bpm 138
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
 eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Piercing, Robotic, & High Energy)
-# ==========================================================
+# Scores
 
-# Relentless 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Relentless 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Heavy, synthetic clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Heavy synthetic clap on beats 2 and 4
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Rigid off‑beat hats (steps 2,6,10,14) with varying amplitudes
+s_hats = gen_score("..x..x..x..x....",
+  [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5},
+   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
 
-# The "Gallop" Bass (A Minor).
-# Plays continuous 16th notes. Alternating octaves (:a2, :a3) with a 
-# high cutoff (100) creates a relentless, robotic, high-energy pulse.
-s_bass  = (ring {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a3, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a3, :cutoff => 100, :release => 0.1}, 
-           {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a3, :cutoff => 100, :release => 0.1}, {:note => :e2, :cutoff => 100, :release => 0.1}, {:note => :e3, :cutoff => 100, :release => 0.1}, 
-           {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a3, :cutoff => 100, :release => 0.1}, {:note => :a2, :cutoff => 100, :release => 0.1}, {:note => :a3, :cutoff => 100, :release => 0.1}, 
-           {:note => :g2, :cutoff => 100, :release => 0.1}, {:note => :g3, :cutoff => 100, :release => 0.1}, {:note => :f2, :cutoff => 100, :release => 0.1}, {:note => :e2, :cutoff => 100, :release => 0.1})
+# The "Gallop" Bass – continuous 16ths with octave jumps
+# Define the 16-step note sequence (alternating low/high)
+bass_notes = [
+  :a2, :a3, :a2, :a3, :a2, :a3, :e2, :e3,
+  :a2, :a3, :a2, :a3, :g2, :g3, :f2, :e2
+]
+# Build hash array once
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| {note: n, cutoff: 100, release: 0.1} })
 
-# Synthetic, staccato orchestral stabs (A Minor).
-# Hit strictly on the off-beats in sync with the open hats.
-s_chords= (ring nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil, [:f3, :a3, :c4], nil)
+# Staccato orchestral stabs on off‑beats (steps 2,6,10,14)
+s_chords = gen_score("..x..x..x..x....",
+  [[:a3, :c4, :e4],
+   [:a3, :c4, :e4],
+   [:g3, :bb3, :d4],
+   [:f3, :a3, :c4]])
 
-# Piercing, metallic FM lead (A Minor).
-# FIXED: Exactly 16 steps (8 notes, 8 rests).
-s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 4, :release => 0.2}, nil, 
-           {:note => :e5, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.2}, nil, 
-           {:note => :c6, :amp => 0.7, :divisor => 3, :depth => 4, :release => 0.2}, nil, 
-           {:note => :e6, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.2}, nil, 
-           {:note => :a5, :amp => 0.6, :divisor => 3, :depth => 4, :release => 0.2}, nil, 
-           {:note => :c6, :amp => 0.7, :divisor => 3, :depth => 4, :release => 0.2}, nil, 
-           {:note => :d6, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.2}, nil, 
-           {:note => :e6, :amp => 0.7, :divisor => 3, :depth => 4, :release => 0.2}, nil)
+# Piercing metallic FM lead – sparse on even steps (0,2,4,...)
+# Define the note and amp sequence
+fm_notes = [
+  {note: :a5, amp: 0.6},
+  {note: :e5, amp: 0.5},
+  {note: :c6, amp: 0.7},
+  {note: :e6, amp: 0.5},
+  {note: :a5, amp: 0.6},
+  {note: :c6, amp: 0.7},
+  {note: :d6, amp: 0.5},
+  {note: :e6, amp: 0.7}
+]
+s_fm = gen_score("x.x.x.x.x.x.x.x.",
+  fm_notes.map { |h| h.merge(divisor: 3, depth: 4, release: 0.2) })
 
-# Chopped, robotic vocal stutter (Granular Synth).
-# High density, tiny size = a sharp, sugary, robotic vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil)
+# Chopped robotic vocal stutter – steps 4 and 12
+s_vocal = gen_score("....x.......x...",
+  [{note: :a4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.03, amp: 0.6},
+   {note: :c5, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.03, amp: 0.6}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Drive - Just the kick, off-beat hats, and gallop bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: The Vibe - Add the heavy claps and synthetic stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Drop - The piercing FM lead and vocal chops drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_sub, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
-    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1: Drive – Kick, Hats, Gallop Bass
+  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4],
+    [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Vibe – Add Clap and Stabs
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8], [:play_snare, s_clap, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Drop – Add FM Lead and Vocal
+  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8], [:play_snare, s_clap, 8],
+    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN RELENTLESS MOMENTUM]
-# 
-# 1. The Gallop Bass: Look at `s_bass`. It plays on EVERY single 16th step, 
-#    alternating between the low octave (:a2) and the high octave (:a3). 
-#    By using a high `cutoff` (100) and a very short `release` (0.1), the 
-#    engine turns the `:dsaw` synth into a relentless, piercing "gallop" 
-#    that drives the track forward unstoppably. This is the absolute 
-#    genetic code of Hi-NRG.
-#
-# 2. Rigid Off-Beats: Look at `s_hats` and `s_chords`. They hit strictly on 
-#    steps 2, 6, 10, and 14. In a 16-step grid, these are the exact midpoints 
-#    between the kicks. The engine's strict master clock locks these together 
-#    perfectly, creating a massive, bouncing "boom-cha" wall of sound.
-#
-# 3. FM as a Piercing Lead: The `s_fm` sequence uses `divisor: 3` and 
-#    `depth: 4`. This narrows the harmonic ratio to produce a sharp, metallic 
-#    square wave that cuts through the heavy bass and drums, perfectly 
-#    mimicking the cheap, aggressive synthesizer leads of 80s gay club music 
-#    and early Stock Aitken Waterman productions.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The gallop bass: continuous 16ths with octave jumps (a2→a3)
+#   and high cutoff (100) create a relentless, piercing pulse.
+# - Rigid off‑beats: hats and chords on steps 2,6,10,14 lock
+#   together for a massive "boom‑cha" wall of sound.
+# - FM as piercing lead: divisor 3 and depth 4 produce a sharp,
+#   metallic square wave that cuts through the heavy bass.
 # ==========================================================
