@@ -1,107 +1,94 @@
 # ==========================================================
 # PLAYBOOK: 90s JAZZ RAP / ACID JAZZ
 # (Pioneered by A Tribe Called Quest, Gang Starr, and US3)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 90s Jazz Rap.
-# We have explored Lo-Fi Hip-Hop (which is its descendant) and Boom-Bap. 
-# Jazz Rap is the sound of 90s New York underground. It fuses a dusty, 
-# swung MPC drum break with lush, sample-based jazz instrumentation. It 
-# relies on a deep, melodic upright bass and warm, major 9th chords that 
-# sound like a dusty vinyl record playing in a basement.
-#
-# This playbook perfectly demonstrates how to use the `:play_fm` synth 
-# to simulate a muted trumpet or saxophone, and how to use the `:play_sub` 
-# synth to create a warm, walking acoustic bassline that anchors the 
-# complex, swung drum grid.
+# Jazz Rap fuses a swung MPC drum break with lush, sample‑based
+# jazz instrumentation – walking upright bass, warm major 9th
+# chords, and a mellow muted trumpet/sax melody.
+# This playbook uses FM to simulate brass and a low‑cutoff
+# sub‑bass for a warm, dusty upright tone.
 # ==========================================================
 
 use_bpm 90
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (Eb Major - Warm, Dusty, & Swung)
-# ==========================================================
+# Scores
+s_kick  = gen_score("x......x..x.....", [
+  :c4,
+  {note: :c4, amp: 0.8},
+  {note: :c4, amp: 1.0}
+])
 
-# The "MPC Swing" Kick. 
-# Hits on step 0, the 'a' of 2 (step 7), and the 'e' of 3 (step 10).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil)
+s_snare = gen_score("....x..x....x..x", [
+  :c4,
+  {note: :c4, amp: 0.3},
+  :c4,
+  {note: :c4, amp: 0.3}
+])
 
-# Crisp, dusty snare strictly on beats 2 and 4 (steps 4 and 12), 
-# with a ghost snare on the 'a' of 2 (step 7) and 'a' of 4 (step 15).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.3}, nil)
+s_hats  = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.15},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.15},
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.15},
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.15}
+])
 
-# Swung, lazy 16th hats. 
-# Notice the heavy amplitude manipulation (0.15 to 0.4) to simulate a 
-# human drummer playing with a 54% swing quantize.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.15}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.15}, nil)
+s_bass  = gen_score("x...x.x.x.x.x.x.", [
+  {note: :eb2, release: 0.2, cutoff: 80},
+  {note: :eb2, release: 0.2, cutoff: 80},
+  {note: :g2,  release: 0.2, cutoff: 80},
+  {note: :ab2, release: 0.2, cutoff: 80},
+  {note: :bb2, release: 0.2, cutoff: 80},
+  {note: :c3,  release: 0.2, cutoff: 80},
+  {note: :bb2, release: 0.2, cutoff: 80}
+])
 
-# The "Walking Upright" Bass (Eb Major).
-# Plays a melodic, walking line. Low cutoff (80) and short release (0.2) 
-# to create a warm, muffled acoustic tone.
-s_bass  = (ring {:note => :eb2, :release => 0.2, :cutoff => 80}, nil, nil, nil, {:note => :eb2, :release => 0.2, :cutoff => 80}, nil, {:note => :g2, :release => 0.2, :cutoff => 80}, nil, {:note => :ab2, :release => 0.2, :cutoff => 80}, nil, {:note => :bb2, :release => 0.2, :cutoff => 80}, nil, {:note => :c3, :release => 0.2, :cutoff => 80}, nil, {:note => :bb2, :release => 0.2, :cutoff => 80}, nil)
+s_chords = gen_score("x.......x.......", [
+  {note: [:eb3, :g3, :bb3, :d4], cutoff: 75, release: 1.0, amp: 0.6},
+  {note: [:ab2, :c3, :eb3, :g3], cutoff: 75, release: 1.0, amp: 0.6}
+])
 
-# Lush, warm Major 9th chords (Ebmaj9 to Abmaj7).
-# Hit on the downbeats. The low cutoff (75) gives them that classic 
-# "sampled from a dusty vinyl" muffled feel.
-s_chords= (ring {:note => [:eb3, :g3, :bb3, :d4], :cutoff => 75, :release => 1.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:ab2, :c3, :eb3, :g3], :cutoff => 75, :release => 1.0, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_fm    = gen_score("....x.x.......x.", [
+  {note: :eb5, amp: 0.5, divisor: 3, depth: 2, release: 0.8},
+  {note: :g5,  amp: 0.4, divisor: 3, depth: 2, release: 0.8},
+  {note: :bb4, amp: 0.5, divisor: 3, depth: 2, release: 0.8}
+])
 
-# Mellow, "Muted Trumpet/Sax" Melody (Eb Major Pentatonic).
-# Uses :play_fm with a low divisor (3) and depth (2) to create a soft, 
-# brassy tone. Routed through the engine's tape echo for a cavernous smear.
-s_fm    = (ring nil, nil, nil, nil, {:note => :eb5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.8}, nil, {:note => :g5, :amp => 0.4, :divisor => 3, :depth => 2, :release => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :bb4, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.8}, nil)
+s_grain = gen_score("x...............", [
+  {note: :eb4, buffer: :elec_piano, pos: 0.2, density: 1, size: 0.3, amp: 0.4}
+])
 
-# Dusty, ambient "Vinyl/Air" texture (Granular Synth).
-# Long size (0.3) and low density (1) creates a slow, evolving background 
-# texture that sounds like the crackle of a record.
-s_grain = (ring {:note => :eb4, :buffer => :elec_piano, :pos => 0.2, :density => 1, :size => 0.3, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Vibe - Just the walking bass, dusty chords, and vinyl crackle (4 bars)
+  # Scene 1: The Vibe – walking bass, dusty chords, vinyl crackle (4 bars)
   [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: The Groove - Add the swung MPC drums (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+  # Scene 2: The Groove – add swung MPC drums (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8],
     [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Solo - The mellow muted trumpet melody drops (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 3: The Solo – mellow muted trumpet melody drops (8 bars)
+  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8],
     [:play_lead, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN SAMPLED JAZZ]
-# 
-# 1. The Walking Upright: Look at `s_bass`. Instead of just playing the 
-#    root note, the bassline walks up and down the Eb major scale. By 
-#    using a low `cutoff` (80) and a short `release` (0.2), the engine 
-#    turns the `:dsaw` synth into a warm, muffled upright bass that drives 
-#    the harmonic progression forward, perfectly mimicking a sampled jazz 
-#    double bass.
-#
-# 2. The MPC Swing: Look at `s_kick` and `s_hats`. The kick avoids hitting 
-#    on step 4 (beat 2), pushing the groove late to step 7. The hats have 
-#    wildly varying amplitudes. By emphasizing the off-beats and leaving 
-#    gaps (`nil`), the engine simulates the famous "behind-the-beat" swing 
-#    of 90s jazz rap, all while maintaining a rigid `sleep 0.25` master clock.
-#
-# 3. FM as a Muted Trumpet: The `s_fm` sequence uses `divisor: 3` and 
-#    `depth: 2`. This harmonic ratio produces a soft, brassy tone that 
-#    perfectly mimics a muted trumpet or saxophone sample. Because it's 
-#    routed through the engine's tape echo, the sparse notes cascade 
-#    across the empty space, creating a laid-back, smoky jazz-club atmosphere.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The walking bassline (eb2 → g2 → ab2 → bb2 → c3 → bb2)
+#   uses a low cutoff (80) and short release for a warm upright tone.
+# - The kick and hats avoid straight 16ths – hits on 7 and 10,
+#   with large amplitude variations, simulate an MPC’s 54% swing.
+# - FM with divisor 3 and depth 2 produces a soft, brassy timbre
+#   that sounds like a muted trumpet through tape echo.
 # ==========================================================

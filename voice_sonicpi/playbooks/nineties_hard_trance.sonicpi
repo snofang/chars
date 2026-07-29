@@ -1,111 +1,91 @@
 # ==========================================================
 # PLAYBOOK: 90s HARD TRANCE / HARD DANCE
 # (Pioneered by Scot Project, DuMonde, and Yoji Biomehanika)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 90s Hard Trance.
-# We have explored Progressive Trance (which is slow and emotional) and 
-# Uplifting Trance (which is euphoric and 138 BPM). 90s Hard Trance is the 
-# aggressive, driving sound of German festivals. It sits at 140 BPM and 
-# relies on a relentless, off-beat rolling bass, massive, distorted supersaw 
-# chord stabs, and a continuous 16th-note "Hoover" FM riff that sounds like 
-# a robot screaming.
-#
-# This playbook perfectly demonstrates how to push the `:play_fm` synth 
-# to create a massive, aggressive "Hoover" riff. By using an extreme `depth` 
-# (8) and playing continuous 16th notes, the engine creates a relentless, 
-# high-energy wall of sound that defined 90s hard dance floors.
+# 90s Hard Trance is the aggressive, driving sound of German
+# festivals at 140 BPM. It uses an off‑beat rolling bass,
+# massive distorted supersaw stabs, and a continuous 16th‑note
+# "Hoover" FM riff that sounds like a robot screaming.
 # ==========================================================
 
 use_bpm 140
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Aggressive, Driving, & Distorted)
-# ==========================================================
+# Scores
+s_kick  = gen_score("x...x...x...x...", [:c4])
 
-# Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_clap  = gen_score("....x.......x...", [:c4])
 
-# Heavy, dry rave clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_hats  = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.5}
+])
 
-# Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+s_bass  = gen_score("..x...x...x...x.", [
+  {note: :a1, release: 0.1, cutoff: 90},
+  {note: :a1, release: 0.1, cutoff: 90},
+  {note: :e1, release: 0.1, cutoff: 90},
+  {note: :g1, release: 0.1, cutoff: 90}
+])
 
-# The "Off-Beat" Rolling Bass (A Minor).
-# Hits strictly on the off-beats (steps 2, 6, 10, 14). Very short release 
-# (0.1) creates a relentless, bouncing "pump" that drives the track forward.
-s_bass  = (ring nil, nil, {:note => :a1, :release => 0.1, :cutoff => 90}, nil, nil, nil, {:note => :a1, :release => 0.1, :cutoff => 90}, nil, nil, nil, {:note => :e1, :release => 0.1, :cutoff => 90}, nil, nil, nil, {:note => :g1, :release => 0.1, :cutoff => 90}, nil)
+s_chords = gen_score("..x...x...x...x.", [
+  {note: [:a3, :c4, :e4], cutoff: 120, release: 0.3, amp: 0.6},
+  {note: [:a3, :c4, :e4], cutoff: 120, release: 0.3, amp: 0.6},
+  {note: [:f3, :a3, :c4], cutoff: 120, release: 0.3, amp: 0.6},
+  {note: [:g3, :bb3, :d4], cutoff: 120, release: 0.3, amp: 0.6}
+])
 
-# Massive, distorted "Supersaw" Chords (Am to F to G).
-# Hit strictly on the off-beats in sync with the bass. Extreme cutoff (120) 
-# and medium release (0.3) create a sharp, aggressive wall of sound.
-s_chords= (ring nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 120, :release => 0.3, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 120, :release => 0.3, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:f3, :a3, :c4], :cutoff => 120, :release => 0.3, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:g3, :bb3, :d4], :cutoff => 120, :release => 0.3, :amp => 0.6}, nil)
+s_fm    = gen_score("xxxxxxxxxxxxxxxx", [
+  {note: :a3,  divisor: 2, depth: 8, release: 0.1, amp: 0.7},
+  {note: :a4,  divisor: 2, depth: 8, release: 0.1, amp: 0.5},
+  {note: :a3,  divisor: 2, depth: 8, release: 0.1, amp: 0.7},
+  {note: :e4,  divisor: 2, depth: 8, release: 0.1, amp: 0.5},
+  {note: :a3,  divisor: 2, depth: 8, release: 0.1, amp: 0.7},
+  {note: :a4,  divisor: 2, depth: 8, release: 0.1, amp: 0.5},
+  {note: :c4,  divisor: 2, depth: 8, release: 0.1, amp: 0.7},
+  {note: :e4,  divisor: 2, depth: 8, release: 0.1, amp: 0.5},
+  {note: :f3,  divisor: 2, depth: 8, release: 0.1, amp: 0.7},
+  {note: :f4,  divisor: 2, depth: 8, release: 0.1, amp: 0.5},
+  {note: :f3,  divisor: 2, depth: 8, release: 0.1, amp: 0.7},
+  {note: :c4,  divisor: 2, depth: 8, release: 0.1, amp: 0.5},
+  {note: :g3,  divisor: 2, depth: 8, release: 0.1, amp: 0.7},
+  {note: :g4,  divisor: 2, depth: 8, release: 0.1, amp: 0.5},
+  {note: :bb3, divisor: 2, depth: 8, release: 0.1, amp: 0.7},
+  {note: :d4,  divisor: 2, depth: 8, release: 0.1, amp: 0.5}
+])
 
-# The "Hoover" FM Riff (A Minor).
-# Uses :play_fm with a low divisor (2) and extreme depth (8). Plays 
-# continuous 16th notes, alternating octaves (:a3, :a4). This creates a 
-# buzzing, aggressive "Hoover" synth that drives the track.
-s_fm    = (ring {:note => :a3, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.7}, {:note => :a4, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.5}, {:note => :a3, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.7}, {:note => :e4, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.5}, 
-           {:note => :a3, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.7}, {:note => :a4, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.5}, {:note => :c4, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.7}, {:note => :e4, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.5}, 
-           {:note => :f3, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.7}, {:note => :f4, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.5}, {:note => :f3, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.7}, {:note => :c4, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.5}, 
-           {:note => :g3, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.7}, {:note => :g4, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.5}, {:note => :bb3, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.7}, {:note => :d4, :divisor => 2, :depth => 8, :release => 0.1, :amp => 0.5})
+s_grain = gen_score("x.......x.......", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.2, amp: 0.5},
+  {note: :f4, buffer: :ambi_choir, pos: 0.5, density: 1, size: 0.2, amp: 0.5}
+])
 
-# Ethereal, granular vocal pad (using :ambi_choir).
-# Long size (0.2) and low density (1) creates a slow, evolving celestial 
-# texture that drifts behind the aggressive beat.
-s_grain = (ring {:note => :a4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.5, :density => 1, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
-
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Drive - Just the kick, off-beat bass, and hats (4 bars)
+  # Scene 1: The Drive – kick, off‑beat bass, and hats (4 bars)
   [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_hats, s_hats, 4] ],
   
-  # Scene 2: The Build - Add the claps, supersaw chords, and vocal pad (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
+  # Scene 2: The Build – add claps, supersaw chords, and vocal pad (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8],
     [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8] ],
     
-  # Scene 3: The Drop - The relentless Hoover FM riff drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8], 
-    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8], 
+  # Scene 3: The Drop – relentless Hoover FM riff drops (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_hats, s_hats, 8],
+    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], [:play_grain, s_grain, 8],
     [:play_fm, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN HARD DANCE]
-# 
-# 1. The "Hoover" FM Riff: Look at `s_fm`. The `:play_fm` synth plays on 
-#    EVERY single 16th step, alternating between the low octave (:a3) and the 
-#    high octave (:a4). By using an extreme `depth` of `8`, the engine forces 
-#    the FM modulator to shatter the carrier wave, creating a buzzing, 
-#    aggressive "Hoover" sound that perfectly mimics the classic Roland 
-#    Alpha Juno 2 presets used in 90s hard trance.
-#
-# 2. The Off-Beat Pump: Hard Trance relies on a relentless, bouncing energy. 
-#    The `s_bass`, `s_hats`, and `s_chords` ALL hit strictly on steps 2, 6, 
-#    10, and 14. The engine's strict master clock locks these together 
-#    perfectly at 140 BPM, creating a massive, skipping "boom-cha" momentum 
-#    that forces you to dance.
-#
-# 3. Distorted Supersaws: Look at `s_chords`. The arrays form massive 3-note 
-#    minor chords. By using an extreme `cutoff` (120), the engine turns the 
-#    `:blade` synth into a sharp, distorted wall of sound that cuts through 
-#    the heavy bass and FM riff, perfectly mimicking the aggressive, 
-#    overdriven supersaw stabs of 90s German festival dance floors.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The FM "Hoover" riff uses divisor 2 and depth 8 to create
+#   a buzzing, aggressive sound that plays on every 16th step.
+# - Bass, hats, and chords lock on off‑beats (2,6,10,14) to
+#   create the relentless "boom‑cha" pump at 140 BPM.
+# - The supersaw chords use extreme cutoff (120) to cut through
+#   the mix as sharp, distorted stabs.
 # ==========================================================

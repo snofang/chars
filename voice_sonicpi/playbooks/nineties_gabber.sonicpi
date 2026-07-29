@@ -4,101 +4,83 @@
 # ========================================================== 
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 90s Gabber.
-# We have explored Hardstyle (150 BPM) and Happy Hardcore (170 BPM). 
-# Gabber is the absolute limit of the 16-step grid's perceptible speed. 
-# At 200 BPM, a 16th note is a microscopic 75 milliseconds long. It is 
-# the sound of pure, distorted adrenaline, relying on a relentless, 
-# distorted 4/4 kick, an off-beat "bumping" bass, and frantic, 
-# chip-tune style FM arpeggios.
-#
-# This playbook perfectly demonstrates how to push the master clock to 
-# its absolute limit. By playing continuous 16th notes at 200 BPM, the 
-# engine creates an auditory blur that feels like a freight train.
+# Gabber is the absolute limit of the 16‑step grid – 200 BPM
+# with 16th notes at 75 ms. It uses a distorted 4/4 kick,
+# off‑beat "bumping" bass, and frantic chip‑tune arpeggios
+# to create a relentless freight‑train effect.
 # ==========================================================
 
 use_bpm 200
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (A Minor - Frantic, Distorted, & Relentless)
-# ==========================================================
+# Scores
+s_kick  = gen_score("x...x...x...x...", [{note: :c4, amp: 1.5}])
 
-# Relentless, heavily distorted 4-on-the-floor Gabber kick.
-s_kick  = (ring {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil, {:note => :c4, :amp => 1.5}, nil, nil, nil)
+s_clap  = gen_score("....x.......x...", [{note: :c4, amp: 0.8}])
 
-# Heavy, dry rave clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, nil)
+s_hats  = gen_score("x.x.x.x.x.x.x.x.", [
+  {note: :c4, amp: 0.4},
+  {note: :c4, amp: 0.3}
+])
 
-# Rigid, driving 16th off-beat hats.
-s_hats  = (ring {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil)
+s_bass  = gen_score("..x...x...x...x.", [{note: :a1, release: 0.1}])
 
-# The "Bumping" Gabber Bass (A Minor).
-# Hits strictly on the off-beats (steps 2, 6, 10, 14). Very short release (0.1) 
-# creates a relentless "boom-cha boom-cha" bounce.
-s_bass  = (ring nil, nil, {:note => :a1, :release => 0.1}, nil, nil, nil, {:note => :a1, :release => 0.1}, nil, nil, nil, {:note => :a1, :release => 0.1}, nil, nil, nil, {:note => :a1, :release => 0.1}, nil)
+s_chords = gen_score("..x...x...x...x.", [
+  [:a3, :c4, :e4],
+  [:a3, :c4, :e4],
+  [:g3, :bb3, :d4],
+  [:f3, :a3, :c4]
+])
 
-# Aggressive, off-beat synth stabs (A Minor).
-# Hit in sync with the off-beat bass to create a massive wall of sound.
-s_chords= (ring nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil, [:f3, :a3, :c4], nil)
+s_fm    = gen_score("xxxxxxxxxxxxxxxx", [
+  {note: :a5, amp: 0.6, divisor: 2, depth: 4, release: 0.05},
+  {note: :e5, amp: 0.5, divisor: 2, depth: 4, release: 0.05},
+  {note: :c6, amp: 0.6, divisor: 2, depth: 4, release: 0.05},
+  {note: :e6, amp: 0.5, divisor: 2, depth: 4, release: 0.05},
+  {note: :a5, amp: 0.6, divisor: 2, depth: 4, release: 0.05},
+  {note: :e5, amp: 0.5, divisor: 2, depth: 4, release: 0.05},
+  {note: :c6, amp: 0.6, divisor: 2, depth: 4, release: 0.05},
+  {note: :e6, amp: 0.5, divisor: 2, depth: 4, release: 0.05},
+  {note: :g5, amp: 0.6, divisor: 2, depth: 4, release: 0.05},
+  {note: :d5, amp: 0.5, divisor: 2, depth: 4, release: 0.05},
+  {note: :bb5, amp: 0.6, divisor: 2, depth: 4, release: 0.05},
+  {note: :d6, amp: 0.5, divisor: 2, depth: 4, release: 0.05},
+  {note: :f5, amp: 0.6, divisor: 2, depth: 4, release: 0.05},
+  {note: :c5, amp: 0.5, divisor: 2, depth: 4, release: 0.05},
+  {note: :a5, amp: 0.6, divisor: 2, depth: 4, release: 0.05},
+  {note: :c6, amp: 0.5, divisor: 2, depth: 4, release: 0.05}
+])
 
-# Frantic, 200 BPM FM Arpeggio (A Minor).
-# Plays on EVERY SINGLE 16th step. The extreme speed creates a buzzing, 
-# chip-tune blur that cuts through the heavy kick and bass.
-s_fm    = (ring {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :e6, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.05}, 
-           {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :e6, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.05}, 
-           {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :d5, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :bb5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :d6, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.05}, 
-           {:note => :f5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :c5, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 4, :release => 0.05}, {:note => :c6, :amp => 0.5, :divisor => 2, :depth => 4, :release => 0.05})
+s_vocal = gen_score("....x.......x...", [
+  {note: :a4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.02, amp: 0.6},
+  {note: :c5, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.02, amp: 0.6}
+])
 
-# Pitched-up, demonic "MC" vocal stutter (Granular Synth).
-# High density, tiny size = a sharp, frantic rave vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.02, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :c5, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.02, :amp => 0.6}, nil, nil, nil)
-
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Freight Train - Just the relentless kick and bumping bass (4 bars)
+  # Scene 1: The Freight Train – kick and bumping bass (4 bars)
   [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4] ],
   
-  # Scene 2: The Rave - Add the heavy claps and off-beat stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
+  # Scene 2: The Rave – add claps, hats, and off‑beat stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8],
     [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
     
-  # Scene 3: The Meltdown - The frantic 200 BPM FM arpeggio drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
+  # Scene 3: The Meltdown – frantic FM arpeggio and vocal stutter (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8],
+    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8],
     [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EXTREME TEMPO]
-# 
-# 1. The 200 BPM Blur: Look at `s_fm`. It plays on EVERY SINGLE 16th step. 
-#    At 200 BPM, the engine is firing a note every 75 milliseconds. Because 
-#    the engine's strict master clock is perfectly rigid, this creates an 
-#    auditory blur that sounds like a buzzing saw wave, perfectly mimicking 
-#    the frantic chip-tune arpeggios of 90s Gabber and Happy Hardcore.
-#
-# 2. The Off-Beat Bump: Look at `s_bass` and `s_chords`. They hit strictly 
-#    on steps 2, 6, 10, and 14. In a 16-step grid, these are the exact 
-#    midpoints between the kicks. The engine's strict master clock locks 
-#    these together perfectly, creating the signature Gabber "boom-cha 
-#    boom-cha" bounce that drives the track forward unstoppably.
-#
-# 3. Extreme Distortion: The `s_kick` uses a massive amplitude (`1.5`). 
-#    In Sonic Pi, pushing the amplitude this high causes the internal 
-#    limiter to clamp down, naturally distorting the kick drum. Combined 
-#    with the off-beat bass, the engine creates a massive, distorted wall 
-#    of sound that feels like standing in front of a massive speaker stack 
-#    at a 90s underground rave.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The FM arpeggio fires every 16th step at 200 BPM (every
+#   75 ms), creating a buzzing chip‑tune blur.
+# - Bass and chords hit on off‑beats (steps 2,6,10,14) to
+#   lock with the kick, producing the classic "boom‑cha" bounce.
+# - The kick uses amp 1.5 to push the internal limiter into
+#   natural distortion, simulating a massive rave stack.
 # ==========================================================

@@ -1,102 +1,83 @@
 # ==========================================================
 # PLAYBOOK: 90s DREAM TRANCE / MEDITERRANEAN PROGRESSIVE
 # (Pioneered by Robert Miles, Gigi D'Agostino, and Mauro Picotto)
-# ========================================================== 
+# ==========================================================
 # 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose 90s Dream Trance.
-# We have explored dark, heavy genres (Gabber, Brostep) and rigid 
-# minimalism (Minimal Techno). Dream Trance is the sound of melancholic 
-# euphoria. It was invented to calm down aggressive crowds at raves. 
-# It relies on a relentless 4/4 beat, a specific "off-beat" rolling bass, 
-# and massive, sweeping piano/string chords that wash over the grid like 
-# ocean waves.
-#
-# This playbook perfectly demonstrates how to simulate the legendary 
-# "Mediterranean Piano" sound. By using the `:play_chords` synth with 
-# a high `cutoff` and medium `release`, the engine creates a bright, 
-# emotional piano stab that locks perfectly with the off-beat bass.
+# Dream Trance relies on a relentless 4/4 beat, off‑beat rolling
+# bass, and massive sweeping piano/string chords that wash over
+# the grid. This playbook simulates the legendary "Mediterranean
+# Piano" sound using high‑cutoff chords that lock with the bass.
 # ==========================================================
 
 use_bpm 132
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (C Minor - Melancholic, Sweeping, & Driving)
-# ==========================================================
+# Scores
+s_kick  = gen_score("x...x...x...x...", [:c4])
 
-# Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_clap  = gen_score("....x.......x...", [:c4])
 
-# Deep, analog clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_hats  = gen_score("..x...x...x...x.", [
+  {note: :c4, amp: 0.3},
+  {note: :c4, amp: 0.4}
+])
 
-# Off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil)
+s_bass  = gen_score("..x...x...x...x.", [
+  {note: :c2, release: 0.1, cutoff: 90},
+  {note: :c2, release: 0.1, cutoff: 90},
+  {note: :ab1, release: 0.1, cutoff: 90},
+  {note: :g1,  release: 0.1, cutoff: 90}
+])
 
-# The "Off-Beat" Rolling Bass (C Minor).
-# Hits strictly on the off-beats (steps 2, 6, 10, 14). Very short release (0.1) 
-# creates a relentless, bouncing "pump" that drives the track forward.
-s_bass  = (ring nil, nil, {:note => :c2, :release => 0.1, :cutoff => 90}, nil, nil, nil, {:note => :c2, :release => 0.1, :cutoff => 90}, nil, nil, nil, {:note => :ab1, :release => 0.1, :cutoff => 90}, nil, nil, nil, {:note => :g1, :release => 0.1, :cutoff => 90}, nil)
+s_chords = gen_score("x..x..x.x..x..x.", [
+  {note: [:c3, :eb3, :g3, :c4], cutoff: 110, release: 0.3, amp: 0.6},
+  {note: [:c3, :eb3, :g3, :c4], cutoff: 110, release: 0.3, amp: 0.4},
+  {note: [:c3, :eb3, :g3, :c4], cutoff: 110, release: 0.3, amp: 0.6},
+  {note: [:ab2, :c3, :eb3, :g3], cutoff: 110, release: 0.3, amp: 0.5},
+  {note: [:ab2, :c3, :eb3, :g3], cutoff: 110, release: 0.3, amp: 0.4},
+  {note: [:g2,  :b2, :d3, :g3], cutoff: 110, release: 0.3, amp: 0.5}
+])
 
-# The "Mediterranean Piano" Chords (Cm to Ab to G).
-# Hit on a syncopated rhythm. The high cutoff (110) and medium release (0.3) 
-# create a bright, emotional piano stab that washes over the beat.
-s_chords= (ring {:note => [:c3, :eb3, :g3, :c4], :cutoff => 110, :release => 0.3, :amp => 0.6}, nil, nil, {:note => [:c3, :eb3, :g3, :c4], :cutoff => 110, :release => 0.3, :amp => 0.4}, nil, nil, {:note => [:c3, :eb3, :g3, :c4], :cutoff => 110, :release => 0.3, :amp => 0.6}, nil, {:note => [:ab2, :c3, :eb3, :g3], :cutoff => 110, :release => 0.3, :amp => 0.5}, nil, nil, {:note => [:ab2, :c3, :eb3, :g3], :cutoff => 110, :release => 0.3, :amp => 0.4}, nil, nil, {:note => [:g2, :b2, :d3, :g3], :cutoff => 110, :release => 0.3, :amp => 0.5}, nil)
+s_fm    = gen_score("x...x.x...x..x.x", [
+  {note: :c5,  amp: 0.6, divisor: 3, depth: 1, release: 1.0},
+  {note: :eb5, amp: 0.5, divisor: 3, depth: 1, release: 1.0},
+  {note: :g5,  amp: 0.6, divisor: 3, depth: 1, release: 1.0},
+  {note: :ab5, amp: 0.7, divisor: 3, depth: 1, release: 1.0},
+  {note: :g5,  amp: 0.5, divisor: 3, depth: 1, release: 1.0},
+  {note: :c6,  amp: 0.6, divisor: 3, depth: 1, release: 1.0}
+])
 
-# High-pitched, echoing "Synth String" Melody (C Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) and low depth (1) to create a soft, 
-# sine-like wave. Routed through the engine's tape echo for a cascading smear.
-s_fm    = (ring {:note => :c5, :amp => 0.6, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil, {:note => :eb5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 1.0}, nil, {:note => :g5, :amp => 0.6, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, nil, {:note => :ab5, :amp => 0.7, :divisor => 3, :depth => 1, :release => 1.0}, nil, nil, {:note => :g5, :amp => 0.5, :divisor => 3, :depth => 1, :release => 1.0}, nil, {:note => :c6, :amp => 0.6, :divisor => 3, :depth => 1, :release => 1.0})
+s_grain = gen_score("x.......x.......", [
+  {note: :c4, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.4, amp: 0.5},
+  {note: :g3, buffer: :ambi_choir, pos: 0.5, density: 1, size: 0.4, amp: 0.5}
+])
 
-# Sweeping, granular string pad (using :ambi_choir).
-# Long size (0.4) and low density (1) creates a slow, evolving celestial texture.
-s_grain = (ring {:note => :c4, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :g3, :buffer => :ambi_choir, :pos => 0.5, :density => 1, :size => 0.4, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
-
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Atmosphere - Just the sweeping strings, piano, and bass (4 bars)
+  # Scene 1: Atmosphere – strings, piano, bass (4 bars)
   [ [:play_grain, s_grain, 4], [:play_chords, s_chords, 4], [:play_sub, s_bass, 4] ],
   
-  # Scene 2: The Drive - Add the relentless 4/4 beat (8 bars)
-  [ [:play_grain, s_grain, 8], [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], 
+  # Scene 2: The Drive – add relentless 4/4 beat (8 bars)
+  [ [:play_grain, s_grain, 8], [:play_chords, s_chords, 8], [:play_sub, s_bass, 8],
     [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
     
-  # Scene 3: The Climax - The echoing synth string melody drops (8 bars)
-  [ [:play_grain, s_grain, 8], [:play_chords, s_chords, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
+  # Scene 3: The Climax – echoing synth string melody drops (8 bars)
+  [ [:play_grain, s_grain, 8], [:play_chords, s_chords, 8], [:play_sub, s_bass, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8],
     [:play_lead, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MELANCHOLIC EUPHORIA]
-# 
-# 1. The Mediterranean Piano: Look at `s_chords`. The arrays form lush 
-#    4-note minor chords. By using a high `cutoff` (110), the engine 
-#    turns the `:blade` synth into a bright, piercing piano stab. The 
-#    syncopated rhythm (steps 0, 3, 6, 8, 11, 14) creates the signature 
-#    bouncing, emotional progression that defined 90s Dream Trance.
-#
-# 2. The Off-Beat Pump: Look at `s_bass`. It hits strictly on steps 2, 6, 
-#    10, and 14—the exact midpoints between the kicks. By using a very 
-#    short `release` (0.1), the engine creates a relentless, hypnotic 
-#    "pump" that drives the track forward unstoppably, perfectly anchoring 
-#    the floating piano chords.
-#
-# 3. Sweeping Granular Space: The `s_grain` sequence uses a massive `size` 
-#    of `0.4` and a `density` of `1`. By time-stretching the choir sample 
-#    into a slow, evolving drone, the engine simulates the massive, 
-#    sweeping string pads that give Dream Trance its cavernous, oceanic 
-#    atmosphere.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - The piano chords use a high cutoff (110) to become bright,
+#   emotional stabs that lock with the syncopated off‑beat bass.
+# - The bass hits on steps 2,6,10,14 with a short release (0.1)
+#   to create a relentless "pump" that drives the track.
+# - The granular pad uses long size (0.4) and low density (1)
+#   to simulate sweeping string pads that give a cavernous feel.
 # ==========================================================
