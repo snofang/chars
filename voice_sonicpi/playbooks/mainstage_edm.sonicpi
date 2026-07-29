@@ -1,102 +1,38 @@
 # ==========================================================
 # PLAYBOOK: MAINSTAGE EDM / BIG ROOM HOUSE
-# (Pioneered by Martin Garrix, Hardwell, and Showtek)
 # ==========================================================
-# 
-# [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Mainstage EDM 
-# (Big Room). In the 2010s, this genre completely took over global 
-# festival culture. It is structurally designed for massive crowds: 
-# it features long, tension-building intros, dropouts, and an explosive 
-# "drop" where a massive, syncopated supersaw chord stab takes over 
-# the groove.
-#
-# This playbook perfectly demonstrates how to use the 16-step grid to 
-# create that bouncy, off-beat festival groove. By stacking Parameter 
-# Hashes (amp and cutoff) on the chords, we simulate a massive, 
-# sidechained EDM wall of sound.
+# Festival-ready big room with syncopated supersaw drops and driving energy.
+# DNA: 128 BPM | Key E Minor | Rhythm: 4-on-the-floor with syncopation | Timbre: Aggressive, bright, massive | Arrangement: Buildup → Groove → Drop
 # ==========================================================
 
 use_bpm 128
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (E Minor - Festival Energy)
-# ==========================================================
+# Scores
+s_kick = gen_score("x...x...x...x...", [:c4])
+s_clap = gen_score("....x.......x...", [:c4])
+s_hats = gen_score("..x...x...x...x.", [{amp: 0.4}, {amp: 0.5}])
+s_bass = gen_score("..x...x...x...x.", [{note: :e2, amp: 1.0, release: 0.15}, {note: :g2, amp: 1.0, release: 0.15}])
+s_chords = gen_score("x..x..x.x..x..x.", [[:e3, :g3, :b3, :e4], {note: [:e3, :g3, :b3, :e4], cutoff: 90, amp: 0.6}, {note: [:e3, :g3, :b3, :e4], cutoff: 100, amp: 0.7}, [:g3, :b3, :d4, :g4], {note: [:g3, :b3, :d4, :g4], cutoff: 90, amp: 0.6}, {note: [:g3, :b3, :d4, :g4], cutoff: 100, amp: 0.7}])
+s_fm = gen_score(".x........x.....", [{note: :e6, amp: 0.6, depth: 2, divisor: 4}, {note: :b5, amp: 0.5, depth: 2, divisor: 4}])
+s_vocal = gen_score("........x.x.x.x.", [{note: :e4, buffer: :ambi_choir, pos: 0.2, density: 3, size: 0.03, amp: 0.6}, {note: :g4, buffer: :ambi_choir, pos: 0.4, density: 3, size: 0.03, amp: 0.6}])
 
-# Rigid, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
-
-# Heavy, festival-style clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
-
-# Off-beat open hats. Notice they hit exactly between the kicks.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, 
-           nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
-
-# The "Big Room" Bounce Bass. 
-# Hits strictly on the off-beats (steps 2, 6, 10, 14) to create a massive bounce.
-s_bass  = (ring nil, nil, {:note => :e2, :amp => 1.0, :release => 0.15}, nil, nil, nil, {:note => :e2, :amp => 1.0, :release => 0.15}, nil, 
-           nil, nil, {:note => :g2, :amp => 1.0, :release => 0.15}, nil, nil, nil, {:note => :g2, :amp => 1.0, :release => 0.15}, nil)
-
-# The Massive "Supersaw" Drop Chords (E Minor to G Major).
-# Notice the syncopated rhythm (steps 0, 3, 6, 8, 11, 14) and the 
-# rising cutoff Hashes, which simulate a filter opening up on a synth.
-s_chords= (ring [:e3, :g3, :b3, :e4], nil, nil, {:note => [:e3, :g3, :b3, :e4], :cutoff => 90, :amp => 0.6}, nil, nil, {:note => [:e3, :g3, :b3, :e4], :cutoff => 100, :amp => 0.7}, nil, 
-           [:g3, :b3, :d4, :g4], nil, nil, {:note => [:g3, :b3, :d4, :g4], :cutoff => 90, :amp => 0.6}, nil, nil, {:note => [:g3, :b3, :d4, :g4], :cutoff => 100, :amp => 0.7}, nil)
-
-# Piercing, metallic FM blips for futuristic tension.
-s_fm    = (ring nil, {:note => :e6, :amp => 0.6, :depth => 2, :divisor => 4}, nil, nil, nil, nil, nil, nil, nil, {:note => :b5, :amp => 0.5, :depth => 2, :divisor => 4}, nil, nil, nil, nil, nil, nil)
-
-# Chanted, rhythmic "Festival" vocal chops (Granular Synth)
-# High density, small size = a sharp, percussive vocal stab.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :e4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.03, :amp => 0.6}, nil, {:note => :e4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.03, :amp => 0.6}, nil, 
-           {:note => :g4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.03, :amp => 0.6}, nil, {:note => :g4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.03, :amp => 0.6}, nil)
-
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Playbook
 playbook = (ring
-  # Scene 1: The Buildup - Just the kick, off-beat bass, and FM blips (4 bars)
   [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_fm, s_fm, 4] ],
-  
-  # Scene 2: The Groove - Add the claps, hats, and chanted vocals (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8],
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_grain, s_vocal, 8] ],
-    
-  # Scene 3: The Drop - The massive supersaw chords enter (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8],
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_grain, s_vocal, 8],
-    [:play_chords, s_chords, 8] ]
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_grain, s_vocal, 8] ],
+  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_fm, s_fm, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_grain, s_vocal, 8], [:play_chords, s_chords, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN FESTIVAL ENERGY]
-# 
-# 1. The Syncopated Drop: Look at `s_chords`. Instead of hitting on the 
-#    downbeat, the chords hit on step 0, but then jump to the off-beats 
-#    (steps 3, 6, 8, 11, 14). This syncopated rhythm, combined with the 
-#    rigid 4/4 kick, creates the lopsided, bouncing "Big Room" groove 
-#    that makes festival crowds jump.
-#
-# 2. Data-Driven Filter Sweeps: Look closely at the `s_chords` Hashes. 
-#    The first hit has no cutoff specified (so it uses the engine default), 
-#    but the following hits push the `cutoff` to 90 and 100. The engine 
-#    reads these Hashes and opens the filter on the synth, making the 
-#    chords sound brighter and more aggressive as the pattern loops.
-#
-# 3. Percussive Vocals: In EDM, vocals are often used as percussion. 
-#    The `s_vocal` sequence uses the granular engine to chop a vocal into 
-#    tiny, rhythmic stutters (`size: 0.03`) that hit in sync with the 
-#    bassline, adding massive human energy to the rigid grid.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Syncopated chord rhythm creates the signature big room bounce
+# - Progressive cutoff values simulate filter sweeps across the pattern
+# - Granular vocal chops add human energy to the rigid grid
+# - Off-beat bass placement drives the festival groove
+# - Open hats on off-beats reinforce the syncopated feel
 # ==========================================================

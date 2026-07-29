@@ -1,3 +1,27 @@
+# ==========================================================
+# PLAYBOOK: ITALO DISCO / MORODER SYNTH
+# Rigid Drums, Relentless Octave‑Jumping Bass, Icy Arpeggios
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook captures the classic Italo disco / Moroder
+# sound – a rigid 4/4 kick, dry clap, relentless 16th‑note
+# bass with octave jumps, staccato synth stabs, echoing
+# arpeggios, and a robotic vocoder vocal stab. It's driving,
+# hypnotic, and icy.
+#
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 120 BPM
+# Key: A minor (dark, driving)
+# Rhythm: 4/4 kick, clap on 2/4, continuous 16th hats with
+# alternating dynamics, octave‑jumping bass on every 16th,
+# off‑beat chord stabs, arpeggio with gaps, granular vocal
+# stab.
+# Timbre: Kick (bd_haus), clap (sn_dolf), hats (cymbal_closed),
+# bass (dsaw), chords (blade), lead (fm, tape echo), vocal
+# (granular).
+# Arrangement: Drums+Bass → Add Chords → Add Arpeggio+Vocal.
+# ==========================================================
+
 use_bpm 120
 
 # ==========================================================
@@ -9,57 +33,69 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (A Minor - Icy & Driving)
 # ==========================================================
 
-# Rigid 4-on-the-floor drum machine kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Rigid 4‑on‑the‑floor kick.
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Stark, dry clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Stark, dry clap strictly on beats 2 and 4.
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Rigid 16th-note closed hats.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, 
-           {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.2})
+# Rigid 16th‑note closed hats with alternating amplitudes.
+hat_amps = [0.3, 0.2, 0.3, 0.2, 0.3, 0.2, 0.3, 0.2,
+            0.3, 0.2, 0.3, 0.2, 0.3, 0.2, 0.3, 0.2]
+s_hats = gen_score("xxxxxxxxxxxxxxxx",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# The "Moroder" Bass. 
-# Plays on EVERY 16th step, alternating octaves to create a hypnotic, rolling pulse.
-s_bass  = (ring :a2, :a2, :a3, :a2, :a2, :a2, :a3, :a2, 
-           :c3, :c3, :c4, :c3, :c3, :c3, :c4, :c3)
+# The "Moroder" Bass – octave‑jumping, relentless 16ths.
+bass_notes = [:a2, :a2, :a3, :a2, :a2, :a2, :a3, :a2,
+              :c3, :c3, :c4, :c3, :c3, :c3, :c4, :c3]
+s_bass = gen_score("xxxxxxxxxxxxxxxx", bass_notes)
 
-# Icy, staccato synth stabs (A Minor).
-# Hits on the off-beats (steps 2, 6, 10, 14) to leave room for the bass.
-s_chords= (ring nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:a3, :c4, :e4], nil, 
-           nil, nil, [:g3, :bb3, :d4], nil, nil, nil, [:g3, :bb3, :d4], nil)
+# Icy, staccato synth stabs on off‑beats (steps 2,6,10,14).
+s_chords = gen_score("..x..x..x..x....",
+  [ [:a3, :c4, :e4],
+    [:a3, :c4, :e4],
+    [:g3, :bb3, :d4],
+    [:g3, :bb3, :d4] ])
 
-# High-pitched, echoing arpeggio lead (A Minor).
-# Routed through the engine's tape echo for that classic space echo smear.
-s_lead  = (ring :a5, nil, :e5, :c5, :a5, nil, :e5, :c5, 
-           :g5, nil, :d5, :bb4, :g5, nil, :d5, :bb4)
+# High‑pitched echoing arpeggio lead (positions 0,2,3,4,6,7,8,10,11,12,14,15).
+arpeggio_notes = [:a5, :e5, :c5, :a5, :e5, :c5,
+                  :g5, :d5, :bb4, :g5, :d5, :bb4]
+s_lead = gen_score("x.xxx.xxx.xxx.xx", arpeggio_notes)
 
-# Pitched-down, robotic vocoder vocal stab (Granular Synth)
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, 
-           {:note => :a3, :buffer => :ambi_choir, :pos => 0.1, :density => 3, :size => 0.04, :amp => 0.6}, nil, nil, nil, 
-           nil, nil, nil, nil)
+# Pitched‑down, robotic vocoder vocal stab – one hit on step 8.
+s_vocal = gen_score("........x.......",
+  [ {note: :a3, buffer: :ambi_choir, pos: 0.1, density: 3, size: 0.04, amp: 0.6} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK
 # ==========================================================
 playbook = (ring
-  # Scene 1: Just the rigid drums and relentless Moroder bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: Add the icy off-beat chord stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The echoing arpeggio and vocoder vocal drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
-    [:play_lead, s_lead, 8], [:play_grain, s_vocal, 4] ]
+  # Scene 1: Drums + relentless Moroder bass (4 bars)
+  [ [:play_kick, s_kick, 4], [:play_snare, s_clap, 4],
+    [:play_hats, s_hats, 4], [:play_sub, s_bass, 4] ],
+
+  # Scene 2: Add icy off‑beat chord stabs (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3: Add echoing arpeggio and vocoder vocal (8 bars)
+  [ [:play_kick, s_kick, 8], [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8], [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8], [:play_lead, s_lead, 8],
+    [:play_grain, s_vocal, 4] ]
 )
 
 # ==========================================================
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Octave‑jumping bass on every 16th creates a hypnotic, rolling pulse.
+# - Off‑beat chord stabs leave room for the bass and arpeggio.
+# - Echoing arpeggio with tape echo gives the classic Italo space.
+# - Pitched‑down granular vocal stab adds a robotic, vocoder texture.
+# ==========================================================

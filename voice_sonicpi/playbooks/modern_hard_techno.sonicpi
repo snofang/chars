@@ -1,103 +1,97 @@
 # ==========================================================
 # PLAYBOOK: MODERN HARD TECHNO / PEAK-TIME INDUSTRIAL
 # (Pioneered by I Hate Models, 999999999, and Charlie Sparks)
-# ========================================================== 
-# 
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Modern Hard Techno.
-# We have explored Detroit Techno (which is melodic) and Minimal Techno 
-# (which is sparse). Modern Hard Techno is the sound of the current 
-# underground festival circuit (like Awakenings and Time Warp). It pushes 
-# the tempo to 138 BPM and relies on a relentless 4/4 kick, a massively 
-# distorted, continuous 16th-note rolling bass, and piercing, industrial 
-# FM "alarm" stabs.
-#
-# This playbook perfectly demonstrates how to push the `:play_sub` synth 
-# into absolute overdrive. By using an extreme `cutoff` (120) and a 
-# microscopic `release` (0.1) on continuous 16th notes, the engine creates 
-# a grinding, aggressive wall of sound that drives the track forward 
-# unstoppably.
+# Modern Hard Techno pushes 138 BPM with a relentless 4/4 kick,
+# a distorted 16th‑note rolling bass, and piercing industrial FM
+# stabs. This playbook uses extreme cutoff (120) and microscopic
+# release (0.1) to create a grinding, aggressive wall of sound.
+# [DNA: 138 BPM, D minor, 4/4 kick, distorted rolling bass,
+#  off‑beat hats, stark chords, industrial FM alarm, granular static]
 # ==========================================================
 
 use_bpm 138
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (D Minor - Relentless, Distorted, & Industrial)
-# ==========================================================
+# ----------------------------------------------------------
+# SCORES – Normalized with gen_score, DRY where possible
+# ----------------------------------------------------------
 
-# Relentless, heavy 4/4 kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Relentless 4/4 kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Heavy, dry industrial clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Heavy dry clap on beats 2 and 4
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Rigid off‑beat open hats – pattern with 4 hits
+s_hats = gen_score("..x...x...x...x.",
+  [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
 
-# The "Distorted" Rolling Bass (D Minor).
-# Plays continuous 16th notes, alternating octaves (:d1, :d2). 
-# Extreme cutoff (120) and short release (0.1) create a grinding, distorted churn.
-s_bass  = (ring {:note => :d1, :cutoff => 120, :release => 0.1}, {:note => :d1, :cutoff => 120, :release => 0.1}, {:note => :d2, :cutoff => 120, :release => 0.1}, {:note => :d1, :cutoff => 120, :release => 0.1}, 
-           {:note => :d1, :cutoff => 120, :release => 0.1}, {:note => :d1, :cutoff => 120, :release => 0.1}, {:note => :f1, :cutoff => 120, :release => 0.1}, {:note => :f1, :cutoff => 120, :release => 0.1}, 
-           {:note => :f1, :cutoff => 120, :release => 0.1}, {:note => :f1, :cutoff => 120, :release => 0.1}, {:note => :f2, :cutoff => 120, :release => 0.1}, {:note => :f1, :cutoff => 120, :release => 0.1}, 
-           {:note => :g1, :cutoff => 120, :release => 0.1}, {:note => :g1, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :d1, :cutoff => 120, :release => 0.1})
+# Distorted rolling bass – continuous 16th notes
+bass_notes = [:d1, :d1, :d2, :d1,
+              :d1, :d1, :f1, :f1,
+              :f1, :f1, :f2, :f1,
+              :g1, :g1, :a1, :d1].ring
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| {note: n, cutoff: 120, release: 0.1} })
 
-# Stark, minor chord stabs (Dm to Gm).
-# Hit sparingly on the off-beats to leave maximum room for the rolling bass.
-s_chords= (ring nil, nil, [:d3, :f3, :a3], nil, nil, nil, [:d3, :f3, :a3], nil, nil, nil, [:g3, :bb3, :d4], nil, nil, nil, [:g3, :bb3, :d4], nil)
+# Stark minor chords – off‑beats (same pattern as hats)
+s_chords = gen_score("..x...x...x...x.",
+  [[:d3, :f3, :a3], [:d3, :f3, :a3],
+   [:g3, :bb3, :d4], [:g3, :bb3, :d4]])
 
-# Piercing, "Industrial Alarm" FM Lead (D Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) and extreme depth (4) to create a 
-# sharp, robotic square wave that cuts through the heavy bass.
-s_fm    = (ring nil, nil, nil, nil, {:note => :d6, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.1}, nil, {:note => :a5, :amp => 0.4, :divisor => 3, :depth => 4, :release => 0.1}, nil, nil, {:note => :d6, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.1}, nil, {:note => :f6, :amp => 0.6, :divisor => 3, :depth => 4, :release => 0.1}, nil, nil, {:note => :a5, :amp => 0.4, :divisor => 3, :depth => 4, :release => 0.1}, nil)
+# Piercing industrial FM alarm – 5 hits
+s_fm = gen_score("....x.x..x.x..x.",
+  [{note: :d6, amp: 0.5, divisor: 3, depth: 4, release: 0.1},
+   {note: :a5, amp: 0.4, divisor: 3, depth: 4, release: 0.1},
+   {note: :d6, amp: 0.5, divisor: 3, depth: 4, release: 0.1},
+   {note: :f6, amp: 0.6, divisor: 3, depth: 4, release: 0.1},
+   {note: :a5, amp: 0.4, divisor: 3, depth: 4, release: 0.1}])
 
-# The "Grinding" Granular FX.
-# Uses :elec_piano buffer. High density, tiny size = industrial, machine-like static.
-s_grain = (ring {:note => :d3, :buffer => :elec_piano, :pos => 0.1, :density => 6, :size => 0.05, :amp => 0.4}, nil, nil, nil, nil, nil, nil, nil, {:note => :d3, :buffer => :elec_piano, :pos => 0.5, :density => 6, :size => 0.05, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Grinding granular static – two hits
+s_grain = gen_score("x.......x.......",
+  [{note: :d3, buffer: :elec_piano, pos: 0.1, density: 6, size: 0.05, amp: 0.4},
+   {note: :d3, buffer: :elec_piano, pos: 0.5, density: 6, size: 0.05, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# ----------------------------------------------------------
+# PLAYBOOK 
+# ----------------------------------------------------------
 playbook = (ring
-  # Scene 1: The Warehouse - Just the relentless kick and distorted bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: The Machine - Add the claps, hats, and stark chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Meltdown - The piercing FM alarm and granular static drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
-    [:play_lead, s_fm, 8], [:play_grain, s_grain, 8] ]
+  # Scene 1 – The Warehouse: kick + bass (4 bars)
+  [ [:play_kick, s_kick, 4],
+    [:play_sub, s_bass, 4] ],
+
+  # Scene 2 – The Machine: add claps, hats, and chords (8 bars)
+  [ [:play_kick, s_kick, 8],
+    [:play_sub, s_bass, 8],
+    [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3 – The Meltdown: full arrangement with FM and granular (8 bars)
+  [ [:play_kick, s_kick, 8],
+    [:play_sub, s_bass, 8],
+    [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8],
+    [:play_chords, s_chords, 8],
+    [:play_lead, s_fm, 8],
+    [:play_grain, s_grain, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN INDUSTRIAL MOMENTUM]
-# 
-# 1. Data-Driven Overdrive: Look at `s_bass`. The `:play_sub` synth is given 
-#    an extreme `cutoff` of `120` on every single 16th step. This leaves the 
-#    filter wide open, letting all the harsh, high-frequency harmonics of the 
-#    detuned sawtooth through. This creates a relentless, buzzing "chug" that 
-#    perfectly mimics the overdriven modular basslines of modern Hard Techno.
-#
-# 2. The 16th-Note Roll: Hard Techno relies on continuous motion. The `s_bass` 
-#    never stops. The engine's strict master clock ensures this 16-note 
-#    sequence fires with absolute mathematical precision at 138 BPM, creating 
-#    a relentless, hypnotic pulse that drives the track forward unstoppably.
-#
-# 3. Extreme FM Aggression: The `s_fm` sequence uses `divisor: 3` and an 
-#    extreme `depth` of `4`. This harsh harmonic ratio forces the FM synth 
-#    to produce a piercing, metallic alarm sound that cuts through the heavy 
-#    bass and drums without needing external distortion effects.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# 1. Data‑Driven Overdrive – cutoff 120 on every bass step opens
+#    the filter wide, letting harsh sawtooth harmonics create a
+#    buzzing “chug” that mimics modular overdrive.
+# 2. The 16th‑Note Roll – the bass never stops, firing with
+#    mathematical precision at 138 BPM for a hypnotic, relentless
+#    pulse.
+# 3. Extreme FM Aggression – divisor 3 and depth 4 produce a
+#    piercing metallic alarm that cuts through the heavy mix
+#    without external distortion.
 # ==========================================================

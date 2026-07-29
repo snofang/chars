@@ -1,100 +1,96 @@
 # ==========================================================
 # PLAYBOOK: MODERN LATIN TRAP / REGGAETON FUSION
 # (Pioneered by Bad Bunny, J Balvin, and Tainy)
-# ========================================================== 
-# 
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Modern Latin Trap.
-# We have explored classic Reggaeton (Dembow) and dark Opium/Plugg. 
-# Modern Latin Trap is the global pop phenomenon that fuses the two. 
-# It slows the Dembow rhythm down to 92 BPM, replacing the rigid snare 
-# with organic trap rimshots, and uses massive, sliding 808 basslines 
-# alongside dark, minimal synth plucks.
-#
-# This playbook perfectly demonstrates how to blend the 3-3-2 Latin 
-# Dembow pulse with Trap hi-hat rolls. By using a long `release` on 
-# the 808 bass, the engine creates a slow, heavy, swaggering groove 
-# that dominates modern streaming charts.
+# Modern Latin Trap fuses the 3‑3‑2 Dembow pulse with Trap
+# hi‑hat rolls and sliding 808s. At 92 BPM, it creates a slow,
+# heavy, swaggering groove that dominates global charts.
+# [DNA: 92 BPM, C minor, Dembow kick, trap rimshots, sliding 808,
+#  dark chords, FM flute/marimba, granular vocal chant]
 # ==========================================================
 
 use_bpm 92
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (C Minor - Dark, Heavy, & Swaggering)
-# ==========================================================
+# ----------------------------------------------------------
+# SCORES – Normalized with gen_score & DRY parameters
+# ----------------------------------------------------------
 
-# The "Latin Trap" Kick. 
-# 3-3-2 Dembow feel. Hits on step 0, the 'a' of 1 (step 3), 
-# the 'and' of 2 (step 6), and beat 3 (step 8).
-s_kick  = (ring {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, {:note => :c4, :amp => 0.6}, nil, nil, nil, nil)
+# Dembow kick – hits on steps 0,3,6,8 (3‑3‑2 feel)
+kick_hits = [:c4, {note: :c4, amp: 0.6}, {note: :c4, amp: 0.8}, {note: :c4, amp: 1.0}, {note: :c4, amp: 0.6}]
+s_kick = gen_score("x..x..x.x..x....", kick_hits)
 
-# Organic, trap-style rimshot/snare. 
-# Hits on the off-beats (steps 2, 5, 7, 11, 14) to fill the Dembow gaps.
-s_snare = (ring nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.4}, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.4})
+# Trap‑style rimshot/snare – fills the gaps
+snare_hits = [{note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}, {note: :c4, amp: 0.4},
+              {note: :c4, amp: 0.7}, {note: :c4, amp: 0.9}, {note: :c4, amp: 0.4}]
+s_snare = gen_score("..x..x.x..x..x.x", snare_hits)
 
-# Trap hi-hats with a rising amplitude roll.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, {:note => :c4, :amp => 0.5}, nil)
+# Trap hi‑hats with rising amplitude roll
+hat_amps = [0.3, 0.2, 0.3, 0.4, 0.3, 0.2, 0.3, 0.4, 0.5]
+s_hats = gen_score("x..xx.x..x..xxx.",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# Massive, sliding 808 Bass (C Minor).
-# Massive release (1.0) allows the bass to ring out and carry the dark melody.
-s_bass  = (ring {:note => :c1, :release => 1.0, :cutoff => 80}, nil, nil, nil, nil, nil, nil, nil, {:note => :f1, :release => 1.0, :cutoff => 80}, nil, nil, nil, nil, nil, nil, nil)
+# Sliding 808 bass – long release (1.0) for weight
+s_bass = gen_score("x.......x.......",
+  [{note: :c1, release: 1.0, cutoff: 80},
+   {note: :f1, release: 1.0, cutoff: 80}])
 
-# Dark, sparse minor chord plucks (Cm to Fm).
-# Hit sparingly on the off-beats to leave maximum room for the 808.
-s_chords= (ring nil, nil, nil, nil, {:note => [:c3, :eb3, :g3], :cutoff => 90, :release => 0.3, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => [:f3, :ab3, :c4], :cutoff => 90, :release => 0.3, :amp => 0.5}, nil, nil, nil)
+# Dark sparse chords – off‑beats, short release
+s_chords = gen_score("....x.......x...",
+  [{note: [:c3, :eb3, :g3], cutoff: 90, release: 0.3, amp: 0.5},
+   {note: [:f3, :ab3, :c4], cutoff: 90, release: 0.3, amp: 0.5}])
 
-# Mellow, "Flute/Marimba" Melody (C Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and depth (2) to create a sharp, 
-# organic pluck. Routed through the engine's tape echo for a cascading smear.
-s_fm    = (ring nil, {:note => :g5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.3}, nil, {:note => :eb5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.3}, nil, {:note => :c5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.3}, nil, nil, nil, {:note => :ab5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.3}, nil, {:note => :f5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.3}, nil, {:note => :c5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.3}, nil, nil)
+# Mellow FM flute/marimba – divisor 2, depth 2 for organic pluck
+fm_notes = [:g5, :eb5, :c5, :ab5, :f5, :c5]
+fm_defaults = {divisor: 2, depth: 2, release: 0.3, amp: 0.6}
+s_fm = gen_score(".x.x.x...x.x.x..",
+  fm_notes.map { |n| {note: n, **fm_defaults} })
 
-# Pitched-down, repetitive "Chant" vocal (Granular Synth).
-# Medium density, small size = a raw, rhythmic vocal hit.
-s_vocal = (ring nil, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil)
+# Rhythmic vocal chant – granular, medium density, small size
+vocal_hits = [{note: :c4, pos: 0.2}, {note: :f4, pos: 0.4}]
+s_vocal = gen_score("....x......x....",
+  vocal_hits.map { |h| {note: h[:note], buffer: :ambi_choir,
+                        pos: h[:pos], density: 2, size: 0.05, amp: 0.6} })
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# ----------------------------------------------------------
+# PLAYBOOK – In‑line and readable
+# ----------------------------------------------------------
 playbook = (ring
-  # Scene 1: The Vibe - Just the 808, dark plucks, and vocal chant (4 bars)
-  [ [:play_sub, s_bass, 4], [:play_chords, s_chords, 4], [:play_grain, s_vocal, 4] ],
-  
-  # Scene 2: The Groove - Add the Dembow kick, trap snares, and hats (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: The Drop - The mellow flute melody drops (8 bars)
-  [ [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], [:play_grain, s_vocal, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
+  # Scene 1 – The Vibe: 808, chords, and vocal chant (4 bars)
+  [ [:play_sub, s_bass, 4],
+    [:play_chords, s_chords, 4],
+    [:play_grain, s_vocal, 4] ],
+
+  # Scene 2 – The Groove: add Dembow kick, trap snares, hats (8 bars)
+  [ [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8],
+    [:play_grain, s_vocal, 8],
+    [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8] ],
+
+  # Scene 3 – The Drop: mellow flute melody enters (8 bars)
+  [ [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8],
+    [:play_grain, s_vocal, 8],
+    [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8],
     [:play_lead, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN LATIN FUSION]
-# 
-# 1. The Dembow/Trap Blend: Look at `s_kick` and `s_snare`. The kick 
-#    maintains the 3-3-2 pulse (steps 0, 3, 6, 8), but the snare abandons 
-#    the rigid reggaeton pattern for organic trap rimshots. The engine's 
-#    strict master clock ensures this hybrid groove locks together with 
-#    absolute precision, creating a slow, heavy, swaggering bounce.
-#
-# 2. The Sliding 808: Look at `s_bass`. The `:play_sub` synth is given a 
-#    `release` of `1.0` (a whole beat). Because the BPM is 92, that low C 
-#    note rings out and decays naturally, creating the massive, booming 
-#    low-end that carries the dark melody in modern Latin Trap.
-#
-# 3. Mellow FM Flute: The `s_fm` sequence uses `divisor: 2` and `depth: 2`. 
-#    This creates a sharp, organic pluck that mimics a Latin flute or marimba. 
-#    Routed through the engine's tape echo, the sparse notes cascade across 
-#    the empty space, perfectly contrasting the heavy 808 bass.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# 1. Dembow/Trap Blend – the kick keeps the 3‑3‑2 pulse while
+#    the snare abandons rigid reggaeton for organic trap rimshots,
+#    creating a hybrid groove.
+# 2. Sliding 808 – release 1.0 at 92 BPM lets the bass ring out,
+#    carrying the dark melody with massive low‑end.
+# 3. Mellow FM Flute – divisor 2, depth 2 create an organic pluck;
+#    tape echo cascades the sparse notes across the mix.
 # ==========================================================

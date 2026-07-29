@@ -1,3 +1,27 @@
+# ==========================================================
+# PLAYBOOK: AMBIENT DRONE / HALF‑TIME ATMOSPHERE
+# Deep, Pulsing Bass, Nostalgic FM, Granular Vocal Drone
+# ==========================================================
+# [WHY THIS GENRE?]
+# This playbook blends a half‑time drum feel with deep,
+# pulsing bass, an angular FM melody, and a granular vocal
+# drone. It moves from atmospheric texture to a driving beat,
+# with a break where the bass drops out and the FM takes over.
+# 
+# [DNA: Tempo, Key, Rhythm, Timbre, Arrangement]
+# Tempo: 135 BPM
+# Key: F# minor (dark, introspective)
+# Rhythm: Half‑time kick on 1 and 3, snare on 2 and 4 with
+# ghost, off‑beat hats with dynamic accents, pulsing bass
+# on downbeats, angular FM melody with syncopation, sparse
+# granular vocal drone.
+# Timbre: Kick (bd_haus), snare (sn_dolf), hats (cymbal_closed
+# with amp layers), sub‑bass (dsaw), FM lead (divisor 3,
+# depth 2), granular vocal (ambi_choir).
+# Arrangement: Atmosphere (grain+bass) → Drums (add half‑time
+# beat) → Break (bass drops, FM melody enters).
+# ==========================================================
+
 use_bpm 135
 
 # ==========================================================
@@ -8,19 +32,31 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 # 2. THE SCORES (F# Minor)
 # ==========================================================
-# Half-time drum feel
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil)
-s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil)
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.15}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.15}, nil)
 
-# Deep, pulsing bass
-s_bass  = (ring :fs2, nil, nil, nil, nil, nil, :fs2, nil, nil, nil, :a2, nil, nil, nil, nil, nil)
+# Half‑time kick – hits on steps 0 and 8
+s_kick = gen_score("x.......x.......", [:c4])
 
-# Angular, nostalgic FM melody
-s_fm    = (ring :fs4, nil, nil, :c5, nil, nil, :a4, nil, nil, nil, :e4, nil, :fs4, nil, :c5, nil)
+# Snare on beats 2 and 4 (steps 4 and 12) with ghost amp on 12
+s_snare = gen_score("....x.......x...",
+  [:c4, {note: :c4, amp: 0.5}])
 
-# Granular vocal drone (Using :ambi_choir buffer, low density for ambient feel)
-s_grain = (ring {:note => :fs3, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.15}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Off‑beat hats – steps 2,6,10,14 with alternating amps
+s_hats = gen_score("..x...x...x...x.",
+  [ {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.15},
+    {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.15} ])
+
+# Deep, pulsing bass – hits on steps 0,6,10
+s_bass = gen_score("x.....x...x.....", [:fs2, :fs2, :a2])
+
+# Angular, nostalgic FM melody – hits on steps 0,3,6,10,12,14
+s_fm = gen_score("x..x..x...x.x.x.",
+  [:fs4, :c5, :a4, :e4, :fs4, :c5])
+
+# Granular vocal drone – one long grain on step 0
+s_grain = gen_score("x...............",
+  [ {note: :fs3, buffer: :ambi_choir, pos: 0.4, density: 2, size: 0.15} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK
@@ -28,17 +64,32 @@ s_grain = (ring {:note => :fs3, :buffer => :ambi_choir, :pos => 0.4, :density =>
 playbook = (ring
   # Scene 1: Atmosphere and Bass (4 bars)
   [ [:play_grain, s_grain, 4], [:play_sub, s_bass, 4] ],
-  
+
   # Scene 2: Drums enter (8 bars)
-  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
-    
+  [ [:play_grain, s_grain, 8], [:play_sub, s_bass, 8],
+    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8] ],
+
   # Scene 3: FM Melody enters, bass drops out for a break (4 bars)
-  [ [:play_grain, s_grain, 4], [:play_fm, s_fm, 4], 
-    [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4] ]
+  [ [:play_grain, s_grain, 4], [:play_fm, s_fm, 4],
+    [:play_kick, s_kick, 4], [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4] ]
 )
 
 # ==========================================================
 # 4. RUN
 # ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Half‑time kick: kick on 1 and 3 creates a spacious groove.
+# - Off‑beat hats: alternating amps (0.3/0.15) add swing.
+# - Granular drone: a single long grain (size 0.15) provides
+#   an ambient vocal texture that drifts throughout.
+# - FM melody: angular notes on off‑grid positions (3,6,10,12,14)
+#   create a nostalgic, synth‑wave feel.
+# - Arrangement: scenes build and break, with bass dropping
+#   out to let the FM melody shine.
+# ==========================================================

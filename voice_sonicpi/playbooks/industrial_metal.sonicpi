@@ -29,36 +29,56 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Relentless, heavy 4/4 marching kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
 # Heavy, metallic snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil)
+s_snare = gen_score("....x.......x...",
+  [ {note: :c4, amp: 1.0}, {note: :c4, amp: 1.0} ])
 
 # Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil)
+s_hats = gen_score("..x..x..x..x....",
+  [ {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.3},
+    {note: :c4, amp: 0.4} ])
 
 # The "Distorted Guitar Chug" Bass (D Minor).
-# Plays continuous 16th notes, alternating octaves (:d2, :d3). 
-# Extreme cutoff (120) and short release (0.1) create a grinding, distorted churn.
-s_bass  = (ring {:note => :d2, :cutoff => 120, :release => 0.1}, {:note => :d2, :cutoff => 120, :release => 0.1}, {:note => :d3, :cutoff => 120, :release => 0.1}, {:note => :d2, :cutoff => 120, :release => 0.1}, 
-           {:note => :d2, :cutoff => 120, :release => 0.1}, {:note => :d2, :cutoff => 120, :release => 0.1}, {:note => :f2, :cutoff => 120, :release => 0.1}, {:note => :d2, :cutoff => 120, :release => 0.1}, 
-           {:note => :bb1, :cutoff => 120, :release => 0.1}, {:note => :bb1, :cutoff => 120, :release => 0.1}, {:note => :bb2, :cutoff => 120, :release => 0.1}, {:note => :bb1, :cutoff => 120, :release => 0.1}, 
-           {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :f2, :cutoff => 120, :release => 0.1}, {:note => :a2, :cutoff => 120, :release => 0.1})
+# Define note sequence and common parameters once.
+bass_notes = [
+  :d2, :d2, :d3, :d2, :d2, :d2, :f2, :d2,
+  :bb1, :bb1, :bb2, :bb1, :a1, :a1, :f2, :a2
+]
+bass_params = {cutoff: 120, release: 0.1}
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| bass_params.merge(note: n) })
 
 # Stark, orchestral minor chord stabs (Dm to Bb).
 # Hit sparingly on the downbeats. High cutoff (100) gives them a soaring, 
 # symphonic wall of sound feel.
-s_chords= (ring {:note => [:d3, :f3, :a3], :cutoff => 100, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => [:bb2, :d3, :f3], :cutoff => 100, :release => 0.8, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_chords = gen_score("x.......x.......",
+  [ {note: [:d3, :f3, :a3], cutoff: 100, release: 0.8, amp: 0.6},
+    {note: [:bb2, :d3, :f3], cutoff: 100, release: 0.8, amp: 0.6} ])
 
 # Piercing, metallic FM Lead (D Minor Pentatonic).
-# Uses :play_fm with a high divisor (3) and extreme depth (4) to create 
-# a sharp, robotic square wave that cuts through the heavy guitar chug.
-s_fm    = (ring {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 4, :release => 0.1}, nil, {:note => :f5, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.1}, nil, {:note => :a5, :amp => 0.7, :divisor => 3, :depth => 4, :release => 0.1}, nil, nil, {:note => :d5, :amp => 0.6, :divisor => 3, :depth => 4, :release => 0.1}, nil, nil, {:note => :c5, :amp => 0.5, :divisor => 3, :depth => 4, :release => 0.1}, nil, {:note => :a4, :amp => 0.6, :divisor => 3, :depth => 4, :release => 0.1}, nil, nil, nil)
+# Define note/amp pairs and common FM parameters.
+fm_notes = [
+  {note: :d5, amp: 0.6},
+  {note: :f5, amp: 0.5},
+  {note: :a5, amp: 0.7},
+  {note: :d5, amp: 0.6},
+  {note: :c5, amp: 0.5},
+  {note: :a4, amp: 0.6}
+]
+fm_params = {divisor: 3, depth: 4, release: 0.1}
+s_fm = gen_score("x.x.x.x..x..x...",
+  fm_notes.map { |h| fm_params.merge(h) })
 
 # Pitched-down, demonic "Choir" drone (Granular Synth).
 # Pitched DOWN to :d3. Long size (0.2) and low density (1) creates a 
 # slow, haunting background texture that sounds like a choir in a cathedral.
-s_vocal = (ring {:note => :d3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :bb3, :buffer => :ambi_choir, :pos => 0.4, :density => 1, :size => 0.2, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+s_vocal = gen_score("x.......x.......",
+  [ {note: :d3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.2, amp: 0.6},
+    {note: :bb3, buffer: :ambi_choir, pos: 0.4, density: 1, size: 0.2, amp: 0.6} ])
 
 # ==========================================================
 # 3. THE PLAYBOOK

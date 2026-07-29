@@ -2,101 +2,108 @@
 # PLAYBOOK: MODERN DANCEHALL / REGGAE FUSION
 # (Pioneered by Sean Paul, Konshens, and Popcaan)
 # ==========================================================
-# 
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Modern Dancehall.
-# We have explored Latin Dembow (Reggaeton) and Afrobeat, but Modern 
-# Dancehall is the absolute king of the Caribbean 16-step grid. It 
-# operates around 100 BPM and relies on a highly syncopated, bouncy 
-# rhythm known as the "Boom Clash." 
-#
-# Unlike hip-hop where the kick is heavy and slow, Dancehall kicks 
-# stutter and gallop. The basslines are deep, melodic, and slide between 
-# notes. This playbook perfectly demonstrates how to use grid sparsity 
-# to create a massive, swaggering island groove that leaves tons of room 
-# for the vocals.
+# Modern Dancehall is the king of the Caribbean 16‑step grid.
+# At ~100 BPM, it relies on a syncopated “Boom Clash” rhythm
+# with stuttering kicks, deep sliding bass, and sparse off‑beat
+# chords. This playbook uses grid sparsity to create a massive,
+# swaggering island groove that leaves room for vocals.
+# [DNA: 102 BPM, C minor, galloping kick, melodic 808 slides,
+#  FM brass stabs, granular vocal chops]
 # ==========================================================
 
 use_bpm 102
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (C Minor - Bouncy & Tropical)
-# ==========================================================
+# ----------------------------------------------------------
+# SCORES – Normalized with gen_score
+# ----------------------------------------------------------
 
-# The "Boom Clash" Kick.
-# Hits on step 0, the 'a' of 1 (step 3), the 'and' of 2 (step 6), and beat 3 (step 8).
-# This lopsided placement creates the signature Dancehall bounce.
-s_kick  = (ring :c4, nil, nil, {:note => :c4, :amp => 0.8}, nil, nil, {:note => :c4, :amp => 0.6}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, nil)
+# Galloping kick – hits on steps 0, 3, 6, 8
+s_kick = gen_score("x..x..x.x.......",
+  [:c4,
+   {note: :c4, amp: 0.8},
+   {note: :c4, amp: 0.6},
+   {note: :c4, amp: 1.0}])
 
-# Sharp, woodblock-style snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, {:note => :c4, :amp => 0.4}, nil)
+# Snare on beats 2 and 4, with a ghost note on 14
+s_snare = gen_score("....x.......x.x.",
+  [{note: :c4, amp: 0.9},
+   {note: :c4, amp: 0.9},
+   {note: :c4, amp: 0.4}])
 
-# Swung, triplet-feel hats.
-# Notice the gaps (nil) that create a lazy, rolling Caribbean swing.
-s_hats  = (ring nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, nil, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, {:note => :c4, :amp => 0.4}, nil)
+# Swung, triplet‑feel hi‑hats – lazy Caribbean roll
+s_hats = gen_score(".xxx.xx..xxx.xx.",
+  [{note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.4},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.4}])
 
-# Deep, sliding 808 Melodic Bass (C Minor).
-# Long release (0.4) allows the notes to ring out and carry the melody.
-s_bass  = (ring {:note => :c2, :release => 0.4}, nil, nil, nil, nil, nil, {:note => :eb2, :release => 0.4}, nil, {:note => :g2, :release => 0.4}, nil, nil, nil, nil, nil, {:note => :f2, :release => 0.4}, nil)
+# Deep, sliding 808 melodic bass – C minor line, long release
+s_bass = gen_score("x.....x.x.....x.",
+  [{note: :c2, release: 0.4},
+   {note: :eb2, release: 0.4},
+   {note: :g2, release: 0.4},
+   {note: :f2, release: 0.4}])
 
-# Lush, staccato minor chords (Cm to Fm).
-# Hit on the off-beats to leave maximum room for the galloping kick.
-s_chords= (ring nil, nil, nil, nil, [:c3, :eb3, :g3], nil, nil, nil, nil, nil, nil, nil, [:f3, :ab3, :c4], nil, nil, nil)
+# Lush staccato chords (Cm / Fm) on off‑beats
+s_chords = gen_score("....x.......x...",
+  [[:c3, :eb3, :g3],
+   [:f3, :ab3, :c4]])
 
-# Bright, brassy Synth Horn Melody (C Minor Pentatonic).
-# Uses :play_fm with a high divisor to create a piercing, reggae fusion horn stab.
-# Routed through the engine's tape echo for a Caribbean smear.
-s_fm    = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :g5, :amp => 0.7, :divisor => 2, :depth => 2}, nil, {:note => :eb5, :amp => 0.5, :divisor => 2, :depth => 2}, nil, nil, nil, nil, nil)
+# Bright, brassy FM horn melody (C minor pentatonic)
+s_fm = gen_score("........x.x.....",
+  [{note: :g5, amp: 0.7, divisor: 2, depth: 2},
+   {note: :eb5, amp: 0.5, divisor: 2, depth: 2}])
 
-# Pitched-down, rhythmic dancehall vocal chant (Granular Synth)
-# Medium density, small size = a raw, repetitive vocal stab.
-s_vocal = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.3, :density => 2, :size => 0.05, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil)
+# Rhythmic dancehall vocal chant – pitched‑down granular stab
+s_vocal = gen_score("........x.......",
+  [{note: :c4, buffer: :ambi_choir, pos: 0.3, density: 2, size: 0.05, amp: 0.6}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# ----------------------------------------------------------
+# PLAYBOOK
+# ----------------------------------------------------------
 playbook = (ring
-  # Scene 1: The Riddim - Just the galloping drums and melodic bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
+  # Scene 1 – The Riddim: drums and melodic bass (4 bars)
+  [ [:play_kick, s_kick, 4],
+    [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4],
     [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: The Groove - Add the lush off-beat chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Hook - The brassy synth melody and vocal chant drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_chords, s_chords, 8], 
-    [:play_fm, s_fm, 8], [:play_grain, s_vocal, 8] ]
+
+  # Scene 2 – The Groove: add lush off‑beat chords (8 bars)
+  [ [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3 – The Hook: brassy FM lead and vocal chant (8 bars)
+  [ [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8],
+    [:play_chords, s_chords, 8],
+    [:play_fm, s_fm, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN ISLAND SWING]
-# 
-# 1. The Galloping Kick: Look at `s_kick`. It hits on steps 0, 3, 6, and 8.
-#    By hitting on the 'a' of beat 1 and the 'and' of beat 2, the kick 
-#    creates a lopsided, staggering groove. The engine's strict master 
-#    clock ensures these syncopated hits land with absolute precision, 
-#    making the track feel like it is physically bouncing.
-#
-# 2. Melodic 808 Slides: Look at `s_bass`. In Dancehall, the bass isn't 
-#    just a rhythm instrument; it carries the melody. By using a `release` 
-#    of `0.4`, the `:play_sub` synth rings out and decays naturally, 
-#    creating those massive, sliding low-end notes that define the genre.
-#
-# 3. FM as Brass: The `s_fm` sequence uses `divisor: 2` and `depth: 2` 
-#    to turn the FM synth into a sharp, brassy horn stab. Because it's 
-#    routed through the engine's tape echo, the notes smear across the 
-#    empty space, creating that massive, festival-ready Reggae Fusion 
-#    sound (think Sean Paul's "Temperature").
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# 1. Galloping Kick – hits on steps 0,3,6,8 create a lopsided,
+#    staggering bounce that defines the Dancehall “Boom Clash”.
+# 2. Melodic 808 Slides – a release of 0.4 lets the sub‑bass
+#    ring out and carry the melody, a hallmark of the genre.
+# 3. FM as Brass – divisor 2, depth 2 turns FM into a sharp
+#    horn stab; the tape echo smears it across the empty space
+#    for a festival‑ready Reggae Fusion feel.
 # ==========================================================

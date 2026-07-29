@@ -1,109 +1,117 @@
 # ==========================================================
 # PLAYBOOK: MODERN AFRO SWING / UK AFROBASHMENT
 # (Pioneered by J Hus, NSG, and Burna Boy)
-# ========================================================== 
-# 
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Afro Swing 
-# (or UK Afrobashment). We have explored modern Trap and classic 
-# Dancehall, but Afro Swing is the sound of the modern UK and African 
-# charts. It fuses the syncopated, bouncing rhythms of Dancehall and 
-# Afrobeats with UK rap, deep melodic sub-bass, and warm, plucked 
-# guitar/synth loops. 
-#
-# This playbook perfectly demonstrates how to create a highly syncopated, 
-# "dancing" drum grid that avoids the standard 4/4 pulse. By pairing it 
-# with a deep, round sub-bass and off-beat plucked chords, the engine 
-# creates a warm, infectious, and distinctly modern groove.
+# Afro Swing fuses syncopated Dancehall/Afrobeats rhythms with
+# UK rap, deep sub‑bass, and warm plucked loops. This playbook
+# demonstrates a highly syncopated “dancing” drum grid, a round
+# sub‑bass, and off‑beat chords that create an infectious modern
+# groove.
+# [DNA: 105 BPM, F# minor, syncopated kick & off‑beat skank,
+#  warm/muffled bass, glassy FM lead, granular vocal chops]
 # ==========================================================
 
 use_bpm 105
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (F# Minor - Bouncy, Warm, & Melodic)
-# ==========================================================
+# ----------------------------------------------------------
+# SCORES – Normalized with gen_score
+# ----------------------------------------------------------
 
-# The "Afro Swing" Kick. 
-# Highly syncopated. Hits on step 0, the 'and' of 2 (step 6), 
-# beat 3 (step 8), and the 'e' of 4 (step 12).
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, nil, {:note => :c4, :amp => 1.0}, nil, nil, nil, {:note => :c4, :amp => 0.7}, nil, nil, nil)
+# Syncopated kick – hits on steps 0, 6, 8, 12
+s_kick = gen_score("x.....x.x...x...",
+  [:c4,
+   {note: :c4, amp: 0.8},
+   {note: :c4, amp: 1.0},
+   {note: :c4, amp: 0.7}])
 
-# Crisp, organic snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil)
+# Snare on beats 2 and 4 (steps 4 and 12)
+s_snare = gen_score("....x.......x...",
+  [{note: :c4, amp: 0.9},
+   {note: :c4, amp: 0.9}])
 
-# Swung, bouncing 16th hats.
-s_hats  = (ring nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, {:note => :c4, :amp => 0.4}, nil)
+# Swung 16th hi‑hats – busy and bouncy
+s_hats = gen_score(".x.x.xx..x.x.xx.",
+  [{note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.3},
+   {note: :c4, amp: 0.2},
+   {note: :c4, amp: 0.4}])
 
-# Deep, round sub-bass (F# Minor).
-# Walks a slow, melodic line. Low cutoff (65) and medium release (0.3) 
-# to create a warm, muffled undercurrent.
-s_bass  = (ring {:note => :fs1, :release => 0.3, :cutoff => 65}, nil, nil, {:note => :fs1, :release => 0.3, :cutoff => 65}, nil, {:note => :a1, :release => 0.3, :cutoff => 65}, nil, nil, {:note => :fs1, :release => 0.3, :cutoff => 65}, nil, nil, {:note => :b1, :release => 0.3, :cutoff => 65}, nil, {:note => :a1, :release => 0.3, :cutoff => 65}, nil, nil)
+# Deep, round sub‑bass – F# minor walking line, low cutoff
+s_bass = gen_score("x..x.x..x..x.x..",
+  [{note: :fs1, release: 0.3, cutoff: 65},
+   {note: :fs1, release: 0.3, cutoff: 65},
+   {note: :a1,  release: 0.3, cutoff: 65},
+   {note: :fs1, release: 0.3, cutoff: 65},
+   {note: :b1,  release: 0.3, cutoff: 65},
+   {note: :a1,  release: 0.3, cutoff: 65}])
 
-# Warm, "Plucked Guitar" Chords (F#m to A to B).
-# Uses :play_pluck. Hit strictly on the off-beats (steps 2, 6, 10, 14) 
-# to leave maximum room for the syncopated kick and bass.
-s_chords= (ring nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:b2, :d3, :fs3], nil)
+# Off‑beat plucked guitar chords (F#m – A – B)
+s_chords = gen_score("..x...x...x...x.",
+  [[:fs3, :a3, :c4],
+   [:a3, :c4, :e4],
+   [:fs3, :a3, :c4],
+   [:b2, :d3, :fs3]])
 
-# Bright, "Marimba/Flute" Melody (F# Minor Pentatonic).
-# FIXED: Exactly 16 steps. Uses :play_fm with a low divisor (2) and depth (2) 
-# to create a warm, organic pluck. Routed through the engine's tape echo.
-s_fm    = (ring nil, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.2}, nil, nil, 
-           {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.2}, nil, 
-           {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.2}, nil, nil, nil, 
-           {:note => :b5, :amp => 0.5, :divisor => 2, :depth => 2, :release => 0.2}, nil, nil, 
-           {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.2}, nil, 
-           {:note => :fs5, :amp => 0.7, :divisor => 2, :depth => 2, :release => 0.2})
+# Bright marimba/flute melody (F# minor pentatonic) – via FM
+s_fm = gen_score(".x..x.x...x..x.x",
+  [{note: :fs5, amp: 0.6, divisor: 2, depth: 2, release: 0.2},
+   {note: :a5,  amp: 0.5, divisor: 2, depth: 2, release: 0.2},
+   {note: :c6,  amp: 0.6, divisor: 2, depth: 2, release: 0.2},
+   {note: :b5,  amp: 0.5, divisor: 2, depth: 2, release: 0.2},
+   {note: :a5,  amp: 0.6, divisor: 2, depth: 2, release: 0.2},
+   {note: :fs5, amp: 0.7, divisor: 2, depth: 2, release: 0.2}])
 
-# Rhythmic, pitched-up "Afro" vocal chant (Granular Synth).
-# High density, small size = a sharp, sugary vocal skip.
-s_vocal = (ring nil, nil, {:note => :fs4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.4, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil, nil, {:note => :c4, :buffer => :ambi_choir, :pos => 0.6, :density => 2, :size => 0.05, :amp => 0.5}, nil, nil, nil, nil)
+# Rhythmic vocal chops – granular cloud, sharp and sugary
+s_vocal = gen_score("..x...x....x....",
+  [{note: :fs4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.05, amp: 0.5},
+   {note: :a4,  buffer: :ambi_choir, pos: 0.4, density: 2, size: 0.05, amp: 0.5},
+   {note: :c4,  buffer: :ambi_choir, pos: 0.6, density: 2, size: 0.05, amp: 0.5}])
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# ----------------------------------------------------------
+# PLAYBOOK
+# ----------------------------------------------------------
 playbook = (ring
-  # Scene 1: The Vibe - Just the syncopated drums, bass, and guitar plucks (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_snare, s_snare, 4], [:play_hats, s_hats, 4], 
-    [:play_sub, s_bass, 4], [:play_pluck, s_chords, 4] ],
-  
-  # Scene 2: The Groove - Add the vocal chops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_pluck, s_chords, 8], [:play_grain, s_vocal, 8] ],
-    
-  # Scene 3: The Drop - The bright marimba melody drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_sub, s_bass, 8], [:play_pluck, s_chords, 8], [:play_grain, s_vocal, 8], 
+  # Scene 1 – The Vibe: drums, bass, and off‑beat pluck (4 bars)
+  [ [:play_kick, s_kick, 4],
+    [:play_snare, s_snare, 4],
+    [:play_hats, s_hats, 4],
+    [:play_sub, s_bass, 4],
+    [:play_pluck, s_chords, 4] ],
+
+  # Scene 2 – The Groove: add vocal chops (8 bars)
+  [ [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8],
+    [:play_pluck, s_chords, 8],
+    [:play_grain, s_vocal, 8] ],
+
+  # Scene 3 – The Drop: bright marimba melody enters (8 bars)
+  [ [:play_kick, s_kick, 8],
+    [:play_snare, s_snare, 8],
+    [:play_hats, s_hats, 8],
+    [:play_sub, s_bass, 8],
+    [:play_pluck, s_chords, 8],
+    [:play_grain, s_vocal, 8],
     [:play_lead, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MODERN BOUNCE]
-# 
-# 1. The Afro Swing Syncopation: Look at `s_kick`. It completely avoids 
-#    landing on the standard 4/4 pulse. By hitting on steps 0, 6, 8, and 12, 
-#    the engine creates a lopsided, "dancing" groove that feels distinctly 
-#    West African and Caribbean. The engine's strict master clock ensures 
-#    this complex rhythm lands with absolute precision.
-#
-# 2. The Off-Beat Skank: Look at `s_chords`. The plucked chords hit strictly 
-#    on steps 2, 6, 10, and 14. In a 16-step grid, these are the exact 
-#    midpoints between the kicks. The engine's strict 16-step grid locks 
-#    these stabs perfectly between the syncopated kick drum, creating that 
-#    signature bouncing "pocket".
-#
-# 3. Deep Harmonic Warmth: The `s_bass` sequence uses a very low `cutoff` (65) 
-#    to keep it round and warm. The `:play_fm` melody uses a low `divisor` (2) 
-#    to create a woody, organic marimba tone. The engine's strict 16-step grid 
-#    ensures these lush, melodic elements never clash with the complex, 
-#    syncopated drum pattern, creating a perfectly balanced, infectious mix.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# 1. Afro Swing Syncopation – The kick avoids the 4/4 pulse
+#    (steps 0,6,8,12), creating a “dancing” lopsided groove.
+# 2. Off‑Beat Skank – The plucked chords hit exactly on steps
+#    2,6,10,14, locking between the kicks for that signature bounce.
+# 3. Deep Harmonic Warmth – Sub‑bass uses a low cutoff (65) and
+#    the FM lead uses a low divisor (2) for a woody, organic tone.
 # ==========================================================

@@ -1,42 +1,34 @@
 use_bpm 170
 
 # ==========================================================
-# 1. REQUIRE ENGINE
+# PLAYBOOK: F# Minor Atmospheric Drum & Bass
 # ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+# [WHY THIS GENRE? Atmospheric DnB with deep bass and granular pad]
+# [DNA: 170 BPM, F# minor, breakbeat rhythm, sub bass + granular texture, arrangement: intro -> drums -> breakdown]
+# ==========================================================
 
-# ==========================================================
-# 2. THE SCORES (F# Minor Atmospheric)
-# ==========================================================
-# DnB Breakbeat pattern
-s_kick  = (ring :c4, nil, nil, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, nil, nil)
-s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
-# Fast, rolling 16th hats with dynamic velocity via Hashes
-s_hats  = (ring {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
-           {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
-           {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, 
-           {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}, {note: :c4, amp: 0.3}, {note: :c4, amp: 0.15})
-# Deep Reese bass
-s_bass  = (ring :fs1, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-# Lush granular vocal pad
-s_pad   = (ring :fs3, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# Scores
+s_kick  = gen_score("x.....x...x.....", [:c4])
+s_snare = gen_score("....x.......x....", [:c4])
+s_hats  = gen_score("xxxxxxxxxxxxxxxx", [{note: :c4, amp: 0.3}, {note: :c4, amp: 0.15}])
+s_bass  = gen_score("x...............", [:fs1])
+s_pad   = gen_score("x...............", [:fs3])
+
+# Playbook
 playbook = (ring
-  # Scene 1: Atmospheric intro (4 bars)
   [ [:play_grain, s_pad, 4], [:play_sub, s_bass, 4] ],
-  
-  # Scene 2: Drums drop (8 bars)
-  [ [:play_grain, s_pad, 8], [:play_sub, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: Breakdown - drums leave, atmosphere remains (4 bars)
+  [ [:play_grain, s_pad, 8], [:play_sub, s_bass, 8], [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8] ],
   [ [:play_grain, s_pad, 4], [:play_sub, s_bass, 4] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
+
+# ==========================================================
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Atmospheric DnB relies on sparse kick/snare placement for groove
+# - Granular pad creates evolving texture, sustain throughout
+# - Alternating hi-hat dynamics add realism and forward motion
+# ==========================================================

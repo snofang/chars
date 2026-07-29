@@ -1,103 +1,128 @@
 # ==========================================================
 # PLAYBOOK: MIDTEMPO BASS / INDUSTRIAL BASS
-# (Pioneered by Rezz, 1788-L, and Space Laces)
-# ========================================================== 
-# 
-# [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Midtempo Bass.
-# We have explored fast, 4/4 rave genres (Breakbeat Hardcore) and 
-# minimalistic genres (Minimal Techno). Midtempo Bass sits right in the 
-# middle at 105 BPM. It is the sound of the modern underground. It relies 
-# on a half-time, swaggering groove, massive "metallic" FM basses, and 
-# heavily sidechained, eerie atmospheres.
-#
-# This playbook perfectly demonstrates how to use the Parameter Hashes 
-# to create a "sidechain pump" purely via data. By making the bass volume 
-# dip on every kick drum hit, the engine creates that massive, breathing, 
-# head-banging momentum that defines artists like Rezz.
+# ==========================================================
+# Dark, swaggering half-time groove with metallic FM bass and eerie atmospheres.
+# DNA: 105 BPM | Key G# Minor | Rhythm: Half-time with syncopation | Timbre: Metallic, dark, eerie | Arrangement: Void → Groove → Drop
 # ==========================================================
 
 use_bpm 105
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
 # ==========================================================
-# 2. THE SCORES (G# Minor - Dark, Eerie, & Swaggering)
+# DRUM PATTERNS
 # ==========================================================
 
-# Half-time, syncopated kick. 
-# Hits on step 0, the 'a' of 2 (step 7), beat 3 (step 8), and the 'a' of 4 (step 15).
-s_kick  = (ring {:note => :c4, :amp => 1.2}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.8}, {:note => :c4, :amp => 1.0}, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.6})
+# Syncopated half-time kick with accents
+s_kick = gen_score("x......xx......x", [
+  {amp: 1.2},
+  {amp: 0.8},
+  {amp: 1.0},
+  {amp: 0.6}
+])
 
-# Heavy, dry snare strictly on beat 3 (step 8), with a ghost on the 'a' of 3.
-s_snare = (ring nil, nil, nil, nil, nil, nil, nil, nil, {:note => :c4, :amp => 0.9}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil)
+# Heavy snare on beat 3 with ghost note
+s_snare = gen_score("........x...x...", [
+  {amp: 0.9},
+  {amp: 0.4}
+])
 
-# Swung, triplet-feel hats with a roll at the end of the bar.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.2}, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil)
-
-# The "Sidechained" Metallic Bass (G# Minor).
-# Uses :play_fm with extreme depth (6) to create a metallic clank.
-# The 'amp' Hashes dip to 0.2 when the kick hits (steps 0, 7, 8, 15) 
-# and spike to 0.9 in between, simulating heavy sidechain compression!
-s_bass  = (ring {:note => :gs1, :divisor => 2, :depth => 6, :release => 0.2, :amp => 0.2}, nil, nil, {:note => :gs1, :divisor => 2, :depth => 6, :release => 0.2, :amp => 0.9}, nil, nil, {:note => :gs1, :divisor => 2, :depth => 6, :release => 0.2, :amp => 0.2}, nil, {:note => :gs1, :divisor => 2, :depth => 6, :release => 0.2, :amp => 0.2}, nil, nil, {:note => :cs2, :divisor => 2, :depth => 6, :release => 0.2, :amp => 0.9}, nil, nil, {:note => :ds2, :divisor => 2, :depth => 6, :release => 0.2, :amp => 0.2}, nil)
-
-# Dark, eerie minor chords (G#m to C#m).
-# Hit sparingly on the off-beats with a long release to create a sense of dread.
-s_chords= (ring nil, nil, {:note => [:gs3, :b3, :eb4], :cutoff => 90, :release => 1.0, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => [:cs3, :e3, :gs3], :cutoff => 90, :release => 1.0, :amp => 0.5}, nil, nil, nil, nil, nil)
-
-# Piercing, high-pitched "Alien" FM blips (G# Minor Pentatonic).
-# Uses a high divisor (4) and depth (4) to create a sharp, robotic sound.
-s_fm    = (ring nil, nil, nil, nil, {:note => :gs5, :amp => 0.6, :divisor => 4, :depth => 4}, nil, nil, nil, nil, nil, nil, nil, {:note => :ds5, :amp => 0.5, :divisor => 4, :depth => 4}, nil, nil, nil)
-
-# Eerie, time-stretched vocal drone (Granular Synth).
-# Pitched DOWN to :gs3. Long size (0.15) and low density (1).
-# This creates a slow, ghostly undercurrent that drifts beneath the kick.
-s_grain = (ring {:note => :gs3, :buffer => :ambi_choir, :pos => 0.2, :density => 1, :size => 0.15, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Swung hats with triplet feel
+s_hats = gen_score("x..x.x..x..xx.xx.", [
+  {amp: 0.3},
+  {amp: 0.4},
+  {amp: 0.2},
+  {amp: 0.3},
+  {amp: 0.5},
+  {amp: 0.3},
+  {amp: 0.2}
+])
 
 # ==========================================================
-# 3. THE PLAYBOOK
+# BASS WITH SIDECHAIN SIMULATION
 # ==========================================================
+
+# Metallic FM bass with amp modulation
+# Amp dips when kick hits (steps 0, 7, 8, 15) and pumps between
+s_bass = gen_score("x..x..x.xx..x..x.", [
+  {note: :gs1, divisor: 2, depth: 6, release: 0.2, amp: 0.2},
+  {note: :gs1, divisor: 2, depth: 6, release: 0.2, amp: 0.9},
+  {note: :gs1, divisor: 2, depth: 6, release: 0.2, amp: 0.2},
+  {note: :gs1, divisor: 2, depth: 6, release: 0.2, amp: 0.2},
+  {note: :cs2, divisor: 2, depth: 6, release: 0.2, amp: 0.9},
+  {note: :ds2, divisor: 2, depth: 6, release: 0.2, amp: 0.2}
+])
+
+# ==========================================================
+# HARMONIC & MELODIC ELEMENTS
+# ==========================================================
+
+# Dark minor chords (G#m → C#m) on off-beats
+s_chords = gen_score("..x.....x.......", [
+  {note: [:gs3, :b3, :eb4], cutoff: 90, release: 1.0, amp: 0.5},
+  {note: [:cs3, :e3, :gs3], cutoff: 90, release: 1.0, amp: 0.5}
+])
+
+# Piercing alien FM blips (G# minor pentatonic)
+s_fm = gen_score("....x.......x...", [
+  {note: :gs5, amp: 0.6, divisor: 4, depth: 4},
+  {note: :ds5, amp: 0.5, divisor: 4, depth: 4}
+])
+
+# Eerie time-stretched vocal drone
+s_grain = gen_score("x...............", [
+  {note: :gs3, buffer: :ambi_choir, pos: 0.2, density: 1, size: 0.15, amp: 0.5}
+])
+
+# ==========================================================
+# PLAYBOOK STRUCTURE
+# ==========================================================
+
 playbook = (ring
-  # Scene 1: The Void - Just the eerie drone and metallic bass (4 bars)
-  [ [:play_grain, s_grain, 4], [:play_fm, s_bass, 4] ],
   
-  # Scene 2: The Groove - Add the half-time drums and dark chords (8 bars)
-  [ [:play_grain, s_grain, 8], [:play_fm, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Drop - The piercing alien FM blips drop (8 bars)
-  [ [:play_grain, s_grain, 8], [:play_fm, s_bass, 8], 
-    [:play_kick, s_kick, 8], [:play_snare, s_snare, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8] ]
+  # Scene 1: The Void (4 bars)
+  # Eerie drone and metallic bass establish the dark atmosphere
+  [
+    [:play_grain, s_grain, 4],
+    [:play_fm,    s_bass, 4]
+  ],
+  
+  # Scene 2: The Groove (8 bars)
+  # Half-time drums and dark chords enter
+  [
+    [:play_grain,  s_grain, 8],
+    [:play_fm,     s_bass, 8],
+    [:play_kick,   s_kick, 8],
+    [:play_snare,  s_snare, 8],
+    [:play_hats,   s_hats, 8],
+    [:play_chords, s_chords, 8]
+  ],
+  
+  # Scene 3: The Drop (8 bars)
+  # Piercing FM blips complete the arrangement
+  [
+    [:play_grain,  s_grain, 8],
+    [:play_fm,     s_bass, 8],
+    [:play_kick,   s_kick, 8],
+    [:play_snare,  s_snare, 8],
+    [:play_hats,   s_hats, 8],
+    [:play_chords, s_chords, 8],
+    [:play_lead,   s_fm, 8]
+  ]
 )
 
 # ==========================================================
-# 4. RUN
+# RUN
 # ==========================================================
+
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN MODERN BASS]
-# 
-# 1. Data-Driven Sidechain: Look at `s_bass`. A real Midtempo Bass track 
-#    uses heavy sidechain compression to make the bass "duck" when the 
-#    kick hits. Because our engine reads Parameter Hashes, we can simulate 
-#    this perfectly by just setting the bass `amp` to `0.2` on steps 0, 7, 
-#    8, and 15 (where the kick hits), and `0.9` on the steps in between. 
-#    The engine handles the rest, creating that massive, breathing groove.
-#
-# 2. FM as Metal: The `s_bass` sequence uses `divisor: 2` and `depth: 6`. 
-#    This extreme FM ratio forces the synth to produce a harsh, metallic 
-#    clank that sounds like a steel door closing. This is the absolute 
-#    signature sound design of artists like Rezz and 1788-L.
-#
-# 3. Eerie Granular Space: The `s_grain` sequence uses a `density` of `1` 
-#    and a `size` of `0.15`. By pitching the vocal down to `:gs3` and 
-#    using sparse, long grains, the engine time-stretches the sample into 
-#    a formless, ghostly drone that perfectly anchors the aggressive, 
-#    metallic bassline.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - Amp modulation simulates sidechain compression on bass
+# - Extreme FM ratio (divisor 2, depth 6) creates metallic clank
+# - Time-stretched vocal drone adds ghostly atmosphere
+# - Syncopated kick pattern defines the swaggering half-time groove
+# - Sparse chords on off-beats create sense of dread
 # ==========================================================

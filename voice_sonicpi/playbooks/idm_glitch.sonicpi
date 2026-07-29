@@ -32,21 +32,17 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # 2. THE SCORES (A Minor - Chaotic but Locked)
 # ==========================================================
 
-# Syncopated kick – positions 0,4,6,10,12
-s_kick = gen_score("x...x.x...x.x...", [:c4, :c4, :c4, :c4, :c4])
+# Syncopated kick – 5 triggers, wrap single :c4
+s_kick = gen_score("x...x.x...x.x...", [:c4])
 
-# Rolling, stuttering hats – positions 0,1,3,5,6,8,10,11,13,15
-hat_data = [
-  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3},
-  {note: :c4, amp: 0.5}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4},
-  {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}, {note: :c4, amp: 0.3},
-  {note: :c4, amp: 0.5}, {note: :c4, amp: 0.2}, {note: :c4, amp: 0.4}
-]
-s_hats = gen_score("xx.x.xx.x.xx.x.x", hat_data)
+# Rolling, stuttering hats – 12 triggers with alternating amps
+hat_amps = [0.2, 0.4, 0.3, 0.5, 0.2, 0.4, 0.2, 0.4, 0.3, 0.5, 0.2, 0.4]
+s_hats = gen_score("xx.x.xx.x.xx.x.x",
+  hat_amps.map { |a| {note: :c4, amp: a} })
 
-# Angular FM stabs – positions 1,3,6,8,11,13
+# Angular FM stabs – common params, only note/amp vary
 fm_base = {divisor: 2, depth: 1}
-fm_data = [
+fm_notes = [
   {note: :a5, amp: 0.6},
   {note: :c6, amp: 0.5},
   {note: :e5, amp: 0.6},
@@ -54,21 +50,17 @@ fm_data = [
   {note: :g5, amp: 0.5},
   {note: :e5, amp: 0.6}
 ]
-s_fm = gen_score(".x.x..x.x..x.x..", fm_data.map { |h| fm_base.merge(h) })
+s_fm = gen_score(".x.x..x.x..x.x..", fm_notes.map { |h| fm_base.merge(h) })
 
-# Plucked arpeggio – even steps 0,2,4,6,8,10,12,14
-pluck_data = [:a3, :a3, :e3, :e3, :g3, :g3, :a3, :c4]
-s_pluck = gen_score("x.x.x.x.x.x.x.x.", pluck_data)
+# Plucked arpeggio – even steps, 8 notes (can simplify: wrap with pattern)
+# Actually 8 triggers match 8 notes, keep as is.
+pluck_notes = [:a3, :a3, :e3, :e3, :g3, :g3, :a3, :c4]
+s_pluck = gen_score("x.x.x.x.x.x.x.x.", pluck_notes)
 
-# Syncopated bass clusters – positions 0,1,3,6,7,9,12,15
-bass_data = [
-  {note: :a1}, {note: :a1}, {note: :a1},
-  {note: :a1}, {note: :a1},
-  {note: :a1},
-  {note: :g1},
-  {note: :g1}
-]
-s_bass = gen_score("xx.x..xx.x..x..x", bass_data)
+# Syncopated bass clusters – 8 triggers, single common release/cutoff
+bass_base = {note: :a1}
+bass_notes = [:a1, :a1, :a1, :a1, :a1, :a1, :g1, :g1] # 8 elements
+s_bass = gen_score("xx.x..xx.x..x..x", bass_notes.map { |n| {note: n} })
 
 # ==========================================================
 # 3. THE PLAYBOOK

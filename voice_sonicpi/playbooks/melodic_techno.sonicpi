@@ -1,104 +1,134 @@
 # ==========================================================
 # PLAYBOOK: MELODIC TECHNO / AFTERLIFE
-# (Pioneered by Tale Of Us, Anyma, and Stephan Bodzin)
 # ==========================================================
-# 
-# [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Melodic Techno.
-# We have explored heavy, dark techno (Peak-Time) and organic house
-# (Afro House). Melodic Techno is currently dominating the global 
-# festival and club scene. It blends the relentless, driving 16th-note 
-# grid of Berlin techno with deep, emotional, cinematic chord progressions.
-#
-# This playbook perfectly demonstrates how to use Parameter Hashes 
-# (`cutoff`) to create a hypnotic filter sweep on a rolling bassline, 
-# and how the `:play_chords` synth can be used to create massive, 
-# wide, evolving analog pads that wash over a rigid 4/4 beat.
+# Hypnotic techno with rolling basslines and emotional cinematic progressions.
+# DNA: 125 BPM | Key A Minor | Rhythm: 4-on-the-floor with 16th-note roll | Timbre: Bright, driving, cinematic | Arrangement: Hypnosis → Tension → Release
 # ==========================================================
 
 use_bpm 125
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
 # ==========================================================
-# 2. THE SCORES (A Minor - Driving & Emotional)
+# DRUM PATTERNS
 # ==========================================================
 
-# Relentless, driving 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Relentless 4-on-the-floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Deep, analog clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Deep analog clap on beats 2 and 4
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.3}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil)
-
-# The "Rolling" Melodic Bassline (A Minor).
-# Plays on every 16th step, alternating octaves. The 'cutoff' Hash 
-# slowly opens and closes, simulating a modular filter envelope.
-s_bass  = (ring {:note => :a1, :cutoff => 70}, {:note => :a2, :cutoff => 75}, {:note => :a1, :cutoff => 80}, {:note => :a2, :cutoff => 85}, 
-           {:note => :a1, :cutoff => 90}, {:note => :a2, :cutoff => 95}, {:note => :a1, :cutoff => 100}, {:note => :a2, :cutoff => 105}, 
-           {:note => :f1, :cutoff => 100}, {:note => :f2, :cutoff => 95}, {:note => :f1, :cutoff => 90}, {:note => :f2, :cutoff => 85}, 
-           {:note => :g1, :cutoff => 80}, {:note => :g2, :cutoff => 75}, {:note => :g1, :cutoff => 70}, {:note => :g2, :cutoff => 65})
-
-# Massive, emotional off-beat chord stabs (Am to F to G).
-# Uses Hashes to push the 'cutoff' high, creating a bright, soaring supersaw sound.
-s_chords= (ring nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 110, :release => 1.0, :amp => 0.6}, nil, nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 110, :release => 1.0, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:f3, :a3, :c4], :cutoff => 110, :release => 1.0, :amp => 0.6}, nil, nil, nil, {:note => [:g3, :bb3, :d4], :cutoff => 110, :release => 1.0, :amp => 0.6}, nil)
-
-# The "Modular" Pluck Arpeggio (A Minor).
-# Uses :play_fm with a specific divisor to create a sharp, organic pluck.
-# Routed through the engine's tape echo for a cinematic smear.
-s_fm    = (ring :a4, nil, :e5, nil, :c5, nil, :e5, nil, :a4, nil, :e5, nil, :g4, nil, :d5, nil)
-
-# Ethereal, granular vocal drone (using :ambi_choir).
-# Long size (0.2) and low density (2) creates a slow, evolving atmospheric texture.
-s_grain = (ring {:note => :a3, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil, {:note => :f3, :buffer => :ambi_choir, :pos => 0.5, :density => 2, :size => 0.2, :amp => 0.5}, nil, nil, nil, nil, nil, nil, nil)
+# Off-beat open hats
+s_hats = gen_score("..x...x...x...x.", [
+  {amp: 0.3},
+  {amp: 0.4}
+])
 
 # ==========================================================
-# 3. THE PLAYBOOK
+# ROLLING BASS WITH FILTER SWEEP
 # ==========================================================
+
+# Hypnotic bassline on every 16th note with evolving cutoff
+# Creates a "breathing" modular filter envelope
+s_bass = gen_score("xxxxxxxxxxxxxxxx", [
+  {note: :a1, cutoff: 70},
+  {note: :a2, cutoff: 75},
+  {note: :a1, cutoff: 80},
+  {note: :a2, cutoff: 85},
+  {note: :a1, cutoff: 90},
+  {note: :a2, cutoff: 95},
+  {note: :a1, cutoff: 100},
+  {note: :a2, cutoff: 105},
+  {note: :f1, cutoff: 100},
+  {note: :f2, cutoff: 95},
+  {note: :f1, cutoff: 90},
+  {note: :f2, cutoff: 85},
+  {note: :g1, cutoff: 80},
+  {note: :g2, cutoff: 75},
+  {note: :g1, cutoff: 70},
+  {note: :g2, cutoff: 65}
+])
+
+# ==========================================================
+# HARMONIC & MELODIC ELEMENTS
+# ==========================================================
+
+# Emotional off-beat supersaw chords (Am → F → G)
+s_chords = gen_score("..x..x..x..x..x.", [
+  {note: [:a3, :c4, :e4], cutoff: 110, release: 1.0, amp: 0.6},
+  {note: [:f3, :a3, :c4], cutoff: 110, release: 1.0, amp: 0.6},
+  {note: [:g3, :bb3, :d4], cutoff: 110, release: 1.0, amp: 0.6}
+])
+
+# Echoing modular pluck arpeggio (A minor)
+s_fm = gen_score("x.x.x.x.x.x.x.x.", [
+  :a4,
+  :e5,
+  :c5,
+  :e5,
+  :a4,
+  :e5,
+  :g4,
+  :d5
+])
+
+# Ethereal granular vocal drone
+s_grain = gen_score("x.......x.......", [
+  {note: :a3, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.2, amp: 0.5},
+  {note: :f3, buffer: :ambi_choir, pos: 0.5, density: 2, size: 0.2, amp: 0.5}
+])
+
+# ==========================================================
+# PLAYBOOK STRUCTURE
+# ==========================================================
+
 playbook = (ring
-  # Scene 1: The Hypnosis - Just the kick, rolling bass, and drone (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_grain, s_grain, 4] ],
   
-  # Scene 2: The Tension - Add the claps, hats, and emotional chords (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Release - The modular pluck arpeggio drops (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_grain, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], [:play_chords, s_chords, 8], 
-    [:play_fm, s_fm, 8] ]
+  # Scene 1: The Hypnosis (4 bars)
+  # Foundation: Kick, rolling bass, and vocal drone
+  [
+    [:play_kick,  s_kick, 4],
+    [:play_sub,   s_bass, 4],
+    [:play_grain, s_grain, 4]
+  ],
+  
+  # Scene 2: The Tension (8 bars)
+  # Add claps, hats, and emotional chords
+  [
+    [:play_kick,   s_kick, 8],
+    [:play_sub,    s_bass, 8],
+    [:play_grain,  s_grain, 8],
+    [:play_snare,  s_clap, 8],
+    [:play_hats,   s_hats, 8],
+    [:play_chords, s_chords, 8]
+  ],
+  
+  # Scene 3: The Release (8 bars)
+  # Modular pluck arpeggio completes the arrangement
+  [
+    [:play_kick,   s_kick, 8],
+    [:play_sub,    s_bass, 8],
+    [:play_grain,  s_grain, 8],
+    [:play_snare,  s_clap, 8],
+    [:play_hats,   s_hats, 8],
+    [:play_chords, s_chords, 8],
+    [:play_fm,     s_fm, 8]
+  ]
 )
 
 # ==========================================================
-# 4. RUN
+# RUN
 # ==========================================================
+
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN EMOTIONAL MOMENTUM]
-# 
-# 1. The 16-Step Filter Sweep: Look at `s_bass`. It plays on every single
-#    16th step, but the `cutoff` Hash starts at `70`, slowly opens to 
-#    `105` by step 7, and then closes back down to `65`. Because the 
-#    engine loops this grid, the bassline constantly "breathes", creating 
-#    a hypnotic, rolling tension that is the absolute signature of 
-#    Melodic Techno.
-#
-# 2. The Off-Beat Supersaw: Look at `s_chords`. The chords hit strictly 
-#    on the off-beats (steps 2, 6, 10, 14) in sync with the open hats. 
-#    By using the `:play_chords` synth with a high `cutoff` (110), the 
-#    engine turns the normally warm `:blade` synth into a bright, 
-#    soaring wall of sound that cuts through the rolling bass.
-#
-# 3. Echoing Arpeggios: The `s_fm` sequence plays a simple A minor 
-#    arpeggio, but leaves a `nil` between every note. Because the engine 
-#    routes the `:play_fm` synth through a tape echo, those empty spaces 
-#    are filled by delay tails, creating a massive, shimmering soundscape 
-#    that feels like looking up at a massive LED screen at a festival.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# - 16-step bassline with evolving cutoff creates hypnotic filter sweep
+# - Off-beat chord stabs sync with hats for driving momentum
+# - Echo delays fill arpeggio gaps for cinematic shimmer
+# - Vocal drone adds ethereal texture throughout
+# - Alternating octaves in bassline creates rolling movement
 # ==========================================================

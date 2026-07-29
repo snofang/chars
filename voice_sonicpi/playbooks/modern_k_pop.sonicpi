@@ -1,105 +1,97 @@
 # ==========================================================
 # PLAYBOOK: MODERN K-POP / EDM DANCE BREAK
 # (Pioneered by BLACKPINK, BTS, and EXO)
-# ========================================================== 
-# 
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Modern K-Pop.
-# We have explored underground genres (Witch House, Gqom) and classic 
-# club genres (House, Techno). K-Pop is arguably the most polished, 
-# high-energy pop genre in the world right now. Its "dance breaks" are 
-# notorious for fusing heavy Trap/Bass elements with massive, bright 
-# Supersaws and pristine, chopped vocal stutters.
-#
-# This playbook perfectly demonstrates how to create a stadium-sized 
-# pop drop. By combining a deep, rhythmic 808 bass with wide, off-beat 
-# supersaw chords and a rising hi-hat roll, the engine creates a massive, 
-# festival-ready energy that feels like the climax of a sold-out stadium 
-# concert.
+# K‑Pop fuses heavy Trap/Bass with massive Supersaws and pristine
+# vocal stutters. This playbook delivers a stadium‑sized drop
+# with a rhythmic 808 bass, off‑beat supersaw chords, and a rising
+# hi‑hat roll that builds festival‑ready energy.
+# [DNA: 120 BPM, F# minor, 4/4 kick, rhythmic 808, off‑beat
+#  supersaws, piercing FM lead, vocal stutter, dynamic hat roll]
 # ==========================================================
 
 use_bpm 120
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (F# Minor - High Energy, Polished, & Heavy)
-# ==========================================================
+# ----------------------------------------------------------
+# SCORES – Normalized with gen_score & DRY parameters
+# ----------------------------------------------------------
 
-# Driving, punchy 4/4 kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Driving 4/4 kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Heavy, modern pop clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Heavy pop clap on beats 2 and 4
+s_clap = gen_score("....x.......x...", [:c4])
 
-# The "Dance Break" Hi-Hat Roll.
-# Plays 16ths, but notice the rising amplitude Hashes (0.3 to 0.8) at the 
-# end of the bar (steps 12-15) to simulate a massive trap roll.
-s_hats  = (ring {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.4}, nil, {:note => :c4, :amp => 0.3}, nil, {:note => :c4, :amp => 0.2}, nil, {:note => :c4, :amp => 0.5}, {:note => :c4, :amp => 0.6}, {:note => :c4, :amp => 0.7}, {:note => :c4, :amp => 0.8})
+# Rising hi‑hat roll – amplitudes increase toward the end
+hat_amps = [0.3, 0.2, 0.3, 0.4, 0.3, 0.2, 0.5, 0.6, 0.7, 0.8]
+s_hats  = gen_score("x.xx.xx.xx.xxxxx",
+  hat_amps.map { |amp| {note: :c4, amp: amp} })
 
-# Deep, rhythmic 808 Bass (F# Minor).
-# Hits a syncopated melody. Short release (0.3) makes it punchy.
-s_bass  = (ring {:note => :fs1, :release => 0.3}, nil, nil, {:note => :fs1, :release => 0.3}, nil, nil, {:note => :a1, :release => 0.3}, nil, {:note => :fs1, :release => 0.3}, nil, nil, {:note => :fs1, :release => 0.3}, nil, nil, {:note => :e1, :release => 0.3}, nil)
+# Rhythmic 808 bass – syncopated melody with short release
+bass_notes = [:fs1, :fs1, :a1, :fs1, :fs1, :e1]
+s_bass = gen_score("x..x..x.x..x..x.",
+  bass_notes.map { |n| {note: n, release: 0.3} })
 
-# Massive, wide Supersaw Chords (F#m to A to E).
-# Hit strictly on the off-beats (steps 2, 6, 10, 14). High cutoff (110) 
-# and medium release (0.5) create a bright, soaring wall of sound.
-s_chords= (ring nil, nil, {:note => [:fs3, :a3, :c4], :cutoff => 110, :release => 0.5, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:fs3, :a3, :c4], :cutoff => 110, :release => 0.5, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:a3, :c4, :e4], :cutoff => 110, :release => 0.5, :amp => 0.6}, nil, 
-           nil, nil, {:note => [:e3, :g3, :b3], :cutoff => 110, :release => 0.5, :amp => 0.6}, nil)
+# Wide off‑beat supersaw chords (F#m – A – E) – high cutoff
+chord_prog = [[:fs3, :a3, :c4],
+              [:fs3, :a3, :c4],
+              [:a3,  :c4, :e4],
+              [:e3,  :g3, :b3]]
+s_chords = gen_score("..x...x...x...x.",
+  chord_prog.map { |c| {note: c, cutoff: 110, release: 0.5, amp: 0.6} })
 
-# Bright, piercing "Synth Brass/Pluck" Lead (F# Minor Pentatonic).
-# Uses :play_fm with a low divisor (2) and depth (3) to create a sharp, 
-# buzzy square wave that cuts through the heavy mix.
-s_fm    = (ring {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, nil, {:note => :a5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :c6, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, nil, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, nil, {:note => :e5, :amp => 0.5, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :d5, :amp => 0.6, :divisor => 2, :depth => 3, :release => 0.1}, nil, {:note => :c5, :amp => 0.7, :divisor => 2, :depth => 3, :release => 0.1})
+# Bright FM lead (square wave) – low divisor, medium depth
+fm_notes = [:fs5, :a5, :c6, :fs5, :e5, :d5, :c5]
+fm_defaults = {divisor: 2, depth: 3, release: 0.1}
+s_fm = gen_score("x..x.x..x..x.x.x",
+  fm_notes.map { |n| {note: n, amp: 0.6, **fm_defaults} })
 
-# High-pitched, pristine "K-Pop" Vocal Stutter (Granular Synth).
-# High density, tiny size = a sharp, sugary, rhythmic vocal skip.
-s_vocal = (ring nil, nil, nil, nil, nil, {:note => :fs4, :buffer => :ambi_choir, :pos => 0.2, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, {:note => :a4, :buffer => :ambi_choir, :pos => 0.4, :density => 3, :size => 0.03, :amp => 0.6}, nil, nil)
+# Pristine vocal stutter – high density, tiny grains
+vocal_hits = [{note: :fs4, pos: 0.2},
+              {note: :a4,  pos: 0.4}]
+s_vocal = gen_score("....x.......x..",
+  vocal_hits.map { |h| {note: h[:note], buffer: :ambi_choir,
+                        pos: h[:pos], density: 3, size: 0.03, amp: 0.6} })
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# ----------------------------------------------------------
+# PLAYBOOK – In‑line and readable
+# ----------------------------------------------------------
 playbook = (ring
-  # Scene 1: The Build - Just the kick, bass, and vocal chops (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_sub, s_bass, 4], [:play_grain, s_vocal, 4] ],
-  
-  # Scene 2: The Vibe - Add the heavy claps and rolling hats (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8] ],
-    
-  # Scene 3: The Drop - The massive supersaws and brass lead drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_sub, s_bass, 8], [:play_grain, s_vocal, 8], 
-    [:play_snare, s_clap, 8], [:play_hats, s_hats, 8], 
-    [:play_chords, s_chords, 8], [:play_lead, s_fm, 8] ]
+  # Scene 1 – The Build: kick, bass, and vocal chops (4 bars)
+  [ [:play_kick, s_kick, 4],
+    [:play_sub, s_bass, 4],
+    [:play_grain, s_vocal, 4] ],
+
+  # Scene 2 – The Vibe: add claps and rolling hats (8 bars)
+  [ [:play_kick, s_kick, 8],
+    [:play_sub, s_bass, 8],
+    [:play_grain, s_vocal, 8],
+    [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8] ],
+
+  # Scene 3 – The Drop: massive supersaws and FM lead (8 bars)
+  [ [:play_kick, s_kick, 8],
+    [:play_sub, s_bass, 8],
+    [:play_grain, s_vocal, 8],
+    [:play_snare, s_clap, 8],
+    [:play_hats, s_hats, 8],
+    [:play_chords, s_chords, 8],
+    [:play_lead, s_fm, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN STADIUM POP]
-# 
-# 1. The Dance Break Roll: Look at `s_hats`. The amplitudes in the Hashes 
-#    rise linearly from 0.2 to 0.8 at the end of the bar (steps 10-15). 
-#    Because the engine fires these on the strict 16-step grid, it creates 
-#    a machine-gun roll that builds massive tension, perfectly mimicking 
-#    the high-energy drum fills of a K-Pop dance break.
-#
-# 2. The Supersaw Wall: Look at `s_chords`. The chords hit strictly on the 
-#    off-beats (steps 2, 6, 10, 14). By using a high `cutoff` (110), the 
-#    engine turns the `:blade` synth into a bright, soaring wall of sound 
-#    that contrasts heavily with the deep, rumbling 808 bass.
-#
-# 3. Rhythmic 808s: The `s_bass` sequence doesn't just hold a root note; 
-#    it plays a syncopated melody with a short `release` (0.3). The engine's 
-#    strict master clock ensures this deep bassline locks perfectly with 
-#    the kick drum, creating the heavy, bouncing low-end that defines 
-#    modern pop and trap productions.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# 1. Dance Break Roll – amplitudes in the hat pattern rise from
+#    0.2 to 0.8, creating a machine‑gun roll that builds tension.
+# 2. Supersaw Wall – off‑beat chords with cutoff 110 produce a
+#    bright, soaring contrast to the deep 808 bass.
+# 3. Rhythmic 808s – the bass plays a syncopated melody with a
+#    short release (0.3), locking tightly with the kick for a
+#    heavy, bouncing low‑end that defines modern pop/trap.
 # ==========================================================

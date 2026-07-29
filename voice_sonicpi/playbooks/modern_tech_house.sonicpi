@@ -1,101 +1,106 @@
 # ==========================================================
 # PLAYBOOK: MODERN TECH HOUSE
 # (Pioneered by Fisher, Chris Lake, and Detlef)
-# ========================================================== 
-# 
+# ==========================================================
 # [WHY THIS GENRE?]
-# If I were to select the next playbook, I would choose Modern Tech House.
-# We have explored dark, minimal techno and lush deep house. Tech House 
-# is the perfect middle ground. It is the sound of mainstream festival 
-# dancefloors. It takes the rigid 4/4 grid of techno but injects it with 
-# a bouncy, syncopated "womp" FM bassline, crisp 909 drums, and repetitive, 
-# percussive vocal chops.
-#
-# This playbook perfectly demonstrates how to create a massive, groove-
-# centric bassline using the `:play_fm` synth. By playing 16th notes 
-# with rapidly changing `divisor` and `depth` Hashes, the engine creates 
-# a thick, talking bassline that locks perfectly with the drums.
+# Tech House is the mainstream festival sound – rigid 4/4 kick
+# with a syncopated "womp" FM bassline, crisp 909 drums, and
+# percussive vocal chops. This playbook uses changing FM parameters
+# to create a "talking" bassline that locks perfectly with the groove.
+# [DNA: 125 BPM, F minor, 4/4 kick, off‑beat hats, syncopated
+#  FM bass, staccato chords, plucky FM lead, granular vocal stabs]
 # ==========================================================
 
 use_bpm 125
 
-# ==========================================================
-# 1. REQUIRE ENGINE
-# ==========================================================
-eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
+eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi"
 
-# ==========================================================
-# 2. THE SCORES (F Minor - Groovy, Bouncy, & Crisp)
-# ==========================================================
+# ----------------------------------------------------------
+# SCORES – Normalized with gen_score – behavior identical to original
+# ----------------------------------------------------------
 
-# Driving, crisp 909-style 4-on-the-floor kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+# Driving 4‑on‑the‑floor kick
+s_kick = gen_score("x...x...x...x...", [:c4])
 
-# Thick, organic clap strictly on beats 2 and 4 (steps 4 and 12).
-s_clap  = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+# Thick clap on beats 2 and 4
+s_clap = gen_score("....x.......x...", [:c4])
 
-# Off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+# Off‑beat open hats – steps 2,6,10,14
+s_hats = gen_score("..x...x...x...x.",
+  [{note: :c4, amp: 0.4}, {note: :c4, amp: 0.5},
+   {note: :c4, amp: 0.4}, {note: :c4, amp: 0.5}])
 
-# The "Womp" Tech House Bass (F Minor).
-# Plays a syncopated 16th-note rhythm. The changing 'divisor' and 'depth' 
-# Hashes make the FM synth squelch and "talk" in the pockets between the kick.
-s_bass  = (ring {:note => :f2, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, nil, nil, {:note => :f2, :divisor => 3, :depth => 6, :release => 0.12, :amp => 0.8}, {:note => :ab2, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, nil, {:note => :c3, :divisor => 4, :depth => 8, :release => 0.12, :amp => 0.8}, nil, {:note => :f2, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, nil, nil, {:note => :f2, :divisor => 3, :depth => 6, :release => 0.12, :amp => 0.8}, {:note => :eb2, :divisor => 2, :depth => 4, :release => 0.12, :amp => 1.0}, nil, {:note => :g2, :divisor => 4, :depth => 8, :release => 0.12, :amp => 0.8}, nil)
+# "Womp" Tech House bass – syncopated 16ths with changing FM parameters
+# Triggers on steps: 0,3,4,6,8,11,12,14 → "x..xx.x.x..xx.x."
+bass_data = [
+  {note: :f2,  divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :f2,  divisor: 3, depth: 6, release: 0.12, amp: 0.8},
+  {note: :ab2, divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :c3,  divisor: 4, depth: 8, release: 0.12, amp: 0.8},
+  {note: :f2,  divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :f2,  divisor: 3, depth: 6, release: 0.12, amp: 0.8},
+  {note: :eb2, divisor: 2, depth: 4, release: 0.12, amp: 1.0},
+  {note: :g2,  divisor: 4, depth: 8, release: 0.12, amp: 0.8}
+]
+s_bass = gen_score("x..xx.x.x..xx.x.", bass_data)
 
-# Staccato, minor chord stabs (Fm).
-# Hit sparingly on the off-beats to leave maximum room for the bassline.
-s_chords= (ring nil, nil, nil, nil, {:note => [:f3, :ab3, :c4], :cutoff => 100, :release => 0.15, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+# Staccato minor chord stabs – only on step 4
+s_chords = gen_score("....x...........",
+  [{note: [:f3, :ab3, :c4], cutoff: 100, release: 0.15, amp: 0.6}])
 
-# Plucky, echoing top-line melody (F Minor Pentatonic).
-# FIXED: Exactly 16 steps.
-s_fm    = (ring nil, nil, nil, nil, {:note => :f5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :c5, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil, nil, nil, nil, nil, {:note => :ab5, :amp => 0.6, :divisor => 3, :depth => 2, :release => 0.3}, nil, {:note => :c6, :amp => 0.5, :divisor => 3, :depth => 2, :release => 0.3}, nil)
+# Plucky, echoing top‑line melody – triggers on steps 4,6,12,14
+# Pattern: "....x.x.....x.x."
+fm_data = [
+  {note: :f5,  amp: 0.6, divisor: 3, depth: 2, release: 0.3},
+  {note: :c5,  amp: 0.5, divisor: 3, depth: 2, release: 0.3},
+  {note: :ab5, amp: 0.6, divisor: 3, depth: 2, release: 0.3},
+  {note: :c6,  amp: 0.5, divisor: 3, depth: 2, release: 0.3}
+]
+s_fm = gen_score("....x.x.....x.x.", fm_data)
 
-# Repetitive, percussive "Festival" vocal chop (Granular Synth).
-# Hits in sync with the bassline. High density, small size = a sharp vocal skip.
-s_vocal = (ring nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.03, :amp => 0.6}, nil, nil, nil, nil, nil, nil, nil, nil, {:note => :f4, :buffer => :ambi_choir, :pos => 0.2, :density => 2, :size => 0.03, :amp => 0.6}, nil, nil)
+# Repetitive festival vocal chop – triggers on steps 4 and 13
+# Pattern: "....x........x.."
+vocal_data = [
+  {note: :f4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.03, amp: 0.6},
+  {note: :f4, buffer: :ambi_choir, pos: 0.2, density: 2, size: 0.03, amp: 0.6}
+]
+s_vocal = gen_score("....x........x..", vocal_data)
 
-# ==========================================================
-# 3. THE PLAYBOOK
-# ==========================================================
+# ----------------------------------------------------------
+# PLAYBOOK – In‑line and readable
+# ----------------------------------------------------------
 playbook = (ring
-  # Scene 1: The Groove - Just the kick, off-beat hats, and womp bass (4 bars)
-  [ [:play_kick, s_kick, 4], [:play_hats, s_hats, 4], [:play_fm, s_bass, 4] ],
-  
-  # Scene 2: The Vibe - Add the heavy claps and sparse chord stabs (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8] ],
-    
-  # Scene 3: The Drop - The plucky melody and vocal chops drop (8 bars)
-  [ [:play_kick, s_kick, 8], [:play_hats, s_hats, 8], [:play_fm, s_bass, 8], 
-    [:play_snare, s_clap, 8], [:play_chords, s_chords, 8], 
-    [:play_lead, s_fm, 8], [:play_grain, s_vocal, 8] ]
+  # Scene 1 – The Groove: kick, hats, and womp bass (4 bars)
+  [ [:play_kick, s_kick, 4],
+    [:play_hats, s_hats, 4],
+    [:play_fm, s_bass, 4] ],
+
+  # Scene 2 – The Vibe: add claps and sparse chords (8 bars)
+  [ [:play_kick, s_kick, 8],
+    [:play_hats, s_hats, 8],
+    [:play_fm, s_bass, 8],
+    [:play_snare, s_clap, 8],
+    [:play_chords, s_chords, 8] ],
+
+  # Scene 3 – The Drop: plucky melody and vocal chops (8 bars)
+  [ [:play_kick, s_kick, 8],
+    [:play_hats, s_hats, 8],
+    [:play_fm, s_bass, 8],
+    [:play_snare, s_clap, 8],
+    [:play_chords, s_chords, 8],
+    [:play_lead, s_fm, 8],
+    [:play_grain, s_vocal, 8] ]
 )
 
-# ==========================================================
-# 4. RUN
-# ==========================================================
 start_engine(playbook)
 
 # ==========================================================
-# [WHAT MAKES THIS PLAYBOOK A MASTERCLASS IN THE GROOVE]
-# 
-# 1. The "Talking" Bass: Look at `s_bass`. The `:play_fm` synth plays a 
-#    syncopated rhythm, but the `divisor` and `depth` Hashes change on 
-#    almost every hit (e.g., from `divisor: 2, depth: 4` to `divisor: 3, 
-#    depth: 6`). Because the engine reads these Hashes independently, 
-#    the FM modulator radically reshapes the carrier wave on every step. 
-#    This creates the illusion of a thick, squelching bassline that 
-#    "talks" in the pockets between the kick drum.
-#
-# 2. Extreme Sparsity: Tech House relies on leaving massive room for the 
-#    bassline. The `s_chords` sequence only hits once per bar (step 4), 
-#    and the `s_fm` melody leaves huge gaps (`nil`). The engine's strict 
-#    master clock ensures these sparse elements land with absolute precision, 
-#    making the groove feel incredibly tight and punchy.
-#
-# 3. Percussive Vocals: The `s_vocal` sequence uses the granular engine 
-#    to chop a vocal into microscopic shards (`size: 0.03`). In Tech House, 
-#    vocals are rarely sung; they are sliced and used as raw percussion that 
-#    hits in sync with the bassline, adding massive human energy to the rigid 
-#    4/4 grid.
+# MASTERCLASS INSIGHTS
+# ==========================================================
+# 1. "Talking" Bass – changing divisor/depth per step reshapes the
+#    FM carrier, creating a squelching, syncopated bassline.
+# 2. Extreme Sparsity – chords and lead leave huge gaps, making
+#    the bass and drums feel tight and punchy.
+# 3. Percussive Vocals – granular chops (size 0.03) turn vocals
+#    into rhythmic hits that add human energy to the grid.
 # ==========================================================

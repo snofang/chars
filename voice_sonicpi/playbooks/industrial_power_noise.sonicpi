@@ -30,37 +30,50 @@ eval_file "~/develop/chars/voice_sonicpi/engine.sonicpi" # Update your path!
 # ==========================================================
 
 # Relentless, hammering 4/4 kick.
-s_kick  = (ring :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil, :c4, nil, nil, nil)
+s_kick = gen_score("x...x...x...x...", [:c4])
 
 # Heavy, dry industrial snare strictly on beats 2 and 4 (steps 4 and 12).
-s_snare = (ring nil, nil, nil, nil, :c4, nil, nil, nil, nil, nil, nil, nil, :c4, nil, nil, nil)
+s_snare = gen_score("....x.......x...", [:c4])
 
 # Rigid, off-beat open hats to drive the momentum.
-s_hats  = (ring nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil, nil, nil, {:note => :c4, :amp => 0.4}, nil, nil, nil, {:note => :c4, :amp => 0.5}, nil)
+s_hats = gen_score("..x..x..x..x....",
+  [ {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.5},
+    {note: :c4, amp: 0.4},
+    {note: :c4, amp: 0.5} ])
 
-# The "Industrial Pulse" Bass (F# Minor).
-# Uses play_sub. Plays continuous 16th notes. The extreme cutoff (120) and 
-# very short release (0.1) create a relentless, buzzing, distorted churn.
-s_bass  = (ring {:note => :fs1, :cutoff => 120, :release => 0.1}, {:note => :fs1, :cutoff => 120, :release => 0.1}, {:note => :fs2, :cutoff => 120, :release => 0.1}, {:note => :fs1, :cutoff => 120, :release => 0.1}, 
-           {:note => :fs1, :cutoff => 120, :release => 0.1}, {:note => :fs1, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, 
-           {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, {:note => :a2, :cutoff => 120, :release => 0.1}, {:note => :a1, :cutoff => 120, :release => 0.1}, 
-           {:note => :e1, :cutoff => 120, :release => 0.1}, {:note => :e1, :cutoff => 120, :release => 0.1}, {:note => :fs1, :cutoff => 120, :release => 0.1}, {:note => :e1, :cutoff => 120, :release => 0.1})
+# The "Industrial Pulse" Bass (F# Minor) – continuous 16ths, extreme cutoff.
+bass_notes = [
+  :fs1, :fs1, :fs2, :fs1, :fs1, :fs1, :a1, :a1,
+  :a1, :a1, :a2, :a1, :e1, :e1, :fs1, :e1
+]
+bass_params = {cutoff: 120, release: 0.1}
+s_bass = gen_score("xxxxxxxxxxxxxxxx",
+  bass_notes.map { |n| bass_params.merge(note: n) })
 
-# Stark, minor chord stabs (F#m to A to E).
-# Hit sparingly on the off-beats to leave maximum room for the pulse bass.
-s_chords= (ring nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:fs3, :a3, :c4], nil, nil, nil, [:a3, :c4, :e4], nil, nil, nil, [:e3, :g3, :b3], nil)
+# Stark, minor chord stabs (F#m to A to E) on off‑beats (steps 2,6,10,14).
+s_chords = gen_score("..x..x..x..x....",
+  [ [:fs3, :a3, :c4],
+    [:fs3, :a3, :c4],
+    [:a3, :c4, :e4],
+    [:e3, :g3, :b3] ])
 
-# The "Metallic Noise" Chopper.
-# Uses :play_fm. The alternating low/high notes (:fs3 vs :fs5) force the 
-# FM divisor to jump back and forth, creating a rhythmic, chopping metallic effect.
-s_fm    = (ring {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, 
-           {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, 
-           {:note => :a3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, {:note => :a3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :a5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, 
-           {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05}, {:note => :fs3, :amp => 0.4, :divisor => 4, :depth => 5, :release => 0.05}, {:note => :fs5, :amp => 0.6, :divisor => 2, :depth => 2, :release => 0.05})
+# The "Metallic Noise" Chopper – alternating low/high notes to create rhythmic metal.
+# Define two FM templates: low (click) and high (piercing).
+low_fm  = {amp: 0.4, divisor: 4, depth: 5, release: 0.05}
+high_fm = {amp: 0.6, divisor: 2, depth: 2, release: 0.05}
 
-# The "Grinding" Granular FX.
-# Uses :elec_piano buffer. High density, tiny size = grinding metal.
-s_grain = (ring {:note => :fs3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :a3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :fs3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil, {:note => :e3, :buffer => :elec_piano, :pos => 0.8, :density => 6, :size => 0.02, :amp => 0.4}, nil, nil, nil)
+# Build a 16‑step sequence: 4 repeats of (fs3, fs5), then 2 repeats of (a3, a5), then 4 repeats of (fs3, fs5).
+fs_pair = [{note: :fs3}.merge(low_fm), {note: :fs5}.merge(high_fm)]
+a_pair  = [{note: :a3}.merge(low_fm),  {note: :a5}.merge(high_fm)]
+fm_data = (fs_pair * 4) + (a_pair * 2) + (fs_pair * 4)
+s_fm = gen_score("xxxxxxxxxxxxxxxx", fm_data)
+
+# The "Grinding" Granular FX – metallic static using elec_piano.
+grain_notes = [:fs3, :a3, :fs3, :e3]
+grain_base  = {buffer: :elec_piano, pos: 0.8, density: 6, size: 0.02, amp: 0.4}
+s_grain = gen_score("x...x...x...x...",
+  grain_notes.map { |n| grain_base.merge(note: n) })
 
 # ==========================================================
 # 3. THE PLAYBOOK
